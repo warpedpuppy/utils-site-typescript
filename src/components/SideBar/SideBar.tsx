@@ -3,13 +3,14 @@ import Utils from "../../utils/Utils";
 import { NavLink } from "react-router-dom";
 import "./SideBar.scss";
 
+type LargerCategory = {
+  [key: string]: IndividualExample;
+};
+
 type IndividualExample = {
   t: string;
   l: string;
   f: any;
-};
-type LargerCategory = {
-  [key: string]: IndividualExample;
 };
 
 function SideBar() {
@@ -29,7 +30,7 @@ function SideBar() {
         arr.push(
           <dd key={`sidemenu-dd-${innerKey}`}>
             <NavLink
-              to={l}
+              to={`/examples/${l}`}
               className={({ isActive, isPending }) =>
                 isPending ? "pending" : isActive ? "active" : ""
               }
