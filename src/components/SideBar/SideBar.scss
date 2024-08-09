@@ -1,0 +1,23 @@
+#side-bar {
+  min-height: 100vh;
+  border-right: 1px solid black;
+  width: 250px;
+  dt {
+    text-align: left;
+  }
+  dd {
+    text-align: right;
+  }
+  dt,
+  dd {
+    padding: 1em 0.5em;
+    border-bottom: 1px solid black;
+    cursor: pointer;
+  }
+  pending {
+    color: green;
+  }
+  active {
+    color: red;
+  }
+}
