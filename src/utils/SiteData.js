@@ -3,6 +3,15 @@ const SiteData = {
     circleFromThreePoints: {
       t: "get circle from three points",
       l: "circle-from-three-points",
+      bf: function (canvas) {
+        const ctx = canvas.getContext("2d");
+        ctx.fillRect(25, 25, 100, 100);
+        ctx.clearRect(45, 45, 60, 60);
+        ctx.strokeRect(50, 50, 50, 50);
+      },
+      end: function () {
+
+      },
       f: function (x1, y1, x2, y2, x3, y3) {
         var x12 = (x1 - x2);
         var x13 = (x1 - x3);
@@ -63,7 +72,16 @@ const SiteData = {
           x: (start.x + end.x) / 2,
           y: (start.y + end.y) / 2
         }
-      }
+      },
+      bf: function (canvas) {
+        const ctx = canvas.getContext("2d");
+        ctx.fillRect(25, 25, 100, 100);
+        ctx.clearRect(45, 45, 60, 60);
+        ctx.strokeRect(50, 50, 50, 50);
+      },
+      end: function () {
+
+      },
     },
     equilateralTriangleVertices: {
       t: "get equilateral triangle vertices from radius and center point",
@@ -73,7 +91,16 @@ const SiteData = {
         let point2 = { x: radius * Math.cos((1 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((1 / 3) * (2 * Math.PI)) + centerPoint.y }
         let point3 = { x: radius * Math.cos((2 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((2 / 3) * (2 * Math.PI)) + centerPoint.y }
         return { point1, point2, point3 }
-      }
+      },
+      bf: function (canvas) {
+        const ctx = canvas.getContext("2d");
+        ctx.fillRect(25, 25, 100, 100);
+        ctx.clearRect(45, 45, 60, 60);
+        ctx.strokeRect(50, 50, 50, 50);
+      },
+      end: function () {
+
+      },
     }
   }
 }

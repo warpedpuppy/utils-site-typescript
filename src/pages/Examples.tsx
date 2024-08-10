@@ -1,24 +1,35 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import PrimaryCanvas from "../components/PrimaryCanvas/PrimaryCanvas";
 import SideBar from "../components/SideBar/SideBar";
 import ProcessSiteData from "../utils/ProcessSiteData";
 import "./Examples.scss";
 
 function Examples() {
-  const params = useParams();
-  const [activeObject, setActiveObject] = useState<object>({});
+  const [activeObject, setActiveObject] = useState<IndividualObject>({
+    t: "",
+    l: "",
+    end: () => {},
+    bf: () => {},
+    f: () => {},
+  });
 
   type SiteDataType = {
-    [key: string]: InnerSiteDataType;
+    [key: string]: object;
   };
   type InnerSiteDataType = {
     [key: string]: object;
   };
 
-  const loadCode: Function = (key: string, innerKey: string) => {
-    let test: SiteDataType = siteData;
-    setActiveObject(test[key][innerKey]);
+  type IndividualObject = {
+    bf: Function;
+    end: Function;
+    t: string;
+    l: string;
+    f: Function;
+  };
+
+  const loadCode: Function = (key: keyof object, innerKey: keyof object) => {
+    setActiveObject(siteData[key][innerKey]);
   };
   const { sideMenu, siteData } = ProcessSiteData(loadCode);
 

@@ -1,16 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, createRef } from "react";
 import "./PrimaryCanvas.scss";
 
 type CanvasObject = {
-  activeObject: object;
+  activeObject: IndividualObject;
+};
+
+type IndividualObject = {
+  bf: Function;
+  end: Function;
+  t: string;
+  l: string;
+  f: Function;
 };
 
 function PrimaryCanvas(props: CanvasObject) {
-  const activeObject: object = props.activeObject;
+  const activeObject: IndividualObject = props.activeObject;
+  const canvasRef = createRef<HTMLCanvasElement>();
   useEffect(() => {
-    console.log(activeObject);
-  }, [activeObject]);
-  return <canvas id="primary-canvas"></canvas>;
+    activeObject.bf(canvasRef.current);
+  }, [activeObject, canvasRef]);
+  return <canvas ref={canvasRef}></canvas>;
 }
 
 export default PrimaryCanvas;
