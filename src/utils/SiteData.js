@@ -7,11 +7,14 @@ const SiteData = {
         return {
           init() {
             this.canvas = canvas;
-            const ctx = canvas.getContext("2d");
-            canvas.addEventListener("pointerdown", this.pointerDownHandler)
+            this.ctx = canvas.getContext("2d");
+            canvas.addEventListener("pointerdown", this.pointerDownHandler.bind(this))
           },
           pointerDownHandler(e) {
-            console.log(e, "three points")
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            console.log(e, this)
+            this.ctx.font = "48px serif";
+            this.ctx.fillText(e.pageX, 10, 50);
 
           },
           stop() {
