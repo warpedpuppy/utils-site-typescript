@@ -1,13 +1,7 @@
-import './Home.scss';
-import PrimaryCanvas from '../components/PrimaryCanvas/PrimaryCanvas';
-import SideBar from '../components/SideBar/SideBar';
+import "./Home.scss";
+
 function Home() {
-  return (
-    <section id="home-page">
-      <SideBar />
-      <PrimaryCanvas />
-    </section>
-  );
+  return <section id="home-page">home</section>;
 }
 
 export default Home;

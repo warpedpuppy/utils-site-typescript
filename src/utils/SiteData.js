@@ -1,4 +1,4 @@
-const Utils = {
+const SiteData = {
   trig: {
     circleFromThreePoints: {
       t: "get circle from three points",
@@ -78,4 +78,4 @@ const Utils = {
   }
 }
 
-export default Utils;
+export default SiteData;

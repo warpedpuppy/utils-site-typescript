@@ -1,7 +1,16 @@
+import { useEffect } from "react";
 import "./PrimaryCanvas.scss";
 
-function PrimaryCanvas() {
-  return (<canvas id="primary-canvas"></canvas>);
+type CanvasObject = {
+  activeFunction: string;
+};
+
+function PrimaryCanvas(props: CanvasObject) {
+  const activeFunction: string = props.activeFunction;
+  useEffect(() => {
+    console.log(activeFunction);
+  }, [activeFunction]);
+  return <canvas id="primary-canvas"></canvas>;
 }
 
 export default PrimaryCanvas;
