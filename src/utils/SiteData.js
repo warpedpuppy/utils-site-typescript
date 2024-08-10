@@ -5,6 +5,8 @@ const SiteData = {
       l: "circle-from-three-points",
       bf: function (canvas) {
         return {
+          text: "",
+          points: [],
           init() {
             this.canvas = canvas;
             this.ctx = canvas.getContext("2d");
@@ -12,9 +14,25 @@ const SiteData = {
           },
           pointerDownHandler(e) {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            console.log(e, this)
-            this.ctx.font = "48px serif";
-            this.ctx.fillText(e.pageX, 10, 50);
+            let { top, left } = this.canvas.getBoundingClientRect();
+            if (this.points.length === 3) this.points.shift();
+            this.points.push([Math.floor(e.pageX - left), Math.floor(e.pageY - top)])
+            this.ctx.font = "12px serif";
+            this.ctx.fillText("points:", 10, 30);
+            this.ctx.fillText(this.formatText(), 10, 50);
+
+            this.points.forEach(item => {
+              this.ctx.beginPath();
+              this.ctx.arc(item[0], item[1], 5, 0, 2 * Math.PI);
+              this.ctx.stroke();
+            })
+
+          },
+          formatText() {
+            return this.points.map((item, index) => {
+              let i = index + 1;
+              return `point ${i}: {x:${item[0]}, y:${item[1]}}`
+            }).join(",")
 
           },
           stop() {
