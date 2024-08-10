@@ -7,19 +7,31 @@ type CanvasObject = {
 
 type IndividualObject = {
   bf: Function;
-  end: Function;
   t: string;
   l: string;
   f: Function;
 };
 
+type AnimationObject = {
+  [index: string]: any;
+};
+
 function PrimaryCanvas(props: CanvasObject) {
   const activeObject: IndividualObject = props.activeObject;
   const canvasRef = createRef<HTMLCanvasElement>();
+
   useEffect(() => {
-    activeObject.bf(canvasRef.current);
+    if (canvasRef.current) {
+      canvasRef.current.height = canvasRef.current?.clientHeight;
+      canvasRef.current.width = canvasRef.current?.clientWidth;
+    }
+    let obj: AnimationObject = activeObject.bf(canvasRef.current);
+    obj?.init();
+
+    return () => obj?.stop();
   }, [activeObject, canvasRef]);
-  return <canvas ref={canvasRef}></canvas>;
+
+  return <canvas id="primary-canvas" ref={canvasRef}></canvas>;
 }
 
 export default PrimaryCanvas;

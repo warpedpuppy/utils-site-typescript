@@ -1,32 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PrimaryCanvas from "../components/PrimaryCanvas/PrimaryCanvas";
 import SideBar from "../components/SideBar/SideBar";
 import ProcessSiteData from "../utils/ProcessSiteData";
 import "./Examples.scss";
 
+type IndividualObject = {
+  bf: Function;
+  t: string;
+  l: string;
+  f: Function;
+};
+
 function Examples() {
   const [activeObject, setActiveObject] = useState<IndividualObject>({
     t: "",
     l: "",
-    end: () => {},
     bf: () => {},
     f: () => {},
   });
-
-  type SiteDataType = {
-    [key: string]: object;
-  };
-  type InnerSiteDataType = {
-    [key: string]: object;
-  };
-
-  type IndividualObject = {
-    bf: Function;
-    end: Function;
-    t: string;
-    l: string;
-    f: Function;
-  };
 
   const loadCode: Function = (key: keyof object, innerKey: keyof object) => {
     setActiveObject(siteData[key][innerKey]);

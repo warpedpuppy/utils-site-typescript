@@ -9,6 +9,7 @@ type LargerCategory = {
 type IndividualExample = {
   t: string;
   l: string;
+  bf: Function;
   f: any;
 };
 

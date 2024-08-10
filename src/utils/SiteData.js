@@ -4,13 +4,20 @@ const SiteData = {
       t: "get circle from three points",
       l: "circle-from-three-points",
       bf: function (canvas) {
-        const ctx = canvas.getContext("2d");
-        ctx.fillRect(25, 25, 100, 100);
-        ctx.clearRect(45, 45, 60, 60);
-        ctx.strokeRect(50, 50, 50, 50);
-      },
-      end: function () {
+        return {
+          init() {
+            this.canvas = canvas;
+            const ctx = canvas.getContext("2d");
+            canvas.addEventListener("pointerdown", this.pointerDownHandler)
+          },
+          pointerDownHandler(e) {
+            console.log(e, "three points")
 
+          },
+          stop() {
+            canvas.removeEventListener("pointerdown", this.pointerDownHandler)
+          }
+        }
       },
       f: function (x1, y1, x2, y2, x3, y3) {
         var x12 = (x1 - x2);
@@ -74,14 +81,21 @@ const SiteData = {
         }
       },
       bf: function (canvas) {
-        const ctx = canvas.getContext("2d");
-        ctx.fillRect(25, 25, 100, 100);
-        ctx.clearRect(45, 45, 60, 60);
-        ctx.strokeRect(50, 50, 50, 50);
-      },
-      end: function () {
+        return {
+          init() {
+            this.canvas = canvas;
+            const ctx = canvas.getContext("2d");
+            canvas.addEventListener("pointerdown", this.pointerDownHandler)
+          },
+          pointerDownHandler(e) {
+            console.log(e, "halfway")
 
-      },
+          },
+          stop() {
+            canvas.removeEventListener("pointerdown", this.pointerDownHandler)
+          }
+        }
+      }
     },
     equilateralTriangleVertices: {
       t: "get equilateral triangle vertices from radius and center point",
@@ -93,14 +107,21 @@ const SiteData = {
         return { point1, point2, point3 }
       },
       bf: function (canvas) {
-        const ctx = canvas.getContext("2d");
-        ctx.fillRect(25, 25, 100, 100);
-        ctx.clearRect(45, 45, 60, 60);
-        ctx.strokeRect(50, 50, 50, 50);
-      },
-      end: function () {
+        return {
+          init() {
+            this.canvas = canvas;
+            const ctx = canvas.getContext("2d");
+            canvas.addEventListener("pointerdown", this.pointerDownHandler)
+          },
+          pointerDownHandler(e) {
+            console.log(e, "equilateral trianlge")
 
-      },
+          },
+          stop() {
+            canvas.removeEventListener("pointerdown", this.pointerDownHandler)
+          }
+        }
+      }
     }
   }
 }
