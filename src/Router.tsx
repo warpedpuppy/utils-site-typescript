@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import OuterShell from "./pages/OuterShell";
 import Home from "./pages/Home";
 import Examples from "./pages/Examples";
+import CreateJSON from "./pages/CreateJSON";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
             element: <Examples />,
           },
         ],
+      },
+      {
+        path: "create-json",
+        element: <CreateJSON />,
       },
       {
         path: "about",

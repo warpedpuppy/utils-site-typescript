@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PrimaryCanvas from "../components/PrimaryCanvas/PrimaryCanvas";
 import SideBar from "../components/SideBar/SideBar";
-import ProcessSiteData from "../utils/ProcessSiteData";
+import ProcessSiteData from "../siteData/ProcessSiteData";
 import { AnimationObject } from "../types/types";
 import "./Examples.scss";
 

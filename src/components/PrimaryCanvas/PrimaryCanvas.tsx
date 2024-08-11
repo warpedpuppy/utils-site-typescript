@@ -11,6 +11,7 @@ function PrimaryCanvas(props: CanvasObject) {
   const canvasRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
+    console.log(activeObject);
     let obj: GenericObject = activeObject.bf(canvasRef.current, activeObject.f);
     console.log(obj);
     obj?.init();
