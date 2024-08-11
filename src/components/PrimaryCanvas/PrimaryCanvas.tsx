@@ -15,7 +15,7 @@ function PrimaryCanvas(props: CanvasObject) {
       canvasRef.current.height = canvasRef.current?.clientHeight;
       canvasRef.current.width = canvasRef.current?.clientWidth;
     }
-    let obj: GenericObject = activeObject.bf(canvasRef.current);
+    let obj: GenericObject = activeObject.bf(canvasRef.current, activeObject.f);
     obj?.init();
 
     return () => obj?.stop();

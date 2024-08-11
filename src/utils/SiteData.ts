@@ -4,7 +4,7 @@ const SiteData = {
     circleFromThreePoints: {
       t: "get circle from three points",
       l: "circle-from-three-points",
-      bf: function (canvas: HTMLCanvasElement) {
+      bf: function (canvas: HTMLCanvasElement, keyFunction: Function) {
         const obj: GenericObject = {
           text: "",
           points: [],
@@ -27,6 +27,13 @@ const SiteData = {
               this.ctx.arc(item[0], item[1], 5, 0, 2 * Math.PI);
               this.ctx.stroke();
             })
+
+            if (this.points.length === 3) {
+              let { center, radius} = keyFunction(this.points[0][0], this.points[0][1],this.points[1][0], this.points[1][1],this.points[2][0], this.points[2][1]);
+              this.ctx.beginPath();
+              this.ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+              this.ctx.stroke();
+            }
 
           },
           formatText() {
@@ -91,8 +98,6 @@ const SiteData = {
         var r = Math.sqrt(sqr_of_r);
 
         return { radius: r, center: { x: h, y: k } }
-        // document.write("Centre = (" + h + ", " + k + ")" + "<br>");
-        // document.write("Radius = " + r.toFixed(5));}
       }
     },
     getHalfwayPointofLine: {
