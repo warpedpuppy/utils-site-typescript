@@ -1,23 +1,13 @@
 import { useEffect, createRef } from "react";
+import {
+  GenericObject,
+  CanvasObject,
+  AnimationObject,
+} from "../../types/types";
 import "./PrimaryCanvas.scss";
 
-type CanvasObject = {
-  activeObject: IndividualObject;
-};
-
-type IndividualObject = {
-  bf: Function;
-  t: string;
-  l: string;
-  f: Function;
-};
-
-type AnimationObject = {
-  [index: string]: any;
-};
-
 function PrimaryCanvas(props: CanvasObject) {
-  const activeObject: IndividualObject = props.activeObject;
+  const activeObject: AnimationObject = props.activeObject;
   const canvasRef = createRef<HTMLCanvasElement>();
 
   useEffect(() => {
@@ -25,7 +15,7 @@ function PrimaryCanvas(props: CanvasObject) {
       canvasRef.current.height = canvasRef.current?.clientHeight;
       canvasRef.current.width = canvasRef.current?.clientWidth;
     }
-    let obj: AnimationObject = activeObject.bf(canvasRef.current);
+    let obj: GenericObject = activeObject.bf(canvasRef.current);
     obj?.init();
 
     return () => obj?.stop();

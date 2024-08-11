@@ -1,17 +1,11 @@
-interface LooseObject {
-  [key: string]: any
-}
-type Point = {
-  x: number;
-  y:number;
-}
+import { GenericObject, Point } from "../types/types";
 const SiteData = {
   trig: {
     circleFromThreePoints: {
       t: "get circle from three points",
       l: "circle-from-three-points",
       bf: function (canvas: HTMLCanvasElement) {
-        const obj: LooseObject = {
+        const obj: GenericObject = {
           text: "",
           points: [],
           init() {
@@ -111,7 +105,7 @@ const SiteData = {
         }
       },
       bf: function (canvas: HTMLCanvasElement) {
-        const obj: LooseObject = {
+        const obj: GenericObject = {
           init() {
             this.canvas = canvas;
             const ctx = canvas.getContext("2d");
@@ -138,7 +132,7 @@ const SiteData = {
         return { point1, point2, point3 }
       },
       bf: function (canvas: HTMLCanvasElement) {
-        let obj: LooseObject = {
+        let obj: GenericObject = {
           init() {
             this.canvas = canvas;
             const ctx = canvas.getContext("2d");

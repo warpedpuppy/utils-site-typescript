@@ -1,17 +1,7 @@
 import { useMemo } from "react";
 import SiteData from "./SiteData";
 import { useNavigate } from "react-router-dom";
-
-type LargerCategory = {
-  [key: string]: IndividualExample;
-};
-
-type IndividualExample = {
-  t: string;
-  l: string;
-  bf: Function;
-  f: any;
-};
+import { CanvasObject, GenericObject } from "../types/types";
 
 function ProcessUtils(loadCode: Function) {
   const navigate = useNavigate();
@@ -31,7 +21,7 @@ function ProcessUtils(loadCode: Function) {
     for (key in SiteData) {
       arr.push(<dt key={`sidemenu-dt-${key}`}>{key}</dt>);
       let BigCat: string = key.toString();
-      const subObject: LargerCategory = SiteData[key];
+      const subObject: GenericObject = SiteData[key];
       let innerKey: keyof typeof subObject;
 
       for (innerKey in subObject) {

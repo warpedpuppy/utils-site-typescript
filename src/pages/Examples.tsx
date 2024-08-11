@@ -2,17 +2,11 @@ import { useState } from "react";
 import PrimaryCanvas from "../components/PrimaryCanvas/PrimaryCanvas";
 import SideBar from "../components/SideBar/SideBar";
 import ProcessSiteData from "../utils/ProcessSiteData";
+import { AnimationObject } from "../types/types";
 import "./Examples.scss";
 
-type IndividualObject = {
-  bf: Function;
-  t: string;
-  l: string;
-  f: Function;
-};
-
 function Examples() {
-  const [activeObject, setActiveObject] = useState<IndividualObject>({
+  const [activeObject, setActiveObject] = useState<AnimationObject>({
     t: "",
     l: "",
     bf: () => {},
