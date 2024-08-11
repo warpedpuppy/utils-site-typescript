@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import SiteData from "./SiteData";
 import { useNavigate } from "react-router-dom";
-import { CanvasObject, GenericObject } from "../types/types";
+import { GenericObject } from "../types/types";
 
 function ProcessUtils(loadCode: Function) {
   const navigate = useNavigate();
@@ -28,14 +28,11 @@ function ProcessUtils(loadCode: Function) {
         let { t, l, f } = subObject[innerKey];
         let LittleCat: string = innerKey.toString();
         arr.push(
-          <dd key={`sidemenu-dd-${innerKey}`}>
-            <div
-              onClick={() =>
-                clickHandler(`/examples/${l}`, f, BigCat, LittleCat)
-              }
-            >
-              {t}
-            </div>
+          <dd
+            key={`sidemenu-dd-${innerKey}`}
+            onClick={() => clickHandler(`/examples/${l}`, f, BigCat, LittleCat)}
+          >
+            <div>{t}</div>
           </dd>
         );
       }
