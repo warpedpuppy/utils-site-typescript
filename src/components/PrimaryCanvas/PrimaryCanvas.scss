@@ -1,5 +1,9 @@
-#primary-canvas {
+#primary-canvas-cont {
   width: 100%;
   background-color: rgba($color: #000000, $alpha: 0.045);
-  height: 100%;
+  height: calc(100vh - 50px);
+  canvas {
+    width: 100%;
+    height: calc(100vh - 50px);
+  }
 }

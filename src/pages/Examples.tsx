@@ -12,11 +12,11 @@ function Examples() {
     bf: () => {},
     f: () => {},
   });
-
-  const loadCode: Function = (key: keyof object, innerKey: keyof object) => {
-    setActiveObject(siteData[key][innerKey]);
-  };
   const { sideMenu, siteData } = ProcessSiteData(loadCode);
+
+  function loadCode(key: keyof object, innerKey: keyof object) {
+    setActiveObject(siteData[key][innerKey]);
+  }
 
   return (
     <section id="home-page">

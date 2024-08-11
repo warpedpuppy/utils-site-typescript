@@ -8,20 +8,17 @@ import "./PrimaryCanvas.scss";
 
 function PrimaryCanvas(props: CanvasObject) {
   const activeObject: AnimationObject = props.activeObject;
-  const canvasRef = createRef<HTMLCanvasElement>();
+  const canvasRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
-    if (canvasRef.current) {
-      canvasRef.current.height = canvasRef.current?.clientHeight;
-      canvasRef.current.width = canvasRef.current?.clientWidth;
-    }
     let obj: GenericObject = activeObject.bf(canvasRef.current, activeObject.f);
+    console.log(obj);
     obj?.init();
 
     return () => obj?.stop();
   }, [activeObject, canvasRef]);
 
-  return <canvas id="primary-canvas" ref={canvasRef}></canvas>;
+  return <div id="primary-canvas-cont" ref={canvasRef}></div>;
 }
 
 export default PrimaryCanvas;

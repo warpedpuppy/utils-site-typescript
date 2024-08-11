@@ -4,21 +4,28 @@ const SiteData = {
     circleFromThreePoints: {
       t: "get circle from three points",
       l: "circle-from-three-points",
-      bf: function (canvas: HTMLCanvasElement, keyFunction: Function) {
+      bf: function (cont: HTMLDivElement, keyFunction: Function) {
         const obj: GenericObject = {
           text: "",
           points: [],
+          ctx: undefined,
           init() {
-            this.canvas = canvas;
-            this.ctx = canvas.getContext("2d");
-            canvas.addEventListener("pointerdown", this.pointerDownHandler.bind(this))
+            this.canvas = document.createElement("canvas");
+            this.canvas.width = cont.clientWidth;
+            this.canvas.height = cont.clientHeight;
+            this.ctx = this.canvas.getContext("2d");
+            cont.appendChild(this.canvas)
+
+            this.canvas.addEventListener("pointerdown", this.pointerDownHandlerThree.bind(this) )
+            window.addEventListener("resize", this.resizeHandler.bind(this))
           },
-          pointerDownHandler(e: PointerEvent) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            let { top, left } = this.canvas.getBoundingClientRect();
-            if (this.points.length === 3) this.points.shift();
-            this.points.push([Math.floor(e.pageX - left), Math.floor(e.pageY - top)])
-            this.ctx.font = "12px serif";
+          resizeHandler() {
+            this.canvas.width = cont.clientWidth;
+            this.canvas.height = cont.clientHeight;
+            this.draw();
+          },
+          draw() {
+            this.ctx.font = "16px serif";
             this.ctx.fillText("points:", 10, 30);
             this.ctx.fillText(this.formatText(), 10, 50);
 
@@ -34,6 +41,14 @@ const SiteData = {
               this.ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
               this.ctx.stroke();
             }
+          },
+          pointerDownHandlerThree(e: PointerEvent) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            let { top, left } = this.canvas.getBoundingClientRect();
+            if (this.points.length === 3) this.points.shift();
+            this.points.push([Math.floor(e.pageX - left), Math.floor(e.pageY - top)])
+            this.draw();
+         
 
           },
           formatText() {
@@ -44,7 +59,11 @@ const SiteData = {
 
           },
           stop() {
-            canvas.removeEventListener("pointerdown", this.pointerDownHandler)
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            this.canvas.removeEventListener("pointerdown", this.pointerDownHandlerThree)
+            window.removeEventListener("resize", this.resizeHandler.bind(this))
+            cont.removeChild(this.canvas)
+            this.canvas = null;
           }
           
         }
@@ -109,19 +128,67 @@ const SiteData = {
           y: (start.y + end.y) / 2
         }
       },
-      bf: function (canvas: HTMLCanvasElement) {
+      bf: function (cont: HTMLDivElement, keyFunction: Function) {
         const obj: GenericObject = {
           init() {
-            this.canvas = canvas;
-            const ctx = canvas.getContext("2d");
-            canvas.addEventListener("pointerdown", this.pointerDownHandler)
+            this.canvas = document.createElement("canvas");
+            cont.appendChild(this.canvas);
+            this.canvas.width = cont.clientWidth;
+            this.canvas.height = cont.clientHeight;
+            this.ctx = this.canvas.getContext("2d");
+
+            this.startPoint = undefined;
+            this.endPoint = undefined;
+            let { top, left } = this.canvas.getBoundingClientRect();
+            this.top = top;
+            this.left = left;
+            this.allowDraw = false;
+            this.canvas.addEventListener("pointerdown", this.pointerDownHandler.bind(this));
+            this.canvas.addEventListener("pointermove", this.pointerMoveHandler.bind(this));
+            this.canvas.addEventListener("pointerup", this.pointerUpHandler.bind(this));
+            window.addEventListener("resize", this.resizeHandler.bind(this))
+          },
+          resizeHandler() {
+            console.log("resize")
+            this.canvas.width = cont.clientWidth;
+            this.canvas.height = cont.clientHeight;
+            this.draw();
+          },
+          draw() {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            this.ctx.font = "12px serif";
+            this.ctx.fillText("click and drag to form a line", 10, 50);
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
+            this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
+            this.ctx.stroke();
+
+            let point: Point = keyFunction(this.startPoint,this.endPoint)
+
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+            this.ctx.stroke();
           },
           pointerDownHandler(e: PointerEvent) {
-            console.log(e, "halfway")
-
+            this.startPoint = {x: Math.floor(e.pageX - this.left), y: Math.floor(e.pageY - this.top)};
+            this.allowDraw = true;
+          },
+          pointerMoveHandler(e: PointerEvent) {
+            if (this.allowDraw) {
+              this.endPoint = {x: Math.floor(e.pageX - this.left), y: Math.floor(e.pageY - this.top)}
+              this.draw();
+            }
+          },
+          pointerUpHandler(e: PointerEvent) {
+            this.allowDraw = false;
           },
           stop() {
-            canvas.removeEventListener("pointerdown", this.pointerDownHandler)
+            this.canvas.removeEventListener("pointerdown", this.pointerDownHandler.bind(this));
+            this.canvas.removeEventListener("pointermove", this.pointerMoveHandler.bind(this));
+            this.canvas.removeEventListener("pointerup", this.pointerUpHandler.bind(this));
+            window.removeEventListener("resize", this.resizeHandler.bind(this))
+            cont.removeChild(this.canvas);
+            this.canvas = null;
           }
         }
         return obj;
@@ -136,19 +203,20 @@ const SiteData = {
         let point3 = { x: radius * Math.cos((2 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((2 / 3) * (2 * Math.PI)) + centerPoint.y }
         return { point1, point2, point3 }
       },
-      bf: function (canvas: HTMLCanvasElement) {
+      bf: function (cont: HTMLDivElement) {
         let obj: GenericObject = {
           init() {
-            this.canvas = canvas;
-            const ctx = canvas.getContext("2d");
-            canvas.addEventListener("pointerdown", this.pointerDownHandler)
+            this.canvas = document.createElement("canvas");
+            cont.appendChild(this.canvas);
+            this.ctx = this.canvas.getContext("2d");
+            this.canvas.addEventListener("pointerdown", this.pointerDownHandler)
           },
           pointerDownHandler(e: PointerEvent) {
             console.log(e, "equilateral trianlge")
 
           },
           stop() {
-            canvas.removeEventListener("pointerdown", this.pointerDownHandler)
+            this.canvas.removeEventListener("pointerdown", this.pointerDownHandler)
           }
         }
         return obj;
