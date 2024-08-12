@@ -1,12 +1,12 @@
-import { GenericObject, Point } from "../../types/types";
-const  getHalfwayPointofLine = {
-  t: "get halfway point in line",
-  l: "halfway-point-in-line",
-  f: function (start: Point, end: Point) {
-    return {
-      x: (start.x + end.x) / 2,
-      y: (start.y + end.y) / 2
-    }
+import { Point, GenericObject } from "../../../types/types";
+const equilateralTriangleVertices = {
+  t: "get equilateral triangle vertices from radius and center point",
+  l: "equilateral-trianlge-points",
+  f: function (radius: number, centerPoint: Point) {
+    let point1 = { x: radius * Math.cos(0) + centerPoint.x, y: radius * Math.sin(0) + centerPoint.y }
+    let point2 = { x: radius * Math.cos((1 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((1 / 3) * (2 * Math.PI)) + centerPoint.y }
+    let point3 = { x: radius * Math.cos((2 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((2 / 3) * (2 * Math.PI)) + centerPoint.y }
+    return { point1, point2, point3 }
   },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
     const obj: GenericObject = {
@@ -29,7 +29,6 @@ const  getHalfwayPointofLine = {
         window.addEventListener("resize", this.resizeHandler.bind(this))
       },
       resizeHandler() {
-        console.log("resize")
         this.canvas.width = cont.clientWidth;
         this.canvas.height = cont.clientHeight;
         this.draw();
@@ -43,11 +42,11 @@ const  getHalfwayPointofLine = {
         this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
         this.ctx.stroke();
 
-        let point: Point = keyFunction(this.startPoint,this.endPoint)
+        // let point: Point = keyFunction(this.startPoint,this.endPoint)
 
-        this.ctx.beginPath();
-        this.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-        this.ctx.stroke();
+        // this.ctx.beginPath();
+        // this.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+        // this.ctx.stroke();
       },
       pointerDownHandler(e: PointerEvent) {
         this.startPoint = {x: Math.floor(e.pageX - this.left), y: Math.floor(e.pageY - this.top)};
@@ -74,4 +73,4 @@ const  getHalfwayPointofLine = {
     return obj;
   }
 }
-export default getHalfwayPointofLine;
+export default equilateralTriangleVertices;

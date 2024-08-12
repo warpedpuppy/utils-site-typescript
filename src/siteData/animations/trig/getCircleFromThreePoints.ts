@@ -1,17 +1,22 @@
-import { GenericObject } from "../../types/types";
+import { GenericObject } from "../../../types/types";
 const circleFromThreePoints = {
   t: "get circle from three points",
   l: "circle-from-three-points",
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
     const obj: GenericObject = {
-      text: "",
+      // text: "",
       points: [],
+      text: [],
       ctx: undefined,
       init() {
         this.canvas = document.createElement("canvas");
         this.canvas.width = cont.clientWidth;
         this.canvas.height = cont.clientHeight;
         this.ctx = this.canvas.getContext("2d");
+        this.interval = undefined;
+        this.circleQ = 0;
+        this.text.push("Click screen to make three points.")
+        // this.text.push("Click screen to make three points.")
         cont.appendChild(this.canvas);
 
         this.canvas.addEventListener(
@@ -19,6 +24,7 @@ const circleFromThreePoints = {
           this.pointerDownHandlerThree.bind(this)
         );
         window.addEventListener("resize", this.resizeHandler.bind(this));
+        this.draw();
       },
       resizeHandler() {
         this.canvas.width = cont.clientWidth;
@@ -26,10 +32,11 @@ const circleFromThreePoints = {
         this.draw();
       },
       draw() {
-        this.ctx.font = "16px serif";
-        this.ctx.fillText("points:", 10, 30);
-        this.ctx.fillText(this.formatText(), 10, 50);
-
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.font = "bold 16px sans-serif";
+        this.text.forEach( (text:string, i: number) => {
+          this.ctx.fillText(text, 10, 30 + (i * 10));
+        })
         this.points.forEach((item: Array<Array<Number>>) => {
           this.ctx.beginPath();
           this.ctx.arc(item[0], item[1], 5, 0, 2 * Math.PI);
@@ -46,29 +53,44 @@ const circleFromThreePoints = {
             this.points[2][1]
           );
           this.ctx.beginPath();
-          this.ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+          this.ctx.arc(center.x, center.y, radius, 0, this.circleQ);
           this.ctx.stroke();
+          this.ctx.fillText(`radius: ${Math.floor(radius)}, center: { x: ${Math.floor(center.x)}, y: ${Math.floor(center.y)} }`, 10, 70);
+          this.interval = setTimeout(this.drawCircle.bind(this), 10);
+        }
+      },
+      drawCircle() {
+        let degree = 1 * (Math.PI / 180);
+        this.circleQ += degree
+        if (this.circleQ < Math.PI*2){
+          this.interval = setTimeout(this.drawCircle.bind(this), 10);
+          this.draw();
         }
       },
       pointerDownHandlerThree(e: PointerEvent) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         let { top, left } = this.canvas.getBoundingClientRect();
-        if (this.points.length === 3) this.points.shift();
+        if (this.points.length === 3) {
+          this.points = [];
+          this.circleQ = 0;
+          this.text.slice(2)
+        }
         this.points.push([
           Math.floor(e.pageX - left),
           Math.floor(e.pageY - top),
         ]);
+        this.text[2] = this.formatText();
         this.draw();
       },
       formatText() {
         return this.points
           .map((item: Array<Array<number>>, index: number) => {
             let i = index + 1;
-            return `point ${i}: {x:${item[0]}, y:${item[1]}}`;
+            return `point ${i}: { x:${item[0]}, y:${item[1]} }`;
           })
-          .join(",");
+          .join(", ");
       },
       stop() {
+        clearInterval(this.interval);
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.removeEventListener(
           "pointerdown",

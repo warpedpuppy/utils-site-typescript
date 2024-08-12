@@ -1,14 +1,16 @@
-import circleFromThreePoints from "./animations/getCircleFromThreePoints";
-import getHalfwayPointofLine from "./animations/getHalfwayPointofLine";
-import equilateralTriangleVertices from "./animations/getEquilateralTriangleVertices";
-import pointMovingObjectInCorrectDirection from "./animations/pointMovingObjectInCorrectDirection";
+import circleFromThreePoints from "./animations/trig/getCircleFromThreePoints";
+import getHalfwayPointofLine from "./animations/geometry/getHalfwayPointofLine";
+import equilateralTriangleVertices from "./animations/trig/getEquilateralTriangleVertices";
+import pointMovingObjectInCorrectDirection from "./animations/trig/pointMovingObjectInCorrectDirection";
 
 const SiteData = {
   trig: {
     circleFromThreePoints,
-    getHalfwayPointofLine,
     equilateralTriangleVertices,
     pointMovingObjectInCorrectDirection
+  },
+  geometry: {
+    getHalfwayPointofLine,
   }
 }
 

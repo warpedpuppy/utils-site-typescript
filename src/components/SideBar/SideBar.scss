@@ -4,9 +4,19 @@
   width: 250px;
   dt {
     text-align: left;
+    color: black;
+    font-weight: bold;
   }
   dd {
     text-align: right;
+    color: rgba($color: #000000, $alpha: 0.5);
+    transition: all 0.15s;
+    &:hover {
+      color: black;
+    }
+    &.active {
+      color: black;
+    }
   }
   dt,
   dd {

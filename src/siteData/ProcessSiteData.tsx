@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import SiteData from "./SiteData";
 import { useNavigate } from "react-router-dom";
 import { GenericObject } from "../types/types";
 
 function ProcessUtils(loadCode: Function) {
   const navigate = useNavigate();
+  const [activeLink, setActiveLink] = useState<string>("");
 
   const sideMenu = useMemo(() => {
     let arr = [];
@@ -17,6 +18,7 @@ function ProcessUtils(loadCode: Function) {
     ) {
       loadCode(key, innerKey);
       navigate(str);
+      setActiveLink(innerKey);
     }
     for (key in SiteData) {
       arr.push(<dt key={`sidemenu-dt-${key}`}>{key}</dt>);
@@ -30,6 +32,7 @@ function ProcessUtils(loadCode: Function) {
         arr.push(
           <dd
             key={`sidemenu-dd-${innerKey}`}
+            className={activeLink === LittleCat ? "active" : ""}
             onClick={() => clickHandler(`/examples/${l}`, f, BigCat, LittleCat)}
           >
             <div>{t}</div>
@@ -38,7 +41,7 @@ function ProcessUtils(loadCode: Function) {
       }
     }
     return arr;
-  }, [loadCode, navigate]);
+  }, [loadCode, navigate, activeLink]);
 
   return { sideMenu, siteData: SiteData };
 }
