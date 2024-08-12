@@ -25,12 +25,18 @@ function PrimaryCanvas(props: CanvasObject) {
   }
 
   return (
-    <section id="primary-canvas-section">
-      <div id="primary-canvasHeader">
+    <section id="primary-canvas">
+      <div id="primary-canvas--header">
         <h3>{title}</h3>
         <button onClick={showEquationHandler}>see equation</button>
       </div>
-      <div id="primary-canvas-cont" ref={canvasRef}></div>
+      <div id="primary-canvas--content">
+        <div id="primary-canvas--content--text"></div>
+        <div
+          id="primary-canvas--content--canvas-container"
+          ref={canvasRef}
+        ></div>
+      </div>
       {showModal && (
         <Modal
           functionString={activeObject.f}

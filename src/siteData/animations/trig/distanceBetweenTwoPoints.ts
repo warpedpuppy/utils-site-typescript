@@ -1,24 +1,20 @@
 import { Point, GenericObject } from "../../../types/types";
 const equilateralTriangleVertices = {
-  t: "get equilateral triangle vertices from radius and center point",
-  l: "equilateral-trianlge-points",
-  f: function (radius: number, centerPoint: Point) {
-    let point1 = { x: radius * Math.cos(0) + centerPoint.x, y: radius * Math.sin(0) + centerPoint.y }
-    let point2 = { x: radius * Math.cos((1 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((1 / 3) * (2 * Math.PI)) + centerPoint.y }
-    let point3 = { x: radius * Math.cos((2 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((2 / 3) * (2 * Math.PI)) + centerPoint.y }
-    return { point1, point2, point3 }
+  t: "get distance between two points",
+  l: "distance-between-points",
+  f: function (startPoint: Point, endPoint: Point) {
+        let  a = startPoint.x - endPoint.x;
+        let  b = startPoint.y - endPoint.y;
+        return Math.sqrt( a*a + b*b );
   },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
     const obj: GenericObject = {
       init() {
-        this.textDiv = document.getElementById("primary-canvas--content--text");
-        this.textDiv.innerHTML = "click and drag to create center and radius of triangle";
         this.canvas = document.createElement("canvas");
         cont.appendChild(this.canvas);
         this.canvas.width = cont.clientWidth;
         this.canvas.height = cont.clientHeight;
         this.ctx = this.canvas.getContext("2d");
-
         this.startPoint = undefined;
         this.endPoint = undefined;
         let { top, left } = this.canvas.getBoundingClientRect();
@@ -37,9 +33,10 @@ const equilateralTriangleVertices = {
       },
       draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        
+        this.ctx.beginPath();
         this.ctx.strokeStyle = "green";
         this.ctx.lineWidth = 3;
-        this.ctx.beginPath();
         this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
         this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
         this.ctx.stroke();
@@ -49,11 +46,10 @@ const equilateralTriangleVertices = {
 
         let radius = Math.sqrt( a*a + b*b );
 
-        let {point1, point2, point3} = keyFunction(radius, this.startPoint);
-
-        [point1, point2, point3].forEach( (item: Point) => {
+        keyFunction(radius, this.startPoint).forEach( (item: Point) => {
           this.ctx.beginPath();
-         
+          this.ctx.strokeStyle = "green";
+          this.ctx.lineWidth = 3;
           this.ctx.arc(item.x, item.y, 5, 0, 2 * Math.PI);
           this.ctx.stroke();
         })
@@ -73,7 +69,6 @@ const equilateralTriangleVertices = {
         this.allowDraw = false;
       },
       stop() {
-        this.textDiv.innerHTML = "";
         this.canvas.removeEventListener("pointerdown", this.pointerDownHandler.bind(this));
         this.canvas.removeEventListener("pointermove", this.pointerMoveHandler.bind(this));
         this.canvas.removeEventListener("pointerup", this.pointerUpHandler.bind(this));

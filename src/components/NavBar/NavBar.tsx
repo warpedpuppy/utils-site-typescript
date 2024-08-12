@@ -4,7 +4,7 @@ function NavBar() {
   return (
     <nav>
       <Link to="/">
-        <h1>nav</h1>
+        <h1>utils generator</h1>
       </Link>
       <div>
         <Link to="/">home</Link>

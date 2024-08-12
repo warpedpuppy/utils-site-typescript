@@ -13,8 +13,15 @@
     width: fit-content;
     height: fit-content;
     background-color: white;
-    padding: 2rem;
     border: 1px solid var(--site-gray);
     border-radius: 5px;
+    &-header {
+      border-bottom: 1px solid var(--site-gray);
+      padding: 2rem 2rem 0.5rem 2rem;
+      font-weight: bold;
+    }
+    &-content {
+      padding: 2rem;
+    }
   }
 }
