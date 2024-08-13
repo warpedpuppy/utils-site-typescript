@@ -2,11 +2,11 @@ import { GenericObject, Point} from "../../../types/types";
 const rotateObjectTowardsChangingPoint = {
   t: "rotate object to changing point",
   l: "rotate-to-changing-point",
-  f: function (destinationPoint: Point, zeroReference: Point) {
+  f: function (originPoint: Point, destinationPoint: Point) {
 
     return Math.atan2(
-      destinationPoint.y - zeroReference.y,
-      destinationPoint.x - zeroReference.x
+      destinationPoint.y - originPoint.y,
+      destinationPoint.x - originPoint.x
     );
   },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
