@@ -1,9 +1,8 @@
-import { GenericObject, Point} from "../../../types/types";
+import { GenericObject, Point } from "../../../types/types";
 const rotateObjectTowardsChangingPoint = {
   t: "rotate object to changing point",
   l: "rotate-to-changing-point",
   f: function (originPoint: Point, destinationPoint: Point) {
-
     return Math.atan2(
       destinationPoint.y - originPoint.y,
       destinationPoint.x - originPoint.x
@@ -26,8 +25,6 @@ const rotateObjectTowardsChangingPoint = {
 
         window.addEventListener("resize", this.resizeHandler.bind(this));
 
-        
-
         this.draw = this.draw.bind(this);
 
         this.img = new Image();
@@ -37,14 +34,14 @@ const rotateObjectTowardsChangingPoint = {
         });
         this.img.src = "/bmps/arrow.png";
 
-        this.vx = 1;
-        this.vy = 1;
-        this.x = 0;
-        this.y = 0;
-        this.ratio = 0;
+        // this.vx = 1;
+        // this.vy = 1;
+        // this.x = 0;
+        // this.y = 0;
+        // this.ratio = 0;
         this.i = 0;
       },
-      pointsAroundCircle (
+      pointsAroundCircle(
         circleCenter: Point,
         i: number,
         radius: number,
@@ -62,7 +59,6 @@ const rotateObjectTowardsChangingPoint = {
         this.draw();
       },
       draw() {
-
         this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
 
         this.ctx.beginPath();
@@ -82,8 +78,6 @@ const rotateObjectTowardsChangingPoint = {
         this.ctx.strokeStyle = "grey";
         this.ctx.lineWidth = 2;
 
-
-
         let point = this.pointsAroundCircle(
           { x: this.halfWidth, y: this.halfHeight },
           this.i,
@@ -97,7 +91,13 @@ const rotateObjectTowardsChangingPoint = {
         this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
         this.ctx.stroke();
 
-        let angle = keyFunction(point, {x: this.halfWidth, y: this.halfHeight})
+        let angle = keyFunction(
+          {
+            x: this.halfWidth,
+            y: this.halfHeight,
+          },
+          point
+        );
 
         this.ctx.translate(this.halfWidth, this.halfHeight);
         this.ctx.rotate(angle);
@@ -106,11 +106,9 @@ const rotateObjectTowardsChangingPoint = {
         this.ctx.drawImage(this.img, this.halfWidth - 50, this.halfHeight - 25);
         this.ctx.resetTransform();
 
-      
         requestAnimationFrame(this.draw);
       },
       stop() {
-
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.canvas.removeEventListener(
           "pointerdown",
