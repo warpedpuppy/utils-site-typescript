@@ -4,17 +4,19 @@ import equilateralTriangleVertices from "./animations/trig/getEquilateralTriangl
 import pointMovingObjectInCorrectDirection from "./animations/trig/pointMovingObjectInCorrectDirection";
 import distanceBetweenTwoPoints from "./animations/trig/distanceBetweenTwoPoints";
 import findCoordinatesForRightTriangleOnCircle from "./animations/trig/findCoordinatesForRightTriangleOnCircle";
+import moveObjectTowardsChangingPoint from "./animations/trig/moveObjectTowardsChangingPoint";
 const SiteData = {
   trig: {
     circleFromThreePoints,
     equilateralTriangleVertices,
     pointMovingObjectInCorrectDirection,
     distanceBetweenTwoPoints,
-    findCoordinatesForRightTriangleOnCircle
+    findCoordinatesForRightTriangleOnCircle,
+    moveObjectTowardsChangingPoint,
   },
   geometry: {
     getHalfwayPointofLine,
-  }
-}
+  },
+};
 
 export default SiteData;

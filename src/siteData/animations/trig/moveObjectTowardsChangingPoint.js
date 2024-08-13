@@ -1,8 +1,9 @@
-import { GenericObject, Point } from "../../../types/types";
+import { GenericObject, Point} from "../../../types/types";
 const moveObjectToChangingPoint = {
   t: "move object to changing point",
   l: "move-to-changing-point",
   f: function (destinationPoint: Point, zeroReference: Point) {
+
     return Math.atan2(
       destinationPoint.y - zeroReference.y,
       destinationPoint.x - zeroReference.x
@@ -72,10 +73,7 @@ const moveObjectToChangingPoint = {
         this.ctx.strokeStyle = "green";
         this.ctx.lineWidth = 2;
 
-        let angle = keyFunction(this.dot, {
-          x: this.halfWidth,
-          y: this.halfHeight,
-        });
+        let angle = keyFunction(this.dot, {x: this.halfWidth, y: this.halfHeight})
 
         this.ctx.translate(this.halfWidth, this.halfHeight);
         this.ctx.rotate(angle);
