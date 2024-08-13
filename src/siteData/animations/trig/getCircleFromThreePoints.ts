@@ -9,9 +9,10 @@ const circleFromThreePoints = {
       text: [],
       ctx: undefined,
       init() {
-
         this.textDiv = document.getElementById("primary-canvas--content--text");
-        this.text.push("<h3>click screen to make three points.</h3>");
+        this.text.push(
+          "<h3>click screen three times to make three points.</h3>"
+        );
 
         this.canvas = document.createElement("canvas");
         this.canvas.width = cont.clientWidth;
@@ -19,7 +20,7 @@ const circleFromThreePoints = {
         this.ctx = this.canvas.getContext("2d");
         this.interval = undefined;
         this.circleQ = 0;
-       
+
         cont.appendChild(this.canvas);
 
         this.canvas.addEventListener(
@@ -36,11 +37,11 @@ const circleFromThreePoints = {
       },
       draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  
-        let textString = ""
-        this.text.forEach( (text:string, i: number) => {
-          textString += `${text}`
-        })
+
+        let textString = "";
+        this.text.forEach((text: string, i: number) => {
+          textString += `${text}`;
+        });
         this.textDiv.innerHTML = textString;
 
         this.points.forEach((item: Array<Array<Number>>) => {
@@ -58,19 +59,23 @@ const circleFromThreePoints = {
             this.points[2][0],
             this.points[2][1]
           );
-          
+
           this.ctx.strokeStyle = "green";
           this.ctx.beginPath();
           this.ctx.arc(center.x, center.y, radius, 0, this.circleQ);
           this.ctx.stroke();
-          this.text[3]=`<p>radius: ${Math.floor(radius)}, center: { x: ${Math.floor(center.x)}, y: ${Math.floor(center.y)} }</p>`;
+          this.text[3] = `<p>radius: ${Math.floor(
+            radius
+          )}, center: { x: ${Math.floor(center.x)}, y: ${Math.floor(
+            center.y
+          )} }</p>`;
           this.interval = setTimeout(this.drawCircle.bind(this), 10);
         }
       },
       drawCircle() {
         let degree = 1 * (Math.PI / 180);
-        this.circleQ += degree
-        if (this.circleQ < Math.PI*2){
+        this.circleQ += degree;
+        if (this.circleQ < Math.PI * 2) {
           this.interval = setTimeout(this.drawCircle.bind(this), 10);
           this.draw();
         }
@@ -80,7 +85,7 @@ const circleFromThreePoints = {
         if (this.points.length === 3) {
           this.points = [];
           this.circleQ = 0;
-          this.text.slice(2)
+          this.text.slice(2);
         }
         this.points.push([
           Math.floor(e.pageX - left),
@@ -96,7 +101,7 @@ const circleFromThreePoints = {
             return `point ${i}: { x:${item[0]}, y:${item[1]} }`;
           })
           .join(", ");
-          return `<p>${str}</p>`
+        return `<p>${str}</p>`;
       },
       stop() {
         clearInterval(this.interval);

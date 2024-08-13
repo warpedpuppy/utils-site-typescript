@@ -2,10 +2,10 @@ import { GenericObject, Point } from "../../../types/types";
 const moveObjectToChangingPoint = {
   t: "move object to changing point",
   l: "move-to-changing-point",
-  f: function (x1: number, y1: number, x2: number, y2: number, ratio: number) {
-    x2 = x1 + ratio * (x2 - x1);
-    y2 = y1 + ratio * (y2 - y1);
-    return { x: x2, y: y2 };
+  f: function (origin: Point, destination: Point, ratio: number) {
+    let x = origin.x + ratio * (destination.x - origin.x);
+    let y = origin.y + ratio * (destination.y - origin.y);
+    return { x, y };
   },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
     const obj: GenericObject = {
@@ -84,25 +84,13 @@ const moveObjectToChangingPoint = {
         this.ctx.strokeStyle = "green";
         this.ctx.lineWidth = 2;
 
-        let newDotPoint = keyFunction(
-          this.dot.x,
-          this.dot.y,
-          this.dotNew.x,
-          this.dotNew.y,
-          this.ratio
-        );
+        let newDotPoint = keyFunction(this.dot, this.dotNew, this.ratio);
         this.dot = newDotPoint;
         this.ctx.beginPath();
         this.ctx.arc(this.dot.x, this.dot.y, 5, 0, 2 * Math.PI);
         this.ctx.stroke();
 
-        let newPoint = keyFunction(
-          this.arrowPoint.x,
-          this.arrowPoint.y,
-          this.dot.x,
-          this.dot.y,
-          this.ratio
-        );
+        let newPoint = keyFunction(this.arrowPoint, this.dot, this.ratio);
 
         this.arrowPoint = newPoint;
 
