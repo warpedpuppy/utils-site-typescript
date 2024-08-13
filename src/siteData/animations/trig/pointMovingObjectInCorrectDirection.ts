@@ -2,11 +2,10 @@ import { GenericObject, Point } from "../../../types/types";
 const moveObjectToChangingPoint = {
   t: "move object to changing point",
   l: "move-to-changing-point",
-  f: function (destinationPoint: Point, zeroReference: Point) {
-    return Math.atan2(
-      destinationPoint.y - zeroReference.y,
-      destinationPoint.x - zeroReference.x
-    );
+  f: function (x1: number, y1: number, x2: number, y2: number, ratio: number) {
+    x2 = x1 + ratio * (x2 - x1);
+    y2 = y1 + ratio * (y2 - y1);
+    return { x: x2, y: y2 };
   },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
     const obj: GenericObject = {
@@ -36,7 +35,7 @@ const moveObjectToChangingPoint = {
           x: Math.floor(Math.random() * this.canvasWidth),
           y: Math.floor(Math.random() * this.canvasHeight),
         };
-
+        this.drawDot();
         this.img = new Image();
 
         this.draw = this.draw.bind(this);
@@ -52,14 +51,27 @@ const moveObjectToChangingPoint = {
         this.y = 0;
         this.ratio = 0;
 
+        this.arrowPoint = { x: this.halfWidth - 50, y: this.halfHeight - 25 };
+
         this.interval = setInterval(this.drawDot.bind(this), 2000);
+      },
+      getRotation(destinationPoint: Point, zeroReference: Point) {
+        return Math.atan2(
+          destinationPoint.y - zeroReference.y,
+          destinationPoint.x - zeroReference.x
+        );
       },
       drawDot() {
         this.ratio = 0;
-        this.dot = {
+        this.dotNew = {
           x: Math.floor(Math.random() * this.canvasWidth),
           y: Math.floor(Math.random() * this.canvasHeight),
         };
+      },
+      drawLine(x1: number, y1: number, x2: number, y2: number, ratio: number) {
+        x2 = x1 + ratio * (x2 - x1);
+        y2 = y1 + ratio * (y2 - y1);
+        return { x: x2, y: y2 };
       },
       resizeHandler() {
         this.canvas.width = cont.clientWidth;
@@ -72,38 +84,41 @@ const moveObjectToChangingPoint = {
         this.ctx.strokeStyle = "green";
         this.ctx.lineWidth = 2;
 
-        let angle = keyFunction(this.dot, {
-          x: this.halfWidth,
-          y: this.halfHeight,
-        });
-
-        this.ctx.translate(this.halfWidth, this.halfHeight);
-        this.ctx.rotate(angle);
-        this.ctx.translate(-this.halfWidth, -this.halfHeight);
-
-        this.ctx.drawImage(this.img, this.halfWidth - 50, this.halfHeight - 25);
-        this.ctx.resetTransform();
-
-        // this.x = destinationPoint.x;
-        // this.y = destinationPoint.y;
+        let newDotPoint = keyFunction(
+          this.dot.x,
+          this.dot.y,
+          this.dotNew.x,
+          this.dotNew.y,
+          this.ratio
+        );
+        this.dot = newDotPoint;
         this.ctx.beginPath();
         this.ctx.arc(this.dot.x, this.dot.y, 5, 0, 2 * Math.PI);
         this.ctx.stroke();
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.halfHeight);
-        this.ctx.lineTo(this.canvasWidth, this.halfHeight);
-        this.ctx.stroke();
+        let newPoint = keyFunction(
+          this.arrowPoint.x,
+          this.arrowPoint.y,
+          this.dot.x,
+          this.dot.y,
+          this.ratio
+        );
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.halfWidth, 0);
-        this.ctx.lineTo(this.halfWidth, this.canvasHeight);
-        this.ctx.stroke();
+        this.arrowPoint = newPoint;
 
-        // this.ctx.beginPath();
-        // this.ctx.moveTo(this.halfWidth, this.halfHeight);
-        // this.ctx.lineTo(this.dot.x, this.dot.y);
-        // this.ctx.stroke();
+        let angle = this.getRotation(this.dot, newPoint);
+
+        this.ctx.translate(newPoint.x, newPoint.y);
+        this.ctx.rotate(angle);
+        this.ctx.translate(-newPoint.x, -newPoint.y);
+
+        this.ctx.drawImage(
+          this.img,
+          this.arrowPoint.x - 50,
+          this.arrowPoint.y - 25
+        );
+        this.ctx.resetTransform();
+        this.ratio += 0.0001;
 
         requestAnimationFrame(this.draw);
       },
@@ -111,10 +126,7 @@ const moveObjectToChangingPoint = {
         clearInterval(this.interval);
         this.textDiv.innerHTML = "";
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.canvas.removeEventListener(
-          "pointerdown",
-          this.pointerDownHandlerThree
-        );
+
         window.removeEventListener("resize", this.resizeHandler.bind(this));
         cont.removeChild(this.canvas);
         this.canvas = null;
