@@ -2,7 +2,21 @@ import { Point, GenericObject } from "../../../types/types";
 const equilateralTriangleVertices = {
   t: "get triangle data",
   l: "get-triangle-data",
-  f: function (startPoint: Point, endPoint: Point) {},
+  f: function (hypotenuse: number, adjacent: number, opposite: number) {
+    let oa = opposite / adjacent;
+    let angle1 = Math.asin(oa);
+    let angleInDegrees = angle1 * (180 / Math.PI);
+
+    let radians = Math.sin(angle1);
+
+    console.log("asins:", oa, angle1, angleInDegrees);
+    console.log("sins:", oa, radians);
+
+    // let ah = adjacent / hypotenuse;
+    // angle1 = Math.acos(ah);
+    // angleInDegrees = angle1 * (180 / Math.PI);
+    // console.log("acos:", ah, angle1, angleInDegrees);
+  },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
     const obj: GenericObject = {
       init() {
@@ -54,6 +68,11 @@ const equilateralTriangleVertices = {
           this.startPoint.y
         );
 
+        let hypotenuse = this.distanceBetweenPoints(
+          this.startPoint,
+          this.endPoint
+        );
+
         this.ctx.strokeStyle = "grey";
         this.ctx.lineWidth = 0.25;
         this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
@@ -64,16 +83,34 @@ const equilateralTriangleVertices = {
           this.endPoint.x,
           this.startPoint.y
         );
+        let adjacent = this.distanceBetweenPoints(this.startPoint, {
+          x: this.endPoint.x,
+          y: this.startPoint.y,
+        });
 
         this.ctx.moveTo(this.endPoint.x, this.startPoint.y);
         this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
         this.ctx.stroke();
+        this.ctx.fillText(
+          `{x:${this.endPoint.x},y:${this.endPoint.y}}`,
+          this.endPoint.x,
+          this.endPoint.y
+        );
+        let opposite = this.distanceBetweenPoints(
+          {
+            x: this.endPoint.x,
+            y: this.startPoint.y,
+          },
+          this.endPoint
+        );
 
         let radius = this.distanceBetweenPoints(this.startPoint, this.endPoint);
-        this.textDiv.innerHTML = `<h3>the green line  is ${Math.floor(
-          radius
-        )} pixels long.</h3>`;
+        this.textDiv.innerHTML = `
+        <h3>the hypotenuse  is ${Math.floor(hypotenuse)} pixels long.</h3>
+        <h3>the adjacent  is ${Math.floor(adjacent)} pixels long.</h3>
+        <h3>the opposite  is ${Math.floor(opposite)} pixels long.</h3>`;
 
+        keyFunction(hypotenuse, adjacent, opposite);
         this.ctx.beginPath();
         this.ctx.arc(
           this.startPoint.x,
