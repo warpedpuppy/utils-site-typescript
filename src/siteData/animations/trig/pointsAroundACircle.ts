@@ -1,7 +1,7 @@
 import { GenericObject, Point } from "../../../types/types";
 const moveObjectToChangingPoint = {
-  t: "points around a circle",
-  l: "get-points-around-a-circle",
+  t: "distribute around circle",
+  l: "distribute-around-circle",
   f: function (
     circleCenter: Point,
     i: number,
