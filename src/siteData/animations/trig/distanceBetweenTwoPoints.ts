@@ -54,6 +54,8 @@ class DistanceBetweenTwoPoints {
     if (!this.canvas || !this.ctx) return;
     this.canvas.width = this.cont.clientWidth;
     this.canvas.height = this.cont.clientHeight;
+    this.halfHeight = this.cont.clientHeight / 2;
+    this.halfWidth = this.cont.clientWidth / 2;
     this.draw();
   };
   draw = () => {
@@ -71,8 +73,6 @@ class DistanceBetweenTwoPoints {
       this.startPoint.x,
       this.startPoint.y
     );
-
-    this.ctx.fillText("A", this.endPoint.x, this.endPoint.y);
     this.ctx.fillText(
       `{x: ${this.endPoint.x}, y: ${this.endPoint.y}}`,
       this.endPoint.x,

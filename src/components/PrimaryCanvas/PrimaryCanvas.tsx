@@ -23,17 +23,17 @@ function PrimaryCanvas(props: CanvasObject) {
   const canvasRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
-    setTitle(activeObject?.t);
     setExtraHTML("");
-    activeObject?.init(canvasRef.current);
+    setTitle(activeObject?.title);
     if (activeObject?.extraHTML) {
       setExtraHTML(activeObject.extraHTML);
     }
-    return () => {
-      return activeObject?.stop();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => activeObject?.stop();
   }, [activeObject]);
+
+  useEffect(() => {
+    activeObject?.init(canvasRef.current);
+  }, [activeObject, canvasRef]);
 
   function showEquationHandler() {
     setShowModal(true);

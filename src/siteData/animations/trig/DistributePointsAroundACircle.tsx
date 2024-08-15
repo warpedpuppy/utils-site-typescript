@@ -3,6 +3,7 @@ import { Nullable, Point } from "../../../types/types";
 class DistributePointsAroundACircle {
   static t: string = "distribute around circle";
   static l: string = "distribute-around-circle";
+  title: string = "distribute around circle";
   canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
   canvasWidth: number = 0;
   canvasHeight: number = 0;
