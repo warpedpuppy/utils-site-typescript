@@ -49,15 +49,15 @@ class DistributePointsAroundACircle {
       );
     }
     return (
-      <>
-        <label>change item quantity</label>
+      <div className="extra-html">
+        <label>change item quantity: </label>
         <select
           onChange={(e) => this.totalItemsChangeHandler(e.currentTarget.value)}
           defaultValue={this.totalItems}
         >
           {options}
         </select>
-      </>
+      </div>
     );
   };
   totalItemsChangeHandler(num: string) {

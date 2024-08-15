@@ -1,11 +1,22 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import SiteData from "./SiteData";
 import { useNavigate } from "react-router-dom";
 import { GenericObject } from "../types/types";
 
-function ProcessUtils(loadCode: Function) {
+function ProcessUtils(setClassName: Function, location: string) {
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState<string>("");
+
+  const loadCode = useCallback(
+    (key: string, innerKey: string) => {
+      let objectKey = key as keyof object;
+      let objectInnerKey = innerKey as keyof object;
+      let classRef: any = SiteData[objectKey][objectInnerKey];
+      let instance = new classRef();
+      setClassName(instance);
+    },
+    [setClassName]
+  );
 
   const sideMenu = useMemo(() => {
     let arr = [];
@@ -22,12 +33,13 @@ function ProcessUtils(loadCode: Function) {
       let innerKey: keyof typeof subObject;
 
       for (innerKey in subObject) {
-        let { t, l, f } = subObject[innerKey];
+        let { t, l } = subObject[innerKey];
         let LittleCat: string = innerKey.toString();
+        let active = location.includes(l);
         arr.push(
           <dd
             key={`sidemenu-dd-${innerKey}`}
-            className={activeLink === LittleCat ? "active" : ""}
+            className={activeLink === LittleCat || active ? "active" : ""}
             onClick={() => clickHandler(`/examples/${l}`, BigCat, LittleCat)}
           >
             <div>{t}</div>
@@ -36,7 +48,7 @@ function ProcessUtils(loadCode: Function) {
       }
     }
     return arr;
-  }, [loadCode, navigate, activeLink]);
+  }, [loadCode, navigate, activeLink, location]);
 
   return { sideMenu, siteData: SiteData };
 }

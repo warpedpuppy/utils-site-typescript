@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import OuterShell from "./pages/OuterShell";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Examples from "./pages/Examples";
+import Examples from "./pages/examples/Examples";
 import CreateJSON from "./pages/CreateJSON";
 
 const router = createBrowserRouter([
