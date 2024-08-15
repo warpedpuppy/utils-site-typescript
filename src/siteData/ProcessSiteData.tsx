@@ -10,12 +10,7 @@ function ProcessUtils(loadCode: Function) {
   const sideMenu = useMemo(() => {
     let arr = [];
     let key: keyof typeof SiteData;
-    function clickHandler(
-      str: string,
-      f: Function,
-      key: string,
-      innerKey: string
-    ) {
+    function clickHandler(str: string, key: string, innerKey: string) {
       loadCode(key, innerKey);
       navigate(str);
       setActiveLink(innerKey);
@@ -33,7 +28,7 @@ function ProcessUtils(loadCode: Function) {
           <dd
             key={`sidemenu-dd-${innerKey}`}
             className={activeLink === LittleCat ? "active" : ""}
-            onClick={() => clickHandler(`/examples/${l}`, f, BigCat, LittleCat)}
+            onClick={() => clickHandler(`/examples/${l}`, BigCat, LittleCat)}
           >
             <div>{t}</div>
           </dd>

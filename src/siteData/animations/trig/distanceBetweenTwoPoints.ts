@@ -17,6 +17,7 @@ const equilateralTriangleVertices = {
         this.canvas.width = cont.clientWidth;
         this.canvas.height = cont.clientHeight;
         this.ctx = this.canvas.getContext("2d");
+        this.ctx.font = "bold 18px sans serif";
         this.startPoint = undefined;
         this.endPoint = undefined;
         let { top, left } = this.canvas.getBoundingClientRect();
@@ -51,6 +52,18 @@ const equilateralTriangleVertices = {
         this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
         this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
         this.ctx.stroke();
+        this.ctx.fillText(
+          `{x: ${this.startPoint.x}, y: ${this.startPoint.y}}`,
+          this.startPoint.x,
+          this.startPoint.y
+        );
+
+        this.ctx.fillText("A", this.endPoint.x, this.endPoint.y);
+        this.ctx.fillText(
+          `{x: ${this.endPoint.x}, y: ${this.endPoint.y}}`,
+          this.endPoint.x,
+          this.endPoint.y
+        );
 
         this.ctx.strokeStyle = "grey";
         this.ctx.lineWidth = 0.25;

@@ -1,35 +1,47 @@
 import { Point, GenericObject } from "../../../types/types";
-const equilateralTriangleVertices = {
-  t: "get triangle data",
-  l: "get-triangle-data",
-  f: function (hypotenuse: number, adjacent: number, opposite: number) {
-    let oa = opposite / adjacent;
-    let angle1 = Math.asin(oa);
-    let angleInDegrees = angle1 * (180 / Math.PI);
+const triangleDataFromLine = {
+  t: "get triangle data from line",
+  l: "get-triangle-data-from-line",
+  f: function (startPoint: Point, endPoint: Point) {
+    let hypotenuse = distanceBetweenPoints(startPoint, endPoint);
+    let adjacent = distanceBetweenPoints(startPoint, {
+      x: endPoint.x,
+      y: startPoint.y,
+    });
+    let opposite = distanceBetweenPoints(
+      {
+        x: endPoint.x,
+        y: startPoint.y,
+      },
+      endPoint
+    );
 
-    let radians = Math.sin(angle1);
+    let oh = opposite / hypotenuse;
+    let angle1 = Math.asin(oh); // could have used acos or atan -- we have the data
+    let angleInDegrees = Math.floor(angle1 * (180 / Math.PI));
+    let remainingAngle = 180 - angleInDegrees - 90;
 
-    console.log("asins:", oa, angle1, angleInDegrees);
-    console.log("sins:", oa, radians);
+    return { angleInDegrees, remainingAngle, hypotenuse, adjacent, opposite };
 
-    // let ah = adjacent / hypotenuse;
-    // angle1 = Math.acos(ah);
-    // angleInDegrees = angle1 * (180 / Math.PI);
-    // console.log("acos:", ah, angle1, angleInDegrees);
+    function distanceBetweenPoints(startPoint: Point, endPoint: Point) {
+      let a = startPoint.x - endPoint.x;
+      let b = startPoint.y - endPoint.y;
+      return Math.sqrt(a * a + b * b);
+    }
   },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
     const obj: GenericObject = {
       init() {
         this.canvas = document.createElement("canvas");
         this.textDiv = document.getElementById("primary-canvas--content--text");
-
+        this.textDiv.innerHTML = `<h3>click and drag to draw line and get data.</h3>`;
         cont.appendChild(this.canvas);
         this.canvas.width = cont.clientWidth;
         this.canvas.height = cont.clientHeight;
         this.ctx = this.canvas.getContext("2d");
         this.ctx.font = "bold 14px sans serif";
-        this.startPoint = undefined;
-        this.endPoint = undefined;
+        this.startPoint = { x: 0, y: 0 };
+        this.endPoint = { x: 0, y: 0 };
         let { top, left } = this.canvas.getBoundingClientRect();
         this.top = top;
         this.left = left;
@@ -62,55 +74,34 @@ const equilateralTriangleVertices = {
         this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
         this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
         this.ctx.stroke();
-        this.ctx.fillText(
-          `{x:${this.startPoint.x},y:${this.startPoint.y}}`,
-          this.startPoint.x,
-          this.startPoint.y
-        );
-
-        let hypotenuse = this.distanceBetweenPoints(
-          this.startPoint,
-          this.endPoint
-        );
+        this.ctx.fillText("A", this.startPoint.x, this.startPoint.y);
 
         this.ctx.strokeStyle = "grey";
         this.ctx.lineWidth = 0.25;
         this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
         this.ctx.lineTo(this.endPoint.x, this.startPoint.y);
         this.ctx.stroke();
-        this.ctx.fillText(
-          `{x:${this.endPoint.x},y:${this.startPoint.y}}`,
-          this.endPoint.x,
-          this.startPoint.y
-        );
-        let adjacent = this.distanceBetweenPoints(this.startPoint, {
-          x: this.endPoint.x,
-          y: this.startPoint.y,
-        });
+        this.ctx.fillText("C", this.endPoint.x, this.startPoint.y);
 
         this.ctx.moveTo(this.endPoint.x, this.startPoint.y);
         this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
         this.ctx.stroke();
-        this.ctx.fillText(
-          `{x:${this.endPoint.x},y:${this.endPoint.y}}`,
-          this.endPoint.x,
-          this.endPoint.y
-        );
-        let opposite = this.distanceBetweenPoints(
-          {
-            x: this.endPoint.x,
-            y: this.startPoint.y,
-          },
-          this.endPoint
-        );
+        this.ctx.fillText("B", this.endPoint.x, this.endPoint.y);
 
         let radius = this.distanceBetweenPoints(this.startPoint, this.endPoint);
+
+        let { angleInDegrees, remainingAngle, hypotenuse, opposite, adjacent } =
+          keyFunction(this.startPoint, this.endPoint);
         this.textDiv.innerHTML = `
+        <h3>click and drag to draw line and get data.</h3>
         <h3>the hypotenuse  is ${Math.floor(hypotenuse)} pixels long.</h3>
         <h3>the adjacent  is ${Math.floor(adjacent)} pixels long.</h3>
-        <h3>the opposite  is ${Math.floor(opposite)} pixels long.</h3>`;
+        <h3>the opposite  is ${Math.floor(opposite)} pixels long.</h3>
+        <h3>Angle "A" is ${Math.floor(angleInDegrees)} degrees.</h3>
+        <h3>Angle "B" is ${Math.floor(remainingAngle)} degrees.</h3>
+        <h3>Angle "C" is 90 degrees.</h3>
+        `;
 
-        keyFunction(hypotenuse, adjacent, opposite);
         this.ctx.beginPath();
         this.ctx.arc(
           this.startPoint.x,
@@ -167,4 +158,4 @@ const equilateralTriangleVertices = {
     return obj;
   },
 };
-export default equilateralTriangleVertices;
+export default triangleDataFromLine;

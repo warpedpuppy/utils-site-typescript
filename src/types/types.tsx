@@ -17,4 +17,7 @@ export type AnimationObject = {
   t: string;
   l: string;
   f: Function;
+  extraHTML?: Function;
 };
+
+export type Nullable<T> = T | null;

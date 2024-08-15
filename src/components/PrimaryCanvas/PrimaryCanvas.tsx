@@ -1,24 +1,36 @@
-import { useEffect, useState, createRef } from "react";
+import {
+  useEffect,
+  useState,
+  createRef,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   GenericObject,
   CanvasObject,
   AnimationObject,
+  Nullable,
 } from "../../types/types";
 import Modal from "../modal/Modal";
 import "./PrimaryCanvas.scss";
 
 function PrimaryCanvas(props: CanvasObject) {
   const [title, setTitle] = useState<string>("");
+  const [extraHTML, setExtraHTML] = useState<ReactNode>("");
   const [showModal, setShowModal] = useState<boolean>(false);
-  const activeObject: AnimationObject = props.activeObject;
+  const activeObject: any = props.activeObject;
   const canvasRef = createRef<HTMLDivElement>();
 
   useEffect(() => {
-    let obj: GenericObject = activeObject.bf(canvasRef.current, activeObject.f);
-    obj?.init();
-    setTitle(activeObject.t);
-    return () => obj?.stop();
-  }, [activeObject, canvasRef]);
+    setTitle(activeObject?.t);
+    activeObject?.init(canvasRef.current);
+    if (activeObject?.extraHTML) {
+      setExtraHTML(activeObject.extraHTML);
+    }
+    return () => activeObject?.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeObject]);
 
   function showEquationHandler() {
     setShowModal(true);
@@ -28,6 +40,7 @@ function PrimaryCanvas(props: CanvasObject) {
     <section id="primary-canvas">
       <div id="primary-canvas--header">
         <h3>{title}</h3>
+        {extraHTML}
         <button onClick={showEquationHandler}>see equation</button>
       </div>
       <div id="primary-canvas--content">

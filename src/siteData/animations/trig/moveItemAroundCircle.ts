@@ -1,17 +1,16 @@
 import { GenericObject, Point } from "../../../types/types";
-const moveObjectToChangingPoint = {
-  t: "distribute around circle",
-  l: "distribute-around-circle",
+const moveItemAroundCircle = {
+  t: "move item around circle",
+  l: "move-item-around-circle",
   f: function (
     circleCenter: Point,
-    i: number,
     radius: number,
-    numElements: number
+    percentageAroundCircle: number
   ) {
-    const x =
-      circleCenter.x + radius * Math.cos(2 * Math.PI * (i / numElements));
-    const y =
-      circleCenter.y + radius * Math.sin(2 * Math.PI * (i / numElements));
+    let totalCircleRadians = Math.PI * 2;
+    let percent = percentageAroundCircle / 100;
+    const x = circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
+    const y = circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
     return { x, y };
   },
   bf: function (cont: HTMLDivElement, keyFunction: Function) {
@@ -22,7 +21,6 @@ const moveObjectToChangingPoint = {
       ctx: undefined,
       canvas: document.createElement("canvas"),
       init() {
-        // this.canvas = document.createElement("canvas");
         this.canvas.width = this.canvasWidth = cont.clientWidth;
         this.canvas.height = this.canvasHeight = cont.clientHeight;
         this.halfHeight = this.canvasHeight / 2;
@@ -63,12 +61,11 @@ const moveObjectToChangingPoint = {
 
         let point = keyFunction(
           { x: this.halfWidth, y: this.halfHeight },
-          this.i,
           200,
-          360
+          this.i
         );
-        this.i++;
-        if (this.i > 360) this.i = 0;
+        this.i += 0.5;
+        if (this.i > 100) this.i = 0;
         this.ctx.beginPath();
         this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
         this.ctx.stroke();
@@ -102,4 +99,4 @@ const moveObjectToChangingPoint = {
     return obj;
   },
 };
-export default moveObjectToChangingPoint;
+export default moveItemAroundCircle;
