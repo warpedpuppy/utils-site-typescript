@@ -28,7 +28,9 @@ function PrimaryCanvas(props: CanvasObject) {
     if (activeObject?.extraHTML) {
       setExtraHTML(activeObject.extraHTML);
     }
-    return () => activeObject?.stop();
+    return () => {
+      return activeObject?.stop();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeObject]);
 

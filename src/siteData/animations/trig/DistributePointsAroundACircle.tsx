@@ -32,6 +32,7 @@ class DistributePointsAroundACircle {
     this.halfHeight = this.canvasHeight / 2;
     this.halfWidth = this.canvasWidth / 2;
     this.ctx = this.canvas.getContext("2d");
+    cont.innerHTML = "";
     this.cont.appendChild(this.canvas);
     this.draw();
     this.totalItems = 20;
@@ -99,13 +100,14 @@ class DistributePointsAroundACircle {
       this.totalItems
     );
 
-    points.forEach((point: Point, index: number) => {
+    points.forEach((point: Point) => {
       if (!this.ctx) return;
       this.ctx.strokeStyle = "rgba(0 0 0 / 0.5)";
       this.ctx.lineWidth = 2;
 
       this.ctx.beginPath();
       this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
+
       this.ctx.stroke();
 
       this.ctx.beginPath();
@@ -117,9 +119,10 @@ class DistributePointsAroundACircle {
   };
   stop() {
     if (!this.ctx || !this.canvas) return;
+    this.cont.innerHTML = "";
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     window.removeEventListener("resize", this.resizeHandler.bind(this));
-    this.cont.removeChild(this.canvas);
+    // this.cont.removeChild(this.canvas);
     this.canvas = null;
   }
 }
