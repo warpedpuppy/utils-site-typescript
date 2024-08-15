@@ -1,6 +1,6 @@
 // import circleFromThreePoints from "./animations/trig/getCircleFromThreePoints";
 // import getHalfwayPointofLine from "./animations/geometry/getHalfwayPointofLine";
-// import equilateralTriangleVertices from "./animations/trig/getEquilateralTriangleVertices";
+import GetEquilateralTriangleVertices from "./animations/trig/GetEquilateralTriangleVertices";
 // import pointMovingObjectInCorrectDirection from "./animations/trig/pointMovingObjectInCorrectDirection";
 import DistanceBetweenTwoPoints from "./animations/trig/DistanceBetweenTwoPoints";
 // import triangleDataFromLine from "./animations/trig/triangleDataFromLine";
@@ -18,6 +18,7 @@ const SiteData = {
     // moveItemAroundCircle,
     DistributePointsAroundACircle,
     DistanceBetweenTwoPoints,
+    GetEquilateralTriangleVertices,
   },
   geometry: {
     // getHalfwayPointofLine,

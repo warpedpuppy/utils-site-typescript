@@ -56,6 +56,9 @@ class DistanceBetweenTwoPoints {
     this.canvas.height = this.cont.clientHeight;
     this.halfHeight = this.cont.clientHeight / 2;
     this.halfWidth = this.cont.clientWidth / 2;
+    let { top, left } = this.canvas.getBoundingClientRect();
+    this.top = top;
+    this.left = left;
     this.draw();
   };
   draw = () => {
