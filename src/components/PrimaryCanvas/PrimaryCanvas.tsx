@@ -24,6 +24,7 @@ function PrimaryCanvas(props: CanvasObject) {
 
   useEffect(() => {
     setTitle(activeObject?.t);
+    setExtraHTML("");
     activeObject?.init(canvasRef.current);
     if (activeObject?.extraHTML) {
       setExtraHTML(activeObject.extraHTML);
@@ -54,7 +55,7 @@ function PrimaryCanvas(props: CanvasObject) {
       </div>
       {showModal && (
         <Modal
-          functionString={activeObject.f}
+          functionString={activeObject.keyFunction}
           closeModal={() => setShowModal(false)}
         />
       )}
