@@ -20,10 +20,15 @@ class CircleFromThreePoints {
   text: string[] = [];
   interval: any = 0;
   circleQ = 0;
-  points: any = [];
+  points: any = [
+    { x: 423, y: 400 },
+    { x: 576, y: 349 },
+    { x: 519, y: 273 },
+  ];
   allowDraw: boolean = false;
   init(cont: HTMLDivElement) {
-    if (!this.canvas || !this.ctx) return;
+    if (!this.canvas || !this.ctx || !this.textDiv) return;
+    this.textDiv.innerHTML = "";
     cont.innerHTML = "";
     this.cont = cont;
     cont.appendChild(this.canvas);
@@ -67,7 +72,7 @@ class CircleFromThreePoints {
         this.points[1],
         this.points[2]
       );
-
+      this.ctx.lineWidth = 3;
       this.ctx.strokeStyle = "green";
       this.ctx.beginPath();
       this.ctx.arc(center.x, center.y, radius, 0, this.circleQ);
