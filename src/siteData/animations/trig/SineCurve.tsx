@@ -52,7 +52,6 @@ class SineCurve {
     this.canvas.height = this.cont.clientHeight;
   };
   changeHandler(value: any, type: string) {
-    console.log(this);
     if (type === "starting") {
       this.startValue = value;
     } else if (type === "differential") {
