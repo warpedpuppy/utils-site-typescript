@@ -1,7 +1,7 @@
 import { Nullable, Point } from "../../../types/types";
 class MoveObjectToDestinationPoint {
-  static t: "move object to changing point";
-  static l: "move-to-changing-point";
+  static t = "move object to changing point";
+  static l = "move-to-changing-point";
   title: string = "move object to changing point";
   canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
   textDiv: Nullable<HTMLElement> = document.getElementById(
@@ -93,12 +93,12 @@ class MoveObjectToDestinationPoint {
     if (!this.canvas || !this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
     this.ctx.strokeStyle = "green";
-    this.ctx.lineWidth = 2;
+    this.ctx.lineWidth = 10;
 
     let newDotPoint = this.keyFunction(this.dot, this.dotNew, this.ratio);
     this.dot = newDotPoint;
     this.ctx.beginPath();
-    this.ctx.arc(this.dot.x, this.dot.y, 5, 0, 2 * Math.PI);
+    this.ctx.arc(this.dot.x, this.dot.y, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
 
     let newPoint = this.keyFunction(this.arrowPoint, this.dot, this.ratio);
