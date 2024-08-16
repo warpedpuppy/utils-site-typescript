@@ -2,6 +2,7 @@ import { Point, Nullable } from "../../../types/types";
 class DistanceBetweenTwoPoints {
   static t = "get distance between two points";
   static l = "distance-between-points";
+  title = "get distance between two points";
   canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
   textDiv: Nullable<HTMLElement> = document.getElementById(
     "primary-canvas--content--text"

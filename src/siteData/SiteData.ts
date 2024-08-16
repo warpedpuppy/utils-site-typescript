@@ -1,11 +1,11 @@
 import CircleFromThreePoints from "./animations/trig/CircleFromThreePoints";
 // import getHalfwayPointofLine from "./animations/geometry/getHalfwayPointofLine";
 import GetEquilateralTriangleVertices from "./animations/trig/GetEquilateralTriangleVertices";
-// import pointMovingObjectInCorrectDirection from "./animations/trig/pointMovingObjectInCorrectDirection";
+import MoveObjectToDestinationPoint from "./animations/trig/MoveObjectToDestinationPoint";
 import DistanceBetweenTwoPoints from "./animations/trig/DistanceBetweenTwoPoints";
 // import triangleDataFromLine from "./animations/trig/triangleDataFromLine";
 // import rotateObjectTowardsChangingPoint from "./animations/trig/rotateObjectTowardsChangingPoint";
-// import moveItemAroundCircle from "./animations/trig/moveItemAroundCircle";
+import MoveItemAroundCircle from "./animations/trig/MoveItemAroundCircle";
 // import distributePointsAroundACircle from "./animations/trig/distributePointsAroundACircle";
 import DistributePointsAroundACircle from "./animations/trig/DistributePointsAroundACircle";
 const SiteData = {
@@ -20,6 +20,8 @@ const SiteData = {
     DistanceBetweenTwoPoints,
     GetEquilateralTriangleVertices,
     CircleFromThreePoints,
+    MoveItemAroundCircle,
+    MoveObjectToDestinationPoint,
   },
   geometry: {
     // getHalfwayPointofLine,
