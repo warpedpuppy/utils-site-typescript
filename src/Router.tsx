@@ -3,7 +3,7 @@ import OuterShell from "./pages/OuterShell";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Examples from "./pages/examples/Examples";
-import CreateJSON from "./pages/CreateJSON";
+import CreateJSON from "./pages/createJSON/CreateJSON";
 
 const router = createBrowserRouter([
   {

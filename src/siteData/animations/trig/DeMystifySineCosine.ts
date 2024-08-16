@@ -200,7 +200,7 @@ class DeMystifySineCosine {
 
     this.ctx.fillText("B", this.canvasWidth * 0.66 + 5, this.halfHeight - 5);
     this.ctx.fillText(
-      `The sine of angle 'B' is the relationship between the two green lines: ${smallGreenLineHeight} / 100`,
+      `The cosine of angle 'B' is the relationship between the two green lines: ${smallGreenLineHeight} / 100`,
       this.canvasWidth * 0.1,
       this.halfHeight - 170
     );

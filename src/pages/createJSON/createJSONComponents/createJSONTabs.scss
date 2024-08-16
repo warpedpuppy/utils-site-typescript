@@ -1,0 +1,19 @@
+#create-json-tabs {
+  display: flex;
+  div {
+    border: 1px solid black;
+    border-bottom: none;
+    padding: 10px;
+    margin: 0 10px 0 0;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    cursor: pointer;
+    background-color: white;
+    position: relative;
+    top: 0;
+    transition: top 0.25s;
+    &.active-tab {
+      top: 2px;
+    }
+  }
+}
