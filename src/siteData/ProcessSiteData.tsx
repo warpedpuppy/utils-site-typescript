@@ -40,9 +40,13 @@ function ProcessUtils(setClassName: Function, location: string) {
           <dd
             key={`sidemenu-dd-${innerKey}`}
             className={activeLink === LittleCat || active ? "active" : ""}
-            onClick={() => clickHandler(`/examples/${l}`, BigCat, LittleCat)}
           >
-            <div>{t}</div>
+            <input type="checkbox" />
+            <div
+              onClick={() => clickHandler(`/examples/${l}`, BigCat, LittleCat)}
+            >
+              {t}
+            </div>
           </dd>
         );
       }
