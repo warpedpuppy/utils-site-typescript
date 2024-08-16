@@ -26,6 +26,8 @@ class DeMystifySineCosine {
   startValue = 0;
   differential = 200;
   speed = 0.005;
+  thinLine = 2;
+  fatLine = 5;
   keyFunction(
     circleCenter: Point,
     radius: number,
@@ -53,6 +55,7 @@ class DeMystifySineCosine {
     this.cont = cont;
     cont.innerHTML = "";
     cont.appendChild(this.canvas);
+
     this.draw();
     this.i = 0;
     window.addEventListener("resize", this.resizeHandler);
@@ -73,9 +76,10 @@ class DeMystifySineCosine {
   }
   draw = () => {
     if (!this.canvas || !this.ctx) return;
+    this.ctx.font = "bold 18px Arial";
     this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
     this.ctx.strokeStyle = "rgba(0 0 0 /0.5)";
-    this.ctx.lineWidth = 1;
+    this.ctx.lineWidth = this.thinLine;
 
     this.ctx.beginPath();
     this.ctx.moveTo(0, this.halfHeight);
@@ -88,28 +92,28 @@ class DeMystifySineCosine {
     this.ctx.stroke();
 
     this.ctx.strokeStyle = "red";
-    this.ctx.lineWidth = 10;
+    this.ctx.lineWidth = this.fatLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.33, this.halfHeight);
     this.ctx.lineTo(this.canvasWidth * 0.33, this.halfHeight - 100);
     this.ctx.stroke();
 
     this.ctx.strokeStyle = "rgba(0 0 0 /0.5)";
-    this.ctx.lineWidth = 1;
+    this.ctx.lineWidth = this.thinLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.66, 0);
     this.ctx.lineTo(this.canvasWidth * 0.66, this.canvasHeight);
     this.ctx.stroke();
 
     this.ctx.strokeStyle = "green";
-    this.ctx.lineWidth = 10;
+    this.ctx.lineWidth = this.fatLine;
     this.ctx.beginPath();
-    this.ctx.moveTo(this.canvasWidth * 0.66, this.halfHeight + 20);
-    this.ctx.lineTo(this.canvasWidth * 0.66 + 100, this.halfHeight + 20);
+    this.ctx.moveTo(this.canvasWidth * 0.66, this.halfHeight);
+    this.ctx.lineTo(this.canvasWidth * 0.66, this.halfHeight - 100);
     this.ctx.stroke();
 
     this.ctx.strokeStyle = "rgba(0 0 0 /0.5)";
-    this.ctx.lineWidth = 1;
+    this.ctx.lineWidth = this.thinLine;
 
     this.ctx.beginPath();
     this.ctx.arc(this.canvasWidth * 0.33, this.halfHeight, 100, 0, 2 * Math.PI);
@@ -130,14 +134,14 @@ class DeMystifySineCosine {
     );
 
     this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
-    this.ctx.lineWidth = 1;
+    this.ctx.lineWidth = this.thinLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.33, this.halfHeight);
     this.ctx.lineTo(point1.x, point1.y);
     this.ctx.stroke();
 
     this.ctx.strokeStyle = "red";
-    this.ctx.lineWidth = 10;
+    this.ctx.lineWidth = this.fatLine;
     this.ctx.beginPath();
     this.ctx.moveTo(point1.x, point1.y);
     this.ctx.lineTo(point1.x, this.halfHeight);
@@ -153,8 +157,22 @@ class DeMystifySineCosine {
       perc2
     );
 
+    let smallRedLineHeight = Math.floor(
+      this.distanceBetweenPoints(point1, {
+        x: point1.x,
+        y: this.halfHeight,
+      })
+    );
+
+    this.ctx.fillText("A", this.canvasWidth * 0.33 - 5, this.halfHeight - 5);
+    this.ctx.fillText(
+      `The sine of angle 'A' is the relationship between the two red lines: ${smallRedLineHeight} / 100`,
+      this.canvasWidth * 0.1,
+      this.halfHeight - 210
+    );
+
     this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
-    this.ctx.lineWidth = 1;
+    this.ctx.lineWidth = this.thinLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.66, this.halfHeight);
     this.ctx.lineTo(point2.x, point2.y);
@@ -166,14 +184,33 @@ class DeMystifySineCosine {
     this.ctx.stroke();
 
     this.ctx.strokeStyle = "green";
-    this.ctx.lineWidth = 10;
+    this.ctx.lineWidth = this.fatLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.66, this.halfHeight);
     this.ctx.lineTo(point2.x, this.halfHeight);
     this.ctx.stroke();
 
+    let smallGreenLineHeight = Math.floor(
+      this.distanceBetweenPoints(point2, {
+        x: point2.x,
+        y: this.halfHeight,
+      })
+    );
+
+    this.ctx.fillText("B", this.canvasWidth * 0.66 + 5, this.halfHeight - 5);
+    this.ctx.fillText(
+      `The sine of angle 'B' is the relationship between the two green lines: ${smallGreenLineHeight} / 100`,
+      this.canvasWidth * 0.1,
+      this.halfHeight - 170
+    );
+
     requestAnimationFrame(this.draw);
   };
+  distanceBetweenPoints(startPoint: Point, endPoint: Point) {
+    let a = startPoint.x - endPoint.x;
+    let b = startPoint.y - endPoint.y;
+    return Math.sqrt(a * a + b * b);
+  }
   stop() {
     if (!this.canvas || !this.ctx || !this.cont) return;
     clearInterval(this.interval);

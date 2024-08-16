@@ -13,8 +13,8 @@ class TriangleDataFromLine {
   halfWidth: number = 0;
   cont: HTMLDivElement = undefined!;
   ctx = this.canvas?.getContext("2d");
-  startPoint: Nullable<Point> = null;
-  endPoint: Nullable<Point> = null;
+  startPoint: Nullable<Point> = { x: 141, y: 317 };
+  endPoint: Nullable<Point> = { x: 687, y: 120 };
   top: number = 0;
   left: number = 0;
   allowDraw: boolean = false;
@@ -54,8 +54,6 @@ class TriangleDataFromLine {
     this.canvas.width = cont.clientWidth;
     this.canvas.height = cont.clientHeight;
     this.ctx.font = "bold 14px sans serif";
-    this.startPoint = { x: 0, y: 0 };
-    this.endPoint = { x: 0, y: 0 };
     let { top, left } = this.canvas.getBoundingClientRect();
     this.top = top;
     this.left = left;
@@ -70,6 +68,7 @@ class TriangleDataFromLine {
     );
     this.canvas.addEventListener("pointerup", this.pointerUpHandler.bind(this));
     window.addEventListener("resize", this.resizeHandler.bind(this));
+    this.draw();
   }
   resizeHandler = () => {
     if (!this.canvas || !this.cont) return;
@@ -129,6 +128,8 @@ class TriangleDataFromLine {
     this.ctx.beginPath();
     this.ctx.arc(this.startPoint.x, this.startPoint.y, radius, 0, 2 * Math.PI);
     this.ctx.stroke();
+
+    console.log(this.startPoint, this.endPoint);
   };
   distanceBetweenPoints(startPoint: Point, endPoint: Point) {
     let a = startPoint.x - endPoint.x;
