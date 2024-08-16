@@ -15,8 +15,12 @@ function CreateJSON() {
       let innerKey: keyof typeof subObject;
 
       for (innerKey in subObject) {
-        let { t, l } = subObject[innerKey];
+        let { t, l, include } = subObject[innerKey];
         let LittleCat: string = innerKey.toString();
+
+        if (include === false) {
+          continue;
+        }
         arr.push(
           <dd
             className="json-dd"

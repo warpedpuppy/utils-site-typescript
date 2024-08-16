@@ -2,6 +2,7 @@ import { Nullable, Point } from "../../../types/types";
 class DeMystifySineCosine {
   static t: string = "demystify sine and cosine";
   static l: string = "demystify-sine-and-cosine";
+  static include: boolean = false;
   title = "demystify sine and cosine";
   canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
   textDiv: Nullable<HTMLElement> = document.getElementById(
