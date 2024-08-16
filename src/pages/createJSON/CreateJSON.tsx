@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useCallback } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import "./CreateJSON.scss";
 import SiteData from "../../siteData/SiteData";
 import { GenericObject } from "../../types/types";
@@ -38,19 +38,18 @@ function CreateJSON() {
       }
     }
     setChecklist(arr);
-  }, [json]);
-
-  function clickHandler(str: string, keyFunction: Function) {
-    if (json.hasOwnProperty(str)) {
-      let temp: GenericObject = { ...json };
-      delete temp[str];
-      setJSON(temp);
-    } else {
-      let temp: GenericObject = { ...json };
-      temp[str] = keyFunction;
-      setJSON(temp);
+    function clickHandler(str: string, keyFunction: Function) {
+      if (json.hasOwnProperty(str)) {
+        let temp: GenericObject = { ...json };
+        delete temp[str];
+        setJSON(temp);
+      } else {
+        let temp: GenericObject = { ...json };
+        temp[str] = keyFunction;
+        setJSON(temp);
+      }
     }
-  }
+  }, [json]);
 
   return (
     <div id="create-json">

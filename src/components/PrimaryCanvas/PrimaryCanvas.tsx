@@ -1,17 +1,5 @@
-import {
-  useEffect,
-  useState,
-  createRef,
-  ReactNode,
-  useMemo,
-  useCallback,
-} from "react";
-import {
-  GenericObject,
-  CanvasObject,
-  AnimationObject,
-  Nullable,
-} from "../../types/types";
+import { useEffect, useState, createRef, ReactNode } from "react";
+import { CanvasObject } from "../../types/types";
 import Modal from "../modal/Modal";
 import "./PrimaryCanvas.scss";
 

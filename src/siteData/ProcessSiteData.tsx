@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import SiteData from "./SiteData";
 import { useNavigate } from "react-router-dom";
 import { GenericObject } from "../types/types";

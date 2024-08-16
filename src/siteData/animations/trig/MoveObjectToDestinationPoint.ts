@@ -32,9 +32,11 @@ class MoveObjectToDestinationPoint {
     return { x, y };
   }
   init(cont: HTMLDivElement) {
-    if (!this.canvas || !this.ctx || !this.textDiv) return;
-    this.textDiv.innerHTML =
-      "<h3>this function shows you how the arrow moves to the point.  To see how to get the arrow to point towards the point, please see 'point one object towards a moving object'.</h3>";
+    if (!this.canvas || !this.ctx) return;
+    if (this.textDiv) {
+      this.textDiv.innerHTML =
+        "<h3>this function shows you how the arrow moves to the point.  To see how to get the arrow to point towards the point, please see 'point one object towards a moving object'.</h3>";
+    }
     this.canvas.width = this.canvasWidth = cont.clientWidth;
     this.canvas.height = this.canvasHeight = cont.clientHeight;
     this.halfHeight = this.canvasHeight / 2;
@@ -62,7 +64,7 @@ class MoveObjectToDestinationPoint {
 
     this.arrowPoint = { x: this.halfWidth - 50, y: this.halfHeight - 25 };
 
-    this.interval = setInterval(this.drawDot.bind(this), 2000);
+    this.interval = setInterval(this.drawDot, 2000);
   }
   getRotation(destinationPoint: Point, zeroReference: Point) {
     return Math.atan2(
@@ -70,13 +72,13 @@ class MoveObjectToDestinationPoint {
       destinationPoint.x - zeroReference.x
     );
   }
-  drawDot() {
+  drawDot = () => {
     this.ratio = 0;
     this.dotNew = {
       x: Math.floor(Math.random() * this.canvasWidth),
       y: Math.floor(Math.random() * this.canvasHeight),
     };
-  }
+  };
   drawLine(x1: number, y1: number, x2: number, y2: number, ratio: number) {
     x2 = x1 + ratio * (x2 - x1);
     y2 = y1 + ratio * (y2 - y1);
@@ -122,9 +124,11 @@ class MoveObjectToDestinationPoint {
     requestAnimationFrame(this.draw);
   };
   stop() {
-    if (!this.canvas || !this.ctx || !this.textDiv) return;
+    if (!this.canvas || !this.ctx) return;
     clearInterval(this.interval);
-    this.textDiv.innerHTML = "";
+    if (this.textDiv) {
+      this.textDiv.innerHTML = "";
+    }
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     window.removeEventListener("resize", this.resizeHandler.bind(this));
