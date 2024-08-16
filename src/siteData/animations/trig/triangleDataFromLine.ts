@@ -117,19 +117,17 @@ class TriangleDataFromLine {
 
     this.textDiv.innerHTML = `
         <h3>click and drag to draw line and get data.</h3>
-        <h3>the hypotenuse  is ${Math.floor(hypotenuse)} pixels long.</h3>
-        <h3>the adjacent  is ${Math.floor(adjacent)} pixels long.</h3>
-        <h3>the opposite  is ${Math.floor(opposite)} pixels long.</h3>
-        <h3>Angle "A" is ${Math.floor(angleInDegrees)} degrees.</h3>
-        <h3>Angle "B" is ${Math.floor(remainingAngle)} degrees.</h3>
-        <h3>Angle "C" is 90 degrees.</h3>
+        <h5>the hypotenuse  is ${Math.floor(hypotenuse)} pixels long.</h5>
+        <h5>the adjacent  is ${Math.floor(adjacent)} pixels long.</h5>
+        <h5>the opposite  is ${Math.floor(opposite)} pixels long.</h5>
+        <h5>angle "A" is ${Math.floor(angleInDegrees)} degrees.</h5>
+        <h5>angle "B" is ${Math.floor(remainingAngle)} degrees.</h5>
+        <h5>angle "C" is 90 degrees.</h3>
         `;
 
     this.ctx.beginPath();
     this.ctx.arc(this.startPoint.x, this.startPoint.y, radius, 0, 2 * Math.PI);
     this.ctx.stroke();
-
-    console.log(this.startPoint, this.endPoint);
   };
   distanceBetweenPoints(startPoint: Point, endPoint: Point) {
     let a = startPoint.x - endPoint.x;
