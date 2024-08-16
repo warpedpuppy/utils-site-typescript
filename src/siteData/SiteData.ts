@@ -6,16 +6,10 @@ import DistanceBetweenTwoPoints from "./animations/trig/DistanceBetweenTwoPoints
 import TriangleDataFromLine from "./animations/trig/TriangleDataFromLine";
 import PointTowardsMovingPoint from "./animations/trig/PointTowardsMovingPoint";
 import MoveItemAroundCircle from "./animations/trig/MoveItemAroundCircle";
-// import distributePointsAroundACircle from "./animations/trig/distributePointsAroundACircle";
+import SineCurve from "./animations/trig/SineCurve";
 import DistributePointsAroundACircle from "./animations/trig/DistributePointsAroundACircle";
 const SiteData = {
   trig: {
-    // circleFromThreePoints,
-    // equilateralTriangleVertices,
-    // pointMovingObjectInCorrectDirection,
-    // triangleDataFromLine,
-    // rotateObjectTowardsChangingPoint,
-    // moveItemAroundCircle,
     DistributePointsAroundACircle,
     DistanceBetweenTwoPoints,
     GetEquilateralTriangleVertices,
@@ -24,6 +18,7 @@ const SiteData = {
     MoveObjectToDestinationPoint,
     PointTowardsMovingPoint,
     TriangleDataFromLine,
+    SineCurve,
   },
   geometry: {
     // getHalfwayPointofLine,
