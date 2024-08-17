@@ -15,8 +15,8 @@ import PrimaryCanvasHeader from "./PrimaryCanvasHeader";
 function PrimaryCanvas(props: any) {
   const { siteData }: { siteData: object } = props;
   const [title, setTitle] = useState<string>("");
-  const [instance, setInstance] = useState<any>(null);
-  const [extraHTML, setExtraHTML] = useState<ReactNode>("");
+  // const [instance, setInstance] = useState<any>(null);
+  // const [extraHTML, setExtraHTML] = useState<ReactNode>("");
   const [showModal, setShowModal] = useState<boolean>(false);
 
   const activeObject: string[] = props.activeObject;
@@ -25,7 +25,6 @@ function PrimaryCanvas(props: any) {
   const { createClassReference } = ExamplesUtils();
 
   const instanceOfClass = useMemo(() => {
-    // console.log(canvasRef, canvasRef.current);
     if (!activeObject || !activeObject[0]) return;
     let str1 = activeObject[0] as keyof object;
     let str2 = activeObject[1] as keyof object;
@@ -53,9 +52,10 @@ function PrimaryCanvas(props: any) {
         instanceOfClass={instanceOfClass}
         showEquationHandler={showEquationHandler}
       />
+      {/* <canvas width="1000" height="1000" ref={canvasRef}></canvas> */}
       <div id="primary-canvas--content">
         <div id="primary-canvas--content--text"></div>
-        <div id="primary-canvas--content--canvas-container"></div>
+        <div id="primary-canvas--content--canvas-container2"></div>
       </div>
       {showModal && (
         <Modal

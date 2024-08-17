@@ -12,16 +12,11 @@ class getHalfwayPointofLine extends Template {
     };
   }
   init() {
-    console.log(this.ctx);
     this.draw();
   }
   draw = () => {
     if (!this.ctx || !this.canvas || !this.startPoint || !this.endPoint) return;
-
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.ctx.font = "bold 18px Arial";
-    this.ctx.fillText("click and drag to form a line", 10, 50);
 
     this.ctx.strokeStyle = "green";
     this.ctx.lineWidth = 10;
@@ -49,7 +44,6 @@ class getHalfwayPointofLine extends Template {
         x: Math.floor(e.pageX - this.left),
         y: Math.floor(e.pageY - this.top),
       };
-      console.log(this.endPoint);
       this.draw();
     }
   }

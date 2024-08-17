@@ -19,6 +19,7 @@ class Template {
   top: number = 0;
   left: number = 0;
   allowDraw: boolean = false;
+  continue: boolean = true;
   constructor(id: string) {
     if (!this.canvas || !this.ctx) return;
 
@@ -48,9 +49,6 @@ class Template {
     this.canvas.addEventListener("pointerup", this.pointerUpHandler.bind(this));
 
     window.addEventListener("resize", this.resizeHandler);
-
-    // this.draw = this.draw.bind(this);
-    // this.draw();
   }
   resizeHandler = () => {
     if (!this.canvas || !this.ctx) return;
@@ -63,19 +61,12 @@ class Template {
     let { top, left } = this.canvas.getBoundingClientRect();
     this.top = top;
     this.left = left;
-    // this.draw(); // only if no requestAnimationFrame
   };
-  // draw() {
-  //   if (!this.canvas || !this.ctx || !this.startPoint || !this.endPoint) return;
-  //   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  // }
   pointerDownHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
   stop() {
-    console.log("stop being called");
     if (!this.textDiv || !this.canvas || !this.cont) return;
-    console.log("stop being called2");
     this.textDiv.innerHTML = "";
     this.canvas.removeEventListener(
       "pointerdown",
