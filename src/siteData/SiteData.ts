@@ -13,9 +13,9 @@ import DeMystifySineCosine from "./animations/trig/DeMystifySineCosine";
 const SiteData = {
   trig: {
     DistributePointsAroundACircle,
-    // DistanceBetweenTwoPoints,
-    // GetEquilateralTriangleVertices,
-    // CircleFromThreePoints,
+    DistanceBetweenTwoPoints,
+    GetEquilateralTriangleVertices,
+    CircleFromThreePoints,
     // MoveItemAroundCircle,
     // MoveObjectToDestinationPoint,
     // PointTowardsMovingPoint,

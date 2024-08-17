@@ -1,4 +1,4 @@
-import { Nullable, Point } from "../../../types/types";
+import { Point } from "../../../types/types";
 import Template from "../animationTemplate";
 
 class DistributePointsAroundACircle extends Template {
@@ -6,7 +6,6 @@ class DistributePointsAroundACircle extends Template {
   static l: string = "distribute-around-circle";
   title: string = "distribute around circle";
   totalItems: number = 20;
-  continueLocal: boolean = true;
   keyFunction(circleCenter: Point, radius: number, totalItems: number) {
     let totalCircleRadians = Math.PI * 2;
     let returnArray = [];
@@ -22,7 +21,6 @@ class DistributePointsAroundACircle extends Template {
   }
   init() {
     this.draw();
-    console.log("init");
   }
   extraHTML = () => {
     let options = [];
@@ -61,17 +59,7 @@ class DistributePointsAroundACircle extends Template {
     const currentDate = new Date();
     return startValue + Math.cos(currentDate.getTime() * speed) * differential;
   }
-  pointerDownHandler(e: PointerEvent) {
-    console.log("pointer down");
-    this.draw();
-    this.startPoint = {
-      x: Math.floor(e.pageX - this.left),
-      y: Math.floor(e.pageY - this.top),
-    };
-    this.allowDraw = true;
-  }
   draw = () => {
-    console.log("draw");
     if (!this.canvas || !this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas?.height);
 
@@ -106,7 +94,7 @@ class DistributePointsAroundACircle extends Template {
       this.ctx.lineTo(point.x, point.y);
       this.ctx.stroke();
     });
-    // if (this.continue) requestAnimationFrame(this.draw.bind(this));
+    requestAnimationFrame(this.draw.bind(this));
   };
 }
 export default DistributePointsAroundACircle;

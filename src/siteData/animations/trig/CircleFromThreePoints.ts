@@ -1,22 +1,9 @@
 import { GenericObject, Nullable, Point } from "../../../types/types";
-class CircleFromThreePoints {
+import Template from "../animationTemplate";
+class CircleFromThreePoints extends Template {
   static t = "get circle from three points";
   static l = "circle-from-three-points";
   title = "get circle from three points";
-  canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  textDiv: Nullable<HTMLElement> = document.getElementById(
-    "primary-canvas--content--text"
-  );
-  canvasWidth: number = 0;
-  canvasHeight: number = 0;
-  halfHeight: number = 0;
-  halfWidth: number = 0;
-  cont: HTMLDivElement = undefined!;
-  ctx = this.canvas?.getContext("2d");
-  startPoint: Nullable<Point> = null;
-  endPoint: Nullable<Point> = null;
-  top: number = 0;
-  left: number = 0;
   text: string[] = [];
   interval: any = 0;
   circleQ = 0;
@@ -26,29 +13,10 @@ class CircleFromThreePoints {
     { x: 519, y: 273 },
   ];
   allowDraw: boolean = false;
-  init(cont: HTMLDivElement) {
-    if (!this.canvas || !this.ctx || !this.textDiv) return;
-    this.textDiv.innerHTML = "";
-    cont.innerHTML = "";
-    this.cont = cont;
-    cont.appendChild(this.canvas);
-    this.canvas.width = cont.clientWidth;
-    this.canvas.height = cont.clientHeight;
-    this.halfHeight = cont.clientHeight / 2;
-    this.halfWidth = cont.clientWidth / 2;
-    this.ctx = this.canvas.getContext("2d");
-
+  init() {
     this.text.push("<h3>click screen three times to make three points.</h3>");
-    this.canvas.addEventListener("pointerdown", this.pointerDownHandlerThree);
-    window.addEventListener("resize", this.resizeHandler);
     this.draw();
   }
-  resizeHandler = () => {
-    if (!this.canvas || !this.cont) return;
-    this.canvas.width = this.cont.clientWidth;
-    this.canvas.height = this.cont.clientHeight;
-    this.draw();
-  };
   draw() {
     if (!this.canvas || !this.ctx || !this.textDiv) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -94,7 +62,7 @@ class CircleFromThreePoints {
       this.draw();
     }
   }
-  pointerDownHandlerThree = (e: PointerEvent) => {
+  pointerDownHandler(e: PointerEvent) {
     if (!this.canvas) return;
     let { top, left } = this.canvas.getBoundingClientRect();
     if (this.points.length === 3) {
@@ -108,7 +76,7 @@ class CircleFromThreePoints {
     });
     this.text[2] = this.formatText();
     this.draw();
-  };
+  }
   formatText() {
     let str = this.points
       .map((item: GenericObject, index: number) => {
@@ -117,19 +85,6 @@ class CircleFromThreePoints {
       })
       .join(", ");
     return `<p>${str}</p>`;
-  }
-  stop() {
-    if (!this.textDiv || !this.ctx || !this.canvas || !this.cont) return;
-    clearInterval(this.interval);
-    this.textDiv.innerHTML = "";
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.canvas.removeEventListener(
-      "pointerdown",
-      this.pointerDownHandlerThree
-    );
-    window.removeEventListener("resize", this.resizeHandler.bind(this));
-    this.cont.removeChild(this.canvas);
-    this.canvas = null;
   }
   keyFunction(point1: Point, point2: Point, point3: Point) {
     let x12 = point1.x - point2.x;
