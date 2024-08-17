@@ -9,11 +9,17 @@ function ProcessUtils(setClassName: Function, location: string) {
 
   const loadCode = useCallback(
     (key: string, innerKey: string) => {
+      // let objectKey = key as keyof object;
+      // let objectInnerKey = innerKey as keyof object;
+      // let classRef: any = SiteData[objectKey][objectInnerKey];
+      // console.log(classRef);
+      // let instance = new classRef();
+      // setClassName(instance);
+
+      if (!key && !innerKey) return;
       let objectKey = key as keyof object;
       let objectInnerKey = innerKey as keyof object;
-      let classRef: any = SiteData[objectKey][objectInnerKey];
-      let instance = new classRef();
-      setClassName(instance);
+      setClassName([objectKey, objectInnerKey]);
     },
     [setClassName]
   );

@@ -1,23 +1,10 @@
 import { Point, Nullable, GenericObject } from "../../../types/types";
-class GetEquilateralTriangleVertices {
+import Template from "../animationTemplate";
+
+class GetEquilateralTriangleVertices extends Template {
   static t = "get equilateral triangle vertices from radius and center point";
   static l = "equilateral-trianlge-points";
   title = "get equilateral triangle vertices from radius and center point";
-  canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  textDiv: Nullable<HTMLElement> = document.getElementById(
-    "primary-canvas--content--text"
-  );
-  canvasWidth: number = 0;
-  canvasHeight: number = 0;
-  halfHeight: number = 0;
-  halfWidth: number = 0;
-  cont: HTMLDivElement = undefined!;
-  startPoint: Nullable<Point> = null;
-  endPoint: Nullable<Point> = null;
-  top: number = 0;
-  left: number = 0;
-  allowDraw = false;
-  ctx = this.canvas?.getContext("2d");
   backgroundTris: object[] = [];
   angle = 0;
   keyFunction(radius: number, centerPoint: Point, angle: number) {
@@ -44,23 +31,7 @@ class GetEquilateralTriangleVertices {
     };
     return { point1, point2, point3 };
   }
-  init(cont: HTMLDivElement) {
-    if (!this.textDiv) return;
-    this.cont = cont;
-    this.textDiv.innerHTML =
-      "click and drag to create center and radius of triangle";
-    this.canvas = document.createElement("canvas");
-    this.cont.innerHTML = "";
-    this.cont.appendChild(this.canvas);
-    this.canvas.width = this.canvasWidth = this.cont.clientWidth;
-    this.canvas.height = this.canvasHeight = this.cont.clientHeight;
-    this.ctx = this.canvas.getContext("2d");
-
-    let { top, left } = this.canvas.getBoundingClientRect();
-    this.top = top;
-    this.left = left;
-    this.allowDraw = false;
-
+  init() {
     for (let i = 0; i < 10; i++) {
       let radius = Math.random() * 100 + 50;
       let centerPoint = {
@@ -72,27 +43,8 @@ class GetEquilateralTriangleVertices {
       this.backgroundTris.push(obj);
     }
 
-    this.canvas.addEventListener(
-      "pointerdown",
-      this.pointerDownHandler.bind(this)
-    );
-    this.canvas.addEventListener(
-      "pointermove",
-      this.pointerMoveHandler.bind(this)
-    );
-    this.canvas.addEventListener("pointerup", this.pointerUpHandler.bind(this));
-    window.addEventListener("resize", this.resizeHandler.bind(this));
     this.draw();
   }
-  resizeHandler = () => {
-    if (!this.canvas || !this.cont) return;
-    this.canvas.width = this.cont.clientWidth;
-    this.canvas.height = this.cont.clientHeight;
-    let { top, left } = this.canvas.getBoundingClientRect();
-    this.top = top;
-    this.left = left;
-    this.draw();
-  };
   getLineAngle(originPoint: Point, destinationPoint: Point) {
     return Math.atan2(
       destinationPoint.y - originPoint.y,
@@ -167,25 +119,6 @@ class GetEquilateralTriangleVertices {
   }
   pointerUpHandler(e: PointerEvent) {
     this.allowDraw = false;
-  }
-  stop() {
-    if (!this.canvas || !this.cont || !this.textDiv) return;
-    this.textDiv.innerHTML = "";
-    this.canvas.removeEventListener(
-      "pointerdown",
-      this.pointerDownHandler.bind(this)
-    );
-    this.canvas.removeEventListener(
-      "pointermove",
-      this.pointerMoveHandler.bind(this)
-    );
-    this.canvas.removeEventListener(
-      "pointerup",
-      this.pointerUpHandler.bind(this)
-    );
-    window.removeEventListener("resize", this.resizeHandler.bind(this));
-    this.cont.removeChild(this.canvas);
-    this.canvas = null;
   }
 }
 

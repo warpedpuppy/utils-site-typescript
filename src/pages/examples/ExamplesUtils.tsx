@@ -25,8 +25,21 @@ function ExamplesUtils() {
     },
     []
   );
+  function createClassReference(f: Function) {
+    // had to nest the class in an object because it was instantiating it when it was placed in a useState variable
+    let classRef: any = f;
+    function create(ctor: {
+      new (canvasCont: any): typeof classRef;
+    }): typeof classRef {
+      let obj = {
+        initiate: (canvasCont: any) => new ctor(canvasCont),
+      };
+      return obj;
+    }
+    return create(classRef);
+  }
 
-  return getKeyAndInnerKeyFromLocation;
+  return { getKeyAndInnerKeyFromLocation, createClassReference };
 }
 
 export default ExamplesUtils;

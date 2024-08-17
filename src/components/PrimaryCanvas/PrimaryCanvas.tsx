@@ -1,54 +1,26 @@
-import { useEffect, useState, createRef, ReactNode } from "react";
-import { CanvasObject } from "../../types/types";
-import Modal from "../modal/Modal";
+import { useMemo } from "react";
+
+import ExamplesUtils from "../../pages/examples/ExamplesUtils";
 import "./PrimaryCanvas.scss";
 
-function PrimaryCanvas(props: CanvasObject) {
-  const [title, setTitle] = useState<string>("");
-  const [extraHTML, setExtraHTML] = useState<ReactNode>("");
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const activeObject: any = props.activeObject;
-  const canvasRef = createRef<HTMLDivElement>();
+import CanvasContainer from "./CanvasContainer";
 
-  useEffect(() => {
-    setExtraHTML("");
-    setTitle(activeObject?.title);
-    if (activeObject?.extraHTML) {
-      setExtraHTML(activeObject.extraHTML);
-    }
-    return () => activeObject?.stop();
-  }, [activeObject]);
+function PrimaryCanvas(props: any) {
+  const { siteData }: { siteData: object } = props;
 
-  useEffect(() => {
-    activeObject?.init(canvasRef.current);
-  }, [activeObject, canvasRef]);
+  const activeObject: string[] = props.activeObject;
 
-  function showEquationHandler() {
-    setShowModal(true);
-  }
+  const { createClassReference } = ExamplesUtils();
 
-  return (
-    <section id="primary-canvas">
-      <div id="primary-canvas--header">
-        <h3>{title}</h3>
-        {extraHTML}
-        <button onClick={showEquationHandler}>see equation</button>
-      </div>
-      <div id="primary-canvas--content">
-        <div id="primary-canvas--content--text"></div>
-        <div
-          id="primary-canvas--content--canvas-container"
-          ref={canvasRef}
-        ></div>
-      </div>
-      {showModal && (
-        <Modal
-          functionString={activeObject.keyFunction}
-          closeModal={() => setShowModal(false)}
-        />
-      )}
-    </section>
-  );
+  const instanceOfClass = useMemo(() => {
+    if (!activeObject || !activeObject[0]) return;
+    let str1 = activeObject[0] as keyof object;
+    let str2 = activeObject[1] as keyof object;
+    let classRef = createClassReference(siteData[str1][str2]);
+    return classRef;
+  }, [activeObject, createClassReference, siteData]);
+
+  return <CanvasContainer instance={instanceOfClass} />;
 }
 
 export default PrimaryCanvas;
