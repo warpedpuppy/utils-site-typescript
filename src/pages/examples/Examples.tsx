@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import PrimaryCanvas from "../../components/PrimaryCanvas/PrimaryCanvas";
 import SideBar from "../../components/SideBar/SideBar";
@@ -13,16 +13,19 @@ function Examples() {
   const [activeObject, setActiveObject] = useState<Nullable<any>>(null);
   const [key, setKey] = useState<string>("");
   const [innerKey, setInnerKey] = useState<string>("");
-  const [className, setClassName] = useState<any>(null);
-  const getKeyAndInnerKeyFromLocation = ExamplesUtils();
+  const [className, setClassName] = useState<any>(["", ""]);
+  const { getKeyAndInnerKeyFromLocation, createClassReference } =
+    ExamplesUtils();
   const { sideMenu, siteData } = ProcessSiteData(
     setClassName,
     location.pathname
   );
 
   useEffect(() => {
+    if (!className[0]) return;
+
     setActiveObject(className);
-  }, [className]);
+  }, [className, createClassReference, siteData]);
 
   useEffect(() => {
     const { returnKey, returnInnerKey } = getKeyAndInnerKeyFromLocation(
@@ -37,15 +40,13 @@ function Examples() {
     if (!key && !innerKey) return;
     let objectKey = key as keyof object;
     let objectInnerKey = innerKey as keyof object;
-    let classRef: any = siteData[objectKey][objectInnerKey];
-    let instance = new classRef();
-    setClassName(instance);
+    setClassName([objectKey, objectInnerKey]);
   }, [key, innerKey, siteData]);
 
   return (
     <section id="home-page">
       <SideBar sideMenu={sideMenu} />
-      <PrimaryCanvas activeObject={activeObject} />
+      <PrimaryCanvas activeObject={activeObject} siteData={siteData} />
     </section>
   );
 }

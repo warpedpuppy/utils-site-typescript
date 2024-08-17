@@ -1,5 +1,5 @@
 import CircleFromThreePoints from "./animations/trig/CircleFromThreePoints";
-// import getHalfwayPointofLine from "./animations/geometry/getHalfwayPointofLine";
+import GetHalfwayPointOfLine from "./animations/geometry/GetHalfwayPointOfLine";
 import GetEquilateralTriangleVertices from "./animations/trig/GetEquilateralTriangleVertices";
 import MoveObjectToDestinationPoint from "./animations/trig/MoveObjectToDestinationPoint";
 import DistanceBetweenTwoPoints from "./animations/trig/DistanceBetweenTwoPoints";
@@ -24,7 +24,7 @@ const SiteData = {
     DeMystifySineCosine,
   },
   geometry: {
-    // getHalfwayPointofLine,
+    GetHalfwayPointOfLine,
   },
   collissionDetection: {},
 };
