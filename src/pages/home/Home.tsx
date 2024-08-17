@@ -11,6 +11,11 @@ function Home() {
   }, [canvasRef]);
   return (
     <section id="home-page">
+      <div id="home-page--text-container">
+        <div id="home-page--text-container_inner">
+          <p>sdfgsdfgsdfg</p>
+        </div>
+      </div>
       <div id="home-page--canvas-container" ref={canvasRef}></div>
     </section>
   );

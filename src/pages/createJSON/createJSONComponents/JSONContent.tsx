@@ -1,18 +1,20 @@
+import { useEffect, useState } from "react";
 import { GenericObject } from "../../../types/types";
+import { createJson } from "../createJSONUtils/createJSONUtils";
 import "./JSONContent.scss";
 function JSONContent({ json }: { json: GenericObject }) {
+  const [utilsPrintOut, setUtilsPrintOut] = useState<string>("");
+  useEffect(() => {
+    let formattedJSON: string = createJson(json);
+    setUtilsPrintOut(formattedJSON);
+  }, [json]);
+
+  if (!Object.keys(json).length) return <div>nada</div>;
+
   return (
-    <>
-      {Object.keys(json).map((item: string, key) => {
-        let obj: Function = json[item];
-        return (
-          <div key={`json-values-${key}`}>
-            <pre> {item.toString()} </pre>
-            <pre> {obj.toString()} </pre>
-          </div>
-        );
-      })}
-    </>
+    <div>
+      <pre>{utilsPrintOut}</pre>
+    </div>
   );
 }
 

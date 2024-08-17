@@ -1,7 +1,21 @@
 #home-page {
   display: flex;
+  position: relative;
   &--canvas-container {
     width: 100vw;
     height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  &--text-container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    &_inner {
+      width: fit-content;
+      margin: 50px auto;
+    }
   }
 }

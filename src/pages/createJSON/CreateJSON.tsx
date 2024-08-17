@@ -18,10 +18,12 @@ function CreateJSON() {
     for (key in SiteData) {
       arr.push(<dt key={`createjson-dt-${key}`}>{key}</dt>);
       const subObject: GenericObject = SiteData[key];
+
       let innerKey: keyof typeof subObject;
       for (innerKey in subObject) {
         let { t, include } = subObject[innerKey];
         let x = new subObject[innerKey]();
+        let className = x.constructor.name;
         let { keyFunction } = x;
         if (include === false) {
           continue;
@@ -33,19 +35,24 @@ function CreateJSON() {
             clickHandler={clickHandler}
             bool={json.hasOwnProperty(t)}
             keyFunction={keyFunction}
+            className={className}
           />
         );
       }
     }
     setChecklist(arr);
-    function clickHandler(str: string, keyFunction: Function) {
+    function clickHandler(
+      str: string,
+      keyFunction: Function,
+      className: string
+    ) {
       if (json.hasOwnProperty(str)) {
         let temp: GenericObject = { ...json };
         delete temp[str];
         setJSON(temp);
       } else {
         let temp: GenericObject = { ...json };
-        temp[str] = keyFunction;
+        temp[str] = { className, keyFunction };
         setJSON(temp);
       }
     }
