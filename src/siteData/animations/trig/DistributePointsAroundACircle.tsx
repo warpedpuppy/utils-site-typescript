@@ -5,7 +5,8 @@ class DistributePointsAroundACircle extends Template {
   static t: string = "distribute around circle";
   static l: string = "distribute-around-circle";
   title: string = "distribute around circle";
-  totalItems: number = 0;
+  totalItems: number = 20;
+  continueLocal: boolean = true;
   keyFunction(circleCenter: Point, radius: number, totalItems: number) {
     let totalCircleRadians = Math.PI * 2;
     let returnArray = [];
@@ -21,7 +22,7 @@ class DistributePointsAroundACircle extends Template {
   }
   init() {
     this.draw();
-    this.totalItems = 20;
+    console.log("init");
   }
   extraHTML = () => {
     let options = [];
@@ -44,9 +45,9 @@ class DistributePointsAroundACircle extends Template {
       </div>
     );
   };
-  totalItemsChangeHandler(num: string) {
+  totalItemsChangeHandler = (num: string) => {
     this.totalItems = Number(num);
-  }
+  };
   resizeHandler = () => {
     if (!this.canvas) return;
     if (this.cont) {
@@ -60,53 +61,52 @@ class DistributePointsAroundACircle extends Template {
     const currentDate = new Date();
     return startValue + Math.cos(currentDate.getTime() * speed) * differential;
   }
+  pointerDownHandler(e: PointerEvent) {
+    console.log("pointer down");
+    this.draw();
+    this.startPoint = {
+      x: Math.floor(e.pageX - this.left),
+      y: Math.floor(e.pageY - this.top),
+    };
+    this.allowDraw = true;
+  }
   draw = () => {
-    // if (!this.canvas || !this.ctx) return;
-
-    // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas?.height);
+    console.log("draw");
+    if (!this.canvas || !this.ctx) return;
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas?.height);
 
     let radius = this.cosWave(100, 100, 0.001);
-    console.log(this.halfHeight, this.canvasWidth, this.halfHeight);
-    if (this.ctx) {
-      this.ctx.strokeStyle = "green";
-      this.ctx.lineWidth = 20;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.halfWidth, 0);
+    this.ctx.lineTo(this.halfWidth, this.canvasHeight);
+    this.ctx.stroke();
+
+    this.ctx.beginPath();
+    this.ctx.arc(this.halfWidth, this.halfHeight, radius, 0, 2 * Math.PI);
+    this.ctx.stroke();
+
+    let points = this.keyFunction(
+      { x: this.halfWidth, y: this.halfHeight },
+      radius,
+      this.totalItems
+    );
+    points.forEach((point: Point) => {
+      if (!this.ctx) return;
+      this.ctx.strokeStyle = "rgba(0 0 0 / 0.5)";
+      this.ctx.lineWidth = 2;
+
       this.ctx.beginPath();
-      this.ctx.moveTo(0, this.halfHeight);
-      this.ctx.lineTo(this.canvasWidth, this.halfHeight);
+      this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
+
       this.ctx.stroke();
-    }
 
-    // this.ctx.beginPath();
-    // this.ctx.moveTo(this.halfWidth, 0);
-    // this.ctx.lineTo(this.halfWidth, this.canvasHeight);
-    // this.ctx.stroke();
-
-    // this.ctx.beginPath();
-    // this.ctx.arc(this.halfWidth, this.halfHeight, radius, 0, 2 * Math.PI);
-    // this.ctx.stroke();
-
-    // let points = this.keyFunction(
-    //   { x: this.halfWidth, y: this.halfHeight },
-    //   radius,
-    //   this.totalItems
-    // );
-
-    // points.forEach((point: Point) => {
-    //   if (!this.ctx) return;
-    //   this.ctx.strokeStyle = "rgba(0 0 0 / 0.5)";
-    //   this.ctx.lineWidth = 2;
-
-    //   this.ctx.beginPath();
-    //   this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
-
-    //   this.ctx.stroke();
-
-    //   this.ctx.beginPath();
-    //   this.ctx.moveTo(this.halfWidth, this.halfHeight);
-    //   this.ctx.lineTo(point.x, point.y);
-    //   this.ctx.stroke();
-    // });
-    // requestAnimationFrame(this.draw);
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.halfWidth, this.halfHeight);
+      this.ctx.lineTo(point.x, point.y);
+      this.ctx.stroke();
+    });
+    // if (this.continue) requestAnimationFrame(this.draw.bind(this));
   };
 }
 export default DistributePointsAroundACircle;
