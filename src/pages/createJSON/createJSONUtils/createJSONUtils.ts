@@ -8,6 +8,7 @@ export function createJson(json: object): string {
  `;
   });
 
-  str += "};";
+  str += `};
+export default Utils;`;
   return str;
 }
