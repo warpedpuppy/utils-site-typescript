@@ -3,10 +3,10 @@ import "./Home.scss";
 import MoveObjectToDestinationPoint from "../../siteData/animations/trig/MoveObjectToDestinationPoint";
 
 function Home() {
-  const canvasRef = createRef<HTMLDivElement>();
+  const canvasRef = createRef<any>();
   useEffect(() => {
-    let instance = new MoveObjectToDestinationPoint();
-    instance.init(canvasRef.current!);
+    let instance = new MoveObjectToDestinationPoint(canvasRef.current!);
+    instance.init();
     return () => instance.stop();
   }, [canvasRef]);
   return (

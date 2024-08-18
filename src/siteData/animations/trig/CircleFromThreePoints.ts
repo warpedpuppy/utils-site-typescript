@@ -1,4 +1,4 @@
-import { GenericObject, Nullable, Point } from "../../../types/types";
+import { GenericObject, Point } from "../../../types/types";
 import Template from "../animationTemplate";
 class CircleFromThreePoints extends Template {
   static t = "get circle from three points";

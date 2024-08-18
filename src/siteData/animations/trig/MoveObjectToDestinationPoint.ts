@@ -1,23 +1,9 @@
 import { Nullable, Point } from "../../../types/types";
-class MoveObjectToDestinationPoint {
+import Template from "../animationTemplate";
+class MoveObjectToDestinationPoint extends Template {
   static t = "move object to changing point";
   static l = "move-to-changing-point";
   title: string = "move object to changing point";
-  canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  textDiv: Nullable<HTMLElement> = document.getElementById(
-    "primary-canvas--content--text"
-  );
-  canvasWidth: number = 0;
-  canvasHeight: number = 0;
-  halfHeight: number = 0;
-  halfWidth: number = 0;
-  cont: HTMLDivElement = undefined!;
-  ctx = this.canvas?.getContext("2d");
-  startPoint: Nullable<Point> = null;
-  endPoint: Nullable<Point> = null;
-  top: number = 0;
-  left: number = 0;
-  allowDraw: boolean = false;
   points = [];
   text = [];
   interval: any = undefined;
@@ -31,22 +17,11 @@ class MoveObjectToDestinationPoint {
     let y = origin.y + ratio * (destination.y - origin.y);
     return { x, y };
   }
-  init(cont: HTMLDivElement) {
-    if (!this.canvas || !this.ctx) return;
+  init() {
     if (this.textDiv) {
       this.textDiv.innerHTML =
         "<h3>this function shows you how the arrow moves to the point.  To see how to get the arrow to point towards the point, please see 'point one object towards a moving object'.</h3>";
     }
-    this.canvas.width = this.canvasWidth = cont.clientWidth;
-    this.canvas.height = this.canvasHeight = cont.clientHeight;
-    this.halfHeight = this.canvasHeight / 2;
-    this.halfWidth = this.canvasWidth / 2;
-    this.ctx = this.canvas.getContext("2d");
-    this.cont = cont;
-    cont.innerHTML = "";
-    cont.appendChild(this.canvas);
-
-    window.addEventListener("resize", this.resizeHandler);
 
     this.dot = {
       x: Math.floor(Math.random() * this.canvasWidth),
@@ -79,18 +54,6 @@ class MoveObjectToDestinationPoint {
       y: Math.floor(Math.random() * this.canvasHeight),
     };
   };
-  drawLine(x1: number, y1: number, x2: number, y2: number, ratio: number) {
-    x2 = x1 + ratio * (x2 - x1);
-    y2 = y1 + ratio * (y2 - y1);
-    return { x: x2, y: y2 };
-  }
-  resizeHandler = () => {
-    if (!this.canvas || !this.cont) return;
-    this.canvas.width = this.cont.clientWidth;
-    this.canvas.height = this.cont.clientHeight;
-    this.draw();
-  };
-
   draw = () => {
     if (!this.canvas || !this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
@@ -123,17 +86,5 @@ class MoveObjectToDestinationPoint {
 
     requestAnimationFrame(this.draw);
   };
-  stop() {
-    if (!this.canvas || !this.ctx) return;
-    clearInterval(this.interval);
-    if (this.textDiv) {
-      this.textDiv.innerHTML = "";
-    }
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    window.removeEventListener("resize", this.resizeHandler.bind(this));
-    this.cont.removeChild(this.canvas);
-    this.canvas = null;
-  }
 }
 export default MoveObjectToDestinationPoint;

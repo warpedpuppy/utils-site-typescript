@@ -1,23 +1,9 @@
 import { Nullable, Point } from "../../../types/types";
-class PointTowardsMovingPoint {
+import Template from "../animationTemplate";
+class PointTowardsMovingPoint extends Template {
   static t = "point one object towards a moving object";
   static l = "point-one-object-towards-a-moving-object";
   title = "point one object towards a moving object";
-  canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  textDiv: Nullable<HTMLElement> = document.getElementById(
-    "primary-canvas--content--text"
-  );
-  canvasWidth: number = 0;
-  canvasHeight: number = 0;
-  halfHeight: number = 0;
-  halfWidth: number = 0;
-  cont: HTMLDivElement = undefined!;
-  ctx = this.canvas?.getContext("2d");
-  startPoint: Nullable<Point> = null;
-  endPoint: Nullable<Point> = null;
-  top: number = 0;
-  left: number = 0;
-  allowDraw: boolean = false;
   img = new Image();
   i = 0;
   keyFunction(originPoint: Point, destinationPoint: Point) {
@@ -26,18 +12,8 @@ class PointTowardsMovingPoint {
       destinationPoint.x - originPoint.x
     );
   }
-  init(cont: HTMLDivElement) {
+  init() {
     if (!this.canvas || !this.ctx) return;
-    this.canvas.width = this.canvasWidth = cont.clientWidth;
-    this.canvas.height = this.canvasHeight = cont.clientHeight;
-    this.halfHeight = this.canvasHeight / 2;
-    this.halfWidth = this.canvasWidth / 2;
-    this.ctx = this.canvas.getContext("2d");
-    cont.innerHTML = "";
-    cont.appendChild(this.canvas);
-    this.cont = cont;
-    window.addEventListener("resize", this.resizeHandler);
-
     this.img.addEventListener("load", () => {
       if (!this.ctx) return;
       this.ctx.drawImage(this.img, 0, 0);
@@ -56,12 +32,6 @@ class PointTowardsMovingPoint {
     const y =
       circleCenter.y + radius * Math.sin(2 * Math.PI * (i / numElements));
     return { x, y };
-  }
-  resizeHandler() {
-    if (!this.canvas || !this.cont) return;
-    this.canvas.width = this.cont.clientWidth;
-    this.canvas.height = this.cont.clientHeight;
-    this.draw();
   }
   draw = () => {
     if (!this.canvas || !this.ctx) return;
@@ -114,13 +84,5 @@ class PointTowardsMovingPoint {
 
     requestAnimationFrame(this.draw);
   };
-  stop() {
-    if (!this.canvas || !this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    window.removeEventListener("resize", this.resizeHandler);
-    this.cont.removeChild(this.canvas);
-    this.canvas = null;
-  }
 }
 export default PointTowardsMovingPoint;
