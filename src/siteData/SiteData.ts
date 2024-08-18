@@ -19,9 +19,9 @@ const SiteData = {
     MoveItemAroundCircle,
     MoveObjectToDestinationPoint,
     PointTowardsMovingPoint,
-    // TriangleDataFromLine,
-    // SineCurve,
-    // DeMystifySineCosine,
+    TriangleDataFromLine,
+    SineCurve,
+    DeMystifySineCosine,
   },
   geometry: {
     GetHalfwayPointOfLine,

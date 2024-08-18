@@ -1,27 +1,28 @@
 import { Nullable, Point } from "../../../types/types";
-class SineCurve {
+import Template from "../animationTemplate";
+class SineCurve extends Template {
   static t: string = "sine curve";
   static l: string = "sine-curve";
   title = "sine curve";
-  canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  textDiv: Nullable<HTMLElement> = document.getElementById(
-    "primary-canvas--content--text"
-  );
-  canvasWidth: number = 0;
-  canvasHeight: number = 0;
-  halfHeight: number = 0;
-  halfWidth: number = 0;
-  cont: HTMLDivElement = undefined!;
-  ctx = this.canvas?.getContext("2d");
-  startPoint: Nullable<Point> = null;
-  endPoint: Nullable<Point> = null;
-  top: number = 0;
-  left: number = 0;
-  text: string[] = [];
+  // canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
+  // textDiv: Nullable<HTMLElement> = document.getElementById(
+  //   "primary-canvas--content--text"
+  // );
+  // canvasWidth: number = 0;
+  // canvasHeight: number = 0;
+  // halfHeight: number = 0;
+  // halfWidth: number = 0;
+  // cont: HTMLDivElement = undefined!;
+  // ctx = this.canvas?.getContext("2d");
+  // startPoint: Nullable<Point> = null;
+  // endPoint: Nullable<Point> = null;
+  // top: number = 0;
+  // left: number = 0;
+  // text: string[] = [];
   interval: any = 0;
-  circleQ = 0;
-  points: any = [];
-  allowDraw: boolean = false;
+  // circleQ = 0;
+  // points: any = [];
+  // allowDraw: boolean = false;
   i: number = 0;
   startValue = 0;
   differential = 200;
@@ -32,25 +33,9 @@ class SineCurve {
       startingValue + Math.sin(currentDate.getTime() * speed) * differential
     );
   }
-  init(cont: HTMLDivElement) {
-    if (!this.canvas || !this.ctx) return;
-    this.canvas.width = this.canvasWidth = cont.clientWidth;
-    this.canvas.height = this.canvasHeight = cont.clientHeight;
-    this.halfHeight = this.canvasHeight / 2;
-    this.halfWidth = this.canvasWidth / 2;
-    this.ctx = this.canvas.getContext("2d");
-    this.cont = cont;
-    cont.innerHTML = "";
-    cont.appendChild(this.canvas);
+  init() {
     this.draw();
-    this.i = 0;
-    window.addEventListener("resize", this.resizeHandler);
   }
-  resizeHandler = () => {
-    if (!this.canvas || !this.cont) return;
-    this.canvas.width = this.cont.clientWidth;
-    this.canvas.height = this.cont.clientHeight;
-  };
   changeHandler(value: any, type: string) {
     if (type === "starting") {
       this.startValue = value;
@@ -140,34 +125,11 @@ class SineCurve {
     this.ctx.stroke();
 
     let val = this.keyFunction(this.startValue, this.differential, this.speed);
-    // this.i += 0.5;
-    // if (this.i > 100) this.i = 0;
     this.ctx.beginPath();
     this.ctx.arc(this.halfWidth, this.halfHeight + val, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    // this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
-    // this.ctx.lineWidth = 1;
-    // this.ctx.beginPath();
-    // this.ctx.moveTo(this.halfWidth, this.halfHeight);
-    // this.ctx.lineTo(point.x, point.y);
-    // this.ctx.stroke();
-
-    // this.ctx.beginPath();
-    // this.ctx.moveTo(point.x, point.y);
-    // this.ctx.lineTo(point.x, this.halfHeight);
-    // this.ctx.stroke();
-
     requestAnimationFrame(this.draw);
   };
-  stop() {
-    if (!this.canvas || !this.ctx || !this.cont) return;
-    clearInterval(this.interval);
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    window.removeEventListener("resize", this.resizeHandler.bind(this));
-    this.cont.removeChild(this.canvas);
-    this.canvas = null;
-  }
 }
 export default SineCurve;

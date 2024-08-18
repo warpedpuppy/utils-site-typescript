@@ -1,22 +1,9 @@
 import { Point, Nullable } from "../../../types/types";
-class TriangleDataFromLine {
+import Template from "../animationTemplate";
+class TriangleDataFromLine extends Template {
   static t = "get triangle data from line";
   static l = "get-triangle-data-from-line";
   title = "get triangle data from line";
-  canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  textDiv: Nullable<HTMLElement> = document.getElementById(
-    "primary-canvas--content--text"
-  );
-  canvasWidth: number = 0;
-  canvasHeight: number = 0;
-  halfHeight: number = 0;
-  halfWidth: number = 0;
-  cont: HTMLDivElement = undefined!;
-  ctx = this.canvas?.getContext("2d");
-  startPoint: Nullable<Point> = { x: 141, y: 317 };
-  endPoint: Nullable<Point> = { x: 687, y: 120 };
-  top: number = 0;
-  left: number = 0;
   allowDraw: boolean = false;
   keyFunction(startPoint: Point, endPoint: Point) {
     let hypotenuse = distanceBetweenPoints(startPoint, endPoint);
@@ -45,40 +32,9 @@ class TriangleDataFromLine {
       return Math.sqrt(a * a + b * b);
     }
   }
-  init(cont: HTMLDivElement) {
-    if (!this.canvas || !this.ctx || !this.textDiv) return;
-    this.textDiv.innerHTML = `<h3>click and drag to draw line and get data.</h3>`;
-    cont.innerHTML = "";
-    this.cont = cont;
-    cont.appendChild(this.canvas);
-    this.canvas.width = cont.clientWidth;
-    this.canvas.height = cont.clientHeight;
-    this.ctx.font = "bold 14px sans serif";
-    let { top, left } = this.canvas.getBoundingClientRect();
-    this.top = top;
-    this.left = left;
-    this.allowDraw = false;
-    this.canvas.addEventListener(
-      "pointerdown",
-      this.pointerDownHandler.bind(this)
-    );
-    this.canvas.addEventListener(
-      "pointermove",
-      this.pointerMoveHandler.bind(this)
-    );
-    this.canvas.addEventListener("pointerup", this.pointerUpHandler.bind(this));
-    window.addEventListener("resize", this.resizeHandler.bind(this));
+  init() {
     this.draw();
   }
-  resizeHandler = () => {
-    if (!this.canvas || !this.cont) return;
-    this.canvas.width = this.cont.clientWidth;
-    this.canvas.height = this.cont.clientHeight;
-    let { top, left } = this.canvas.getBoundingClientRect();
-    this.top = top;
-    this.left = left;
-    this.draw();
-  };
   draw = () => {
     if (
       !this.canvas ||
@@ -152,32 +108,6 @@ class TriangleDataFromLine {
   }
   pointerUpHandler(e: PointerEvent) {
     this.allowDraw = false;
-  }
-  stop() {
-    if (
-      !this.canvas ||
-      !this.ctx ||
-      !this.startPoint ||
-      !this.endPoint ||
-      !this.textDiv
-    )
-      return;
-    this.textDiv.innerHTML = "";
-    this.canvas.removeEventListener(
-      "pointerdown",
-      this.pointerDownHandler.bind(this)
-    );
-    this.canvas.removeEventListener(
-      "pointermove",
-      this.pointerMoveHandler.bind(this)
-    );
-    this.canvas.removeEventListener(
-      "pointerup",
-      this.pointerUpHandler.bind(this)
-    );
-    window.removeEventListener("resize", this.resizeHandler.bind(this));
-    this.cont.removeChild(this.canvas);
-    this.canvas = null;
   }
 }
 export default TriangleDataFromLine;
