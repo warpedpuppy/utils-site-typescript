@@ -1,6 +1,6 @@
 import { Point, Nullable } from "../../../types/types";
-import Template from "../animationTemplate";
-class TriangleDataFromLine extends Template {
+import AnimationBaseClass from "../AnimationBaseClass";
+class TriangleDataFromLine extends AnimationBaseClass {
   static t = "get triangle data from line";
   static l = "get-triangle-data-from-line";
   title = "get triangle data from line";

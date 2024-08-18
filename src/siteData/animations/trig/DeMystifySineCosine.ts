@@ -1,6 +1,6 @@
 import { Nullable, Point } from "../../../types/types";
-import Template from "../animationTemplate";
-class DeMystifySineCosine extends Template {
+import AnimationBaseClass from "../AnimationBaseClass";
+class DeMystifySineCosine extends AnimationBaseClass {
   static t: string = "demystify sine and cosine";
   static l: string = "demystify-sine-and-cosine";
   static include: boolean = false;

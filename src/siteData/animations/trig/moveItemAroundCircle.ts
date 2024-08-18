@@ -1,6 +1,6 @@
 import { Point } from "../../../types/types";
-import Template from "../animationTemplate";
-class MoveItemAroundCircle extends Template {
+import AnimationBaseClass from "../AnimationBaseClass";
+class MoveItemAroundCircle extends AnimationBaseClass {
   static t: string = "move item around circle";
   static l: string = "move-item-around-circle";
   title = "move item around circle";

@@ -1,6 +1,6 @@
 import { Point, Nullable } from "../../types/types";
 
-class Template {
+class AnimationBaseClass {
   static t = "";
   static l = "";
   title = "";
@@ -86,4 +86,4 @@ class Template {
     this.canvas = null;
   }
 }
-export default Template;
+export default AnimationBaseClass;

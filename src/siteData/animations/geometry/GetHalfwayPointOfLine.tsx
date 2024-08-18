@@ -1,7 +1,7 @@
 import { Point } from "../../../types/types";
-import Template from "../animationTemplate";
+import AnimationBaseClass from "../AnimationBaseClass";
 
-class getHalfwayPointofLine extends Template {
+class getHalfwayPointofLine extends AnimationBaseClass {
   static t = "get halfway point in line";
   static l = "halfway-point-in-line";
   title = "get halfway point in line";

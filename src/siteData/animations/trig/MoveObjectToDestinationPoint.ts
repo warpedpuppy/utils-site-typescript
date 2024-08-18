@@ -1,6 +1,6 @@
 import { Nullable, Point } from "../../../types/types";
-import Template from "../animationTemplate";
-class MoveObjectToDestinationPoint extends Template {
+import AnimationBaseClass from "../AnimationBaseClass";
+class MoveObjectToDestinationPoint extends AnimationBaseClass {
   static t = "move object to changing point";
   static l = "move-to-changing-point";
   title: string = "move object to changing point";

@@ -1,7 +1,7 @@
 import { GenericObject, Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 
-class BallBounce extends AnimationBaseClass {
+class AnimationTemplate extends AnimationBaseClass {
   static t = "enter title";
   static l = "enter-title";
   title = "enter title";
@@ -14,4 +14,4 @@ class BallBounce extends AnimationBaseClass {
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
 }
-export default BallBounce;
+export default AnimationTemplate;

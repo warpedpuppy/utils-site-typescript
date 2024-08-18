@@ -1,6 +1,6 @@
 import { Nullable, Point } from "../../../types/types";
-import Template from "../animationTemplate";
-class SineCurve extends Template {
+import AnimationBaseClass from "../AnimationBaseClass";
+class SineCurve extends AnimationBaseClass {
   static t: string = "sine curve";
   static l: string = "sine-curve";
   title = "sine curve";

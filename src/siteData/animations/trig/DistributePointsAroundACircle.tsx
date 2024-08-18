@@ -1,7 +1,7 @@
 import { Point } from "../../../types/types";
-import Template from "../animationTemplate";
+import AnimationBaseClass from "../AnimationBaseClass";
 
-class DistributePointsAroundACircle extends Template {
+class DistributePointsAroundACircle extends AnimationBaseClass {
   static t: string = "distribute around circle";
   static l: string = "distribute-around-circle";
   title: string = "distribute around circle";

@@ -1,7 +1,7 @@
 import { Point, Nullable } from "../../../types/types";
-import Template from "../animationTemplate";
+import AnimationBaseClass from "../AnimationBaseClass";
 
-class DistanceBetweenTwoPoints extends Template {
+class DistanceBetweenTwoPoints extends AnimationBaseClass {
   static t = "get distance between two points";
   static l = "distance-between-points";
   title = "get distance between two points";

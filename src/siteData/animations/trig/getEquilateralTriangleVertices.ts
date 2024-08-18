@@ -1,7 +1,7 @@
 import { Point, Nullable, GenericObject } from "../../../types/types";
-import Template from "../animationTemplate";
+import AnimationBaseClass from "../AnimationBaseClass";
 
-class GetEquilateralTriangleVertices extends Template {
+class GetEquilateralTriangleVertices extends AnimationBaseClass {
   static t = "get equilateral triangle vertices from radius and center point";
   static l = "equilateral-trianlge-points";
   title = "get equilateral triangle vertices from radius and center point";

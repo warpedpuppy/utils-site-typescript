@@ -1,6 +1,6 @@
 import { GenericObject, Point } from "../../../types/types";
-import Template from "../animationTemplate";
-class CircleFromThreePoints extends Template {
+import AnimationBaseClass from "../AnimationBaseClass";
+class CircleFromThreePoints extends AnimationBaseClass {
   static t = "get circle from three points";
   static l = "circle-from-three-points";
   title = "get circle from three points";
