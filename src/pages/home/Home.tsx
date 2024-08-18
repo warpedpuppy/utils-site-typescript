@@ -1,14 +1,15 @@
-import { createRef, useEffect } from "react";
+import { useEffect } from "react";
 import "./Home.scss";
 import MoveObjectToDestinationPoint from "../../siteData/animations/trig/MoveObjectToDestinationPoint";
 
 function Home() {
-  const canvasRef = createRef<any>();
   useEffect(() => {
-    let instance = new MoveObjectToDestinationPoint(canvasRef.current!);
+    let instance = new MoveObjectToDestinationPoint(
+      "home-page--canvas-container"
+    );
     instance.init();
     return () => instance.stop();
-  }, [canvasRef]);
+  }, []);
   return (
     <section id="home-page">
       <div id="home-page--text-container">
@@ -16,7 +17,7 @@ function Home() {
           <p>sdfgsdfgsdfg</p>
         </div>
       </div>
-      <div id="home-page--canvas-container" ref={canvasRef}></div>
+      <div id="home-page--canvas-container"></div>
     </section>
   );
 }
