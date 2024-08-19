@@ -86,8 +86,10 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       let angle = Math.atan2(dy, dx);
       let targetX = ball1.x + Math.cos(angle) * minDist;
       let targetY = ball1.y + Math.sin(angle) * minDist;
-      let ax = (targetX - ball2.x) * this.spring;
-      let ay = (targetY - ball2.y) * this.spring;
+      let xOverlap = targetX - ball2.x;
+      let yOverlap = targetY - ball2.y;
+      let ax = xOverlap * this.spring;
+      let ay = yOverlap * this.spring;
       ball1.vx -= ax;
       ball1.vy -= ay;
       ball2.vx += ax;
