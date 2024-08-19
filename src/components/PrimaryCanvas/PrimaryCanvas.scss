@@ -5,9 +5,12 @@
   &--header {
     padding: 1rem 1rem 0.25rem 1rem;
     display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 11;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--site-gray);
   }
   &--content {
     width: 100%;

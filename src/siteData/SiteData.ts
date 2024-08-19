@@ -9,8 +9,15 @@ import MoveItemAroundCircle from "./animations/trig/MoveItemAroundCircle";
 import SineCurve from "./animations/trig/SineCurve";
 import DistributePointsAroundACircle from "./animations/trig/DistributePointsAroundACircle";
 import DeMystifySineCosine from "./animations/trig/DeMystifySineCosine";
+import BallBounce from "./animations/geometry/BallBounce";
+import BallsBouncingAgainstEachOther from "./animations/geometry/BallsBouncingAgainstEachOther";
 
 const SiteData = {
+  geometry: {
+    BallBounce,
+    GetHalfwayPointOfLine,
+    BallsBouncingAgainstEachOther,
+  },
   trig: {
     DistributePointsAroundACircle,
     DistanceBetweenTwoPoints,
@@ -22,9 +29,6 @@ const SiteData = {
     TriangleDataFromLine,
     SineCurve,
     DeMystifySineCosine,
-  },
-  geometry: {
-    GetHalfwayPointOfLine,
   },
   collissionDetection: {},
 };
