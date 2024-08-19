@@ -15,6 +15,7 @@ export interface Circle extends ShapeInMotion {
 export interface ShapeInMotion {
   vx: number;
   vy: number;
+  id: string;
 }
 
 // canvas
