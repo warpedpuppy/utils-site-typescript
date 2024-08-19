@@ -38,57 +38,36 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       this.ctx.arc(ball1.x, ball1.y, ball1.radius, 0, 2 * Math.PI);
       this.ctx.stroke();
       this.balls.forEach((ball2) => {
-        if (ball1 !== ball2) {
-          let dx = ball2.x - ball1.x;
-          let dy = ball2.y - ball1.y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
-          let minDist = ball2.radius + ball1.radius;
-          if (distance < minDist) {
-            let angle = Math.atan2(dy, dx);
-            let targetX = ball1.x + Math.cos(angle) * minDist;
-            let targetY = ball1.y + Math.sin(angle) * minDist;
-            let ax = (targetX - ball2.x) * this.spring;
-            let ay = (targetY - ball2.y) * this.spring;
-            ball1.vx -= ax;
-            ball1.vy -= ay;
-            ball2.vx += ax;
-            ball2.vy += ay;
-          }
-        }
+        this.keyFunction(ball1, ball2);
       });
-
-      if (ball1.y > this.canvasHeight - ball1.radius) {
-        ball1.y = this.canvasHeight - ball1.radius;
-        ball1.vy *= -1;
-      }
-
-      if (ball1.y < ball1.radius) {
-        ball1.y = ball1.radius;
-        ball1.vy *= -1;
-      }
-
-      if (ball1.x > this.canvasWidth - ball1.radius) {
-        ball1.x = this.canvasWidth - ball1.radius;
-        ball1.vx *= -1;
-      }
-      if (ball1.x < ball1.radius) {
-        ball1.x = ball1.radius;
-        ball1.vx *= -1;
-      }
-      if (ball1.vx > this.speedLimit) ball1.vx = this.speedLimit;
-      if (ball1.vy > this.speedLimit) ball1.vy = this.speedLimit;
+      this.keepOnScreen(ball1);
+      this.imposeSpeedLimit(ball1);
     });
     requestAnimationFrame(this.draw);
   };
-  getATan2(originPoint: Point, destinationPoint: Point) {
-    return (
-      (Math.atan2(
-        destinationPoint.y - originPoint.y,
-        destinationPoint.x - originPoint.x
-      ) *
-        180) /
-      Math.PI
-    );
+  imposeSpeedLimit(ball1: Circle) {
+    if (ball1.vx > this.speedLimit) ball1.vx = this.speedLimit;
+    if (ball1.vy > this.speedLimit) ball1.vy = this.speedLimit;
+  }
+  keepOnScreen(ball1: Circle) {
+    if (ball1.y > this.canvasHeight - ball1.radius) {
+      ball1.y = this.canvasHeight - ball1.radius;
+      ball1.vy *= -1;
+    }
+
+    if (ball1.y < ball1.radius) {
+      ball1.y = ball1.radius;
+      ball1.vy *= -1;
+    }
+
+    if (ball1.x > this.canvasWidth - ball1.radius) {
+      ball1.x = this.canvasWidth - ball1.radius;
+      ball1.vx *= -1;
+    }
+    if (ball1.x < ball1.radius) {
+      ball1.x = ball1.radius;
+      ball1.vx *= -1;
+    }
   }
   circleCircle(circle1: Circle, circle2: Circle) {
     let distX = circle1.x - circle2.x;
@@ -97,35 +76,23 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
 
     return distance <= circle1.radius + circle2.radius;
   }
-  collide(b: Circle) {
-    const a = this;
-    const x = a.x - b.x;
-    const y = a.y - b.y;
-    const d = x * x + y * y;
-
-    const u1 = (a.vx * x + a.vy * y) / d; // From this to b
-    const u2 = (x * a.vy - y * a.vx) / d; // Adjust self along tangent
-    const u3 = (b.vx * x + b.vy * y) / d; // From b to this
-    const u4 = (x * b.vy - y * b.vx) / d; // Adjust b  along tangent
-
-    // set new velocities
-    b.vx = x * u1 - y * u4;
-    b.vy = y * u1 + x * u4;
-    a.vx = x * u3 - y * u2;
-    a.vy = y * u3 + x * u2;
-  }
-  keyFunction(currentPosition: Point) {
-    currentPosition.x += this.vx;
-    currentPosition.y += this.vy;
-    if (currentPosition.y >= this.canvasHeight - this.ballRadius) {
-      this.vy *= -1;
+  keyFunction(ball1: Circle, ball2: Circle) {
+    if (ball1 === ball2) return;
+    let dx = ball2.x - ball1.x;
+    let dy = ball2.y - ball1.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    let minDist = ball2.radius + ball1.radius;
+    if (distance < minDist) {
+      let angle = Math.atan2(dy, dx);
+      let targetX = ball1.x + Math.cos(angle) * minDist;
+      let targetY = ball1.y + Math.sin(angle) * minDist;
+      let ax = (targetX - ball2.x) * this.spring;
+      let ay = (targetY - ball2.y) * this.spring;
+      ball1.vx -= ax;
+      ball1.vy -= ay;
+      ball2.vx += ax;
+      ball2.vy += ay;
     }
-    if (currentPosition.x >= this.canvasWidth) {
-      this.vy = 1;
-      currentPosition.x = 1;
-      currentPosition.y = 1;
-    }
-    return currentPosition;
   }
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
