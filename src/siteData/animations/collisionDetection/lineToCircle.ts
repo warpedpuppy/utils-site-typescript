@@ -25,7 +25,6 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     if (this.keyFunction(this.line, this.circle)) {
-      console.log("hit!!!");
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "transparent";
