@@ -1,7 +1,7 @@
 import { GenericObject, Point, Line, Circle } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 
-class LineToCircleCollision extends AnimationBaseClass {
+class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";
   static l = "line-to-line-collision";
   title = "line to circle collision";
@@ -11,7 +11,7 @@ class LineToCircleCollision extends AnimationBaseClass {
   };
   line2: Line = {
     startPoint: { x: 0, y: 0 },
-    endPoint: { x: 0, y: 0 },
+    endPoint: { x: this.canvasWidth, y: this.canvasHeight },
   };
   init() {
     this.draw();
@@ -25,6 +25,12 @@ class LineToCircleCollision extends AnimationBaseClass {
     // } else {
     //   this.ctx.fillStyle = "transparent";
     // }
+
+    if (this.keyFunction(this.line1, this.line2)) {
+      this.ctx.strokeStyle = "red";
+    } else {
+      this.ctx.strokeStyle = "black";
+    }
 
     // this.ctx.beginPath();
     // this.ctx.arc(
@@ -41,6 +47,12 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.ctx.beginPath();
     this.ctx.moveTo(this.line1.startPoint.x, this.line1.startPoint.y);
     this.ctx.lineTo(this.line1.endPoint.x, this.line1.endPoint.y);
+    this.ctx.stroke();
+
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.line2.startPoint.x, this.line2.startPoint.y);
+    this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);
     this.ctx.stroke();
 
     requestAnimationFrame(this.draw);
@@ -127,4 +139,4 @@ class LineToCircleCollision extends AnimationBaseClass {
     }
   }
 }
-export default LineToCircleCollision;
+export default LineToLineCollision;

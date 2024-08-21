@@ -9,12 +9,14 @@
   display: flex;
   justify-content: center;
   padding-top: 50px;
+
   .modal-inner {
     width: fit-content;
     height: fit-content;
     background-color: white;
     border: 1px solid var(--site-gray);
     border-radius: 5px;
+    max-width: calc(100vw - 100px);
     &-header {
       border-bottom: 1px solid var(--site-gray);
       padding: 2rem 2rem 0.5rem 2rem;
