@@ -7,7 +7,6 @@ function NavBar() {
         <h1>utilspalooza</h1>
       </Link>
       <div>
-        <Link to="/">home</Link>
         <Link to="/examples">examples</Link>
         <Link to="/create-json">create json</Link>
         <Link to="/about">about</Link>

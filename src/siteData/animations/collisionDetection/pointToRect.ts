@@ -6,10 +6,10 @@ class PointToRectangle extends AnimationBaseClass {
   static l = "point-to-rectangle-collision";
   title = "point to rectangle collision";
   rect1: Rectangle = {
-    x: this.canvasWidth * 0.33,
-    y: this.halfHeight,
-    width: 100,
-    height: 100,
+    x: this.canvasWidth * 0.5 - 150,
+    y: this.halfHeight - 150,
+    width: 300,
+    height: 300,
     vx: 0,
     vy: 0,
     id: "rect1",
@@ -67,11 +67,6 @@ class PointToRectangle extends AnimationBaseClass {
     );
 
     this.ctx.fill();
-
-    this.ctx.fillStyle = "black";
-    this.ctx.fillText("rect 2", this.rect1.x - 35, this.rect1.y);
-    this.ctx.fillText("click and drag", this.rect1.x - 65, this.rect1.y - 15);
-    this.ctx.fillText("over recty 2", this.rect1.x - 55, this.rect1.y + 15);
 
     requestAnimationFrame(this.draw);
   };

@@ -129,6 +129,7 @@ class LineToCircleCollision extends AnimationBaseClass {
     let x = e.pageX - this.left;
     let y = e.pageY - this.top;
     this.line.startPoint = { x, y };
+    this.line.endPoint = { x, y };
     this.allowDraw = true;
   }
   pointerUpHandler(e: PointerEvent) {
