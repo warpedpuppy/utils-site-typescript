@@ -20,26 +20,12 @@ class LineToLineCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    // if (this.keyFunction(this.line, this.circle)) {
-    //   this.ctx.fillStyle = "red";
-    // } else {
-    //   this.ctx.fillStyle = "transparent";
-    // }
-
-    if (this.keyFunction(this.line1, this.line2)) {
+    if (this.keyFunction(this.line1, this.line2).hit) {
       this.ctx.strokeStyle = "red";
     } else {
       this.ctx.strokeStyle = "black";
     }
 
-    // this.ctx.beginPath();
-    // this.ctx.arc(
-    //   this.circle.x,
-    //   this.circle.y,
-    //   this.circle.radius,
-    //   0,
-    //   2 * Math.PI
-    // );
     this.ctx.fill();
     this.ctx.stroke();
 
@@ -58,7 +44,6 @@ class LineToLineCollision extends AnimationBaseClass {
     requestAnimationFrame(this.draw);
   };
   keyFunction(line1: Line, line2: Line) {
-    // calculate the distance to intersection point
     let uA =
       ((line2.endPoint.x - line2.startPoint.x) *
         (line1.startPoint.y - line2.startPoint.y) -
@@ -81,13 +66,17 @@ class LineToLineCollision extends AnimationBaseClass {
     // if uA and uB are between 0-1, lines are colliding
     if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
       // optionally, draw a circle where the lines meet
-      // let intersectionX =
-      //   line1.startPoint.x + uA * (line1.endPoint.x - line1.startPoint.x);
-      // let intersectionY =
-      //   line1.startPoint.y + uA * (line1.endPoint.y - line1.startPoint.y);
-      return true;
+      let intersectionX =
+        line1.startPoint.x + uA * (line1.endPoint.x - line1.startPoint.x);
+      let intersectionY =
+        line1.startPoint.y + uA * (line1.endPoint.y - line1.startPoint.y);
+      return {
+        hit: true,
+        intersectionX,
+        intersectionY,
+      };
     }
-    return false;
+    return { hit: false };
   }
   pointCircle(point: Point, circle: Circle) {
     let distX = point.x - circle.x;
