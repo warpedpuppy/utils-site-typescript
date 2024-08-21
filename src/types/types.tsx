@@ -17,6 +17,10 @@ export interface Rectangle extends ShapeInMotion {
   width: number;
   height: number;
 }
+export interface Line {
+  startPoint: Point;
+  endPoint: Point;
+}
 export interface ShapeInMotion {
   vx: number;
   vy: number;

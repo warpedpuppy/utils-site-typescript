@@ -17,6 +17,7 @@ import CircleToCircleCollision from "./animations/collisionDetection/CircleToCir
 import RectToRect from "./animations/collisionDetection/rectToRect";
 import PointToRectangle from "./animations/collisionDetection/pointToRect";
 import CirceToRectCollision from "./animations/collisionDetection/circleToRect";
+import LineToCircleCollision from "./animations/collisionDetection/lineToCircle";
 const SiteData = {
   collissionDetection: {
     PointToCircleCollision,
@@ -24,6 +25,7 @@ const SiteData = {
     RectToRect,
     PointToRectangle,
     CirceToRectCollision,
+    LineToCircleCollision,
   },
   trig: {
     DistributePointsAroundACircle,
