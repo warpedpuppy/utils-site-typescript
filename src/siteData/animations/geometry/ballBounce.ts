@@ -16,7 +16,7 @@ class BallBounce extends AnimationBaseClass {
   }
   draw = () => {
     if (!this.ctx) return;
-    this.vy += this.gravity;
+
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.beginPath();
     let { x, y } = this.keyFunction({ x: this.x, y: this.y });
@@ -29,6 +29,7 @@ class BallBounce extends AnimationBaseClass {
   keyFunction(currentPosition: Point) {
     currentPosition.x += this.vx;
     currentPosition.y += this.vy;
+    this.vy += this.gravity;
     if (currentPosition.y >= this.canvasHeight - this.ballRadius) {
       this.vy *= -1;
     }

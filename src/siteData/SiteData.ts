@@ -30,6 +30,8 @@ const SiteData = {
     LineToLineCollision,
   },
   trig: {
+    BallBounce,
+    BallsBouncingAgainstEachOther,
     DistributePointsAroundACircle,
     DistanceBetweenTwoPoints,
     GetEquilateralTriangleVertices,
@@ -40,6 +42,7 @@ const SiteData = {
     TriangleDataFromLine,
     SineCurve,
     DeMystifySineCosine,
+    GetHalfwayPointOfLine,
   },
 };
 
