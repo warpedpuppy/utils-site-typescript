@@ -1,105 +1,118 @@
-import { GenericObject, Point } from "../../../types/types";
-const distributePointsAroundACircle = {
-  t: "blank",
-  l: "blank",
-  f: function (
-    circleCenter: Point,
-    i: number,
-    radius: number,
-    numElements: number
-  ) {
-    let totalCircleRadians = Math.PI * 2;
-    let percent = i / numElements;
-    const x = circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
-    const y = circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
-    return { x, y };
-  },
-  bf: function (cont: HTMLDivElement, keyFunction: Function) {
-    const obj: GenericObject = {
-      // text: "",
-      points: [],
-      text: [],
-      ctx: undefined,
-      canvas: document.createElement("canvas"),
-      init() {
-        // this.canvas = document.createElement("canvas");
-        this.canvas.width = this.canvasWidth = cont.clientWidth;
-        this.canvas.height = this.canvasHeight = cont.clientHeight;
-        this.halfHeight = this.canvasHeight / 2;
-        this.halfWidth = this.canvasWidth / 2;
-        this.ctx = this.canvas.getContext("2d");
+import { GenericObject, Point, Circle, Rectangle } from "../../../types/types";
+import AnimationBaseClass from "../AnimationBaseClass";
 
-        cont.appendChild(this.canvas);
-        this.draw = this.draw.bind(this);
-        this.draw();
-        this.i = 0;
-        window.addEventListener("resize", this.resizeHandler.bind(this));
-      },
+class CirceToRectCollision extends AnimationBaseClass {
+  static t = "circle to rectangle collision";
+  static l = "circle-to-rectangle-collision";
+  title = "circle to rectangle collision";
+  rect1: Rectangle = {
+    x: this.canvasWidth * 0.66,
+    y: this.halfHeight,
+    width: 100,
+    height: 100,
+    vx: 0,
+    vy: 0,
+    id: "rect1",
+  };
+  circle1: Circle = {
+    x: this.canvasWidth * 0.33,
+    y: this.halfHeight + 50,
+    radius: 50,
+    vx: 0,
+    vy: 0,
+    id: "circle1",
+  };
+  startDrag: boolean = false;
+  init() {
+    if (!this.ctx) return;
+    this.ctx.font = "bold 20px Arial";
+    this.draw();
+  }
+  draw = () => {
+    if (!this.ctx) return;
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.ctx.fillStyle = "transparent";
+    this.ctx.strokeStyle = "black";
+    if (this.keyFunction(this.circle1, this.rect1)) {
+      this.ctx.fillStyle = "red";
+    } else {
+      this.ctx.fillStyle = "black";
+    }
+    this.ctx.lineWidth = 3;
 
-      resizeHandler() {
-        this.canvas.width = cont.clientWidth;
-        this.canvas.height = cont.clientHeight;
-        this.draw();
-      },
+    this.ctx.beginPath();
+    this.ctx.rect(
+      this.rect1.x,
+      this.rect1.y,
+      this.rect1.width,
+      this.rect1.height
+    );
+    this.ctx.fill();
+    this.ctx.stroke();
 
-      draw() {
-        this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
-        this.ctx.strokeStyle = "green";
-        this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.arc(
+      this.circle1.x,
+      this.circle1.y,
+      this.circle1.radius,
+      0,
+      2 * Math.PI
+    );
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.halfHeight);
-        this.ctx.lineTo(this.canvasWidth, this.halfHeight);
-        this.ctx.stroke();
+    this.ctx.fill();
+    this.ctx.stroke();
+    this.ctx.beginPath();
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.halfWidth, 0);
-        this.ctx.lineTo(this.halfWidth, this.canvasHeight);
-        this.ctx.stroke();
+    requestAnimationFrame(this.draw);
+  };
+  keyFunction(circle: Circle, rectangle: Rectangle) {
+    // temporary variables to set edges for testing
+    let testX = circle.x;
+    let testY = circle.y;
 
-        this.ctx.beginPath();
-        this.ctx.arc(this.halfWidth, this.halfHeight, 200, 0, 2 * Math.PI);
-        this.ctx.stroke();
+    // which edge is closest?
+    if (circle.x < rectangle.x) testX = rectangle.x; // test left edge
+    else if (circle.x > rectangle.x + rectangle.width)
+      testX = rectangle.x + rectangle.width; // right edge
+    if (circle.y < rectangle.y) testY = rectangle.y; // top edge
+    else if (circle.y > rectangle.y + rectangle.height)
+      testY = rectangle.y + rectangle.height; // bottom edge
 
-        let point = keyFunction(
-          { x: this.halfWidth, y: this.halfHeight },
-          this.i,
-          200,
-          360
-        );
-        this.i++;
-        if (this.i > 360) this.i = 0;
-        this.ctx.beginPath();
-        this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
-        this.ctx.stroke();
+    // get distance from closest edges
+    let distX = circle.x - testX;
+    let distY = circle.y - testY;
+    let distance = Math.sqrt(distX * distX + distY * distY);
 
-        this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
-        this.ctx.lineWidth = 1;
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.halfWidth, this.halfHeight);
-        this.ctx.lineTo(point.x, point.y);
-        this.ctx.stroke();
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(point.x, point.y);
-        this.ctx.lineTo(point.x, this.halfHeight);
-        this.ctx.stroke();
-
-        requestAnimationFrame(this.draw);
-      },
-      stop() {
-        clearInterval(this.interval);
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.canvas.removeEventListener(
-          "pointerdown",
-          this.pointerDownHandlerThree
-        );
-        window.removeEventListener("resize", this.resizeHandler.bind(this));
-        cont.removeChild(this.canvas);
-        this.canvas = null;
-      },
-    };
-    return obj;
-  },
-};
-export default distributePointsAroundACircle;
+    // if the distance is less than the radius, collision!
+    if (distance <= circle.radius) {
+      return true;
+    }
+    return false;
+  }
+  pointCircle(point: Point, circle: Circle) {
+    let distX = point.x - circle.x;
+    let distY = point.y - circle.y;
+    let distance = Math.sqrt(distX * distX + distY * distY);
+    return distance <= circle.radius;
+  }
+  pointerDownHandler(e: PointerEvent) {
+    if (
+      this.pointCircle(
+        { x: e.pageX - this.left, y: e.pageY - this.top },
+        this.circle1
+      )
+    ) {
+      this.startDrag = true;
+    }
+  }
+  pointerUpHandler(e: PointerEvent) {
+    this.startDrag = false;
+  }
+  pointerMoveHandler(e: PointerEvent) {
+    if (this.startDrag) {
+      this.circle1.x = e.pageX - this.left;
+      this.circle1.y = e.pageY - this.top;
+    }
+  }
+}
+export default CirceToRectCollision;

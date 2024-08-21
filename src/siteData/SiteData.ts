@@ -11,12 +11,19 @@ import DistributePointsAroundACircle from "./animations/trig/DistributePointsAro
 import DeMystifySineCosine from "./animations/trig/DeMystifySineCosine";
 import BallBounce from "./animations/geometry/BallBounce";
 import BallsBouncingAgainstEachOther from "./animations/geometry/BallsBouncingAgainstEachOther";
-
+import PointToCircleCollision from "./animations/collisionDetection/PointToCircle";
+import CircleToCircleCollision from "./animations/collisionDetection/CircleToCircle";
+// import CircleToCirclePlus from "./animations/collisionDetection/CircleToCirclePlus";
+import RectToRect from "./animations/collisionDetection/rectToRect";
+import PointToRectangle from "./animations/collisionDetection/pointToRect";
+import CirceToRectCollision from "./animations/collisionDetection/circleToRect";
 const SiteData = {
-  geometry: {
-    BallBounce,
-    GetHalfwayPointOfLine,
-    BallsBouncingAgainstEachOther,
+  collissionDetection: {
+    PointToCircleCollision,
+    CircleToCircleCollision,
+    RectToRect,
+    PointToRectangle,
+    CirceToRectCollision,
   },
   trig: {
     DistributePointsAroundACircle,
@@ -30,7 +37,6 @@ const SiteData = {
     SineCurve,
     DeMystifySineCosine,
   },
-  collissionDetection: {},
 };
 
 export default SiteData;

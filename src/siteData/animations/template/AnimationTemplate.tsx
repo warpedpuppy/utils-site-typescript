@@ -8,7 +8,11 @@ class AnimationTemplate extends AnimationBaseClass {
   init() {
     this.draw();
   }
-  draw() {}
+  draw = () => {
+    if (!this.ctx) return;
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    // requestAnimationFrame(this.draw);
+  };
   keyFunction() {}
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}

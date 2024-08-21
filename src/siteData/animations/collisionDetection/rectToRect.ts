@@ -1,105 +1,107 @@
-import { GenericObject, Point } from "../../../types/types";
-const distributePointsAroundACircle = {
-  t: "blank",
-  l: "blank",
-  f: function (
-    circleCenter: Point,
-    i: number,
-    radius: number,
-    numElements: number
-  ) {
-    let totalCircleRadians = Math.PI * 2;
-    let percent = i / numElements;
-    const x = circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
-    const y = circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
-    return { x, y };
-  },
-  bf: function (cont: HTMLDivElement, keyFunction: Function) {
-    const obj: GenericObject = {
-      // text: "",
-      points: [],
-      text: [],
-      ctx: undefined,
-      canvas: document.createElement("canvas"),
-      init() {
-        // this.canvas = document.createElement("canvas");
-        this.canvas.width = this.canvasWidth = cont.clientWidth;
-        this.canvas.height = this.canvasHeight = cont.clientHeight;
-        this.halfHeight = this.canvasHeight / 2;
-        this.halfWidth = this.canvasWidth / 2;
-        this.ctx = this.canvas.getContext("2d");
+import { GenericObject, Point, Rectangle } from "../../../types/types";
+import AnimationBaseClass from "../AnimationBaseClass";
 
-        cont.appendChild(this.canvas);
-        this.draw = this.draw.bind(this);
-        this.draw();
-        this.i = 0;
-        window.addEventListener("resize", this.resizeHandler.bind(this));
-      },
+class RectToRect extends AnimationBaseClass {
+  static t = "rectangle to rectangle collision";
+  static l = "rectangle-to-rectangle-collision";
+  title = "rectangle to rectangle collision";
+  rect1: Rectangle = {
+    x: this.canvasWidth * 0.33,
+    y: this.halfHeight,
+    width: 100,
+    height: 100,
+    vx: 0,
+    vy: 0,
+    id: "rect1",
+  };
+  rect2: Rectangle = {
+    x: this.canvasWidth * 0.66,
+    y: this.halfHeight,
+    width: 100,
+    height: 100,
+    vx: 0,
+    vy: 0,
+    id: "rect2",
+  };
+  startDrag: boolean = false;
+  init() {
+    if (!this.ctx) return;
+    this.ctx.font = "bold 20px Arial";
+    this.draw();
+  }
+  draw = () => {
+    if (!this.ctx) return;
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.ctx.fillStyle = "transparent";
+    this.ctx.strokeStyle = "black";
+    if (this.keyFunction(this.rect1, this.rect2)) {
+      this.ctx.fillStyle = "red";
+    }
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.rect(
+      this.rect2.x,
+      this.rect2.y,
+      this.rect2.width,
+      this.rect2.height
+    );
 
-      resizeHandler() {
-        this.canvas.width = cont.clientWidth;
-        this.canvas.height = cont.clientHeight;
-        this.draw();
-      },
+    this.ctx.fill();
+    this.ctx.stroke();
+    this.ctx.beginPath();
 
-      draw() {
-        this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
-        this.ctx.strokeStyle = "green";
-        this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.rect(
+      this.rect1.x,
+      this.rect1.y,
+      this.rect1.width,
+      this.rect1.height
+    );
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.halfHeight);
-        this.ctx.lineTo(this.canvasWidth, this.halfHeight);
-        this.ctx.stroke();
+    this.ctx.fill();
+    this.ctx.stroke();
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.halfWidth, 0);
-        this.ctx.lineTo(this.halfWidth, this.canvasHeight);
-        this.ctx.stroke();
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText("rect 2", this.rect2.x - 35, this.rect2.y);
+    this.ctx.fillText("click and drag", this.rect1.x - 65, this.rect1.y - 15);
+    this.ctx.fillText("over recty 2", this.rect1.x - 55, this.rect1.y + 15);
 
-        this.ctx.beginPath();
-        this.ctx.arc(this.halfWidth, this.halfHeight, 200, 0, 2 * Math.PI);
-        this.ctx.stroke();
-
-        let point = keyFunction(
-          { x: this.halfWidth, y: this.halfHeight },
-          this.i,
-          200,
-          360
-        );
-        this.i++;
-        if (this.i > 360) this.i = 0;
-        this.ctx.beginPath();
-        this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
-        this.ctx.stroke();
-
-        this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
-        this.ctx.lineWidth = 1;
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.halfWidth, this.halfHeight);
-        this.ctx.lineTo(point.x, point.y);
-        this.ctx.stroke();
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(point.x, point.y);
-        this.ctx.lineTo(point.x, this.halfHeight);
-        this.ctx.stroke();
-
-        requestAnimationFrame(this.draw);
-      },
-      stop() {
-        clearInterval(this.interval);
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.canvas.removeEventListener(
-          "pointerdown",
-          this.pointerDownHandlerThree
-        );
-        window.removeEventListener("resize", this.resizeHandler.bind(this));
-        cont.removeChild(this.canvas);
-        this.canvas = null;
-      },
-    };
-    return obj;
-  },
-};
-export default distributePointsAroundACircle;
+    requestAnimationFrame(this.draw);
+  };
+  keyFunction(rectangle1: Rectangle, rectangle2: Rectangle) {
+    return (
+      rectangle1.x + rectangle1.width >= rectangle2.x &&
+      rectangle1.x <= rectangle2.x + rectangle2.width &&
+      rectangle1.y + rectangle1.height >= rectangle2.y &&
+      rectangle1.y <= rectangle2.y + rectangle2.height
+    );
+  }
+  pointRectangle(point: Point, rectangle: Rectangle) {
+    return (
+      point.x >= rectangle.x &&
+      point.x <= rectangle.x + rectangle.width &&
+      point.y >= rectangle.y &&
+      point.y <= rectangle.y + rectangle.height
+    );
+  }
+  pointerDownHandler(e: PointerEvent) {
+    if (
+      this.pointRectangle(
+        { x: e.pageX - this.left, y: e.pageY - this.top },
+        this.rect1
+      )
+    ) {
+      this.startDrag = true;
+    }
+  }
+  pointerUpHandler(e: PointerEvent) {
+    this.startDrag = false;
+  }
+  pointerMoveHandler(e: PointerEvent) {
+    if (this.startDrag) {
+      this.rect1.x = e.pageX - this.left;
+      this.rect1.y = e.pageY - this.top;
+    }
+  }
+}
+export default RectToRect;

@@ -11,7 +11,12 @@ export interface Circle extends ShapeInMotion {
   y: number;
   radius: number;
 }
-
+export interface Rectangle extends ShapeInMotion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 export interface ShapeInMotion {
   vx: number;
   vy: number;
