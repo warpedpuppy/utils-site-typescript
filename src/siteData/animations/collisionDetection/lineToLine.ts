@@ -4,7 +4,7 @@ import AnimationBaseClass from "../AnimationBaseClass";
 class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";
   static l = "line-to-line-collision";
-  title = "line to circle collision";
+  title = "line to line collision";
   line1: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },

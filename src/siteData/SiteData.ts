@@ -19,6 +19,8 @@ import PointToRectangle from "./animations/collisionDetection/pointToRect";
 import CirceToRectCollision from "./animations/collisionDetection/circleToRect";
 import LineToCircleCollision from "./animations/collisionDetection/lineToCircle";
 import LineToLineCollision from "./animations/collisionDetection/lineToLine";
+import LineToPointCollision from "./animations/collisionDetection/lineToPoint";
+import LineToRectangleCollision from "./animations/collisionDetection/lineToRect";
 const SiteData = {
   collissionDetection: {
     PointToCircleCollision,
@@ -28,6 +30,8 @@ const SiteData = {
     CirceToRectCollision,
     LineToCircleCollision,
     LineToLineCollision,
+    LineToPointCollision,
+    LineToRectangleCollision,
   },
   trig: {
     BallBounce,
