@@ -51,23 +51,27 @@ class LineToRectangleCollision extends AnimationBaseClass {
     // check if the line has hit any of the rectangle's sides
     // uses the Line/Line function below
     let { x, y, width, height } = rectangle;
-
-    let left = this.lineToLine(line, {
+    let leftSide: Line = {
       startPoint: { x, y },
       endPoint: { x, y: y + height },
-    }).hit;
-    let right = this.lineToLine(line, {
+    };
+    let rightSide: Line = {
       startPoint: { x: x + width, y },
       endPoint: { x: x + width, y: y + height },
-    }).hit;
-    let top = this.lineToLine(line, {
+    };
+    let topSide: Line = {
       startPoint: { x, y },
       endPoint: { x: x + width, y },
-    }).hit;
-    let bottom = this.lineToLine(line, {
+    };
+    let bottomSide: Line = {
       startPoint: { x, y: y + height },
       endPoint: { x: x + width, y: y + height },
-    }).hit;
+    };
+
+    let left = this.lineToLine(line, leftSide).hit;
+    let right = this.lineToLine(line, rightSide).hit;
+    let top = this.lineToLine(line, topSide).hit;
+    let bottom = this.lineToLine(line, bottomSide).hit;
 
     // if ANY of the above are true, the line
     // has hit the rectangle
