@@ -1,4 +1,4 @@
-import { GenericObject, Point } from "../../../types/types";
+import { GenericObject, Point, Polygon, Line } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class AnimationTemplate extends AnimationBaseClass {
@@ -14,35 +14,66 @@ class AnimationTemplate extends AnimationBaseClass {
     // requestAnimationFrame(this.draw);
   };
   keyFunction() {}
-  polyPoly(PVector[] p1, PVector[] p2) {
+  polyPoly(polygon1: Polygon, polygon2: Polygon) {
+    // go through each of the vertices, plus the next
+    // vertex in the list
+    let next = 0;
+    for (let current = 0; current < polygon1.length; current++) {
+      // get next vertex in list
+      // if we've hit the end, wrap around to 0
+      next = current + 1;
+      if (next === polygon1.length) next = 0;
 
-  // go through each of the vertices, plus the next
-  // vertex in the list
-  let  next = 0;
-  for (let current=0; current<p1.length; current++) {
+      // get the PVectors at our current position
+      // this makes our if statement a little cleaner
+      let vc = polygon1[current]; // c for "current"
+      let vn = polygon1[next]; // n for "next"
 
-    // get next vertex in list
-    // if we've hit the end, wrap around to 0
-    next = current+1;
-    if (next == p1.length) next = 0;
+      // now we can use these two points (a line) to compare
+      // to the other polygon's vertices using polyLine()
+      let line: Line = { startPoint: vc, endPoint: vn };
+      let collision = this.polyLine(polygon2, line);
+      if (collision) return true;
 
-    // get the PVectors at our current position
-    // this makes our if statement a little cleaner
-    PVector vc = p1[current];    // c for "current"
-    PVector vn = p1[next];       // n for "next"
+      // optional: check if the 2nd polygon is INSIDE the first
+      collision = this.polyPoint(polygon1, polygon2[0].x, polygon2[0].y);
+      if (collision) return true;
+    }
 
-    // now we can use these two points (a line) to compare
-    // to the other polygon's vertices using polyLine()
-    boolean collision = polyLine(p2, vc.x,vc.y,vn.x,vn.y);
-    if (collision) return true;
-
-    // optional: check if the 2nd polygon is INSIDE the first
-    collision = polyPoint(p1, p2[0].x, p2[0].y);
-    if (collision) return true;
+    return false;
   }
+  polyLine(vertices: Polygon, line: Line) {
+    // go through each of the vertices, plus the next
+    // vertex in the list
+    let next = 0;
+    for (let current = 0; current < vertices.length; current++) {
+      // get next vertex in list
+      // if we've hit the end, wrap around to 0
+      next = current + 1;
+      if (next === vertices.length) next = 0;
 
-  return false;
-}
+      // get the PVectors at our current position
+      // extract X/Y coordinates from each
+      let x3 = vertices[current].x;
+      let y3 = vertices[current].y;
+      let x4 = vertices[next].x;
+      let y4 = vertices[next].y;
+
+      // do a Line/Line comparison
+      // if true, return 'true' immediately and
+      // stop testing (faster)
+      const { x: x1, y: y1 } = line.startPoint;
+      const { x: x2, y: y2 } = line.endPoint;
+
+      let hit = this.lineLine(x1, y1, x2, y2, x3, y3, x4, y4);
+      if (hit) {
+        return true;
+      }
+    }
+
+    // never got a hit
+    return false;
+  }
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
