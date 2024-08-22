@@ -21,6 +21,11 @@ export interface Line {
   startPoint: Point;
   endPoint: Point;
 }
+export interface Triangle {
+  point1: Point;
+  point2: Point;
+  point3: Point;
+}
 export interface ShapeInMotion {
   vx: number;
   vy: number;

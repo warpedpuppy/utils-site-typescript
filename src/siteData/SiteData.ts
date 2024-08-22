@@ -14,13 +14,13 @@ import BallsBouncingAgainstEachOther from "./animations/geometry/BallsBouncingAg
 import PointToCircleCollision from "./animations/collisionDetection/PointToCircle";
 import CircleToCircleCollision from "./animations/collisionDetection/CircleToCircle";
 // import CircleToCirclePlus from "./animations/collisionDetection/CircleToCirclePlus";
-import RectToRect from "./animations/collisionDetection/rectToRect";
-import PointToRectangle from "./animations/collisionDetection/pointToRect";
-import CirceToRectCollision from "./animations/collisionDetection/circleToRect";
-import LineToCircleCollision from "./animations/collisionDetection/lineToCircle";
-import LineToLineCollision from "./animations/collisionDetection/lineToLine";
-import LineToPointCollision from "./animations/collisionDetection/lineToPoint";
-import LineToRectangleCollision from "./animations/collisionDetection/lineToRect";
+import RectToRect from "./animations/collisionDetection/RectToRect";
+import PointToRectangle from "./animations/collisionDetection/PointToRect";
+import CirceToRectCollision from "./animations/collisionDetection/CircleToRect";
+import LineToCircleCollision from "./animations/collisionDetection/LineToCircle";
+import LineToLineCollision from "./animations/collisionDetection/LineToLine";
+import LineToPointCollision from "./animations/collisionDetection/LineToPoint";
+import LineToRectangleCollision from "./animations/collisionDetection/LineToRect";
 const SiteData = {
   collissionDetection: {
     PointToCircleCollision,
