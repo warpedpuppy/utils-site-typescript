@@ -17,7 +17,10 @@ export interface Rectangle extends ShapeInMotion {
   width: number;
   height: number;
 }
-export interface Polygon extends Array<Vector> {}
+export interface Polygon {
+  vertices: Vector[];
+  draw: Function;
+}
 export interface Vector {
   x: number;
   y: number;

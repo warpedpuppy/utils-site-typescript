@@ -5,11 +5,12 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
   static l = "polygon-to-polygon-ollision";
   title = "polygon to polygon collision";
-  star1: Polygon = [];
-  star2: Polygon = [];
+  star1: Polygon = { vertices: [], draw: () => {} };
+  star2: Polygon = { vertices: [], draw: () => {} };
+  angle1: number = 0;
   init() {
-    this.star1 = this.createStar({ x: 100, y: 100 }, 5, 50, 25, 0);
-    this.star2 = this.createStar({ x: 400, y: 100 }, 5, 100, 25, 0);
+    this.star1 = this.createStar({ x: 100, y: 100 }, 5, 50, 25, 0, this.ctx);
+    this.star2 = this.createStar({ x: 400, y: 100 }, 5, 100, 25, 0, this.ctx);
     this.draw();
   }
   draw = () => {
@@ -18,29 +19,26 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     this.ctx.lineWidth = 3;
     this.ctx.strokeStyle = "black";
     this.ctx.beginPath();
-    this.ctx.moveTo(this.star1[0].x + this.left, this.star1[0].y + this.top);
-    for (let i = 1; i < this.star1.length; i++) {
-      let p = this.star1[i];
-      this.ctx.lineTo(p.x + this.left, p.y + this.top);
-    }
+    this.star1.draw(this.top, this.left);
     this.ctx.closePath();
     this.ctx.stroke();
+
     requestAnimationFrame(this.draw);
   };
   keyFunction(polygon1: Polygon, polygon2: Polygon) {
     // go through each of the vertices, plus the next
     // vertex in the list
     let next = 0;
-    for (let current = 0; current < polygon1.length; current++) {
+    for (let current = 0; current < polygon1.vertices.length; current++) {
       // get next vertex in list
       // if we've hit the end, wrap around to 0
       next = current + 1;
-      if (next === polygon1.length) next = 0;
+      if (next === polygon1.vertices.length) next = 0;
 
       // get the PVectors at our current position
       // this makes our if statement a little cleaner
-      let vc = polygon1[current]; // c for "current"
-      let vn = polygon1[next]; // n for "next"
+      let vc = polygon1.vertices[current]; // c for "current"
+      let vn = polygon1.vertices[next]; // n for "next"
 
       // now we can use these two points (a line) to compare
       // to the other polygon's vertices using polyLine()
@@ -49,7 +47,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       if (collision) return true;
 
       // optional: check if the 2nd polygon is INSIDE the first
-      collision = this.polyPoint(polygon1, polygon2[0]);
+      collision = this.polyPoint(polygon1, polygon2.vertices[0]);
       if (collision) return true;
     }
 
@@ -60,32 +58,37 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     spikes: number,
     outerRadius: number,
     innerRadius: number,
-    angle: number
+    angle: number = 0,
+    ctx: any
   ): Polygon {
-    angle *= Math.PI / 180; // convert to radians
     var rot = (Math.PI / 2) * 3; // start at 270 degrees
-
     var x = centerPoint.x;
     var y = centerPoint.y;
     var step = Math.PI / spikes; // steps are divided into half the radians
-    let vertices: Vector[] = [];
-    let startX = centerPoint.x + Math.cos(angle + rot);
-    let startY = centerPoint.y + Math.sin(angle + rot) - outerRadius;
+    let star: Polygon = { vertices: [], draw: () => {} };
+    star.draw = function (top: number, left: number) {
+      for (let i = 0; i < spikes; i++) {
+        x = centerPoint.x + Math.cos(angle + rot) * outerRadius;
+        y = centerPoint.y + Math.sin(angle + rot) * outerRadius;
 
-    // vertices.push({ x: centerPoint.x, y: centerPoint.y - outerRadius });
-    for (let i = 0; i < spikes; i++) {
-      x = centerPoint.x + Math.cos(angle + rot) * outerRadius;
-      y = centerPoint.y + Math.sin(angle + rot) * outerRadius;
-      vertices.push({ x, y });
-      rot += step;
-      x = centerPoint.x + Math.cos(angle + rot) * innerRadius;
-      y = centerPoint.y + Math.sin(angle + rot) * innerRadius;
-      vertices.push({ x, y });
-      rot += step;
-    }
-    // vertices.push({ x: centerPoint.x, y: centerPoint.y - outerRadius });
+        if (i === 0) {
+          ctx.moveTo(x + left, y + top);
+        } else {
+          ctx.lineTo(x + left, y + top);
+        }
+        star.vertices.push({ x, y });
+        rot += step;
+        x = centerPoint.x + Math.cos(angle + rot) * innerRadius;
+        y = centerPoint.y + Math.sin(angle + rot) * innerRadius;
+        star.vertices.push({ x, y });
+        ctx.lineTo(x + left, y + top);
+        rot += step;
+      }
+      angle += 0.01;
+      if (angle > 2 * Math.PI) angle = 0;
+    };
 
-    return vertices;
+    return star;
   }
   strokeStar(center: Point, radius: number, spikes: number, inset: number) {
     if (!this.ctx) return;
@@ -103,10 +106,11 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     this.ctx.fill();
     this.ctx.restore();
   }
-  polyLine(vertices: Polygon, line: Line) {
+  polyLine(polygon: Polygon, line: Line) {
     // go through each of the vertices, plus the next
     // vertex in the list
     let next = 0;
+    const { vertices } = polygon;
     for (let current = 0; current < vertices.length; current++) {
       // get next vertex in list
       // if we've hit the end, wrap around to 0
@@ -169,12 +173,13 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     }
     return { hit: false };
   }
-  polyPoint(vertices: Polygon, point: Point) {
+  polyPoint(polygon: Polygon, point: Point) {
     let collision = false;
 
     // go through each of the vertices, plus the next
     // vertex in the list
     let next = 0;
+    const { vertices } = polygon;
     for (let current = 0; current < vertices.length; current++) {
       // get next vertex in list
       // if we've hit the end, wrap around to 0
