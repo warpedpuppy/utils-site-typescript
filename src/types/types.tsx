@@ -21,7 +21,6 @@ export interface Polygon extends Array<Vector> {}
 export interface Vector {
   x: number;
   y: number;
-  z: number;
 }
 export interface Line {
   startPoint: Point;

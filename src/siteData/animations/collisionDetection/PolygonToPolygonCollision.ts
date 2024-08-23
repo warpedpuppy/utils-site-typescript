@@ -1,20 +1,33 @@
-import { GenericObject, Point, Polygon, Line } from "../../../types/types";
+import { Point, Polygon, Line, Vector } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 
-class AnimationTemplate extends AnimationBaseClass {
-  static t = "enter title";
-  static l = "enter-title";
-  title = "enter title";
+class PolygonToPolygonCollision extends AnimationBaseClass {
+  static t = "polygon to polygon collision";
+  static l = "polygon-to-polygon-ollision";
+  title = "polygon to polygon collision";
+  star1: Polygon = [];
+  star2: Polygon = [];
   init() {
+    this.star1 = this.createStar({ x: 100, y: 100 }, 5, 50, 25, 0);
+    this.star2 = this.createStar({ x: 400, y: 100 }, 5, 100, 25, 0);
     this.draw();
   }
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    // requestAnimationFrame(this.draw);
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeStyle = "black";
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.star1[0].x + this.left, this.star1[0].y + this.top);
+    for (let i = 1; i < this.star1.length; i++) {
+      let p = this.star1[i];
+      this.ctx.lineTo(p.x + this.left, p.y + this.top);
+    }
+    this.ctx.closePath();
+    this.ctx.stroke();
+    requestAnimationFrame(this.draw);
   };
-  keyFunction() {}
-  polyPoly(polygon1: Polygon, polygon2: Polygon) {
+  keyFunction(polygon1: Polygon, polygon2: Polygon) {
     // go through each of the vertices, plus the next
     // vertex in the list
     let next = 0;
@@ -36,11 +49,59 @@ class AnimationTemplate extends AnimationBaseClass {
       if (collision) return true;
 
       // optional: check if the 2nd polygon is INSIDE the first
-      collision = this.polyPoint(polygon1, polygon2[0].x, polygon2[0].y);
+      collision = this.polyPoint(polygon1, polygon2[0]);
       if (collision) return true;
     }
 
     return false;
+  }
+  createStar(
+    centerPoint: Point,
+    spikes: number,
+    outerRadius: number,
+    innerRadius: number,
+    angle: number
+  ): Polygon {
+    angle *= Math.PI / 180; // convert to radians
+    var rot = (Math.PI / 2) * 3; // start at 270 degrees
+
+    var x = centerPoint.x;
+    var y = centerPoint.y;
+    var step = Math.PI / spikes; // steps are divided into half the radians
+    let vertices: Vector[] = [];
+    let startX = centerPoint.x + Math.cos(angle + rot);
+    let startY = centerPoint.y + Math.sin(angle + rot) - outerRadius;
+
+    // vertices.push({ x: centerPoint.x, y: centerPoint.y - outerRadius });
+    for (let i = 0; i < spikes; i++) {
+      x = centerPoint.x + Math.cos(angle + rot) * outerRadius;
+      y = centerPoint.y + Math.sin(angle + rot) * outerRadius;
+      vertices.push({ x, y });
+      rot += step;
+      x = centerPoint.x + Math.cos(angle + rot) * innerRadius;
+      y = centerPoint.y + Math.sin(angle + rot) * innerRadius;
+      vertices.push({ x, y });
+      rot += step;
+    }
+    // vertices.push({ x: centerPoint.x, y: centerPoint.y - outerRadius });
+
+    return vertices;
+  }
+  strokeStar(center: Point, radius: number, spikes: number, inset: number) {
+    if (!this.ctx) return;
+    this.ctx.save();
+    this.ctx.beginPath();
+    this.ctx.translate(center.x, center.y);
+    this.ctx.moveTo(0, 0 - radius);
+    for (var i = 0; i < spikes; i++) {
+      this.ctx.rotate(Math.PI / spikes);
+      this.ctx.lineTo(0, 0 - radius * inset);
+      this.ctx.rotate(Math.PI / spikes);
+      this.ctx.lineTo(0, 0 - radius);
+    }
+    this.ctx.closePath();
+    this.ctx.fill();
+    this.ctx.restore();
   }
   polyLine(vertices: Polygon, line: Line) {
     // go through each of the vertices, plus the next
@@ -59,13 +120,12 @@ class AnimationTemplate extends AnimationBaseClass {
       let x4 = vertices[next].x;
       let y4 = vertices[next].y;
 
-      // do a Line/Line comparison
-      // if true, return 'true' immediately and
-      // stop testing (faster)
-      const { x: x1, y: y1 } = line.startPoint;
-      const { x: x2, y: y2 } = line.endPoint;
+      let tempLine: Line = {
+        startPoint: { x: x3, y: y3 },
+        endPoint: { x: x4, y: y4 },
+      };
 
-      let hit = this.lineLine(x1, y1, x2, y2, x3, y3, x4, y4);
+      let hit = this.lineLine(line, tempLine);
       if (hit) {
         return true;
       }
@@ -74,11 +134,75 @@ class AnimationTemplate extends AnimationBaseClass {
     // never got a hit
     return false;
   }
+  lineLine(line1: Line, line2: Line) {
+    let uA =
+      ((line2.endPoint.x - line2.startPoint.x) *
+        (line1.startPoint.y - line2.startPoint.y) -
+        (line2.endPoint.y - line2.startPoint.y) *
+          (line1.startPoint.x - line2.startPoint.x)) /
+      ((line2.endPoint.y - line2.startPoint.y) *
+        (line1.endPoint.x - line1.startPoint.x) -
+        (line2.endPoint.x - line2.startPoint.x) *
+          (line1.endPoint.y - line1.startPoint.y));
+    let uB =
+      ((line1.endPoint.x - line1.startPoint.x) *
+        (line1.startPoint.y - line2.startPoint.y) -
+        (line1.endPoint.y - line1.startPoint.y) *
+          (line1.startPoint.x - line2.startPoint.x)) /
+      ((line2.endPoint.y - line2.startPoint.y) *
+        (line1.endPoint.x - line1.startPoint.x) -
+        (line2.endPoint.x - line2.startPoint.x) *
+          (line1.endPoint.y - line1.startPoint.y));
+
+    // if uA and uB are between 0-1, lines are colliding
+    if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+      // optionally, draw a circle where the lines meet
+      let intersectionX =
+        line1.startPoint.x + uA * (line1.endPoint.x - line1.startPoint.x);
+      let intersectionY =
+        line1.startPoint.y + uA * (line1.endPoint.y - line1.startPoint.y);
+      return {
+        hit: true,
+        intersectionX,
+        intersectionY,
+      };
+    }
+    return { hit: false };
+  }
+  polyPoint(vertices: Polygon, point: Point) {
+    let collision = false;
+
+    // go through each of the vertices, plus the next
+    // vertex in the list
+    let next = 0;
+    for (let current = 0; current < vertices.length; current++) {
+      // get next vertex in list
+      // if we've hit the end, wrap around to 0
+      next = current + 1;
+      if (next === vertices.length) next = 0;
+
+      // get the PVectors at our current position
+      // this makes our if statement a little cleaner
+      let vc = vertices[current]; // c for "current"
+      let vn = vertices[next]; // n for "next"
+
+      // compare position, flip 'collision' variable
+      // back and forth
+      if (
+        ((vc.y > point.y && vn.y < point.y) ||
+          (vc.y < point.y && vn.y > point.y)) &&
+        point.x < ((vn.x - vc.x) * (point.y - vc.y)) / (vn.y - vc.y) + vc.x
+      ) {
+        collision = !collision;
+      }
+    }
+    return collision;
+  }
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
 }
-export default AnimationTemplate;
+export default PolygonToPolygonCollision;
 
 // ←Collision Detection→
 

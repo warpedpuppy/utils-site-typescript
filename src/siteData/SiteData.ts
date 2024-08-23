@@ -13,7 +13,6 @@ import BallBounce from "./animations/geometry/BallBounce";
 import BallsBouncingAgainstEachOther from "./animations/geometry/BallsBouncingAgainstEachOther";
 import PointToCircleCollision from "./animations/collisionDetection/PointToCircle";
 import CircleToCircleCollision from "./animations/collisionDetection/CircleToCircle";
-// import CircleToCirclePlus from "./animations/collisionDetection/CircleToCirclePlus";
 import RectToRect from "./animations/collisionDetection/RectToRect";
 import PointToRectangle from "./animations/collisionDetection/PointToRect";
 import CirceToRectCollision from "./animations/collisionDetection/CircleToRect";
@@ -21,6 +20,7 @@ import LineToCircleCollision from "./animations/collisionDetection/LineToCircle"
 import LineToLineCollision from "./animations/collisionDetection/LineToLine";
 import LineToPointCollision from "./animations/collisionDetection/LineToPoint";
 import LineToRectangleCollision from "./animations/collisionDetection/LineToRect";
+import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonToPolygonCollision";
 const SiteData = {
   collissionDetection: {
     PointToCircleCollision,
@@ -32,6 +32,7 @@ const SiteData = {
     LineToLineCollision,
     LineToPointCollision,
     LineToRectangleCollision,
+    PolygonToPolygonCollision,
   },
   trig: {
     BallBounce,
