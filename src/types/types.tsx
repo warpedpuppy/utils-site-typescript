@@ -20,6 +20,7 @@ export interface Rectangle extends ShapeInMotion {
 export interface Polygon {
   vertices: Vector[];
   draw: Function;
+  drag: boolean;
 }
 export interface Vector {
   x: number;
