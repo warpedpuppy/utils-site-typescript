@@ -17,7 +17,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       25,
       0,
       this.ctx,
-      false,
+      true,
       "star 1"
     );
 
@@ -96,8 +96,8 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
         rot += step;
       }
       if (rotate) {
-        // angle += 0.01;
-        // if (angle > 2 * Math.PI) angle = 0;
+        angle += 0.01;
+        if (angle > 2 * Math.PI) angle = 0;
       }
       ctx.stroke();
       ctx.closePath();
