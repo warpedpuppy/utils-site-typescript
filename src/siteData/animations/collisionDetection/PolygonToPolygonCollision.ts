@@ -8,7 +8,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
   star1: Polygon = { vertices: [], draw: () => {}, drag: false };
   star2: Polygon = { vertices: [], draw: () => {}, drag: false };
   mousePoint: Point = { x: 0, y: 0 };
-  angle1: number = 0;
+  stars: Polygon[] = [];
   init() {
     this.star1 = this.createStar(
       { x: 200, y: this.halfHeight },
@@ -17,8 +17,10 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       25,
       0,
       this.ctx,
-      true
+      false,
+      "star 1"
     );
+
     this.star2 = this.createStar(
       { x: this.halfWidth, y: this.halfHeight - 50 },
       5,
@@ -26,56 +28,13 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       25,
       0,
       this.ctx,
-      false
+      false,
+      "star 2"
     );
-
+    this.stars.push(this.star1, this.star2);
     this.draw();
   }
-  draw = () => {
-    if (!this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.ctx.lineWidth = 3;
-    this.ctx.strokeStyle = "black";
-    this.ctx.beginPath();
-    this.star1.draw(this.top, this.left);
-    this.star2.draw(this.top, this.left, this.mousePoint);
-    this.ctx.closePath();
-    this.ctx.stroke();
 
-    if (this.keyFunction(this.star1, this.star2)) {
-      // console.log("hit");
-    }
-
-    requestAnimationFrame(this.draw);
-  };
-  keyFunction(polygon1: Polygon, polygon2: Polygon) {
-    // go through each of the vertices, plus the next
-    // vertex in the list
-    let next = 0;
-    for (let current = 0; current < polygon1.vertices.length; current++) {
-      // get next vertex in list
-      // if we've hit the end, wrap around to 0
-      next = current + 1;
-      if (next === polygon1.vertices.length) next = 0;
-
-      // get the PVectors at our current position
-      // this makes our if statement a little cleaner
-      let vc = polygon1.vertices[current]; // c for "current"
-      let vn = polygon1.vertices[next]; // n for "next"
-
-      // now we can use these two points (a line) to compare
-      // to the other polygon's vertices using polyLine()
-      let line: Line = { startPoint: vc, endPoint: vn };
-      let collision = this.polyLine(polygon2, line);
-      if (collision) return true;
-
-      // optional: check if the 2nd polygon is INSIDE the first
-      collision = this.polyPoint(polygon1, polygon2.vertices[0]);
-      if (collision) return true;
-    }
-
-    return false;
-  }
   createStar(
     centerPoint: Point,
     spikes: number,
@@ -83,7 +42,8 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     innerRadius: number,
     angle: number = 0,
     ctx: any,
-    rotate: boolean = false
+    rotate: boolean = false,
+    id: string = ""
   ): Polygon {
     var rot = (Math.PI / 2) * 3; // start at 270 degrees
     var x = centerPoint.x;
@@ -97,8 +57,10 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       mousePoint: Point = { x: 0, y: 0 }
     ) {
       ctx.beginPath();
+
       if (!this.drag) mousePoint = { x: 0, y: 0 };
       centerPoint = this.drag ? { x: 0, y: 0 } : storeCenterPoint;
+
       this.vertices = [];
       for (let i = 0; i < spikes; i++) {
         x =
@@ -134,8 +96,8 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
         rot += step;
       }
       if (rotate) {
-        angle += 0.01;
-        if (angle > 2 * Math.PI) angle = 0;
+        // angle += 0.01;
+        // if (angle > 2 * Math.PI) angle = 0;
       }
       ctx.stroke();
       ctx.closePath();
@@ -143,21 +105,59 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
 
     return star;
   }
-  strokeStar(center: Point, radius: number, spikes: number, inset: number) {
+  draw = () => {
     if (!this.ctx) return;
-    this.ctx.save();
-    this.ctx.beginPath();
-    this.ctx.translate(center.x, center.y);
-    this.ctx.moveTo(0, 0 - radius);
-    for (var i = 0; i < spikes; i++) {
-      this.ctx.rotate(Math.PI / spikes);
-      this.ctx.lineTo(0, 0 - radius * inset);
-      this.ctx.rotate(Math.PI / spikes);
-      this.ctx.lineTo(0, 0 - radius);
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    if (this.keyFunction(this.star1, this.star2)) {
+      this.ctx.fillStyle = "red";
+    } else {
+      this.ctx.fillStyle = "yellow";
     }
-    this.ctx.closePath();
-    this.ctx.fill();
-    this.ctx.restore();
+
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeStyle = "black";
+
+    this.stars.forEach((star) => {
+      if (!this.ctx) return;
+      this.ctx.beginPath();
+      star.draw(this.top, this.left, this.mousePoint);
+      this.ctx.closePath();
+      this.ctx.fill();
+      this.ctx.stroke();
+    });
+
+    requestAnimationFrame(this.draw);
+  };
+  keyFunction(polygon1: Polygon, polygon2: Polygon) {
+    // go through each of the vertices, plus the next
+    // vertex in the list
+
+    let next = 0;
+
+    for (let current = 0; current < polygon1.vertices.length; current++) {
+      // get next vertex in list
+      // if we've hit the end, wrap around to 0
+      next = current + 1;
+      if (next === polygon1.vertices.length) next = 0;
+
+      // get the PVectors at our current position
+      // this makes our if statement a little cleaner
+      let vc = polygon1.vertices[current]; // c for "current"
+      let vn = polygon1.vertices[next]; // n for "next"
+
+      // now we can use these two points (a line) to compare
+      // to the other polygon's vertices using polyLine()
+      let line: Line = { startPoint: vc, endPoint: vn };
+      let collision = this.polyLine(polygon2, line);
+      if (collision) return true;
+
+      // optional: check if the 2nd polygon is INSIDE the first
+      collision = this.polyPoint(polygon1, polygon2.vertices[0]);
+      if (collision) return true;
+    }
+
+    return false;
   }
   polyLine(polygon: Polygon, line: Line) {
     // go through each of the vertices, plus the next
@@ -181,8 +181,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
         startPoint: { x: x3, y: y3 },
         endPoint: { x: x4, y: y4 },
       };
-
-      let hit = this.lineLine(line, tempLine);
+      let hit = this.lineLine(line, tempLine).hit;
       if (hit) {
         return true;
       }
@@ -259,11 +258,17 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     return collision;
   }
   pointerDownHandler(e: PointerEvent) {
+    if (this.polyPoint(this.star1, this.mousePoint)) {
+      this.star1.drag = true;
+      this.stars = [this.star2, this.star1];
+    }
     if (this.polyPoint(this.star2, this.mousePoint)) {
       this.star2.drag = true;
+      this.stars = [this.star1, this.star2];
     }
   }
   pointerUpHandler(e: PointerEvent) {
+    this.star1.drag = false;
     this.star2.drag = false;
   }
   pointerMoveHandler(e: PointerEvent) {
