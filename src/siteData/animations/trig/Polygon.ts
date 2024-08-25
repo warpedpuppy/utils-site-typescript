@@ -8,7 +8,7 @@ class AnimationTemplate extends AnimationBaseClass {
   rect: Rectangle;
   constructor() {
     super();
-    this.rect = new Rectangle(200, 200, 0, this.ctx, false, "rect");
+    this.rect = new Rectangle(200, 300, 0, this.ctx, false, "rect");
   }
   init() {
     this.draw();

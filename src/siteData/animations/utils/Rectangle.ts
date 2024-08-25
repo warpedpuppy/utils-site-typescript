@@ -86,13 +86,6 @@ class Rectangle {
     ctx.stroke();
     this.vertices.push({ x, y });
 
-    // x = centerPoint.x - dist * Math.cos(atan2 + angle);
-    // y = centerPoint.y - dist * Math.sin(atan2 + angle);
-    // ctx.strokeStyle = "purple";
-    // ctx.beginPath();
-    // ctx.arc(x, y, 5, 0, Math.PI * 2);
-    // ctx.stroke();
-
     x = centerPoint.x + dist * Math.cos(atan2 + angle);
     y = centerPoint.y - dist * Math.sin(atan2 + angle);
     ctx.beginPath();
