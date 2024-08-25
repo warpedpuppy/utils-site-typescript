@@ -13,6 +13,7 @@ class Rectangle {
   step: number = 0;
   rect: Polygon = { vertices: [], draw: () => {}, drag: false };
   options: GenericObject = {};
+  spinSpeed: number = 0.25;
   constructor(
     width: number,
     height: number,
@@ -31,6 +32,9 @@ class Rectangle {
     this.rot = (Math.PI / 2) * 3; // start at 270 degrees
     this.angle *= Math.PI / 180;
     this.options = options;
+    this.spinSpeed = this.options.spinSpeed
+      ? this.options.spinSpeed
+      : this.spinSpeed;
   }
   returnRectangle() {
     return this.rect;
@@ -88,7 +92,7 @@ class Rectangle {
     });
     if (this.options?.fill) ctx.fill();
     if (this.options.stroke) ctx.stroke();
-    this.angle += (0.25 * Math.PI) / 180;
+    this.angle += (this.spinSpeed * Math.PI) / 180;
     this.rect.vertices = this.vertices;
   }
 }
