@@ -9,7 +9,7 @@ class BallBounce extends AnimationBaseClass {
   vy: number = 1;
   x: number = 1;
   y: number = 1;
-  gravity: number = 0.4;
+  gravity: number = 0.5;
   ballRadius: number = 10;
   init() {
     this.draw();
