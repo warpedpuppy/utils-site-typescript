@@ -31,9 +31,10 @@ class RectToRect extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fillStyle = "transparent";
-    this.ctx.strokeStyle = "black";
     if (polyPoly(this.rect1.returnRectangle(), this.rect2.returnRectangle())) {
       this.ctx.fillStyle = "red";
+    } else {
+      this.ctx.fillStyle = "black";
     }
     this.ctx.lineWidth = 3;
     this.ctx.beginPath();
@@ -44,36 +45,14 @@ class RectToRect extends AnimationBaseClass {
       y,
     });
 
-    this.ctx.fill();
-    this.ctx.stroke();
-
     this.ctx.beginPath();
     this.rect2.draw(this.top, this.left, {
       x: this.halfWidth,
       y: this.halfHeight,
     });
 
-    this.ctx.fill();
-    this.ctx.stroke();
-
     requestAnimationFrame(this.draw);
   };
-  keyFunction(rectangle1: Rectangle, rectangle2: Rectangle) {
-    // return (
-    //   rectangle1.x + rectangle1.width >= rectangle2.x &&
-    //   rectangle1.x <= rectangle2.x + rectangle2.width &&
-    //   rectangle1.y + rectangle1.height >= rectangle2.y &&
-    //   rectangle1.y <= rectangle2.y + rectangle2.height
-    // );
-  }
-  pointRectangle(point: Point, rectangle: Rectangle) {
-    // return (
-    //   point.x >= rectangle.x &&
-    //   point.x <= rectangle.x + rectangle.width &&
-    //   point.y >= rectangle.y &&
-    //   point.y <= rectangle.y + rectangle.height
-    // );
-  }
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
