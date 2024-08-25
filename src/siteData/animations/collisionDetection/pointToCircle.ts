@@ -39,6 +39,8 @@ class PointToCircleCollision extends AnimationBaseClass {
 
     if (this.keyFunction({ x, y }, this.circle2)) {
       this.ctx.fillStyle = "red";
+    } else {
+      this.ctx.fillStyle = "black";
     }
     this.ctx.lineWidth = 3;
     this.ctx.beginPath();
@@ -51,7 +53,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     );
 
     this.ctx.fill();
-    this.ctx.stroke();
+
     this.ctx.beginPath();
     this.ctx.fillStyle = "black";
     this.ctx.beginPath();
@@ -59,7 +61,6 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.ctx.arc(x, y, this.circle1.radius, 0, 2 * Math.PI);
 
     this.ctx.fill();
-    this.ctx.stroke();
 
     requestAnimationFrame(this.draw);
   };
