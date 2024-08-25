@@ -12,7 +12,7 @@ function Home() {
   }, []);
   return (
     <section id="home-page">
-      <div id="primary-canvas--content--text">
+      <div id="home-page--text-container">
         <div id="home-page--text-container_inner">
           <p>sdfgsdfgsdfg</p>
         </div>

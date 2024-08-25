@@ -1,5 +1,6 @@
 #side-bar {
-  min-height: 100vh;
+  max-height: calc(100vh - 50px);
+  overflow-y: scroll;
   border-right: 1px solid black;
   dt {
     text-align: left;
@@ -19,7 +20,7 @@
   }
   dt,
   dd {
-    padding: 1em 1em;
+    padding: 0.25em 1em;
     border-bottom: 1px solid black;
     display: flex;
     align-items: center;

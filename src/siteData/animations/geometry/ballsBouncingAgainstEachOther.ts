@@ -13,10 +13,22 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
   ballQ: number = 20;
   balls: Circle[] = [];
   spring = 0.05;
-  friction = -0.9;
   speedLimit = 5;
+  storeCanvasSize = { width: 0, height: 0 };
   init() {
     if (this.textDiv) this.textDiv.innerHTML = `<h2>${this.title}</h2>`;
+    this.storeCanvasSize = {
+      width: this.canvasWidth,
+      height: this.canvasHeight,
+    };
+    this.createBalls();
+
+    this.draw();
+  }
+  createBalls() {
+    this.balls = [];
+    let totalArea = this.canvasWidth * this.canvasHeight;
+    this.ballQ = Math.floor(totalArea / 20000);
 
     for (let i = 0; i < this.ballQ; i++) {
       let radius = Math.random() * 50 + 10;
@@ -24,12 +36,20 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       let y = Math.random() * (this.canvasHeight - 2 * radius) + radius;
       this.balls[i] = { x, y, radius, id: `${i}`, vx: 1, vy: 1 };
     }
-
-    this.draw();
   }
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    if (
+      this.canvasHeight !== this.storeCanvasSize.height ||
+      this.canvasWidth !== this.storeCanvasSize.width
+    ) {
+      this.createBalls();
+      this.storeCanvasSize = {
+        width: this.canvasWidth,
+        height: this.canvasHeight,
+      };
+    }
     this.balls.forEach((ball1) => {
       if (!this.ctx) return;
       ball1.x += ball1.vx;

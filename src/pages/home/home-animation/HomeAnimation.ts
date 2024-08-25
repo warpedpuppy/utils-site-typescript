@@ -123,13 +123,9 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
       this.arrowPoint.y
     );
 
-    let dist = Math.floor(
-      this.distanceBetweenTwoPoint(this.arrowPoint, this.dot)
-    );
-    if (this.textDiv)
-      this.textDiv.innerHTML = `
-    <p>The green circle is ${dist} pixels from the arrow</p>
-    `;
+    // let dist = Math.floor(
+    //   this.distanceBetweenTwoPoint(this.arrowPoint, this.dot)
+    // );
 
     requestAnimationFrame(this.draw);
   };

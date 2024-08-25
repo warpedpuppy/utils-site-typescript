@@ -140,13 +140,6 @@ class DeMystifySineCosine extends AnimationBaseClass {
       })
     );
 
-    this.ctx.fillText("A", this.canvasWidth * 0.33 - 5, this.halfHeight - 5);
-    this.ctx.fillText(
-      `The sine of angle 'A' is the relationship between the two red lines: ${smallRedLineHeight} / 100`,
-      this.canvasWidth * 0.1,
-      this.halfHeight - 210
-    );
-
     this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
     this.ctx.lineWidth = this.thinLine;
     this.ctx.beginPath();
@@ -173,12 +166,12 @@ class DeMystifySineCosine extends AnimationBaseClass {
       })
     );
 
-    this.ctx.fillText("B", this.canvasWidth * 0.66 + 5, this.halfHeight - 5);
-    this.ctx.fillText(
-      `The cosine of angle 'B' is the relationship between the two green lines: ${smallGreenLineHeight} / 100`,
-      this.canvasWidth * 0.1,
-      this.halfHeight - 170
-    );
+    if (this.textDiv)
+      this.textDiv.innerHTML = `
+     <p>The sine of angle 'A' is the relationship between the two red lines: ${smallRedLineHeight} / 100.</p><p>We can use sine to calculate the y value of the triangle's hypotenuse because it represents vertical proportion.</p> 
+     <br />
+      <p>The cosine of angle 'B' is the relationship between the two green lines: ${smallGreenLineHeight} / 100.</p><p>We can use cosine to calculate the x value of the triangle/s hypotenuse because it represents horizontal proportion.</p> 
+    `;
 
     requestAnimationFrame(this.draw);
   };

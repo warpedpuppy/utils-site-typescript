@@ -1,9 +1,9 @@
 import { Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 class MoveItemAroundCircle extends AnimationBaseClass {
-  static t: string = "move item around circle";
-  static l: string = "move-item-around-circle";
-  title = "move item around circle";
+  static t: string = "find points on a circle";
+  static l: string = "find-points-on-a-circle";
+  title = "find points on a circle";
   i: number = 0;
   keyFunction(
     circleCenter: Point,
