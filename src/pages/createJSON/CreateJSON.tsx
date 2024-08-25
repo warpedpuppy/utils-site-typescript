@@ -5,12 +5,14 @@ import { GenericObject } from "../../types/types";
 import CreateJSONTabs from "./createJSONComponents/createJSONTabs";
 import JSONContent from "./createJSONComponents/JSONContent";
 import JSONCheckbox from "./createJSONComponents/JSONCheckbox";
+import LocalStorageManager from "../../services/LocalStorageManager";
 function CreateJSON() {
   const [checklist, setChecklist] = useState<ReactNode[]>([
     <dt key={`holder`}></dt>,
   ]);
   const [tabBody, setTabBody] = useState<number>(0);
   const [json, setJSON] = useState<GenericObject>({});
+  const { addToLocaStorage, deleteFromLocaStorage } = LocalStorageManager();
 
   useEffect(() => {
     let arr = [];
@@ -49,10 +51,12 @@ function CreateJSON() {
       if (json.hasOwnProperty(str)) {
         let temp: GenericObject = { ...json };
         delete temp[str];
+        deleteFromLocaStorage(className);
         setJSON(temp);
       } else {
         let temp: GenericObject = { ...json };
         temp[str] = { className, keyFunction };
+        addToLocaStorage(className);
         setJSON(temp);
       }
     }

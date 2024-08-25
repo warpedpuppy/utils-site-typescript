@@ -1,28 +1,9 @@
-import { Nullable, Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 class SineCurve extends AnimationBaseClass {
   static t: string = "sine curve";
   static l: string = "sine-curve";
   title = "sine curve";
-  // canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  // textDiv: Nullable<HTMLElement> = document.getElementById(
-  //   "primary-canvas--content--text"
-  // );
-  // canvasWidth: number = 0;
-  // canvasHeight: number = 0;
-  // halfHeight: number = 0;
-  // halfWidth: number = 0;
-  // cont: HTMLDivElement = undefined!;
-  // ctx = this.canvas?.getContext("2d");
-  // startPoint: Nullable<Point> = null;
-  // endPoint: Nullable<Point> = null;
-  // top: number = 0;
-  // left: number = 0;
-  // text: string[] = [];
   interval: any = 0;
-  // circleQ = 0;
-  // points: any = [];
-  // allowDraw: boolean = false;
   i: number = 0;
   startValue = 0;
   differential = 200;

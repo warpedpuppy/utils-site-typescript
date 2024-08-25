@@ -6,11 +6,17 @@
     padding: 1rem 1rem 0.25rem 1rem;
     display: flex;
     position: absolute;
+    flex-direction: column;
     top: 0;
     right: 0;
     z-index: 11;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
+    &_extra_html {
+      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+    }
   }
   &--content {
     width: 100%;
@@ -44,6 +50,6 @@
     }
   }
   .extra-html {
-    width: max-content;
+    width: 100%;
   }
 }
