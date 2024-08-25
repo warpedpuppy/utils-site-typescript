@@ -11,7 +11,7 @@ class Rectangle {
   vertices: any[] = [];
   rot: number = 0;
   step: number = 0;
-  rect: Polygon = { vertices: [], draw: () => {}, drag: false };
+  star: Polygon = { vertices: [], draw: () => {}, drag: false };
   constructor(
     width: number,
     height: number,
@@ -29,9 +29,6 @@ class Rectangle {
     this.rot = (Math.PI / 2) * 3; // start at 270 degrees
     this.angle *= Math.PI / 180;
   }
-  returnRectangle() {
-    return this.rect;
-  }
 
   draw(
     top: number,
@@ -41,6 +38,10 @@ class Rectangle {
   ) {
     let { angle, ctx, width, height } = this;
 
+    // ctx.beginPath();
+    // ctx.rect(centerPoint.x - 100, centerPoint.y - 100, 200, 200);
+    // ctx.stroke();
+
     this.vertices = [];
 
     let x = centerPoint.x - width / 2;
@@ -49,6 +50,9 @@ class Rectangle {
     let dist = distanceBetweenTwoPoints(centerPoint, { x, y });
     ctx.strokeStyle = "black";
     ctx.lineWidth = 1;
+    // ctx.beginPath();
+    // ctx.arc(centerPoint.x, centerPoint.y, dist, 0, Math.PI * 2);
+    // ctx.stroke();
 
     let atan2 = getAtan2(centerPoint, {
       x,
@@ -59,19 +63,34 @@ class Rectangle {
 
     x = centerPoint.x - dist * Math.cos(atan2 + angle);
     y = centerPoint.y + dist * Math.sin(atan2 + angle);
+    ctx.beginPath();
+    ctx.strokeStyle = "red";
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.stroke();
     this.vertices.push({ x, y });
 
-    // ctx.strokeStyle = "green";
+    ctx.strokeStyle = "green";
     x = centerPoint.x + dist * Math.cos(atan2 - angle);
     y = centerPoint.y + dist * Math.sin(atan2 - angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.stroke();
     this.vertices.push({ x, y });
 
     x = centerPoint.x + dist * Math.cos(atan2 + angle);
     y = centerPoint.y - dist * Math.sin(atan2 + angle);
+    ctx.beginPath();
+    ctx.strokeStyle = "blue";
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.stroke();
     this.vertices.push({ x, y });
 
     x = centerPoint.x - dist * Math.cos(atan2 - angle);
     y = centerPoint.y - dist * Math.sin(atan2 - angle);
+    ctx.beginPath();
+    ctx.strokeStyle = "orange";
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.stroke();
     this.vertices.push({ x, y });
 
     ctx.beginPath();
@@ -86,10 +105,8 @@ class Rectangle {
         ctx.lineTo(this.vertices[0].x, this.vertices[0].y);
       }
     });
-    ctx.fill();
     ctx.stroke();
     this.angle += (0.25 * Math.PI) / 180;
-    this.rect.vertices = this.vertices;
   }
 }
 export default Rectangle;

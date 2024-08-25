@@ -1,6 +1,6 @@
 // import { GenericObject, Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
-import Rectangle from "../utils/Rectangle";
+import Rectangle from "../utils/RectangleWithConstructionDetails";
 class AnimationTemplate extends AnimationBaseClass {
   static t = "draw rectangle";
   static l = "draw-rectangle";
