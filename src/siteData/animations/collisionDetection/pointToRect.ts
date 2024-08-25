@@ -1,12 +1,12 @@
 import { Circle, Point, Rectangle } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
-
+import { sineCurve } from "../utils/OmnibusUtils";
 class PointToRectangle extends AnimationBaseClass {
   static t = "point to rectangle collision";
   static l = "point-to-rectangle-collision";
   title = "point to rectangle collision";
   rect1: Rectangle = {
-    x: this.canvasWidth * 0.5 - 150,
+    x: this.halfWidth - 150,
     y: this.halfHeight - 150,
     width: 300,
     height: 300,
@@ -28,18 +28,24 @@ class PointToRectangle extends AnimationBaseClass {
     this.ctx.font = "bold 20px Arial";
     this.draw();
   }
+  makePointMove() {
+    let x = sineCurve(this.halfWidth, 200, 0.001);
+    let y = sineCurve(this.halfHeight, 200, 0.001);
+    return { x, y };
+  }
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fillStyle = "transparent";
-    this.ctx.strokeStyle = "black";
     if (
       this.keyFunction({ x: this.circle1.x, y: this.circle1.y }, this.rect1)
     ) {
       this.ctx.fillStyle = "red";
+    } else {
+      this.ctx.fillStyle = "black";
     }
-    this.ctx.stroke();
-    this.ctx.beginPath();
+
+    // this.ctx.translate(-this.rect1.x, -this.rect1.y);
 
     this.ctx.beginPath();
     this.ctx.rect(
@@ -48,15 +54,10 @@ class PointToRectangle extends AnimationBaseClass {
       this.rect1.width,
       this.rect1.height
     );
-
     this.ctx.fill();
-    this.ctx.stroke();
 
-    this.ctx.lineWidth = 3;
-    this.ctx.fill();
-    this.ctx.stroke();
-    this.ctx.beginPath();
-    this.ctx.fillStyle = "black";
+    // this.ctx.resetTransform();
+
     this.ctx.beginPath();
     this.ctx.arc(
       this.circle1.x,
@@ -65,7 +66,6 @@ class PointToRectangle extends AnimationBaseClass {
       0,
       2 * Math.PI
     );
-
     this.ctx.fill();
 
     requestAnimationFrame(this.draw);

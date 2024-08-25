@@ -20,7 +20,7 @@ class AnimationBaseClass {
   left: number = 0;
   allowDraw: boolean = false;
   continue: boolean = true;
-  constructor(id: string) {
+  constructor(id: string = "primary-canvas--content--canvas-container") {
     if (!this.canvas || !this.ctx) return;
 
     this.cont = document.getElementById(id);

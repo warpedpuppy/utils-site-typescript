@@ -1,3 +1,4 @@
+import { Point } from "../../../types/types";
 export function centerOnStage(item: any, parent: any) {
   let x = (parent.width - item.width) / 2;
   let y = (parent.height - item.height) / 2;
@@ -33,6 +34,28 @@ export function rad2deg(radians: number) {
 
 export function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+export function sineCurve(
+  startingValue: number,
+  differential: number,
+  speed: number
+) {
+  const currentDate = new Date();
+  return startingValue + Math.sin(currentDate.getTime() * speed) * differential;
+}
+
+export function getAtan2(originPoint: Point, destinationPoint: Point) {
+  return Math.atan2(
+    destinationPoint.y - originPoint.y,
+    destinationPoint.x - originPoint.x
+  );
+}
+
+export function distanceBetweenTwoPoints(startPoint: Point, endPoint: Point) {
+  let a = startPoint.x - endPoint.x;
+  let b = startPoint.y - endPoint.y;
+  return Math.sqrt(a * a + b * b);
 }
 
 export {};

@@ -1,5 +1,6 @@
-import { GenericObject, Point, Circle } from "../../../types/types";
+import { Point, Circle } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { sineCurve } from "../utils/OmnibusUtils";
 
 class PointToCircleCollision extends AnimationBaseClass {
   static t = "point to circle collision";
@@ -32,9 +33,11 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fillStyle = "transparent";
     this.ctx.strokeStyle = "black";
-    if (
-      this.keyFunction({ x: this.circle1.x, y: this.circle1.y }, this.circle2)
-    ) {
+    this.circle2.x = this.halfWidth;
+    this.circle2.y = this.halfHeight;
+    let { x, y } = this.makePointMove();
+
+    if (this.keyFunction({ x, y }, this.circle2)) {
       this.ctx.fillStyle = "red";
     }
     this.ctx.lineWidth = 3;
@@ -52,43 +55,27 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.ctx.beginPath();
     this.ctx.fillStyle = "black";
     this.ctx.beginPath();
-    this.ctx.arc(
-      this.circle1.x,
-      this.circle1.y,
-      this.circle1.radius,
-      0,
-      2 * Math.PI
-    );
+
+    this.ctx.arc(x, y, this.circle1.radius, 0, 2 * Math.PI);
 
     this.ctx.fill();
     this.ctx.stroke();
 
     requestAnimationFrame(this.draw);
   };
+  makePointMove() {
+    let x = sineCurve(this.halfWidth, 200, 0.001);
+    let y = sineCurve(this.halfHeight, 200, 0.001);
+    return { x, y };
+  }
   keyFunction(point: Point, circle: Circle) {
     let distX = point.x - circle.x;
     let distY = point.y - circle.y;
     let distance = Math.sqrt(distX * distX + distY * distY);
     return distance <= circle.radius;
   }
-  pointerDownHandler(e: PointerEvent) {
-    // if (
-    //   this.pointCircle(
-    //     { x: e.pageX - this.left, y: e.pageY - this.top },
-    //     this.circle1
-    //   )
-    // ) {
-    //   this.startDrag = true;
-    // }
-  }
-  pointerUpHandler(e: PointerEvent) {
-    // this.startDrag = false;
-  }
-  pointerMoveHandler(e: PointerEvent) {
-    // if (this.startDrag) {
-    this.circle1.x = e.pageX - this.left;
-    this.circle1.y = e.pageY - this.top;
-    // }
-  }
+  pointerDownHandler(e: PointerEvent) {}
+  pointerUpHandler(e: PointerEvent) {}
+  pointerMoveHandler(e: PointerEvent) {}
 }
 export default PointToCircleCollision;

@@ -21,6 +21,8 @@ import LineToLineCollision from "./animations/collisionDetection/LineToLine";
 import LineToPointCollision from "./animations/collisionDetection/LineToPoint";
 import LineToRectangleCollision from "./animations/collisionDetection/LineToRect";
 import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonToPolygonCollision";
+import Star from "./animations/trig/Star";
+import Polygon from "./animations/trig/Polygon";
 const SiteData = {
   collissionDetection: {
     PointToCircleCollision,
@@ -35,6 +37,8 @@ const SiteData = {
     PolygonToPolygonCollision,
   },
   trig: {
+    Star,
+    Polygon,
     BallBounce,
     BallsBouncingAgainstEachOther,
     DistributePointsAroundACircle,
