@@ -6,7 +6,10 @@ class PointToRectangle extends AnimationBaseClass {
   static t = "point to rectangle collision";
   static l = "point-to-rectangle-collision";
   title = "point to rectangle collision";
-  rect: Rectangle = new Rectangle(200, 300, 0, this.ctx, false, "rect");
+  rect: Rectangle = new Rectangle(200, 300, 0, this.ctx, false, "rect", {
+    stroke: false,
+    fill: true,
+  });
   circle1: Circle = {
     x: this.canvasWidth * 0.33,
     y: this.halfHeight,
@@ -18,8 +21,6 @@ class PointToRectangle extends AnimationBaseClass {
   startDrag: boolean = false;
   init() {
     if (!this.ctx) return;
-    // this.rect = new Rectangle(200, 300, 0, this.ctx, false, "rect");
-    this.ctx.font = "bold 20px Arial";
     this.draw();
   }
   makePointMove() {
@@ -31,6 +32,11 @@ class PointToRectangle extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fillStyle = "transparent";
+
+    let { x, y } = this.makePointMove();
+    this.circle1.x = x;
+    this.circle1.y = y;
+
     if (
       polyPoint(this.rect.returnRectangle(), {
         x: this.circle1.x,
@@ -47,6 +53,7 @@ class PointToRectangle extends AnimationBaseClass {
       y: this.halfHeight,
     });
 
+    this.ctx.fillStyle = "black";
     this.ctx.beginPath();
     this.ctx.arc(
       this.circle1.x,
@@ -56,22 +63,11 @@ class PointToRectangle extends AnimationBaseClass {
       2 * Math.PI
     );
     this.ctx.fill();
-
     requestAnimationFrame(this.draw);
   };
-  // keyFunction(point: Point, rectangle: Rectangle) {
-  //   return (
-  //     point.x >= rectangle.x &&
-  //     point.x <= rectangle.x + rectangle.width &&
-  //     point.y >= rectangle.y &&
-  //     point.y <= rectangle.y + rectangle.height
-  //   );
-  // }
+  keyFunction(point: Point, rectangle: Rectangle) {}
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
-  pointerMoveHandler(e: PointerEvent) {
-    this.circle1.x = e.pageX - this.left;
-    this.circle1.y = e.pageY - this.top;
-  }
+  pointerMoveHandler(e: PointerEvent) {}
 }
 export default PointToRectangle;

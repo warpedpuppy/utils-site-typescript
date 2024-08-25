@@ -1,4 +1,4 @@
-import { Point, Polygon } from "../../../types/types";
+import { GenericObject, Point, Polygon } from "../../../types/types";
 import { getAtan2, distanceBetweenTwoPoints } from "./OmnibusUtils";
 class Rectangle {
   ctx: CanvasRenderingContext2D;
@@ -12,13 +12,15 @@ class Rectangle {
   rot: number = 0;
   step: number = 0;
   rect: Polygon = { vertices: [], draw: () => {}, drag: false };
+  options: GenericObject = {};
   constructor(
     width: number,
     height: number,
     angle: number = 0,
     ctx: any,
     rotate: boolean = false,
-    id: string = ""
+    id: string = "",
+    options: object
   ) {
     this.width = width;
     this.height = height;
@@ -28,6 +30,7 @@ class Rectangle {
     this.id = id;
     this.rot = (Math.PI / 2) * 3; // start at 270 degrees
     this.angle *= Math.PI / 180;
+    this.options = options;
   }
   returnRectangle() {
     return this.rect;
@@ -86,8 +89,8 @@ class Rectangle {
         ctx.lineTo(this.vertices[0].x, this.vertices[0].y);
       }
     });
-    ctx.fill();
-    ctx.stroke();
+    if (this.options?.fill) ctx.fill();
+    if (this.options.stroke) ctx.stroke();
     this.angle += (0.25 * Math.PI) / 180;
     this.rect.vertices = this.vertices;
   }
