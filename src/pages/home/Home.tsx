@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import "./Home.scss";
-import MoveObjectToDestinationPoint from "../../siteData/animations/trig/MoveObjectToDestinationPoint";
+import MoveObjectToDestinationPoint from "./home-animation/HomeAnimation";
 
 function Home() {
   useEffect(() => {
@@ -12,7 +12,7 @@ function Home() {
   }, []);
   return (
     <section id="home-page">
-      <div id="home-page--text-container">
+      <div id="primary-canvas--content--text">
         <div id="home-page--text-container_inner">
           <p>sdfgsdfgsdfg</p>
         </div>

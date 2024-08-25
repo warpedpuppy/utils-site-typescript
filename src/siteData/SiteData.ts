@@ -24,10 +24,10 @@ import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonTo
 const SiteData = {
   collissionDetection: {
     PointToCircleCollision,
-    CircleToCircleCollision,
-    RectToRect,
     PointToRectangle,
+    RectToRect,
     CirceToRectCollision,
+    CircleToCircleCollision,
     LineToCircleCollision,
     LineToLineCollision,
     LineToPointCollision,
