@@ -55,7 +55,10 @@ class Star {
       ctx,
     } = this;
     ctx.beginPath();
-    centerPoint = this.centerPoint ? this.centerPoint : centerPoint;
+    centerPoint =
+      centerPoint.x !== 0 && centerPoint.y !== 0
+        ? centerPoint
+        : this.centerPoint;
     if (!this.drag) mousePoint = { x: 0, y: 0 };
     this.star.vertices = [];
     for (let i = 0; i < spikes; i++) {
