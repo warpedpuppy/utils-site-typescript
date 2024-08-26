@@ -1,6 +1,7 @@
 import { Circle, Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { sineCurve, polyPoint } from "../utils/OmnibusUtils";
+import { sineCurve } from "../utils/OmnibusUtils";
+import { polyPoint } from "../utils/collision-detection/PolygonCollision";
 import Rectangle from "../utils/Rectangle";
 class PointToRectangle extends AnimationBaseClass {
   static t = "point to rectangle collision";

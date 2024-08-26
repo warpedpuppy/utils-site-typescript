@@ -1,7 +1,7 @@
 import { GenericObject, Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 import Rectangle from "../utils/Rectangle";
-import { polyPoly } from "../utils/PolygonUtils";
+import { polyPoly } from "../utils/collision-detection/PolygonCollision";
 import { sineCurve } from "../utils/OmnibusUtils";
 class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";

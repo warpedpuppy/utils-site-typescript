@@ -1,4 +1,5 @@
 import { Line } from "../../../types/types";
+
 export function lineLine(line1: Line, line2: Line) {
   let uA =
     ((line2.endPoint.x - line2.startPoint.x) *
