@@ -36,6 +36,9 @@ class CirceToRectCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
+    this.circle.x = this.halfWidth;
+    this.circle.y = this.halfHeight;
+
     if (polyCircle(this.rect.returnRectangle(), this.circle)) {
       this.ctx.fillStyle = "red";
     } else {
