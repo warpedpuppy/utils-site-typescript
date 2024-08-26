@@ -1,26 +1,20 @@
 import { Polygon, Line } from "../../../../../types/types";
 import { PolygonPoint } from "./PolygonPoint";
 import { PolygonLine } from "./PolygonLine";
+
 export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
-  // go through each of the vertices, plus the next
-  // vertex in the list
-
   let next = 0;
-
-  for (let current = 0; current < polygon1.vertices.length; current++) {
-    // get next vertex in list
-    // if we've hit the end, wrap around to 0
+  const { vertices } = polygon1;
+  for (let current = 0; current < vertices.length; current++) {
     next = current + 1;
-    if (next === polygon1.vertices.length) next = 0;
+    if (next === vertices.length) next = 0;
 
-    // get the PVectors at our current position
-    // this makes our if statement a little cleaner
-    let vc = polygon1.vertices[current]; // c for "current"
-    let vn = polygon1.vertices[next]; // n for "next"
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
 
     // now we can use these two points (a line) to compare
     // to the other polygon's vertices using polyLine()
-    let line: Line = { startPoint: vc, endPoint: vn };
+    let line: Line = { startPoint, endPoint };
     let collision = PolygonLine(polygon2, line);
     if (collision) return true;
 
