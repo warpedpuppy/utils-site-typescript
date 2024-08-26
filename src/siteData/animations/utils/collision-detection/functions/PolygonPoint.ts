@@ -1,5 +1,4 @@
 import { Point, Polygon, Line, Circle } from "../../../../../types/types";
-import { lineLine } from "./LineLine";
 
 export function PolygonPoint(polygon: Polygon, point: Point) {
   let collision = false;

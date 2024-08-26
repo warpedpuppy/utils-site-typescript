@@ -1,6 +1,6 @@
 import { Polygon, Line } from "../../../../../types/types";
-import { polyPoint } from "./PolygonPoint";
-import { polyLine } from "./PolygonLine";
+import { PolygonPoint } from "./PolygonPoint";
+import { PolygonLine } from "./PolygonLine";
 export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   // go through each of the vertices, plus the next
   // vertex in the list
@@ -21,11 +21,11 @@ export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
     // now we can use these two points (a line) to compare
     // to the other polygon's vertices using polyLine()
     let line: Line = { startPoint: vc, endPoint: vn };
-    let collision = polyLine(polygon2, line);
+    let collision = PolygonLine(polygon2, line);
     if (collision) return true;
 
     // optional: check if the 2nd polygon is INSIDE the first
-    collision = polyPoint(polygon1, polygon2.vertices[0]);
+    collision = PolygonPoint(polygon1, polygon2.vertices[0]);
     if (collision) return true;
   }
 

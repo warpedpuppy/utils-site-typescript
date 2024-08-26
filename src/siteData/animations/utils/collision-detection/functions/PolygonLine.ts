@@ -1,5 +1,5 @@
 import { Point, Polygon, Line, Circle } from "../../../../../types/types";
-import { lineLine } from "./LineLine";
+import { LineLine } from "./LineLine";
 
 export function PolygonLine(polygon: Polygon, line: Line) {
   // go through each of the vertices, plus the next
@@ -23,7 +23,7 @@ export function PolygonLine(polygon: Polygon, line: Line) {
       startPoint: { x: x3, y: y3 },
       endPoint: { x: x4, y: y4 },
     };
-    let hit = lineLine(line, tempLine).hit;
+    let hit = LineLine(line, tempLine).hit;
     if (hit) {
       return true;
     }

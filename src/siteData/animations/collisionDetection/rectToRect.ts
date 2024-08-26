@@ -1,7 +1,6 @@
-import { GenericObject, Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 import Rectangle from "../utils/Rectangle";
-import { polyPoly } from "../utils/collision-detection/PolygonCollision";
+import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
 import { sineCurve } from "../utils/OmnibusUtils";
 class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";
@@ -31,7 +30,9 @@ class RectToRect extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fillStyle = "transparent";
-    if (polyPoly(this.rect1.returnRectangle(), this.rect2.returnRectangle())) {
+    if (
+      PolygonPolygon(this.rect1.returnRectangle(), this.rect2.returnRectangle())
+    ) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "black";

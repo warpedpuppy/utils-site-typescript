@@ -1,7 +1,7 @@
 import { GenericObject, Point, Circle } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 import Rectangle from "../utils/Rectangle";
-import { polyCircle } from "../utils/collision-detection/PolygonCollision";
+import { PolygonCircle } from "../utils/collision-detection/PolygonCollision";
 import { sineCurve } from "../utils/OmnibusUtils";
 
 class CirceToRectCollision extends AnimationBaseClass {
@@ -39,7 +39,7 @@ class CirceToRectCollision extends AnimationBaseClass {
     this.circle.x = this.halfWidth;
     this.circle.y = this.halfHeight;
 
-    if (polyCircle(this.rect.returnRectangle(), this.circle)) {
+    if (PolygonCircle(this.rect.returnRectangle(), this.circle)) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "black";
