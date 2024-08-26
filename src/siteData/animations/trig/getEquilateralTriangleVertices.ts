@@ -42,7 +42,8 @@ class GetEquilateralTriangleVertices extends AnimationBaseClass {
       let obj: GenericObject = { radius, centerPoint, angle };
       this.backgroundTris.push(obj);
     }
-
+    if (this.textDiv)
+      this.textDiv.innerHTML = `<h3>Click and drag to draw triangle</h3>`;
     this.draw();
   }
   getLineAngle(originPoint: Point, destinationPoint: Point) {
@@ -82,7 +83,7 @@ class GetEquilateralTriangleVertices extends AnimationBaseClass {
 
     let radius = Math.sqrt(a * a + b * b);
 
-    this.angle = this.getLineAngle(this.startPoint, this.endPoint); // * (180 / Math.PI);
+    this.angle = this.getLineAngle(this.startPoint, this.endPoint);
 
     let { point1, point2, point3 } = this.keyFunction(
       radius,
@@ -100,6 +101,10 @@ class GetEquilateralTriangleVertices extends AnimationBaseClass {
       this.ctx?.arc(item.x, item.y, 5, 0, 2 * Math.PI);
       this.ctx?.stroke();
     });
+
+    if (this.textDiv)
+      this.textDiv.innerHTML = `<h3>Click and drag to draw equilateral triangle</h3>`;
+    requestAnimationFrame(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {
     this.startPoint = {

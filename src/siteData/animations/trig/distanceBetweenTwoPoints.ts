@@ -14,6 +14,8 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     return Math.sqrt(a * a + b * b);
   }
   init() {
+    this.startPoint = { x: this.halfWidth - 100, y: this.halfHeight + 100 };
+    this.endPoint = { x: this.halfWidth + 100, y: this.halfHeight - 100 };
     this.draw();
   }
   draw = () => {
@@ -54,6 +56,7 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     this.ctx.beginPath();
     this.ctx.arc(this.startPoint.x, this.startPoint.y, radius, 0, 2 * Math.PI);
     this.ctx.stroke();
+    requestAnimationFrame(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {
     this.startPoint = {

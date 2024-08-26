@@ -12,6 +12,8 @@ class getHalfwayPointofLine extends AnimationBaseClass {
     };
   }
   init() {
+    this.startPoint = { x: this.halfWidth - 100, y: this.halfHeight + 100 };
+    this.endPoint = { x: this.halfWidth + 100, y: this.halfHeight - 100 };
     this.draw();
   }
   draw = () => {
@@ -30,6 +32,8 @@ class getHalfwayPointofLine extends AnimationBaseClass {
     this.ctx.beginPath();
     this.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
     this.ctx.stroke();
+    if (this.textDiv) this.textDiv.innerHTML = `Click and drag to draw a line`;
+    requestAnimationFrame(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {
     this.startPoint = {
