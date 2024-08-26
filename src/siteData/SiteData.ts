@@ -1,5 +1,5 @@
 import CircleFromThreePoints from "./animations/trig/CircleFromThreePoints";
-import GetHalfwayPointOfLine from "./animations/geometry/GetHalfwayPointOfLine";
+import GetHalfwayPointOfLine from "./animations/trig/GetHalfwayPointOfLine";
 import GetEquilateralTriangleVertices from "./animations/trig/GetEquilateralTriangleVertices";
 import MoveObjectToDestinationPoint from "./animations/trig/MoveObjectToDestinationPoint";
 import DistanceBetweenTwoPoints from "./animations/trig/DistanceBetweenTwoPoints";
@@ -9,8 +9,8 @@ import MoveItemAroundCircle from "./animations/trig/MoveItemAroundCircle";
 import SineCurve from "./animations/trig/SineCurve";
 import DistributePointsAroundACircle from "./animations/trig/DistributePointsAroundACircle";
 import DeMystifySineCosine from "./animations/trig/DeMystifySineCosine";
-import BallBounce from "./animations/geometry/BallBounce";
-import BallsBouncingAgainstEachOther from "./animations/geometry/BallsBouncingAgainstEachOther";
+import BallBounce from "./animations/trig/BallBounce";
+import BallsBouncingAgainstEachOther from "./animations/trig/BallsBouncingAgainstEachOther";
 import PointToCircleCollision from "./animations/collisionDetection/PointToCircle";
 import CircleToCircleCollision from "./animations/collisionDetection/CircleToCircle";
 import RectToRect from "./animations/collisionDetection/RectToRect";

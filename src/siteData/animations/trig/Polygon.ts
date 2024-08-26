@@ -1,8 +1,7 @@
-// import { GenericObject, Point } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 import Rectangle from "../utils/RectangleWithConstructionDetails";
 class AnimationTemplate extends AnimationBaseClass {
-  static t = "draw rectangle";
+  static t = "draw rectangle (without using rect())";
   static l = "draw-rectangle";
   title = "draw rectangle";
   rect: Rectangle;

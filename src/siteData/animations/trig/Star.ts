@@ -1,4 +1,4 @@
-import { GenericObject, Point } from "../../../types/types";
+import { GenericObject } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 import Star from "../utils/Star";
 
