@@ -1,4 +1,4 @@
-import { Line, Circle } from "../../../types/types";
+import { Line, Circle } from "../../../../../types/types";
 import { PointCircle } from "./PointCircle";
 import { LinePoint } from "./LinePoint";
 

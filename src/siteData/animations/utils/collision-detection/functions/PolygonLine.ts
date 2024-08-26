@@ -1,7 +1,7 @@
 import { Point, Polygon, Line, Circle } from "../../../../../types/types";
-import { lineLine } from "../../LineLine";
+import { lineLine } from "./LineLine";
 
-export function polyLine(polygon: Polygon, line: Line) {
+export function PolygonLine(polygon: Polygon, line: Line) {
   // go through each of the vertices, plus the next
   // vertex in the list
   let next = 0;

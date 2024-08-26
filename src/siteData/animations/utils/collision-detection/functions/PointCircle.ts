@@ -1,4 +1,4 @@
-import { Point, Circle } from "../../../types/types";
+import { Point, Circle } from "../../../../../types/types";
 export function PointCircle(point: Point, circle: Circle) {
   let distX = point.x - circle.x;
   let distY = point.y - circle.y;

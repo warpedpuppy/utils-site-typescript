@@ -1,7 +1,7 @@
 import { Polygon, Circle } from "../../../../../types/types";
-import { LineCircle } from "../../LineCircle";
+import { LineCircle } from "./LineCircle";
 
-export function polyCircle(polygon: Polygon, circle: Circle) {
+export function PolygonCircle(polygon: Polygon, circle: Circle) {
   // go through each of the vertices, plus
   // the next vertex in the list
   let next = 0;

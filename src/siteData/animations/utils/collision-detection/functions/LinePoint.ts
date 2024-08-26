@@ -1,5 +1,5 @@
-import { Line, Point } from "../../../types/types";
-import { LineLength } from "./LineLength";
+import { Line, Point } from "../../../../../types/types";
+import { LineLength } from "../../LineLength";
 export function LinePoint(line: Line, point: Point) {
   // get distance from the point to the two ends of the line
   let d1 = LineLength(point, line.startPoint);

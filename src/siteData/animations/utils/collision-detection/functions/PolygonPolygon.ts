@@ -1,7 +1,7 @@
 import { Polygon, Line } from "../../../../../types/types";
 import { polyPoint } from "./PolygonPoint";
 import { polyLine } from "./PolygonLine";
-export function polyPoly(polygon1: Polygon, polygon2: Polygon) {
+export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   // go through each of the vertices, plus the next
   // vertex in the list
 
