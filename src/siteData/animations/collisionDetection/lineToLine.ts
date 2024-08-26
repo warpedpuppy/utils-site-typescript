@@ -56,6 +56,9 @@ class LineToLineCollision extends AnimationBaseClass {
     this.ctx.lineTo(this.line1.endPoint.x, this.line1.endPoint.y);
     this.ctx.stroke();
 
+    this.line2.startPoint = { x: this.halfWidth - 100, y: this.halfHeight };
+    this.line2.endPoint = { x: this.halfWidth + 100, y: this.halfHeight };
+
     this.ctx.beginPath();
     this.ctx.moveTo(this.line2.startPoint.x, this.line2.startPoint.y);
     this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);
