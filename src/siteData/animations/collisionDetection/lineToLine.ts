@@ -1,5 +1,7 @@
-import { GenericObject, Point, Line, Circle } from "../../../types/types";
+import { Line } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { LineLine } from "../utils/collision-detection/LineCollision";
+import { sineCurve } from "../utils/OmnibusUtils";
 
 class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";
@@ -10,32 +12,50 @@ class LineToLineCollision extends AnimationBaseClass {
     endPoint: { x: 0, y: 0 },
   };
   line2: Line = {
-    startPoint: { x: 0, y: 0 },
-    endPoint: { x: this.canvasWidth, y: this.canvasHeight },
+    startPoint: { x: this.halfWidth - 100, y: this.halfHeight },
+    endPoint: { x: this.halfWidth + 100, y: this.halfHeight },
   };
+  lineLength: number = 100;
+  rotate1: number = 0;
+  rotate2: number = 0;
   init() {
     this.draw();
+  }
+  makePointMove() {
+    let x = sineCurve(this.halfWidth, 200, 0.001);
+    let y = sineCurve(this.halfHeight, 200, 0.001);
+    return { x, y };
   }
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (this.keyFunction(this.line1, this.line2).hit) {
+    if (LineLine(this.line1, this.line2).hit) {
       this.ctx.strokeStyle = "red";
     } else {
       this.ctx.strokeStyle = "black";
     }
 
-    this.ctx.fill();
-    this.ctx.stroke();
-
     this.ctx.lineWidth = 3;
+
+    let { x, y } = this.makePointMove();
+    let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
+    let y1 = y + this.lineLength * Math.sin(2 * Math.PI * (this.rotate1 / 360));
+    let x2 = x - this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
+    let y2 = y - this.lineLength * Math.sin(2 * Math.PI * (this.rotate1 / 360));
+    this.rotate1++;
+    if (this.rotate1 > 360) {
+      this.rotate1 = 0;
+    }
+
+    this.line1.startPoint = { x: x1, y: y1 };
+    this.line1.endPoint = { x: x2, y: y2 };
+
     this.ctx.beginPath();
     this.ctx.moveTo(this.line1.startPoint.x, this.line1.startPoint.y);
     this.ctx.lineTo(this.line1.endPoint.x, this.line1.endPoint.y);
     this.ctx.stroke();
 
-    this.ctx.lineWidth = 3;
     this.ctx.beginPath();
     this.ctx.moveTo(this.line2.startPoint.x, this.line2.startPoint.y);
     this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);
@@ -43,89 +63,8 @@ class LineToLineCollision extends AnimationBaseClass {
 
     requestAnimationFrame(this.draw);
   };
-  keyFunction(line1: Line, line2: Line) {
-    let uA =
-      ((line2.endPoint.x - line2.startPoint.x) *
-        (line1.startPoint.y - line2.startPoint.y) -
-        (line2.endPoint.y - line2.startPoint.y) *
-          (line1.startPoint.x - line2.startPoint.x)) /
-      ((line2.endPoint.y - line2.startPoint.y) *
-        (line1.endPoint.x - line1.startPoint.x) -
-        (line2.endPoint.x - line2.startPoint.x) *
-          (line1.endPoint.y - line1.startPoint.y));
-    let uB =
-      ((line1.endPoint.x - line1.startPoint.x) *
-        (line1.startPoint.y - line2.startPoint.y) -
-        (line1.endPoint.y - line1.startPoint.y) *
-          (line1.startPoint.x - line2.startPoint.x)) /
-      ((line2.endPoint.y - line2.startPoint.y) *
-        (line1.endPoint.x - line1.startPoint.x) -
-        (line2.endPoint.x - line2.startPoint.x) *
-          (line1.endPoint.y - line1.startPoint.y));
-
-    // if uA and uB are between 0-1, lines are colliding
-    if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-      // optionally, draw a circle where the lines meet
-      let intersectionX =
-        line1.startPoint.x + uA * (line1.endPoint.x - line1.startPoint.x);
-      let intersectionY =
-        line1.startPoint.y + uA * (line1.endPoint.y - line1.startPoint.y);
-      return {
-        hit: true,
-        intersectionX,
-        intersectionY,
-      };
-    }
-    return { hit: false };
-  }
-  pointCircle(point: Point, circle: Circle) {
-    let distX = point.x - circle.x;
-    let distY = point.y - circle.y;
-    let distance = Math.sqrt(distX * distX + distY * distY);
-    return distance <= circle.radius;
-  }
-  lineLength(startPoint: Point, endPoint: Point) {
-    let a = startPoint.x - endPoint.x;
-    let b = startPoint.y - endPoint.y;
-    return Math.sqrt(a * a + b * b);
-  }
-  linePoint(line: Line, point: Point) {
-    // get distance from the point to the two ends of the line
-    let d1 = this.lineLength(point, line.startPoint);
-    let d2 = this.lineLength(point, line.endPoint);
-
-    // get the length of the line
-    let lineLen = this.lineLength(line.startPoint, line.endPoint);
-
-    // since floats are so minutely accurate, add
-    // a little buffer zone that will give collision
-    let buffer = 0.1; // higher # = less accurate
-
-    // if the two distances are equal to the line's
-    // length, the point is on the line!
-    // note we use the buffer here to give a range,
-    // rather than one #
-    if (d1 + d2 >= lineLen - buffer && d1 + d2 <= lineLen + buffer) {
-      return true;
-    }
-    return false;
-  }
-  pointerDownHandler(e: PointerEvent) {
-    let x = e.pageX - this.left;
-    let y = e.pageY - this.top;
-    this.line1.startPoint = { x, y };
-    this.line1.endPoint = { x, y };
-    this.allowDraw = true;
-  }
-  pointerUpHandler(e: PointerEvent) {
-    this.allowDraw = false;
-  }
-  pointerMoveHandler(e: PointerEvent) {
-    if (this.allowDraw) {
-      let x = e.pageX - this.left;
-      let y = e.pageY - this.top;
-      this.line1.endPoint = { x, y };
-    }
-  }
+  pointerDownHandler(e: PointerEvent) {}
+  pointerUpHandler(e: PointerEvent) {}
+  pointerMoveHandler(e: PointerEvent) {}
 }
 export default LineToLineCollision;
