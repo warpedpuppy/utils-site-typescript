@@ -1,7 +1,7 @@
 import { Point, Line, Circle } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { LineCircle } from "../utils/collision-detection/LineCollision";
-
+import { sineCurve } from "../utils/OmnibusUtils";
 class LineToCircleCollision extends AnimationBaseClass {
   static t = "line to circle collision";
   static l = "line-to-circle-collision";
@@ -10,16 +10,23 @@ class LineToCircleCollision extends AnimationBaseClass {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },
   };
+  lineLength: number = 50;
+  rotate: number = 0;
   circle: Circle = {
     x: this.halfWidth,
     y: this.halfHeight,
-    radius: 200,
+    radius: 100,
     vx: 0,
     vy: 0,
     id: "circle",
   };
   init() {
     this.draw();
+  }
+  makePointMove() {
+    let x = sineCurve(this.halfWidth, 200, 0.001);
+    let y = sineCurve(this.halfHeight, 200, 0.001);
+    return { x, y };
   }
   draw = () => {
     if (!this.ctx) return;
@@ -30,7 +37,8 @@ class LineToCircleCollision extends AnimationBaseClass {
     } else {
       this.ctx.fillStyle = "transparent";
     }
-
+    this.circle.x = this.halfWidth;
+    this.circle.y = this.halfHeight;
     this.ctx.beginPath();
     this.ctx.arc(
       this.circle.x,
@@ -42,24 +50,25 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.ctx.fill();
     this.ctx.stroke();
 
-    let x = this.circle.x + this.circle.radius * Math.cos(2 * Math.PI * 0.1);
-    let y = this.circle.y + this.circle.radius * Math.sin(2 * Math.PI * 0.1);
+    let { x, y } = this.makePointMove();
+    let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate / 360));
+    let y1 = y + this.lineLength * Math.sin(2 * Math.PI * (this.rotate / 360));
+    let x2 = x - this.lineLength * Math.cos(2 * Math.PI * (this.rotate / 360));
+    let y2 = y - this.lineLength * Math.sin(2 * Math.PI * (this.rotate / 360));
+    this.line.startPoint = { x: x1, y: y1 };
+    this.line.endPoint = { x: x2, y: y2 };
 
     this.ctx.lineWidth = 3;
     this.ctx.beginPath();
-    this.ctx.moveTo(this.circle.x, this.circle.y);
-    this.ctx.lineTo(x, y);
+    this.ctx.moveTo(x1, y1);
+
+    this.ctx.lineTo(x2, y2);
     this.ctx.stroke();
 
-    x = this.circle.x - this.circle.radius * Math.cos(2 * Math.PI * 0.1);
-    y = this.circle.y - this.circle.radius * Math.sin(2 * Math.PI * 0.1);
-
-    this.ctx.lineWidth = 3;
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.circle.x, this.circle.y);
-    this.ctx.lineTo(x, y);
-    this.ctx.stroke();
-
+    this.rotate++;
+    if (this.rotate > 360) {
+      this.rotate = 0;
+    }
     requestAnimationFrame(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}
