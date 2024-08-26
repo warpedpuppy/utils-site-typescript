@@ -1,5 +1,8 @@
-import { Rectangle, Point, Line, Circle } from "../../../types/types";
+import { Point, Line, Circle } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
+import Rectangle from "../utils/Rectangle";
+import { sineCurve } from "../utils/OmnibusUtils";
+import { LinePolygon } from "../utils/collision-detection/LineCollision";
 
 class LineToRectangleCollision extends AnimationBaseClass {
   static t = "line to rectangle collision";
@@ -9,23 +12,26 @@ class LineToRectangleCollision extends AnimationBaseClass {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },
   };
-  rect: Rectangle = {
-    x: this.halfWidth - 100,
-    y: this.halfHeight - 100,
-    width: 200,
-    height: 200,
-    vx: 0,
-    vy: 0,
-    id: "rect",
-  };
+  rect: Rectangle = new Rectangle(100, 100, 0, this.ctx, false, "rect", {
+    stroke: false,
+    fill: true,
+    spinSpeed: 3,
+  });
+  rotate1: number = 0;
+  lineLength: number = 100;
   init() {
     this.draw();
+  }
+  makePointMove() {
+    let x = sineCurve(this.halfWidth, 200, 0.001);
+    let y = sineCurve(this.halfHeight, 200, 0.001);
+    return { x, y };
   }
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (this.keyFunction(this.line, this.rect)) {
+    if (LinePolygon(this.rect.returnRectangle(), this.line)) {
       this.ctx.strokeStyle = "red";
       this.ctx.fillStyle = "red";
     } else {
@@ -35,102 +41,42 @@ class LineToRectangleCollision extends AnimationBaseClass {
 
     this.ctx.lineWidth = 3;
 
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(this.line.startPoint.x, this.line.startPoint.y);
+    // this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
+    // this.ctx.stroke();
+
+    let { x, y } = this.makePointMove();
+    let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
+    let y1 = y + this.lineLength * Math.sin(2 * Math.PI * (this.rotate1 / 360));
+    let x2 = x - this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
+    let y2 = y - this.lineLength * Math.sin(2 * Math.PI * (this.rotate1 / 360));
+    this.rotate1++;
+    if (this.rotate1 > 360) {
+      this.rotate1 = 0;
+    }
+
+    this.line.startPoint = { x: x1, y: y1 };
+    this.line.endPoint = { x: x2, y: y2 };
+
     this.ctx.beginPath();
     this.ctx.moveTo(this.line.startPoint.x, this.line.startPoint.y);
     this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
     this.ctx.stroke();
 
     this.ctx.beginPath();
-    this.ctx.rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+    // this.ctx.rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+    this.rect.draw(this.top, this.left, {
+      x: this.halfWidth,
+      y: this.halfHeight,
+    });
     this.ctx.stroke();
     this.ctx.fill();
 
     requestAnimationFrame(this.draw);
   };
-  keyFunction(line: Line, rectangle: Rectangle) {
-    // check if the line has hit any of the rectangle's sides
-    // uses the Line/Line function below
-    let { x, y, width, height } = rectangle;
-    let leftSide: Line = {
-      startPoint: { x, y },
-      endPoint: { x, y: y + height },
-    };
-    let rightSide: Line = {
-      startPoint: { x: x + width, y },
-      endPoint: { x: x + width, y: y + height },
-    };
-    let topSide: Line = {
-      startPoint: { x, y },
-      endPoint: { x: x + width, y },
-    };
-    let bottomSide: Line = {
-      startPoint: { x, y: y + height },
-      endPoint: { x: x + width, y: y + height },
-    };
-
-    let left = this.lineToLine(line, leftSide).hit;
-    let right = this.lineToLine(line, rightSide).hit;
-    let top = this.lineToLine(line, topSide).hit;
-    let bottom = this.lineToLine(line, bottomSide).hit;
-
-    // if ANY of the above are true, the line
-    // has hit the rectangle
-    if (left || right || top || bottom) {
-      return true;
-    }
-    return false;
-  }
-  lineToLine(line1: Line, line2: Line) {
-    let uA =
-      ((line2.endPoint.x - line2.startPoint.x) *
-        (line1.startPoint.y - line2.startPoint.y) -
-        (line2.endPoint.y - line2.startPoint.y) *
-          (line1.startPoint.x - line2.startPoint.x)) /
-      ((line2.endPoint.y - line2.startPoint.y) *
-        (line1.endPoint.x - line1.startPoint.x) -
-        (line2.endPoint.x - line2.startPoint.x) *
-          (line1.endPoint.y - line1.startPoint.y));
-    let uB =
-      ((line1.endPoint.x - line1.startPoint.x) *
-        (line1.startPoint.y - line2.startPoint.y) -
-        (line1.endPoint.y - line1.startPoint.y) *
-          (line1.startPoint.x - line2.startPoint.x)) /
-      ((line2.endPoint.y - line2.startPoint.y) *
-        (line1.endPoint.x - line1.startPoint.x) -
-        (line2.endPoint.x - line2.startPoint.x) *
-          (line1.endPoint.y - line1.startPoint.y));
-
-    // if uA and uB are between 0-1, lines are colliding
-    if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-      // optionally, draw a circle where the lines meet
-      let intersectionX =
-        line1.startPoint.x + uA * (line1.endPoint.x - line1.startPoint.x);
-      let intersectionY =
-        line1.startPoint.y + uA * (line1.endPoint.y - line1.startPoint.y);
-      return {
-        hit: true,
-        intersectionX,
-        intersectionY,
-      };
-    }
-    return { hit: false };
-  }
-  pointerDownHandler(e: PointerEvent) {
-    let x = e.pageX - this.left;
-    let y = e.pageY - this.top;
-    this.line.startPoint = { x, y };
-    this.line.endPoint = { x, y };
-    this.allowDraw = true;
-  }
-  pointerUpHandler(e: PointerEvent) {
-    this.allowDraw = false;
-  }
-  pointerMoveHandler(e: PointerEvent) {
-    if (this.allowDraw) {
-      let x = e.pageX - this.left;
-      let y = e.pageY - this.top;
-      this.line.endPoint = { x, y };
-    }
-  }
+  pointerDownHandler(e: PointerEvent) {}
+  pointerUpHandler(e: PointerEvent) {}
+  pointerMoveHandler(e: PointerEvent) {}
 }
 export default LineToRectangleCollision;
