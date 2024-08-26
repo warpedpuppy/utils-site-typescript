@@ -12,6 +12,7 @@ class Star {
   rot: number = 0;
   step: number = 0;
   star: Polygon = { vertices: [], draw: () => {}, drag: false };
+  centerPoint: Point;
   constructor(
     spikes: number,
     outerRadius: number,
@@ -19,7 +20,8 @@ class Star {
     angle: number = 0,
     ctx: any,
     rotate: boolean = false,
-    id: string = ""
+    id: string = "",
+    centerPoint: Point = { x: 0, y: 0 }
   ) {
     this.spikes = spikes;
     this.outerRadius = outerRadius;
@@ -29,7 +31,7 @@ class Star {
     this.rotate = rotate;
     this.id = id;
     this.rot = (Math.PI / 2) * 3;
-
+    this.centerPoint = centerPoint;
     this.step = Math.PI / spikes;
   }
   getStar() {
@@ -38,7 +40,7 @@ class Star {
   draw(
     top: number,
     left: number,
-    centerPoint: Point,
+    centerPoint: Point = { x: 0, y: 0 },
     mousePoint: Point = { x: 0, y: 0 }
   ) {
     let {
@@ -53,9 +55,8 @@ class Star {
       ctx,
     } = this;
     ctx.beginPath();
+    centerPoint = this.centerPoint ? this.centerPoint : centerPoint;
     if (!this.drag) mousePoint = { x: 0, y: 0 };
-    // centerPoint = this.drag ? { x: 0, y: 0 } : storeCenterPoint;
-
     this.star.vertices = [];
     for (let i = 0; i < spikes; i++) {
       let x =
