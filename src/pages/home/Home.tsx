@@ -15,13 +15,12 @@ function Home() {
       <div id="home-page--text-container">
         <div id="home-page--text-container_inner">
           <p>
-            If you are like me, you enjoy tinkering with web animations, but
-            don't want to rely on a library to
+            Do you ever want to make a quick animation, but don't want to get
+            out your old trig books? Well, this site is for you.
           </p>
           <p>
-            Just go to the "generate utils" page and choose which functions you
-            want, then click the other page and you can copy and paste it into
-            your file system.
+            Just go to the "create" page, click the functions you need and then
+            copy and paste the compiled document. Easy Peasy.
           </p>
         </div>
       </div>
