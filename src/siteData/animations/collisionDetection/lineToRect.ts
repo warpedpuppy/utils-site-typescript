@@ -31,20 +31,19 @@ class LineToRectangleCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeStyle = "black";
+
     if (LinePolygon(this.rect.returnRectangle(), this.line)) {
-      this.ctx.strokeStyle = "red";
       this.ctx.fillStyle = "red";
     } else {
-      this.ctx.strokeStyle = "black";
       this.ctx.fillStyle = "black";
     }
 
-    this.ctx.lineWidth = 3;
-
-    // this.ctx.beginPath();
-    // this.ctx.moveTo(this.line.startPoint.x, this.line.startPoint.y);
-    // this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
-    // this.ctx.stroke();
+    this.rect.draw(this.top, this.left, {
+      x: this.halfWidth,
+      y: this.halfHeight,
+    });
 
     let { x, y } = this.makePointMove();
     let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
@@ -63,15 +62,6 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.ctx.moveTo(this.line.startPoint.x, this.line.startPoint.y);
     this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
     this.ctx.stroke();
-
-    this.ctx.beginPath();
-    // this.ctx.rect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
-    this.rect.draw(this.top, this.left, {
-      x: this.halfWidth,
-      y: this.halfHeight,
-    });
-    this.ctx.stroke();
-    this.ctx.fill();
 
     requestAnimationFrame(this.draw);
   };
