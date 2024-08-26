@@ -56,7 +56,7 @@ class Star {
     if (!this.drag) mousePoint = { x: 0, y: 0 };
     // centerPoint = this.drag ? { x: 0, y: 0 } : storeCenterPoint;
 
-    this.vertices = [];
+    this.star.vertices = [];
     for (let i = 0; i < spikes; i++) {
       let x =
         centerPoint.x +
@@ -86,7 +86,7 @@ class Star {
         Math.sin(angle + rot) * innerRadius +
         mousePoint.y -
         top;
-      star.vertices.push({ x: x + left, y: y + top });
+      this.star.vertices.push({ x: x + left, y: y + top });
       ctx.lineTo(x + left, y + top);
       rot += step;
     }
