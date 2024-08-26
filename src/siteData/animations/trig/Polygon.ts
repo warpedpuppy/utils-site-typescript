@@ -1,7 +1,7 @@
 import AnimationBaseClass from "../AnimationBaseClass";
 import Rectangle from "../utils/RectangleWithConstructionDetails";
 class AnimationTemplate extends AnimationBaseClass {
-  static t = "draw rectangle (without using rect())";
+  static t = "draw rectangle (using trig, not rect())";
   static l = "draw-rectangle";
   title = "draw rectangle";
   rect: Rectangle;
