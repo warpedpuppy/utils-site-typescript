@@ -42,10 +42,22 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.ctx.fill();
     this.ctx.stroke();
 
+    let x = this.circle.x + this.circle.radius * Math.cos(2 * Math.PI * 0.1);
+    let y = this.circle.y + this.circle.radius * Math.sin(2 * Math.PI * 0.1);
+
     this.ctx.lineWidth = 3;
     this.ctx.beginPath();
-    this.ctx.moveTo(this.line.startPoint.x, this.line.startPoint.y);
-    this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
+    this.ctx.moveTo(this.circle.x, this.circle.y);
+    this.ctx.lineTo(x, y);
+    this.ctx.stroke();
+
+    x = this.circle.x - this.circle.radius * Math.cos(2 * Math.PI * 0.1);
+    y = this.circle.y - this.circle.radius * Math.sin(2 * Math.PI * 0.1);
+
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.circle.x, this.circle.y);
+    this.ctx.lineTo(x, y);
     this.ctx.stroke();
 
     requestAnimationFrame(this.draw);
