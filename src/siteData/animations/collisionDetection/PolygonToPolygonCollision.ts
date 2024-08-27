@@ -1,13 +1,20 @@
 import AnimationBaseClass from "../AnimationBaseClass";
 import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
-import Star from "../utils/Star";
+import { Star, StarObject } from "../utils/animation/Star";
 import { sineCurve } from "../utils/OmnibusUtils";
+import { Polygon } from "../../../types/shapes";
 class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
   static l = "polygon-to-polygon-ollision";
   title = "polygon to polygon collision";
-  star1: Star = new Star(5, 50, 25, 0, this.ctx, true, "star1");
-  star2: Star = new Star(9, 150, 25, 0, this.ctx, true, "star2");
+  star1: Polygon = StarObject.keyFunction(5, 50, 25, 0, {
+    rotate: true,
+    rotateSpeed: 2000,
+  });
+  star2: Polygon = StarObject.keyFunction(9, 150, 25, 0, {
+    rotate: true,
+    rotateSpeed: 2000,
+  });
   animationObject = PolygonPolygon;
   init() {
     this.draw();
@@ -21,22 +28,40 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (
-      PolygonPolygon.keyFunction(this.star1.getStar(), this.star2.getStar())
-    ) {
+    this.star1 = StarObject.keyFunction(5, 50, 25, 0, {
+      rotate: true,
+      rotateSpeed: 500,
+    });
+    this.star2 = StarObject.keyFunction(9, 150, 25, 0, {
+      rotate: true,
+      rotateSpeed: 2000,
+    });
+
+    if (PolygonPolygon.keyFunction(this.star1, this.star2)) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "yellow";
     }
 
-    this.star2.draw(this.top, this.left, {
-      x: this.halfWidth,
-      y: this.halfHeight,
+    this.ctx.beginPath();
+    this.star2.vertices.forEach((star, i) => {
+      if (i === 0) {
+        this.ctx?.moveTo(this.halfWidth + star.x, this.halfHeight + star.y);
+      } else {
+        this.ctx?.lineTo(this.halfWidth + star.x, this.halfHeight + star.y);
+      }
     });
     this.ctx.fill();
 
-    let star1CenterPoint = this.makePointMove();
-    this.star1.draw(this.top, this.left, star1CenterPoint);
+    let { x, y } = this.makePointMove();
+    this.ctx.beginPath();
+    this.star1.vertices.forEach((star, i) => {
+      if (i === 0) {
+        this.ctx?.moveTo(x + star.x, y + star.y);
+      } else {
+        this.ctx?.lineTo(x + star.x, y + star.y);
+      }
+    });
     this.ctx.fill();
 
     requestAnimationFrame(this.draw);

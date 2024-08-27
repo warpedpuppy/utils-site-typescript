@@ -17,7 +17,9 @@ export const PolygonPolygon: CollisionDetectionObject = {
 
       // now we can use these two points (a line) to compare
       // to the other polygon's vertices using polyLine()
+
       let line: Line = { startPoint, endPoint };
+
       let collision = PolygonLine.keyFunction(polygon2, line);
       if (collision) return true;
 

@@ -23,15 +23,17 @@ function Modal({
         </div>
         <div className="modal-inner-content">
           <ModalTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          {activeTab === 0 && <pre>{animationObject.functionString}</pre>}
-          {activeTab === 1 && (
-            <div>
-              {animationObject.dependencies.map((item, i) => {
-                return <pre key={`modal-dependencies-${i}`}>{item}</pre>;
-              })}
-            </div>
-          )}
-          {activeTab === 2 && <pre>{ShapesString}</pre>}
+          <div className="modal-inner-content--tab-content">
+            {activeTab === 0 && <pre>{animationObject.functionString}</pre>}
+            {activeTab === 1 && (
+              <div>
+                {animationObject.dependencies.map((item, i) => {
+                  return <pre key={`modal-dependencies-${i}`}>{item}</pre>;
+                })}
+              </div>
+            )}
+            {activeTab === 2 && <pre>{ShapesString}</pre>}
+          </div>
         </div>
       </div>
     </div>

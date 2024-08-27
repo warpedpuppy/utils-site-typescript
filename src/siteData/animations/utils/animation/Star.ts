@@ -1,5 +1,70 @@
-import { Point, Polygon } from "../../../types/shapes";
-class Star {
+import { Point, Polygon } from "../../../../types/shapes";
+import { CollisionDetectionObject } from "../../../../types/types";
+
+export const StarObject: CollisionDetectionObject = {
+  keyFunction: function (
+    spikes: number,
+    innerRadius: number,
+    outerRadius: number,
+    angle: number = 0,
+    options: {
+      rotate: boolean;
+      rotateSpeed: number;
+    } = { rotate: false, rotateSpeed: 1000 }
+  ) {
+    let vertices = [];
+    let rot = 0;
+    let step = Math.PI / spikes;
+    const currentDate = new Date();
+    let rotateQ = options.rotate
+      ? currentDate.getTime() / options.rotateSpeed
+      : 0;
+    for (let i = 0; i < spikes; i++) {
+      let x = Math.cos(angle + rot + rotateQ) * outerRadius;
+      let y = Math.sin(angle + rot + rotateQ) * outerRadius;
+      vertices.push({ x, y });
+      rot += step;
+      x = Math.cos(angle + rot + rotateQ) * innerRadius;
+      y = Math.sin(angle + rot + rotateQ) * innerRadius;
+      vertices.push({ x, y });
+      rot += step;
+    }
+    return { vertices };
+  },
+  dependencies: [],
+  functionString: `
+function DrawStar (
+    spikes: number,
+    innerRadius: number,
+    outerRadius: number,
+    angle: number = 0,
+    options: {
+      rotate: boolean;
+      rotateSpeed: number;
+    } = { rotate: false, rotateSpeed: 1000 }
+  ) {
+    let vertices = [];
+    let rot = 0;
+    let step = Math.PI / spikes;
+    const currentDate = new Date();
+    let rotateQ = options.rotate
+      ? currentDate.getTime() / options.rotateSpeed
+      : 0;
+    for (let i = 0; i < spikes; i++) {
+      let x = Math.cos(angle + rot + rotateQ) * outerRadius;
+      let y = Math.sin(angle + rot + rotateQ) * outerRadius;
+      vertices.push({ x, y });
+      rot += step;
+      x = Math.cos(angle + rot + rotateQ) * innerRadius;
+      y = Math.sin(angle + rot + rotateQ) * innerRadius;
+      vertices.push({ x, y });
+      rot += step;
+    }
+    return vertices;
+  }`,
+};
+
+export class Star {
   ctx: CanvasRenderingContext2D;
   spikes: number;
   outerRadius: number;
@@ -103,4 +168,3 @@ class Star {
     this.star = star;
   }
 }
-export default Star;

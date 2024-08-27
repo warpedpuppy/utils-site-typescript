@@ -1,13 +1,19 @@
+import { Polygon } from "../../../types/shapes";
 import { GenericObject } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
-import Star from "../utils/Star";
+import { Star, StarObject } from "../utils/animation/Star";
 
 class AnimationTemplate extends AnimationBaseClass {
   static t = "draw star";
   static l = "draw-star";
   title = "draw-star";
   stars: Star[] = [];
+  star: Polygon = StarObject.keyFunction(5, 100, 200, 0, {
+    rotate: true,
+    rotateSpeed: 2000,
+  });
   starQ: number = 30;
+  animationObject = StarObject;
   storeWidthHeight: GenericObject = {};
   constructor() {
     super();
@@ -49,10 +55,21 @@ class AnimationTemplate extends AnimationBaseClass {
         width: this.canvasWidth,
       };
     }
-    for (let i = 0; i < this.starQ; i++) {
-      let star = this.stars[i];
-      star.draw(this.top, this.left);
-    }
+    this.ctx.beginPath();
+    this.star = StarObject.keyFunction(5, 70, 200, 0, {
+      rotate: true,
+      rotateSpeed: 2000,
+    });
+    this.star.vertices.forEach((star, i) => {
+      if (i === 0) {
+        this.ctx?.moveTo(this.halfWidth + star.x, this.halfHeight + star.y);
+      } else {
+        this.ctx?.lineTo(this.halfWidth + star.x, this.halfHeight + star.y);
+      }
+    });
+    this.ctx.closePath();
+    this.ctx.stroke();
+
     requestAnimationFrame(this.draw);
   };
   keyFunction() {}

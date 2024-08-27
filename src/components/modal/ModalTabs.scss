@@ -5,15 +5,14 @@
     padding-bottom: 0;
     margin-right: 0.5rem;
     cursor: pointer;
-    border: 1px solid var(--site-gray);
+    border-top: 1px double blue;
     border-bottom: none;
-    border-top-left-radius: 0.15rem;
-    border-top-right-radius: 0.5rem;
     position: relative;
     background-color: white;
     top: 0;
-    &.active-tab {
-      top: 2px;
+    transition: top 0.25s;
+    &.active-modal-tab {
+      top: 1px;
     }
   }
 }
