@@ -34,7 +34,7 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.ctx.lineWidth = 3;
     this.ctx.strokeStyle = "black";
 
-    if (LinePolygon(this.rect.returnRectangle(), this.line)) {
+    if (LinePolygon.keyFunction(this.rect.returnRectangle(), this.line)) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "black";

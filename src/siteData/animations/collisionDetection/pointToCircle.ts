@@ -1,10 +1,7 @@
 import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { sineCurve } from "../utils/OmnibusUtils";
-import {
-  PointCircle,
-  PointCircleString,
-} from "../utils/collision-detection/PointCollision";
+import { PointCircle } from "../utils/collision-detection/PointCollision";
 
 class PointToCircleCollision extends AnimationBaseClass {
   static t = "point to circle collision";
@@ -18,8 +15,6 @@ class PointToCircleCollision extends AnimationBaseClass {
     vy: 0,
     id: "circle1",
   };
-  dependencies: string[] = [];
-  keyFunction: string = PointCircleString;
   circle2: Circle = {
     x: this.canvasWidth * 0.5,
     y: this.halfHeight,
@@ -42,7 +37,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.circle2.y = this.halfHeight;
     let { x, y } = this.makePointMove();
 
-    if (PointCircle({ x, y }, this.circle2)) {
+    if (PointCircle.keyFunction({ x, y }, this.circle2)) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "black";

@@ -34,7 +34,7 @@ class LineToPointCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (LinePoint(this.line, this.point)) {
+    if (LinePoint.keyFunction(this.line, this.point)) {
       this.ctx.fillStyle = "red";
       this.ctx.strokeStyle = "red";
     } else {

@@ -20,7 +20,9 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (PolygonPolygon(this.star1.getStar(), this.star2.getStar())) {
+    if (
+      PolygonPolygon.keyFunction(this.star1.getStar(), this.star2.getStar())
+    ) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "yellow";

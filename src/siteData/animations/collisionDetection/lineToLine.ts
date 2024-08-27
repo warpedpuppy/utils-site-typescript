@@ -30,7 +30,7 @@ class LineToLineCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (LineLine(this.line1, this.line2).hit) {
+    if (LineLine.keyFunction(this.line1, this.line2).hit) {
       this.ctx.strokeStyle = "red";
     } else {
       this.ctx.strokeStyle = "black";

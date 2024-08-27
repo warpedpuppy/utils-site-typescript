@@ -1,15 +1,11 @@
 import AnimationBaseClass from "../AnimationBaseClass";
 import Rectangle from "../utils/Rectangle";
-import {
-  PolygonPolygon,
-  PolygonPolygonString,
-} from "../utils/collision-detection/PolygonCollision";
+import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
 import { sineCurve } from "../utils/OmnibusUtils";
 class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";
   static l = "rectangle-to-rectangle-collision";
   title = "rectangle to rectangle collision";
-  keyFunction: string = PolygonPolygonString;
   rect1: Rectangle = new Rectangle(50, 50, 0, this.ctx, false, "rect", {
     stroke: false,
     fill: true,
@@ -35,7 +31,10 @@ class RectToRect extends AnimationBaseClass {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fillStyle = "transparent";
     if (
-      PolygonPolygon(this.rect1.returnRectangle(), this.rect2.returnRectangle())
+      PolygonPolygon.keyFunction(
+        this.rect1.returnRectangle(),
+        this.rect2.returnRectangle()
+      )
     ) {
       this.ctx.fillStyle = "red";
     } else {

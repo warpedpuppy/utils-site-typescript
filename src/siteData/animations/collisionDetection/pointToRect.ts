@@ -1,4 +1,4 @@
-import { Circle, Point } from "../../../types/shapes";
+import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { sineCurve } from "../utils/OmnibusUtils";
 import { PolygonPoint } from "../utils/collision-detection/PolygonCollision";
@@ -20,7 +20,6 @@ class PointToRectangle extends AnimationBaseClass {
     id: "circle1",
   };
   startDrag: boolean = false;
-  keyFunction: Function = PolygonPoint;
   init() {
     if (!this.ctx) return;
     this.draw();
@@ -40,7 +39,7 @@ class PointToRectangle extends AnimationBaseClass {
     this.circle1.y = y;
 
     if (
-      PolygonPoint(this.rect.returnRectangle(), {
+      PolygonPoint.keyFunction(this.rect.returnRectangle(), {
         x: this.circle1.x,
         y: this.circle1.y,
       })
