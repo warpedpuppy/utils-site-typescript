@@ -2,7 +2,7 @@ import AnimationBaseClass from "../AnimationBaseClass";
 import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
 import { Star, StarObject } from "../utils/animation/Star";
 import { sineCurve } from "../utils/OmnibusUtils";
-import { Polygon } from "../../../types/shapes";
+import { Polygon, Point } from "../../../types/shapes";
 class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
   static l = "polygon-to-polygon-ollision";
@@ -36,13 +36,11 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       rotate: true,
       rotateSpeed: 2000,
     });
-    console.log(this.star1, this.star2);
-    if (PolygonPolygon.keyFunction(this.star1, this.star2)) {
-      this.ctx.fillStyle = "red";
-    } else {
-      this.ctx.fillStyle = "yellow";
-    }
 
+    this.ctx.strokeStyle = "black";
+    this.ctx.lineWidth = 3;
+
+    let vertices1: Point[] = [];
     this.ctx.beginPath();
     this.star2.vertices.forEach((star, i) => {
       if (i === 0) {
@@ -50,10 +48,18 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       } else {
         this.ctx?.lineTo(this.halfWidth + star.x, this.halfHeight + star.y);
       }
+      vertices1.push({
+        x: this.halfWidth + star.x,
+        y: this.halfHeight + star.y,
+      });
     });
+    this.ctx.closePath();
+    this.ctx.stroke();
+
     this.ctx.fill();
 
     let { x, y } = this.makePointMove();
+    let vertices2: Point[] = [];
     this.ctx.beginPath();
     this.star1.vertices.forEach((star, i) => {
       if (i === 0) {
@@ -61,8 +67,25 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       } else {
         this.ctx?.lineTo(x + star.x, y + star.y);
       }
+      vertices2.push({
+        x: x + star.x,
+        y: y + star.y,
+      });
     });
+    this.ctx.closePath();
+    this.ctx.stroke();
     this.ctx.fill();
+
+    if (
+      PolygonPolygon.keyFunction(
+        { vertices: vertices1 },
+        { vertices: vertices2 }
+      )
+    ) {
+      this.ctx.fillStyle = "red";
+    } else {
+      this.ctx.fillStyle = "yellow";
+    }
 
     requestAnimationFrame(this.draw);
   };
