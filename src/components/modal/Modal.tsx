@@ -1,23 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ModalTabs from "./ModalTabs";
 import { ShapesString } from "../../types/shapes";
 import "./Modal.scss";
+import { CollisionDetectionObject } from "../../types/types";
 function Modal({
-  functionParam,
+  animationObject,
   closeModal,
-  dependenciesParam = [],
 }: {
-  functionParam: Function;
+  animationObject: CollisionDetectionObject;
   closeModal: Function;
-  dependenciesParam: string[];
 }) {
-  const [functionString, setFunctionString] = useState("");
   const [activeTab, setActiveTab] = useState(0);
-  useEffect(() => {
-    let tempString = functionParam.toString();
 
-    setFunctionString(tempString);
-  }, [functionParam]);
   return (
     <div className="modal-container">
       <div className="modal-inner">
@@ -29,11 +23,11 @@ function Modal({
         </div>
         <div className="modal-inner-content">
           <ModalTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          {activeTab === 0 && <pre>{functionString}</pre>}
+          {activeTab === 0 && <pre>{animationObject.functionString}</pre>}
           {activeTab === 1 && (
             <div>
-              {dependenciesParam.map((item, i) => {
-                return <div key={`modal-dependencies-${i}`}>{item}</div>;
+              {animationObject.dependencies.map((item, i) => {
+                return <pre key={`modal-dependencies-${i}`}>{item}</pre>;
               })}
             </div>
           )}

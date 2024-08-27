@@ -6,6 +6,7 @@ class LineToCircleCollision extends AnimationBaseClass {
   static t = "line to circle collision";
   static l = "line-to-circle-collision";
   title = "line to circle collision";
+  animationObject = LineCircle;
   line: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },

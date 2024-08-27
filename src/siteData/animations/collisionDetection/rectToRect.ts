@@ -6,6 +6,7 @@ class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";
   static l = "rectangle-to-rectangle-collision";
   title = "rectangle to rectangle collision";
+  animationObject = PolygonPolygon;
   rect1: Rectangle = new Rectangle(50, 50, 0, this.ctx, false, "rect", {
     stroke: false,
     fill: true,

@@ -6,6 +6,7 @@ class LineToPointCollision extends AnimationBaseClass {
   static t = "line to point collision";
   static l = "line-to-point-collision";
   title = "line to point collision";
+  animationObject = LinePoint;
   line: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: this.canvasWidth, y: this.canvasHeight },

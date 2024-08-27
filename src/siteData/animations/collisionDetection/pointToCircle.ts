@@ -7,6 +7,7 @@ class PointToCircleCollision extends AnimationBaseClass {
   static t = "point to circle collision";
   static l = "point-to-circle-collision";
   title = "point to circle collision";
+  animationObject = PointCircle;
   circle1: Circle = {
     x: this.canvasWidth * 0.33,
     y: this.halfHeight,

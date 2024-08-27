@@ -8,6 +8,7 @@ class LineToRectangleCollision extends AnimationBaseClass {
   static t = "line to rectangle collision";
   static l = "line-to-rectangle-collision";
   title = "line to rectangle collision";
+  animationObject = LinePolygon;
   line: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },

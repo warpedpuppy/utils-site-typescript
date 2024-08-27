@@ -3,11 +3,17 @@ import PrimaryCanvasHeader from "./PrimaryCanvasHeader";
 import Modal from "../modal/Modal";
 function CanvasContainer({ instance }: { instance: any }) {
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [animationObject, setAnimationObject] = useState({
+    keyFunction: () => {},
+    dependencies: [],
+    functionString: "",
+  });
   const [instanceOfClass, setInstanceOfClass] = useState<any>();
   useEffect(() => {
     let i = instance?.initiate("primary-canvas--content--canvas-container");
     i?.init();
     setInstanceOfClass(i);
+    setAnimationObject(i?.animationObject);
     return () => i?.stop();
   }, [instance]);
 
@@ -27,8 +33,7 @@ function CanvasContainer({ instance }: { instance: any }) {
       </div>
       {showModal && (
         <Modal
-          functionParam={instanceOfClass.keyFunction}
-          dependenciesParam={instanceOfClass.dependencies}
+          animationObject={animationObject}
           closeModal={() => setShowModal(false)}
         />
       )}

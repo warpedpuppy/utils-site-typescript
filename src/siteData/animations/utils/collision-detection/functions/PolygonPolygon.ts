@@ -1,6 +1,7 @@
 import { Polygon, Line } from "../../../../../types/shapes";
 import { PolygonPoint } from "./PolygonPoint";
 import { PolygonLine } from "./PolygonLine";
+import { LineLine } from "./LineLine";
 import { CollisionDetectionObject } from "../../../../../types/types";
 
 export const PolygonPolygon: CollisionDetectionObject = {
@@ -27,7 +28,11 @@ export const PolygonPolygon: CollisionDetectionObject = {
 
     return false;
   },
-  dependencies: [PolygonPoint.functionString, PolygonLine.functionString],
+  dependencies: [
+    PolygonPoint.functionString,
+    PolygonLine.functionString,
+    LineLine.functionString,
+  ],
   functionString: `
 function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   let next = 0;

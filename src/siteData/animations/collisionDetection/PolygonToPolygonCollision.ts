@@ -8,6 +8,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
   title = "polygon to polygon collision";
   star1: Star = new Star(5, 50, 25, 0, this.ctx, true, "star1");
   star2: Star = new Star(9, 150, 25, 0, this.ctx, true, "star2");
+  animationObject = PolygonPolygon;
   init() {
     this.draw();
   }

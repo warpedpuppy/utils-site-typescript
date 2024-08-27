@@ -6,6 +6,7 @@ class CircleToCircleCollision extends AnimationBaseClass {
   static t = "circle to circle collision";
   static l = "circle-to-circle-collision";
   title = "circle to circle collision";
+  animationObject = CircleCircle;
   circle1: Circle = {
     x: this.canvasWidth * 0.5,
     y: this.halfHeight,

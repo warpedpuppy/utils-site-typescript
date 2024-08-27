@@ -8,6 +8,7 @@ class CirceToRectCollision extends AnimationBaseClass {
   static t = "circle to rectangle collision";
   static l = "circle-to-rectangle-collision";
   title = "circle to rectangle collision";
+  animationObject = PolygonCircle;
   rect: Rectangle = new Rectangle(100, 100, 0, this.ctx, false, "rect", {
     stroke: false,
     fill: true,

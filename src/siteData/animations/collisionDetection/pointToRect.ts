@@ -7,6 +7,7 @@ class PointToRectangle extends AnimationBaseClass {
   static t = "point to polygon collision";
   static l = "point-to-rectangle-collision";
   title = "point to rectangle (or any polygon) collision";
+  animationObject = PolygonPoint;
   rect: Rectangle = new Rectangle(200, 300, 0, this.ctx, false, "rect", {
     stroke: false,
     fill: true,

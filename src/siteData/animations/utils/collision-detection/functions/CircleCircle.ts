@@ -10,16 +10,6 @@ export const CircleCircle: CollisionDetectionObject = {
   },
   dependencies: [],
   functionString: `
-interface Circle extends ShapeInMotion {
-  x: number;
-  y: number;
-  radius: number;
-}
-interface ShapeInMotion {
-  vx: number;
-  vy: number;
-  id: string;
-}
 export function CircleCircle(circle1: Circle, circle2: Circle) {
   let distX = circle1.x - circle2.x;
   let distY = circle1.y - circle2.y;
