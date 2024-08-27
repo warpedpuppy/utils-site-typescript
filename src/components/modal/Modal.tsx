@@ -5,7 +5,7 @@ import "./Modal.scss";
 function Modal({
   functionParam,
   closeModal,
-  dependenciesParam,
+  dependenciesParam = [],
 }: {
   functionParam: Function;
   closeModal: Function;

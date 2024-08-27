@@ -1,33 +1,34 @@
 import { Line, Point } from "../../../../../types/shapes";
-import { LineLength, LineLengthString } from "../../LineLength";
-export function LinePoint(line: Line, point: Point) {
-  // get distance from the point to the two ends of the line
-  let tempLine: Line = { startPoint: line.startPoint, endPoint: point };
-  let d1 = LineLength(tempLine);
+import { CollisionDetectionObject } from "../../../../../types/types";
+import { LineLength } from "../../LineLength";
 
-  tempLine = { startPoint: line.endPoint, endPoint: point };
-  let d2 = LineLength(tempLine);
+export const LinePoint: CollisionDetectionObject = {
+  keyFunction: function LinePoint(line: Line, point: Point) {
+    // get distance from the point to the two ends of the line
+    let tempLine: Line = { startPoint: line.startPoint, endPoint: point };
+    let d1 = LineLength.keyFunction(tempLine);
 
-  // get the length of the line
-  let lineLen = LineLength(line);
+    tempLine = { startPoint: line.endPoint, endPoint: point };
+    let d2 = LineLength.keyFunction(tempLine);
 
-  // since floats are so minutely accurate, add
-  // a little buffer zone that will give collision
-  let buffer = 0.1; // higher # = less accurate
+    // get the length of the line
+    let lineLen = LineLength.keyFunction(line);
 
-  // if the two distances are equal to the line's
-  // length, the point is on the line!
-  // note we use the buffer here to give a range,
-  // rather than one #
-  if (d1 + d2 >= lineLen - buffer && d1 + d2 <= lineLen + buffer) {
-    return true;
-  }
-  return false;
-}
+    // since floats are so minutely accurate, add
+    // a little buffer zone that will give collision
+    let buffer = 0.1; // higher # = less accurate
 
-export const dependencies: string[] = [LineLengthString];
-
-export const LinePointString = `
+    // if the two distances are equal to the line's
+    // length, the point is on the line!
+    // note we use the buffer here to give a range,
+    // rather than one #
+    if (d1 + d2 >= lineLen - buffer && d1 + d2 <= lineLen + buffer) {
+      return true;
+    }
+    return false;
+  },
+  dependencies: [LineLength.functionString],
+  functionString: `
 function LinePoint(line: Line, point: Point) {
   
   let tempLine: Line = { startPoint: line.startPoint, endPoint: point };
@@ -44,4 +45,5 @@ function LinePoint(line: Line, point: Point) {
     return true;
   }
   return false;
-}`;
+}`,
+};
