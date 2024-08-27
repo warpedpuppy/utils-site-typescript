@@ -36,7 +36,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       rotate: true,
       rotateSpeed: 2000,
     });
-
+    console.log(this.star1, this.star2);
     if (PolygonPolygon.keyFunction(this.star1, this.star2)) {
       this.ctx.fillStyle = "red";
     } else {
