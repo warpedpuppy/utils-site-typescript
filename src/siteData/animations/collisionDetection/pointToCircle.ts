@@ -18,6 +18,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     vy: 0,
     id: "circle1",
   };
+  dependencies: string[] = [];
   keyFunction: string = PointCircleString;
   circle2: Circle = {
     x: this.canvasWidth * 0.5,

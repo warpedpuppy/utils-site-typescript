@@ -28,6 +28,7 @@ function CanvasContainer({ instance }: { instance: any }) {
       {showModal && (
         <Modal
           functionParam={instanceOfClass.keyFunction}
+          dependenciesParam={instanceOfClass.dependencies}
           closeModal={() => setShowModal(false)}
         />
       )}

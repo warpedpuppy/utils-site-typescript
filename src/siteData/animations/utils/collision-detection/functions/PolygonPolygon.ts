@@ -1,6 +1,6 @@
 import { Polygon, Line } from "../../../../../types/shapes";
-import { PolygonPoint } from "./PolygonPoint";
-import { PolygonLine } from "./PolygonLine";
+import { PolygonPoint, PolygonPointString } from "./PolygonPoint";
+import { PolygonLine, PolygonLineString } from "./PolygonLine";
 
 export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   let next = 0;
@@ -25,7 +25,7 @@ export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
 
   return false;
 }
-
+export const dependencies: string[] = [PolygonPointString, PolygonLineString];
 export const PolygonPolygonString = `
 function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   let next = 0;

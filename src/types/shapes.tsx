@@ -36,3 +36,44 @@ export interface ShapeInMotion {
   vy: number;
   id: string;
 }
+
+export const ShapesString = `
+interface Point {
+  x: number;
+  y: number;
+}
+interface Circle extends ShapeInMotion {
+  x: number;
+  y: number;
+  radius: number;
+}
+interface Rectangle extends ShapeInMotion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+interface Polygon {
+  vertices: Vector[];
+  draw: Function;
+  drag: boolean;
+}
+interface Vector {
+  x: number;
+  y: number;
+}
+interface Line {
+  startPoint: Point;
+  endPoint: Point;
+}
+interface Triangle {
+  point1: Point;
+  point2: Point;
+  point3: Point;
+}
+interface ShapeInMotion {
+  vx: number;
+  vy: number;
+  id: string;
+}
+`;
