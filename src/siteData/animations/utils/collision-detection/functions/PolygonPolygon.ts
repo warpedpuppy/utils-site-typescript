@@ -25,3 +25,24 @@ export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
 
   return false;
 }
+
+export const PolygonPolygonString = `
+function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
+  let next = 0;
+  const { vertices } = polygon1;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
+
+    let line: Line = { startPoint, endPoint };
+    let collision = PolygonLine(polygon2, line);
+    if (collision) return true;
+
+    collision = PolygonPoint(polygon1, polygon2.vertices[0]);
+    if (collision) return true;
+  }
+  return false;
+}`;

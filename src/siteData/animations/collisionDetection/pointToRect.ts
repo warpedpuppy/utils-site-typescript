@@ -4,9 +4,9 @@ import { sineCurve } from "../utils/OmnibusUtils";
 import { PolygonPoint } from "../utils/collision-detection/PolygonCollision";
 import Rectangle from "../utils/Rectangle";
 class PointToRectangle extends AnimationBaseClass {
-  static t = "point to rectangle collision";
+  static t = "point to polygon collision";
   static l = "point-to-rectangle-collision";
-  title = "point to rectangle collision";
+  title = "point to rectangle (or any polygon) collision";
   rect: Rectangle = new Rectangle(200, 300, 0, this.ctx, false, "rect", {
     stroke: false,
     fill: true,
@@ -20,6 +20,7 @@ class PointToRectangle extends AnimationBaseClass {
     id: "circle1",
   };
   startDrag: boolean = false;
+  keyFunction: Function = PolygonPoint;
   init() {
     if (!this.ctx) return;
     this.draw();
@@ -66,7 +67,6 @@ class PointToRectangle extends AnimationBaseClass {
     this.ctx.fill();
     requestAnimationFrame(this.draw);
   };
-  keyFunction(point: Point, rectangle: Rectangle) {}
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}

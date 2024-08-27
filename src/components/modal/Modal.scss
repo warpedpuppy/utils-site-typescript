@@ -17,6 +17,10 @@
     border: 1px solid var(--site-gray);
     border-radius: 5px;
     max-width: calc(100vw - 100px);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: black;
+    overflow-y: scroll;
     &-header {
       border-bottom: 1px solid var(--site-gray);
       padding: 2rem 2rem 0.5rem 2rem;
