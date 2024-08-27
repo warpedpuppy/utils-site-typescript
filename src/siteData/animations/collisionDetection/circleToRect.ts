@@ -1,4 +1,4 @@
-import { GenericObject, Point, Circle } from "../../../types/types";
+import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import Rectangle from "../utils/Rectangle";
 import { PolygonCircle } from "../utils/collision-detection/PolygonCollision";

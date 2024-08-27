@@ -1,7 +1,17 @@
-import { Point } from "../../../types/types";
+import { Line } from "../../../types/shapes";
 
-export function LineLength(startPoint: Point, endPoint: Point) {
+export function LineLength(line: Line) {
+  const { startPoint, endPoint } = line;
   let a = startPoint.x - endPoint.x;
   let b = startPoint.y - endPoint.y;
   return Math.sqrt(a * a + b * b);
 }
+
+export const LineLengthString = `
+function LineLength(line: Line) {
+  const { startPoint, endPoint } = line;
+  let a = startPoint.x - endPoint.x;
+  let b = startPoint.y - endPoint.y;
+  return Math.sqrt(a * a + b * b);
+}
+`;

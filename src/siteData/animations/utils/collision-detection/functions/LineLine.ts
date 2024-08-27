@@ -1,4 +1,4 @@
-import { Line } from "../../../../../types/types";
+import { Line } from "../../../../../types/shapes";
 
 export function LineLine(line1: Line, line2: Line) {
   let uA =

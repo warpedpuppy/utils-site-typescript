@@ -1,4 +1,4 @@
-import { Point } from "../../../types/types";
+import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class getHalfwayPointofLine extends AnimationBaseClass {

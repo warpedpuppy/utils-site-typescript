@@ -1,4 +1,4 @@
-import { Polygon, Line } from "../../../../../types/types";
+import { Polygon, Line } from "../../../../../types/shapes";
 import { PolygonPoint } from "./PolygonPoint";
 import { PolygonLine } from "./PolygonLine";
 

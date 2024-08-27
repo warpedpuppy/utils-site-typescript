@@ -1,5 +1,5 @@
-import { Point, Nullable } from "../../types/types";
-
+import { Nullable } from "../../types/types";
+import { Point } from "../../types/shapes";
 class AnimationBaseClass {
   static t = "";
   static l = "";

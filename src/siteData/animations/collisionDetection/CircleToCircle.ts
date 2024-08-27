@@ -1,4 +1,4 @@
-import { Circle } from "../../../types/types";
+import { Circle } from "../../../types/shapes";
 import { CircleCircle } from "../utils/collision-detection/CircleCollision";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { sineCurve } from "../utils/OmnibusUtils";

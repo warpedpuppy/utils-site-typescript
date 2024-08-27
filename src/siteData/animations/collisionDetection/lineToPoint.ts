@@ -1,4 +1,4 @@
-import { GenericObject, Point, Line, Circle } from "../../../types/types";
+import { Point, Line, Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { LinePoint } from "../utils/collision-detection/LineCollision";
 import { sineCurve } from "../utils/OmnibusUtils";

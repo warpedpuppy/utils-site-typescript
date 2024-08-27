@@ -1,4 +1,4 @@
-import { Point, Nullable } from "../../../types/types";
+import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 class TriangleDataFromLine extends AnimationBaseClass {
   static t = "get triangle data from line";

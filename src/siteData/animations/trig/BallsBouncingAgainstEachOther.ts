@@ -1,4 +1,4 @@
-import { GenericObject, Point, Circle } from "../../../types/types";
+import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class BallsBouncingAgainstEachOther extends AnimationBaseClass {

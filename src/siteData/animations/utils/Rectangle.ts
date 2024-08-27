@@ -1,4 +1,5 @@
-import { GenericObject, Point, Polygon } from "../../../types/types";
+import { Point, Polygon } from "../../../types/shapes";
+import { GenericObject } from "../../../types/types";
 import { getAtan2, distanceBetweenTwoPoints } from "./OmnibusUtils";
 class Rectangle {
   ctx: CanvasRenderingContext2D;

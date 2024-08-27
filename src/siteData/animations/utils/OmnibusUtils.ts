@@ -1,4 +1,4 @@
-import { Point, Polygon } from "../../../types/types";
+import { Point, Polygon } from "../../../types/shapes";
 export function centerOnStage(item: any, parent: any) {
   let x = (parent.width - item.width) / 2;
   let y = (parent.height - item.height) / 2;

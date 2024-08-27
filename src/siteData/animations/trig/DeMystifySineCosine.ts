@@ -1,4 +1,4 @@
-import { Nullable, Point } from "../../../types/types";
+import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 class DeMystifySineCosine extends AnimationBaseClass {
   static t: string = "demystify sine and cosine";

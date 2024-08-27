@@ -1,4 +1,5 @@
-import { GenericObject, Point, Circle } from "../../../types/types";
+import { GenericObject } from "../../../types/types";
+import { Point, Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class CircleToCirclePlus extends AnimationBaseClass {

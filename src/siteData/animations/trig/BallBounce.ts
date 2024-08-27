@@ -1,4 +1,4 @@
-import { Circle } from "../../../types/types";
+import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { BallBounce } from "../utils/animation/BallBounce";
 class BallBounceAnimation extends AnimationBaseClass {

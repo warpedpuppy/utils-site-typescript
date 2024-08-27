@@ -1,4 +1,4 @@
-import { Point, Polygon } from "../../../types/types";
+import { Point, Polygon } from "../../../types/shapes";
 class Star {
   ctx: CanvasRenderingContext2D;
   spikes: number;

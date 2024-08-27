@@ -1,4 +1,4 @@
-import { Nullable, Point } from "../../../types/types";
+import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 class MoveObjectToDestinationPoint extends AnimationBaseClass {
   static t = "move object to changing point";

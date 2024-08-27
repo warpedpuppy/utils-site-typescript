@@ -1,4 +1,5 @@
-import { GenericObject, Point } from "../../../types/types";
+import { GenericObject } from "../../../types/types";
+import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class AnimationTemplate extends AnimationBaseClass {

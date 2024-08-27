@@ -1,4 +1,5 @@
-import { Point, Nullable } from "../../../types/types";
+import { Point } from "../../../types/shapes";
+import { Nullable } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class DistanceBetweenTwoPoints extends AnimationBaseClass {

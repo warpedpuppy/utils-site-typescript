@@ -1,4 +1,4 @@
-import { Line } from "../../../types/types";
+import { Line } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { LineLine } from "../utils/collision-detection/LineCollision";
 import { sineCurve } from "../utils/OmnibusUtils";

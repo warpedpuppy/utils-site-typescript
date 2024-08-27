@@ -1,4 +1,4 @@
-import { Triangle, Point, Circle, Rectangle } from "../../../types/types";
+import { Triangle, Point, Circle, Rectangle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class TriangleToCirclCollision extends AnimationBaseClass {

@@ -1,4 +1,4 @@
-import { Circle, Point } from "../../../types/types";
+import { Circle, Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { sineCurve } from "../utils/OmnibusUtils";
 import { PolygonPoint } from "../utils/collision-detection/PolygonCollision";

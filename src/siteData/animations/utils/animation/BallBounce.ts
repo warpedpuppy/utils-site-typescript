@@ -1,4 +1,4 @@
-import { Circle } from "../../../../types/types";
+import { Circle } from "../../../../types/shapes";
 
 export function BallBounce(ball: Circle, stage: any) {
   let gravity: number = 0.5;

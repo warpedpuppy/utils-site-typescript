@@ -1,4 +1,4 @@
-import { Polygon, Circle } from "../../../../../types/types";
+import { Polygon, Circle } from "../../../../../types/shapes";
 import { LineCircle } from "./LineCircle";
 
 export function PolygonCircle(polygon: Polygon, circle: Circle) {
