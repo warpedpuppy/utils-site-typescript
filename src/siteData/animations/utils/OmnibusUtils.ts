@@ -36,15 +36,6 @@ export function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export function sineCurve(
-  startingValue: number,
-  differential: number,
-  speed: number
-) {
-  const currentDate = new Date();
-  return startingValue + Math.sin(currentDate.getTime() * speed) * differential;
-}
-
 export function getAtan2(originPoint: Point, destinationPoint: Point) {
   return Math.atan2(
     destinationPoint.y - originPoint.y,

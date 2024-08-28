@@ -1,7 +1,7 @@
 import { Point, Line, Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { LinePoint } from "../utils/collision-detection/LineCollision";
-import { sineCurve } from "../utils/OmnibusUtils";
+import { SineCurve } from "../utils/animation/SineCurve";
 class LineToPointCollision extends AnimationBaseClass {
   static t = "line to point collision";
   static l = "line-to-point-collision";
@@ -24,8 +24,8 @@ class LineToPointCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = sineCurve(this.halfWidth, 200, 0.001);
-    let y = sineCurve(this.halfHeight, 200, 0.001);
+    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {

@@ -1,7 +1,7 @@
 import AnimationBaseClass from "../AnimationBaseClass";
 import { Rectangle } from "../utils/animation/Rectangle";
 import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
-import { sineCurve } from "../utils/OmnibusUtils";
+import { SineCurve } from "../utils/animation/SineCurve";
 class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";
   static l = "rectangle-to-rectangle-collision";
@@ -23,8 +23,8 @@ class RectToRect extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = sineCurve(this.halfWidth, 200, 0.001);
-    let y = sineCurve(this.halfHeight, 200, 0.001);
+    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {

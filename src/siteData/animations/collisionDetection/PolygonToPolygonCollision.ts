@@ -1,7 +1,7 @@
 import AnimationBaseClass from "../AnimationBaseClass";
 import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
 import { Star, StarObject } from "../utils/animation/Star";
-import { sineCurve } from "../utils/OmnibusUtils";
+import { SineCurve } from "../utils/animation/SineCurve";
 import { Polygon, Point } from "../../../types/shapes";
 class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
@@ -20,8 +20,8 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = sineCurve(this.halfWidth, 200, 0.001);
-    let y = sineCurve(this.halfHeight, 200, 0.001);
+    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {

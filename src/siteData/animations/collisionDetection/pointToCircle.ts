@@ -1,6 +1,6 @@
 import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { sineCurve } from "../utils/OmnibusUtils";
+import { SineCurve } from "../utils/animation/SineCurve";
 import { PointCircle } from "../utils/collision-detection/PointCollision";
 
 class PointToCircleCollision extends AnimationBaseClass {
@@ -56,8 +56,8 @@ class PointToCircleCollision extends AnimationBaseClass {
     requestAnimationFrame(this.draw);
   };
   makePointMove() {
-    let x = sineCurve(this.halfWidth, 200, 0.001);
-    let y = sineCurve(this.halfHeight, 200, 0.001);
+    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   pointerDownHandler(e: PointerEvent) {}

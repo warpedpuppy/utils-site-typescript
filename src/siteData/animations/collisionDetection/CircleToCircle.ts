@@ -1,7 +1,7 @@
 import { Circle } from "../../../types/shapes";
 import { CircleCircle } from "../utils/collision-detection/CircleCollision";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { sineCurve } from "../utils/OmnibusUtils";
+import { SineCurve } from "../utils/animation/SineCurve";
 class CircleToCircleCollision extends AnimationBaseClass {
   static t = "circle to circle collision";
   static l = "circle-to-circle-collision";
@@ -24,8 +24,8 @@ class CircleToCircleCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = sineCurve(this.halfWidth, 200, 0.001);
-    let y = sineCurve(this.halfHeight, 200, 0.001);
+    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {

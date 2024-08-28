@@ -1,6 +1,6 @@
 import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { sineCurve } from "../utils/OmnibusUtils";
+import { SineCurve } from "../utils/animation/SineCurve";
 import { PolygonPoint } from "../utils/collision-detection/PolygonCollision";
 import { Rectangle } from "../utils/animation/Rectangle";
 class PointToRectangle extends AnimationBaseClass {
@@ -23,8 +23,8 @@ class PointToRectangle extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = sineCurve(this.halfWidth, 200, 0.001);
-    let y = sineCurve(this.halfHeight, 200, 0.001);
+    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {

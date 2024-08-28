@@ -1,52 +1,19 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { FindPointAroundCircle } from "../utils/animation/FindPointAroundCircle";
+import { SineCurve } from "../utils/animation/SineCurve";
 class DeMystifySineCosine extends AnimationBaseClass {
   static t: string = "demystify sine and cosine";
   static l: string = "demystify-sine-and-cosine";
   static include: boolean = false;
   title = "demystify sine and cosine";
-  // canvas: Nullable<HTMLCanvasElement> = document.createElement("canvas");
-  // textDiv: Nullable<HTMLElement> = document.getElementById(
-  //   "primary-canvas--content--text"
-  // );
-  // canvasWidth: number = 0;
-  // canvasHeight: number = 0;
-  // halfHeight: number = 0;
-  // halfWidth: number = 0;
-  // cont: HTMLDivElement = undefined!;
-  // ctx = this.canvas?.getContext("2d");
-  // startPoint: Nullable<Point> = null;
-  // endPoint: Nullable<Point> = null;
-  // top: number = 0;
-  // left: number = 0;
-  // text: string[] = [];
-  // interval: any = 0;
-  // circleQ = 0;
-  // points: any = [];
-  // allowDraw: boolean = false;
+  animationObject = FindPointAroundCircle;
   i: number = 0;
   startValue = 0;
   differential = 200;
   speed = 0.005;
   thinLine = 2;
   fatLine = 5;
-  keyFunction(
-    circleCenter: Point,
-    radius: number,
-    percentageAroundCircle: number
-  ) {
-    let totalCircleRadians = Math.PI * 2;
-    let percent = percentageAroundCircle / 100;
-    const x = circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
-    const y = circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
-    return { x, y };
-  }
-  sineCurve(startingValue: number, differential: number, speed: number) {
-    const currentDate = new Date();
-    return (
-      startingValue + Math.sin(currentDate.getTime() * speed) * differential
-    );
-  }
   init() {
     this.draw();
   }
@@ -99,8 +66,8 @@ class DeMystifySineCosine extends AnimationBaseClass {
     this.ctx.arc(this.canvasWidth * 0.66, this.halfHeight, 100, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    let perc1 = this.sineCurve(62.5, 12.5, 0.001);
-    let point1 = this.keyFunction(
+    let perc1 = SineCurve.keyFunction(62.5, 12.5, 0.001);
+    let point1 = FindPointAroundCircle.keyFunction(
       {
         x: this.canvasWidth * 0.33,
         y: this.halfHeight,
@@ -123,8 +90,8 @@ class DeMystifySineCosine extends AnimationBaseClass {
     this.ctx.lineTo(point1.x, this.halfHeight);
     this.ctx.stroke();
 
-    let perc2 = this.sineCurve(-12.5, 12.5, 0.001);
-    let point2 = this.keyFunction(
+    let perc2 = SineCurve.keyFunction(-12.5, 12.5, 0.001);
+    let point2 = FindPointAroundCircle.keyFunction(
       {
         x: this.canvasWidth * 0.66,
         y: this.halfHeight,
