@@ -5,6 +5,7 @@ class BallBounceAnimation extends AnimationBaseClass {
   static t = "ball bounce";
   static l = "ball-bounce";
   title = "ball bounce";
+  animationObject = BallBounce;
   ball: Ball = { x: 0, y: 0, radius: 10, vx: 4, vy: 1, id: "ball" };
   init() {
     this.draw();

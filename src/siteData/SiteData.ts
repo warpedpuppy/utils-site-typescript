@@ -1,5 +1,5 @@
 import CircleFromThreePoints_Anim from "./animations/trig-animations/CircleFromThreePointsAnimation";
-import GetHalfwayPointOfLine from "./animations/trig-animations/GetHalfwayPointOfLine";
+import GetHalfwayPointOfLine from "./animations/trig-animations/GetPointOnLineAnimation";
 import GetEquilateralTriangleVertices from "./animations/trig-animations/EquilateralTriangleAnimation";
 import MoveObjectToDestinationPoint from "./animations/trig-animations/MoveObjectToDestinationPoint";
 import DistanceBetweenTwoPoints from "./animations/trig-animations/LIneLengthAnimation";
@@ -24,7 +24,7 @@ import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonTo
 import Star from "./animations/trig-animations/StarAnimation";
 import Polygon from "./animations/trig-animations/PolygonAnimation";
 const SiteData = {
-  collissionDetection: {
+  "collision detection": {
     PointToCircleCollision,
     PointToRectangle,
     RectToRect,
@@ -45,7 +45,7 @@ const SiteData = {
     SineCurveAnimation,
     DeMystifySineCosine,
   },
-  usefulLittleThings: {
+  "useful little things": {
     GetHalfwayPointOfLine,
     TriangleDataFromLine,
     Star,
