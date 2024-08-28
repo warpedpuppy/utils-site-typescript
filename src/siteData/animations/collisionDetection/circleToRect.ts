@@ -1,6 +1,6 @@
-import { Circle } from "../../../types/shapes";
+import { Circle, Point, Polygon } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { Rectangle } from "../utils/animation/Rectangle";
+import { RectangleObject } from "../utils/animation/Rectangle";
 import { PolygonCircle } from "../utils/collision-detection/PolygonCollision";
 import { SineCurve } from "../utils/animation/SineCurve";
 
@@ -9,11 +9,7 @@ class CirceToRectCollision extends AnimationBaseClass {
   static l = "circle-to-rectangle-collision";
   title = "circle to rectangle collision";
   animationObject = PolygonCircle;
-  rect: Rectangle = new Rectangle(100, 100, 0, this.ctx, false, "rect", {
-    stroke: false,
-    fill: true,
-    spinSpeed: 3,
-  });
+  rect = RectangleObject.keyFunction(100, 100, 0, false);
   circle: Circle = {
     x: this.halfWidth,
     y: this.halfHeight,
@@ -37,7 +33,7 @@ class CirceToRectCollision extends AnimationBaseClass {
     this.circle.x = this.halfWidth;
     this.circle.y = this.halfHeight;
 
-    if (PolygonCircle.keyFunction(this.rect.returnRectangle(), this.circle)) {
+    if (PolygonCircle.keyFunction(this.rect, this.circle)) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "black";
@@ -54,10 +50,22 @@ class CirceToRectCollision extends AnimationBaseClass {
     this.ctx.fill();
 
     let { x, y } = this.makePointMove();
-    this.rect.draw(this.top, this.left, {
-      x,
-      y,
+    this.rect = RectangleObject.keyFunction(100, 100, 0, {
+      rotate: true,
+      rotateSpeed: 1000,
     });
+    this.ctx.beginPath();
+    this.rect.vertices.forEach((rect: Point, i: number) => {
+      rect.x += x;
+      rect.y += y;
+      if (i === 0) {
+        this.ctx?.moveTo(rect.x, rect.y);
+      } else {
+        this.ctx?.lineTo(rect.x, rect.y);
+      }
+    });
+    this.ctx.closePath();
+    this.ctx.fill();
 
     requestAnimationFrame(this.draw);
   };

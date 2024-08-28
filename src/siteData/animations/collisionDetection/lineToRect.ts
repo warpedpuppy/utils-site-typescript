@@ -1,8 +1,9 @@
 import { Line } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { Rectangle } from "../utils/animation/Rectangle";
+import { RectangleObject } from "../utils/animation/Rectangle";
 import { SineCurve } from "../utils/animation/SineCurve";
 import { LinePolygon } from "../utils/collision-detection/LineCollision";
+import { Point } from "../../../types/shapes";
 
 class LineToRectangleCollision extends AnimationBaseClass {
   static t = "line to rectangle collision";
@@ -13,11 +14,7 @@ class LineToRectangleCollision extends AnimationBaseClass {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },
   };
-  rect: Rectangle = new Rectangle(100, 100, 0, this.ctx, false, "rect", {
-    stroke: false,
-    fill: true,
-    spinSpeed: 3,
-  });
+  rect = RectangleObject.keyFunction(100, 100, 0);
   rotate1: number = 0;
   lineLength: number = 100;
   init() {
@@ -35,16 +32,25 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.ctx.lineWidth = 3;
     this.ctx.strokeStyle = "black";
 
-    if (LinePolygon.keyFunction(this.rect.returnRectangle(), this.line)) {
+    if (LinePolygon.keyFunction(this.rect, this.line)) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "black";
     }
 
-    this.rect.draw(this.top, this.left, {
-      x: this.halfWidth,
-      y: this.halfHeight,
+    this.rect = RectangleObject.keyFunction(100, 100, 0, false);
+    this.ctx.beginPath();
+    this.rect.vertices.forEach((rect: Point, i: number) => {
+      rect.x += this.halfWidth;
+      rect.y += this.halfHeight;
+      if (i === 0) {
+        this.ctx?.moveTo(rect.x, rect.y);
+      } else {
+        this.ctx?.lineTo(rect.x, rect.y);
+      }
     });
+    this.ctx.closePath();
+    this.ctx.fill();
 
     let { x, y } = this.makePointMove();
     let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));

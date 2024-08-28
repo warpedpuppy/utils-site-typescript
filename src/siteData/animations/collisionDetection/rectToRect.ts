@@ -1,22 +1,15 @@
 import AnimationBaseClass from "../AnimationBaseClass";
-import { Rectangle } from "../utils/animation/Rectangle";
+import { RectangleObject } from "../utils/animation/Rectangle";
 import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
 import { SineCurve } from "../utils/animation/SineCurve";
+import { Point } from "../../../types/shapes";
 class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";
   static l = "rectangle-to-rectangle-collision";
   title = "rectangle to rectangle collision";
   animationObject = PolygonPolygon;
-  rect1: Rectangle = new Rectangle(50, 50, 0, this.ctx, false, "rect", {
-    stroke: false,
-    fill: true,
-    spinSpeed: 3,
-  });
-  rect2: Rectangle = new Rectangle(50, 50, 0, this.ctx, false, "rect", {
-    stroke: false,
-    fill: true,
-    spinSpeed: 1,
-  });
+  rect1 = RectangleObject.keyFunction(50, 50, 0);
+  rect2 = RectangleObject.keyFunction(50, 50, 0);
   init() {
     if (!this.ctx) return;
     this.ctx.font = "bold 20px Arial";
@@ -31,12 +24,7 @@ class RectToRect extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fillStyle = "transparent";
-    if (
-      PolygonPolygon.keyFunction(
-        this.rect1.returnRectangle(),
-        this.rect2.returnRectangle()
-      )
-    ) {
+    if (PolygonPolygon.keyFunction(this.rect1, this.rect2)) {
       this.ctx.fillStyle = "red";
     } else {
       this.ctx.fillStyle = "black";
@@ -45,16 +33,39 @@ class RectToRect extends AnimationBaseClass {
     this.ctx.beginPath();
 
     let { x, y } = this.makePointMove();
-    this.rect1.draw(this.top, this.left, {
-      x,
-      y,
+    this.rect1 = RectangleObject.keyFunction(100, 100, 0, {
+      rotate: true,
+      rotateSpeed: 1000,
     });
-
     this.ctx.beginPath();
-    this.rect2.draw(this.top, this.left, {
-      x: this.halfWidth,
-      y: this.halfHeight,
+    this.rect1.vertices.forEach((rect: Point, i: number) => {
+      rect.x += x;
+      rect.y += y;
+      if (i === 0) {
+        this.ctx?.moveTo(rect.x, rect.y);
+      } else {
+        this.ctx?.lineTo(rect.x, rect.y);
+      }
     });
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    this.rect2 = RectangleObject.keyFunction(100, 100, 0, {
+      rotate: true,
+      rotateSpeed: 1000,
+    });
+    this.ctx.beginPath();
+    this.rect2.vertices.forEach((rect: Point, i: number) => {
+      rect.x += this.halfWidth;
+      rect.y += this.halfHeight;
+      if (i === 0) {
+        this.ctx?.moveTo(rect.x, rect.y);
+      } else {
+        this.ctx?.lineTo(rect.x, rect.y);
+      }
+    });
+    this.ctx.closePath();
+    this.ctx.fill();
 
     requestAnimationFrame(this.draw);
   };

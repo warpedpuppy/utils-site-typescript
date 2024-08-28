@@ -24,16 +24,6 @@ import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonTo
 import Star from "./animations/trig-animations/StarAnimation";
 import Polygon from "./animations/trig-animations/PolygonAnimation";
 const SiteData = {
-  "useful little things": {
-    GetHalfwayPointOfLine,
-    TriangleDataFromLine,
-    Star,
-    Polygon,
-    GetEquilateralTriangleVertices,
-    CircleFromThreePoints_Anim,
-    DistributePointsAroundACircle,
-    DistanceBetweenTwoPoints,
-  },
   "collision detection": {
     PointToCircleCollision,
     PointToRectangle,
@@ -46,6 +36,17 @@ const SiteData = {
     LineToRectangleCollision,
     PolygonToPolygonCollision,
   },
+  "useful little things": {
+    GetHalfwayPointOfLine,
+    TriangleDataFromLine,
+    Star,
+    Polygon,
+    GetEquilateralTriangleVertices,
+    CircleFromThreePoints_Anim,
+    DistributePointsAroundACircle,
+    DistanceBetweenTwoPoints,
+  },
+
   animations: {
     BallBounce,
     BallsBouncingAgainstEachOther,
