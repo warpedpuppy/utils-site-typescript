@@ -1,4 +1,4 @@
-import { Point, Line, Circle } from "../../../types/shapes";
+import { Line } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { Rectangle } from "../utils/animation/Rectangle";
 import { sineCurve } from "../utils/OmnibusUtils";
