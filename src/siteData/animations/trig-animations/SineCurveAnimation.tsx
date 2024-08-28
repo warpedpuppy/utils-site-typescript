@@ -1,19 +1,15 @@
 import AnimationBaseClass from "../AnimationBaseClass";
-class SineCurve extends AnimationBaseClass {
+import { SineCurve } from "../utils/animation/SineCurve";
+class SineCurveAnimation extends AnimationBaseClass {
   static t: string = "sine curve";
   static l: string = "sine-curve";
+  animationObject = SineCurve;
   title = "sine curve";
   interval: any = 0;
   i: number = 0;
   startValue = 0;
   differential = 200;
   speed = 0.005;
-  keyFunction(startingValue: number, differential: number, speed: number) {
-    const currentDate = new Date();
-    return (
-      startingValue + Math.sin(currentDate.getTime() * speed) * differential
-    );
-  }
   init() {
     this.draw();
   }
@@ -105,7 +101,11 @@ class SineCurve extends AnimationBaseClass {
     this.ctx.arc(this.halfWidth, this.halfHeight, 200, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    let val = this.keyFunction(this.startValue, this.differential, this.speed);
+    let val = SineCurve.keyFunction(
+      this.startValue,
+      this.differential,
+      this.speed
+    );
     this.ctx.beginPath();
     this.ctx.arc(this.halfWidth, this.halfHeight + val, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
@@ -113,4 +113,4 @@ class SineCurve extends AnimationBaseClass {
     requestAnimationFrame(this.draw);
   };
 }
-export default SineCurve;
+export default SineCurveAnimation;

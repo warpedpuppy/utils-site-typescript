@@ -1,16 +1,16 @@
-import CircleFromThreePoints_Anim from "./animations/trig-animations/CircleFromThreePoints_anim";
+import CircleFromThreePoints_Anim from "./animations/trig-animations/CircleFromThreePointsAnimation";
 import GetHalfwayPointOfLine from "./animations/trig-animations/GetHalfwayPointOfLine";
-import GetEquilateralTriangleVertices from "./animations/trig-animations/GetEquilateralTriangleVertices_anim";
+import GetEquilateralTriangleVertices from "./animations/trig-animations/EquilateralTriangleAnimation";
 import MoveObjectToDestinationPoint from "./animations/trig-animations/MoveObjectToDestinationPoint";
-import DistanceBetweenTwoPoints from "./animations/trig-animations/DistanceBetweenTwoPoints_anim";
+import DistanceBetweenTwoPoints from "./animations/trig-animations/LIneLengthAnimation";
 import TriangleDataFromLine from "./animations/trig-animations/TriangleDataFromLine";
 import PointTowardsMovingPoint from "./animations/trig-animations/PointTowardsMovingPoint";
 import MoveItemAroundCircle from "./animations/trig-animations/MoveItemAroundCircle";
-import SineCurve from "./animations/trig-animations/SineCurve";
-import DistributePointsAroundACircle from "./animations/trig-animations/DistributePointsAroundACircle_anim";
+import SineCurveAnimation from "./animations/trig-animations/SineCurveAnimation";
+import DistributePointsAroundACircle from "./animations/trig-animations/DistributePointsAroundACircleAnimation";
 import DeMystifySineCosine from "./animations/trig-animations/DeMystifySineCosine";
-import BallBounce from "./animations/trig-animations/BallBounce_anim";
-import BallsBouncingAgainstEachOther from "./animations/trig-animations/BallsBouncingAgainstEachOther_anim";
+import BallBounce from "./animations/trig-animations/BallBounceAnimation";
+import BallsBouncingAgainstEachOther from "./animations/trig-animations/BallBallAnimation";
 import PointToCircleCollision from "./animations/collisionDetection/PointToCircle";
 import CircleToCircleCollision from "./animations/collisionDetection/CircleToCircle";
 import RectToRect from "./animations/collisionDetection/RectToRect";
@@ -21,8 +21,8 @@ import LineToLineCollision from "./animations/collisionDetection/LineToLine";
 import LineToPointCollision from "./animations/collisionDetection/LineToPoint";
 import LineToRectangleCollision from "./animations/collisionDetection/LineToRect";
 import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonToPolygonCollision";
-import Star from "./animations/trig-animations/Star_anim";
-import Polygon from "./animations/trig-animations/Polygon_anim";
+import Star from "./animations/trig-animations/StarAnimation";
+import Polygon from "./animations/trig-animations/PolygonAnimation";
 const SiteData = {
   collissionDetection: {
     PointToCircleCollision,
@@ -39,11 +39,10 @@ const SiteData = {
   animations: {
     BallBounce,
     BallsBouncingAgainstEachOther,
-
     MoveItemAroundCircle,
     MoveObjectToDestinationPoint,
     PointTowardsMovingPoint,
-    SineCurve,
+    SineCurveAnimation,
     DeMystifySineCosine,
   },
   usefulLittleThings: {

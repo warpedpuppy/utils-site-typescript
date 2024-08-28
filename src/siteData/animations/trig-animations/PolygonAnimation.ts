@@ -1,7 +1,7 @@
 import { Polygon } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { RectangleObject } from "../utils/animation/Rectangle";
-class AnimationTemplate extends AnimationBaseClass {
+class PolygonAnimation extends AnimationBaseClass {
   static t = "draw rectangle (using trig, not rect())";
   static l = "draw-rectangle";
   title = "draw rectangle";
@@ -43,4 +43,4 @@ class AnimationTemplate extends AnimationBaseClass {
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
 }
-export default AnimationTemplate;
+export default PolygonAnimation;
