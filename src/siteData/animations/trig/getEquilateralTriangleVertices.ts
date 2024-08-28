@@ -3,9 +3,9 @@ import { GenericObject } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class GetEquilateralTriangleVertices extends AnimationBaseClass {
-  static t = "get equilateral triangle vertices from radius and center point";
+  static t = "draw equilateral triangle (from radius and center point)";
   static l = "equilateral-trianlge-points";
-  title = "get equilateral triangle vertices from radius and center point";
+  title = "draw equilateral triangle (from radius and center point)";
   backgroundTris: object[] = [];
   angle = 0;
   keyFunction(radius: number, centerPoint: Point, angle: number) {
