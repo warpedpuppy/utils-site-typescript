@@ -1,37 +1,12 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-class TriangleDataFromLine extends AnimationBaseClass {
+import { TriangleDataFromLine } from "../utils/usefulLittleThings/TraingleDataFromLine";
+class TriangleFromLineAnimation extends AnimationBaseClass {
   static t = "get triangle data from line";
   static l = "get-triangle-data-from-line";
   title = "get triangle data from line";
+  animationObject = TriangleDataFromLine;
   allowDraw: boolean = false;
-  keyFunction(startPoint: Point, endPoint: Point) {
-    let hypotenuse = distanceBetweenPoints(startPoint, endPoint);
-    let adjacent = distanceBetweenPoints(startPoint, {
-      x: endPoint.x,
-      y: startPoint.y,
-    });
-    let opposite = distanceBetweenPoints(
-      {
-        x: endPoint.x,
-        y: startPoint.y,
-      },
-      endPoint
-    );
-
-    let oh = opposite / hypotenuse;
-    let angle1 = Math.asin(oh); // could have used acos or atan -- we have the data
-    let angleInDegrees = Math.floor(angle1 * (180 / Math.PI));
-    let remainingAngle = 180 - angleInDegrees - 90;
-
-    return { angleInDegrees, remainingAngle, hypotenuse, adjacent, opposite };
-
-    function distanceBetweenPoints(startPoint: Point, endPoint: Point) {
-      let a = startPoint.x - endPoint.x;
-      let b = startPoint.y - endPoint.y;
-      return Math.sqrt(a * a + b * b);
-    }
-  }
   init() {
     this.startPoint = { x: this.halfWidth - 100, y: this.halfHeight + 100 };
     this.endPoint = { x: this.halfWidth + 100, y: this.halfHeight - 100 };
@@ -71,7 +46,7 @@ class TriangleDataFromLine extends AnimationBaseClass {
     let radius = this.distanceBetweenPoints(this.startPoint, this.endPoint);
 
     let { angleInDegrees, remainingAngle, hypotenuse, opposite, adjacent } =
-      this.keyFunction(this.startPoint, this.endPoint);
+      TriangleDataFromLine.keyFunction(this.startPoint, this.endPoint);
 
     this.textDiv.innerHTML = `
         <h3>click and drag to draw line and get data.</h3>
@@ -113,4 +88,4 @@ class TriangleDataFromLine extends AnimationBaseClass {
     this.allowDraw = false;
   }
 }
-export default TriangleDataFromLine;
+export default TriangleFromLineAnimation;

@@ -4,10 +4,11 @@ import { LineLength } from "../utils/animation/LineLength";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class DistanceBetweenTwoPoints extends AnimationBaseClass {
-  static t = "get distance between two points";
-  static l = "distance-between-points";
-  title = "get distance between two points";
+  static t = "get line length";
+  static l = "line-length";
+  title = "get line length";
   startPoint: Nullable<Point> = null;
+  animationObject = LineLength;
   endPoint: Nullable<Point> = null;
   allowDraw: boolean = false;
   init() {
