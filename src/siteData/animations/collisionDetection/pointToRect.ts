@@ -16,9 +16,6 @@ class PointToRectangle extends AnimationBaseClass {
     x: this.canvasWidth * 0.33,
     y: this.halfHeight,
     radius: 5,
-    vx: 0,
-    vy: 0,
-    id: "circle1",
   };
   startDrag: boolean = false;
   init() {

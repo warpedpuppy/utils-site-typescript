@@ -17,9 +17,6 @@ class LineToCircleCollision extends AnimationBaseClass {
     x: this.halfWidth,
     y: this.halfHeight,
     radius: 100,
-    vx: 0,
-    vy: 0,
-    id: "circle",
   };
   init() {
     this.draw();

@@ -18,9 +18,6 @@ class TriangleToCirclCollision extends AnimationBaseClass {
     x: this.canvasWidth * 0.33,
     y: this.halfHeight + 50,
     radius: 50,
-    vx: 0,
-    vy: 0,
-    id: "circle1",
   };
   startDrag: boolean = false;
   init() {

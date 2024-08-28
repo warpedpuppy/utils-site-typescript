@@ -10,17 +10,11 @@ class CircleToCirclePlus extends AnimationBaseClass {
     x: this.canvasWidth * 0.33,
     y: this.halfHeight,
     radius: 100,
-    vx: 0,
-    vy: 0,
-    id: "circle1",
   };
   circle2: Circle = {
     x: this.canvasWidth * 0.66,
     y: this.halfHeight,
     radius: 100,
-    vx: 0,
-    vy: 0,
-    id: "circle2",
   };
   startDrag: boolean = false;
   init() {

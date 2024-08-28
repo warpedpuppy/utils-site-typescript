@@ -15,9 +15,6 @@ class LineToPointCollision extends AnimationBaseClass {
     x: this.halfWidth,
     y: this.halfHeight,
     radius: 5,
-    vx: 0,
-    vy: 0,
-    id: "circle",
   };
   point: Point = {
     x: 0,

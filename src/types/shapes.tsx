@@ -2,7 +2,7 @@ export interface Point {
   x: number;
   y: number;
 }
-export interface Circle extends ShapeInMotion {
+export interface Circle {
   x: number;
   y: number;
   radius: number;
@@ -31,6 +31,11 @@ export interface Triangle {
   point2: Point;
   point3: Point;
 }
+export interface Ball extends ShapeInMotion {
+  x: number;
+  y: number;
+  radius: number;
+}
 export interface ShapeInMotion {
   vx: number;
   vy: number;
@@ -38,40 +43,45 @@ export interface ShapeInMotion {
 }
 
 export const ShapesString = `
-interface Point {
+export interface Point {
   x: number;
   y: number;
 }
-interface Circle extends ShapeInMotion {
+export interface Circle {
   x: number;
   y: number;
   radius: number;
 }
-interface Rectangle extends ShapeInMotion {
+export interface Rectangle extends ShapeInMotion {
   x: number;
   y: number;
   width: number;
   height: number;
 }
-interface Polygon {
+export interface Polygon {
   vertices: Vector[];
   draw: Function;
   drag: boolean;
 }
-interface Vector {
+export interface Vector {
   x: number;
   y: number;
 }
-interface Line {
+export interface Line {
   startPoint: Point;
   endPoint: Point;
 }
-interface Triangle {
+export interface Triangle {
   point1: Point;
   point2: Point;
   point3: Point;
 }
-interface ShapeInMotion {
+export interface Ball extends ShapeInMotion {
+  x: number;
+  y: number;
+  radius: number;
+}
+export interface ShapeInMotion {
   vx: number;
   vy: number;
   id: string;

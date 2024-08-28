@@ -18,9 +18,6 @@ class CirceToRectCollision extends AnimationBaseClass {
     x: this.halfWidth,
     y: this.halfHeight,
     radius: 100,
-    vx: 0,
-    vy: 0,
-    id: "circle",
   };
   startDrag: boolean = false;
   init() {
