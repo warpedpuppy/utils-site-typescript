@@ -1,21 +1,13 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { FindPointAroundCircle } from "../utils/animation/FindPointAroundCircle";
 class MoveItemAroundCircle extends AnimationBaseClass {
   static t: string = "find points on a circle";
   static l: string = "find-points-on-a-circle";
   title = "find points on a circle";
+  animationObject = FindPointAroundCircle;
   i: number = 0;
-  keyFunction(
-    circleCenter: Point,
-    radius: number,
-    percentageAroundCircle: number
-  ) {
-    let totalCircleRadians = Math.PI * 2;
-    let percent = percentageAroundCircle / 100;
-    const x = circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
-    const y = circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
-    return { x, y };
-  }
+
   init() {
     this.draw();
   }
@@ -39,7 +31,7 @@ class MoveItemAroundCircle extends AnimationBaseClass {
     this.ctx.arc(this.halfWidth, this.halfHeight, 200, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    let point = this.keyFunction(
+    let point = FindPointAroundCircle.keyFunction(
       { x: this.halfWidth, y: this.halfHeight },
       200,
       this.i
