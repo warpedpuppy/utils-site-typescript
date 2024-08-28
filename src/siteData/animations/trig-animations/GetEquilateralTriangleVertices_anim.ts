@@ -82,10 +82,12 @@ class GetEquilateralTriangleVertices extends AnimationBaseClass {
       this.ctx?.arc(item.x, item.y, 5, 0, 2 * Math.PI);
       this.ctx?.stroke();
     });
-
-    requestAnimationFrame(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {
+    this.endPoint = {
+      x: 0,
+      y: 0,
+    };
     this.startPoint = {
       x: Math.floor(e.pageX - this.left),
       y: Math.floor(e.pageY - this.top),
