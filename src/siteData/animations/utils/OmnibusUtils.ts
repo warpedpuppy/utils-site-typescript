@@ -21,14 +21,6 @@ export function randomNumberBetween(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-export function randomBlue() {
-  // Color Channel (OKHSL)	Range
-  // Hue	210° - 260°
-  // Saturation	70% - 100%
-  // Lightness	30% - 70%
-  return {};
-}
-
 export function hexToRgb(hex: any) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
