@@ -1,6 +1,6 @@
 import AnimationBaseClass from "../AnimationBaseClass";
 import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
-import { Star, StarObject } from "../utils/animation/Star";
+import { StarObject } from "../utils/animation/Star";
 import { SineCurve } from "../utils/animation/SineCurve";
 import { Polygon, Point } from "../../../types/shapes";
 class PolygonToPolygonCollision extends AnimationBaseClass {

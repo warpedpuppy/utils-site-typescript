@@ -1,18 +1,16 @@
 import { Polygon } from "../../../types/shapes";
 import { GenericObject } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { Star, StarObject } from "../utils/animation/Star";
+import { StarObject } from "../utils/animation/Star";
 
 class AnimationTemplate extends AnimationBaseClass {
   static t = "draw star";
   static l = "draw-star";
   title = "draw-star";
-  stars: Star[] = [];
   star: Polygon = StarObject.keyFunction(5, 100, 200, 0, {
     rotate: true,
     rotateSpeed: 2000,
   });
-  starQ: number = 30;
   animationObject = StarObject;
   storeWidthHeight: GenericObject = {};
   init() {

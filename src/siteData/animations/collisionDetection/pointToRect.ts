@@ -35,7 +35,7 @@ class PointToRectangle extends AnimationBaseClass {
     this.circle1.y = y;
 
     if (
-      PolygonPoint.keyFunction(this.rect.returnRectangle(), {
+      PolygonPoint.keyFunction(this.rect, {
         x: this.circle1.x,
         y: this.circle1.y,
       })
@@ -45,19 +45,22 @@ class PointToRectangle extends AnimationBaseClass {
       this.ctx.fillStyle = "black";
     }
 
-    let rect = RectangleObject.keyFunction(100, 100, 0, false);
+    this.rect = RectangleObject.keyFunction(100, 100, 0, {
+      rotate: true,
+      rotateSpeed: 1000,
+    });
     this.ctx.beginPath();
-    rect.vertices.forEach((rect: Point, i: number) => {
+    this.rect.vertices.forEach((rect: Point, i: number) => {
       rect.x += this.halfWidth;
       rect.y += this.halfHeight;
       if (i === 0) {
-        this.ctx?.moveTo(x, y);
+        this.ctx?.moveTo(rect.x, rect.y);
       } else {
-        this.ctx?.lineTo(x, y);
+        this.ctx?.lineTo(rect.x, rect.y);
       }
     });
     this.ctx.closePath();
-    this.ctx.stroke();
+    this.ctx.fill();
 
     this.ctx.fillStyle = "black";
     this.ctx.beginPath();
