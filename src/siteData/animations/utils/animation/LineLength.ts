@@ -1,5 +1,5 @@
-import { Line } from "../../../types/shapes";
-import { CollisionDetectionObject } from "../../../types/types";
+import { Line } from "../../../../types/shapes";
+import { CollisionDetectionObject } from "../../../../types/types";
 
 export const LineLength: CollisionDetectionObject = {
   keyFunction: function LineLength(line: Line) {

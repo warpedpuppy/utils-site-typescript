@@ -1,7 +1,7 @@
 import { Line, Circle } from "../../../../../types/shapes";
 import { PointCircle } from "./PointCircle";
 import { LinePoint } from "./LinePoint";
-import { LineLength } from "../../LineLength";
+import { LineLength } from "../../animation/LineLength";
 import { CollisionDetectionObject } from "../../../../../types/types";
 
 export const LineCircle: CollisionDetectionObject = {

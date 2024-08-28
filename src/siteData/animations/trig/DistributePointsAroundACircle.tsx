@@ -1,24 +1,13 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { DistributeAroundCircle } from "../utils/animation/DistributeAroundCircle";
 
 class DistributePointsAroundACircle extends AnimationBaseClass {
   static t: string = "distribute around circle";
   static l: string = "distribute-around-circle";
   title: string = "distribute around circle";
   totalItems: number = 20;
-  keyFunction(circleCenter: Point, radius: number, totalItems: number) {
-    let totalCircleRadians = Math.PI * 2;
-    let returnArray = [];
-    for (let i: number = 0; i < totalItems; i++) {
-      let percent = i / totalItems;
-      const x =
-        circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
-      const y =
-        circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
-      returnArray.push({ x, y });
-    }
-    return returnArray;
-  }
+  animationObject = DistributeAroundCircle;
   init() {
     this.draw();
   }
@@ -74,7 +63,7 @@ class DistributePointsAroundACircle extends AnimationBaseClass {
     this.ctx.arc(this.halfWidth, this.halfHeight, radius, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    let points = this.keyFunction(
+    let points = DistributeAroundCircle.keyFunction(
       { x: this.halfWidth, y: this.halfHeight },
       radius,
       this.totalItems

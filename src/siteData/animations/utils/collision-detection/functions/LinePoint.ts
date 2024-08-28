@@ -1,6 +1,6 @@
 import { Line, Point } from "../../../../../types/shapes";
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { LineLength } from "../../LineLength";
+import { LineLength } from "../../animation/LineLength";
 
 export const LinePoint: CollisionDetectionObject = {
   keyFunction: function LinePoint(line: Line, point: Point) {
