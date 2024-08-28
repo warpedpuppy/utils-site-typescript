@@ -1,9 +1,15 @@
+import { CollisionDetectionObject } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class AnimationTemplate extends AnimationBaseClass {
   static t = "enter title";
   static l = "enter-title";
   title = "enter title";
+  animationObject: CollisionDetectionObject = {
+    keyFunction: () => {},
+    dependencies: [],
+    functionString: ``,
+  };
   init() {
     this.draw();
   }

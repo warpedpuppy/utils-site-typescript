@@ -1,9 +1,12 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { MoveAlongLine } from "../utils/animation/MoveAlongLine";
+import { GetRotation } from "../utils/animation/GetRotation";
 class MoveObjectToDestinationPoint extends AnimationBaseClass {
   static t = "move object to changing point";
   static l = "move-to-changing-point";
   title: string = "move object to changing point";
+  animationObject = MoveAlongLine;
   points = [];
   text = [];
   interval: any = undefined;
@@ -12,11 +15,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
   arrowPoint: Point = { x: 0, y: 0 };
   img = new Image();
   ratio = 0;
-  keyFunction(origin: Point, destination: Point, ratio: number) {
-    let x = origin.x + ratio * (destination.x - origin.x);
-    let y = origin.y + ratio * (destination.y - origin.y);
-    return { x, y };
-  }
+
   init() {
     if (this.textDiv) {
       this.textDiv.innerHTML =
@@ -41,12 +40,6 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
 
     this.interval = setInterval(this.drawDot, 2000);
   }
-  getRotation(destinationPoint: Point, zeroReference: Point) {
-    return Math.atan2(
-      destinationPoint.y - zeroReference.y,
-      destinationPoint.x - zeroReference.x
-    );
-  }
   drawDot = () => {
     this.ratio = 0;
     this.dotNew = {
@@ -60,17 +53,25 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     this.ctx.strokeStyle = "green";
     this.ctx.lineWidth = 10;
 
-    let newDotPoint = this.keyFunction(this.dot, this.dotNew, this.ratio);
+    let newDotPoint = MoveAlongLine.keyFunction(
+      this.dot,
+      this.dotNew,
+      this.ratio
+    );
     this.dot = newDotPoint;
     this.ctx.beginPath();
     this.ctx.arc(this.dot.x, this.dot.y, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    let newPoint = this.keyFunction(this.arrowPoint, this.dot, this.ratio);
+    let newPoint = MoveAlongLine.keyFunction(
+      this.arrowPoint,
+      this.dot,
+      this.ratio
+    );
 
     this.arrowPoint = newPoint;
 
-    let angle = this.getRotation(this.dot, newPoint);
+    let angle = GetRotation.keyFunction(this.dot, newPoint);
 
     this.ctx.translate(newPoint.x, newPoint.y);
     this.ctx.rotate(angle);
