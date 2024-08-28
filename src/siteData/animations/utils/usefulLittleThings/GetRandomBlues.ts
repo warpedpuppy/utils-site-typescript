@@ -1,8 +1,8 @@
 import { CollisionDetectionObject } from "../../../../types/types";
 
-export const GetRandomBlues: CollisionDetectionObject = {
-  keyFunction: function randomBlue() {
-    // Color Channel (OKHSL)	Range
+export const GetRandomColors: CollisionDetectionObject = {
+  keyFunction: function GetRandomColors() {
+    // Blues
     // Hue	210° - 260°
     // Saturation	70% - 100%
     // Lightness	30% - 70%
@@ -10,7 +10,7 @@ export const GetRandomBlues: CollisionDetectionObject = {
   },
   dependencies: [],
   functionString: `
-function randomBlue() {
+function GetRandomColors() {
     // Hue	210° - 260°
     // Saturation	70% - 100%
     // Lightness	30% - 70%
