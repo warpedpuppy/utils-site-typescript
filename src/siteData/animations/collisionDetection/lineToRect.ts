@@ -1,6 +1,6 @@
 import { Point, Line, Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import Rectangle from "../utils/Rectangle";
+import { Rectangle } from "../utils/animation/Rectangle";
 import { sineCurve } from "../utils/OmnibusUtils";
 import { LinePolygon } from "../utils/collision-detection/LineCollision";
 

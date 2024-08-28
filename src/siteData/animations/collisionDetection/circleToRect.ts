@@ -1,6 +1,6 @@
 import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import Rectangle from "../utils/Rectangle";
+import { Rectangle } from "../utils/animation/Rectangle";
 import { PolygonCircle } from "../utils/collision-detection/PolygonCollision";
 import { sineCurve } from "../utils/OmnibusUtils";
 

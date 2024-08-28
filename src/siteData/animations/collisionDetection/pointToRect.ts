@@ -2,7 +2,7 @@ import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { sineCurve } from "../utils/OmnibusUtils";
 import { PolygonPoint } from "../utils/collision-detection/PolygonCollision";
-import Rectangle from "../utils/Rectangle";
+import { Rectangle } from "../utils/animation/Rectangle";
 class PointToRectangle extends AnimationBaseClass {
   static t = "point to polygon collision";
   static l = "point-to-rectangle-collision";

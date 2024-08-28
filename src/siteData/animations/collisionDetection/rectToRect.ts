@@ -1,5 +1,5 @@
 import AnimationBaseClass from "../AnimationBaseClass";
-import Rectangle from "../utils/Rectangle";
+import { Rectangle } from "../utils/animation/Rectangle";
 import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
 import { sineCurve } from "../utils/OmnibusUtils";
 class RectToRect extends AnimationBaseClass {

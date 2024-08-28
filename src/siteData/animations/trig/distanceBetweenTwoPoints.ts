@@ -29,6 +29,8 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
     this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
     this.ctx.stroke();
+
+    // should have side length rather than points!!!!!
     this.ctx.fillText(
       `{x: ${this.startPoint.x}, y: ${this.startPoint.y}}`,
       this.startPoint.x,

@@ -10,7 +10,8 @@ export const StarObject: CollisionDetectionObject = {
     options: {
       rotate: boolean;
       rotateSpeed: number;
-    } = { rotate: false, rotateSpeed: 1000 }
+      clockwise: boolean;
+    } = { rotate: false, rotateSpeed: 1000, clockwise: true }
   ) {
     let vertices = [];
     let rot = 0;
@@ -19,6 +20,7 @@ export const StarObject: CollisionDetectionObject = {
     let rotateQ = options.rotate
       ? currentDate.getTime() / options.rotateSpeed
       : 0;
+    if (options.clockwise === false) rotateQ *= -1;
     for (let i = 0; i < spikes; i++) {
       let x = Math.cos(angle + rot + rotateQ) * outerRadius;
       let y = Math.sin(angle + rot + rotateQ) * outerRadius;
