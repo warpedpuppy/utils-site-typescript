@@ -71,7 +71,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
 
     this.arrowPoint = newPoint;
 
-    let angle = GetRotation.keyFunction(this.dot, newPoint);
+    let angle = GetRotation.keyFunction(newPoint, this.dot);
 
     this.ctx.translate(newPoint.x, newPoint.y);
     this.ctx.rotate(angle);

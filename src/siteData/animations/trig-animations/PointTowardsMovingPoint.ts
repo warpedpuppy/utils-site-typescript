@@ -1,17 +1,13 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { GetRotation } from "../utils/animation/GetRotation";
 class PointTowardsMovingPoint extends AnimationBaseClass {
   static t = "point one object towards a moving object";
   static l = "point-one-object-towards-a-moving-object";
   title = "point one object towards a moving object";
+  animationObject = GetRotation;
   img = new Image();
   i = 0;
-  keyFunction(originPoint: Point, destinationPoint: Point) {
-    return Math.atan2(
-      destinationPoint.y - originPoint.y,
-      destinationPoint.x - originPoint.x
-    );
-  }
   init() {
     if (!this.canvas || !this.ctx) return;
     this.img.addEventListener("load", () => {
@@ -67,7 +63,7 @@ class PointTowardsMovingPoint extends AnimationBaseClass {
     this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    let angle = this.keyFunction(
+    let angle = GetRotation.keyFunction(
       {
         x: this.halfWidth,
         y: this.halfHeight,

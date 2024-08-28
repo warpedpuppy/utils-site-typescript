@@ -3,23 +3,23 @@ import { Point } from "../../../../types/shapes";
 
 export const GetRotation: CollisionDetectionObject = {
   keyFunction: function GetRotation(
-    destinationPoint: Point,
-    zeroReference: Point
+    currentPoint: Point,
+    destinationPoint: Point
   ) {
     return Math.atan2(
-      destinationPoint.y - zeroReference.y,
-      destinationPoint.x - zeroReference.x
+      destinationPoint.y - currentPoint.y,
+      destinationPoint.x - currentPoint.x
     );
   },
   dependencies: [],
   functionString: `
   function GetRotation(
-    destinationPoint: Point,
-    zeroReference: Point
+    currentPoint: Point,
+    destinationPoint: Point
   ) {
     return Math.atan2(
-      destinationPoint.y - zeroReference.y,
-      destinationPoint.x - zeroReference.x
+      destinationPoint.y - currentPoint.y,
+      destinationPoint.x - currentPoint.x
     );
   }`,
 };

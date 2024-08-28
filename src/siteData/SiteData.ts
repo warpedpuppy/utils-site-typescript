@@ -36,22 +36,25 @@ const SiteData = {
     LineToRectangleCollision,
     PolygonToPolygonCollision,
   },
-  trig: {
-    Star,
-    Polygon,
+  animations: {
     BallBounce,
     BallsBouncingAgainstEachOther,
-    DistributePointsAroundACircle,
-    DistanceBetweenTwoPoints,
-    GetEquilateralTriangleVertices,
-    CircleFromThreePoints_Anim,
+
     MoveItemAroundCircle,
     MoveObjectToDestinationPoint,
     PointTowardsMovingPoint,
-    TriangleDataFromLine,
     SineCurve,
     DeMystifySineCosine,
+  },
+  usefulLittleThings: {
     GetHalfwayPointOfLine,
+    TriangleDataFromLine,
+    Star,
+    Polygon,
+    GetEquilateralTriangleVertices,
+    CircleFromThreePoints_Anim,
+    DistributePointsAroundACircle,
+    DistanceBetweenTwoPoints,
   },
 };
 
