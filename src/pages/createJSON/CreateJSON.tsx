@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import "./CreateJSON.scss";
 import SiteData from "../../siteData/SiteData";
-import { GenericObject } from "../../types/types";
+import { CollisionDetectionObject, GenericObject } from "../../types/types";
 import CreateJSONTabs from "./createJSONComponents/createJSONTabs";
 import JSONContent from "./createJSONComponents/JSONContent";
 import JSONCheckbox from "./createJSONComponents/JSONCheckbox";
@@ -24,7 +24,9 @@ function CreateJSON() {
       let innerKey: keyof typeof subObject;
       for (innerKey in subObject) {
         let { t, include } = subObject[innerKey];
+
         let x = new subObject[innerKey]();
+        let animationObject = x.animationObject;
         let className = x.constructor.name;
         let { keyFunction } = x;
         if (include === false) {
@@ -34,6 +36,7 @@ function CreateJSON() {
           <JSONCheckbox
             key={`createjson-dd-${innerKey}`}
             t={t}
+            animationObject={animationObject}
             clickHandler={clickHandler}
             bool={json.hasOwnProperty(t)}
             keyFunction={keyFunction}
@@ -46,7 +49,8 @@ function CreateJSON() {
     function clickHandler(
       str: string,
       keyFunction: Function,
-      className: string
+      className: string,
+      animationObject: CollisionDetectionObject
     ) {
       if (json.hasOwnProperty(str)) {
         let temp: GenericObject = { ...json };
@@ -55,7 +59,7 @@ function CreateJSON() {
         setJSON(temp);
       } else {
         let temp: GenericObject = { ...json };
-        temp[str] = { className, keyFunction };
+        temp[str] = { className, keyFunction, animationObject };
         addToLocaStorage(className);
         setJSON(temp);
       }
