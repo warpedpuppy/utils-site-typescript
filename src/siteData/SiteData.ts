@@ -1,4 +1,4 @@
-import CircleFromThreePoints_Anim from "./animations/trig-animations/CircleFromThreePointsAnimation";
+import CircleFromThreePointsAnimation from "./animations/trig-animations/CircleFromThreePointsAnimation";
 import GetHalfwayPointOfLine from "./animations/trig-animations/GetPointOnLineAnimation";
 import GetEquilateralTriangleVertices from "./animations/trig-animations/EquilateralTriangleAnimation";
 import MoveObjectToDestinationPoint from "./animations/trig-animations/MoveObjectToDestinationPoint";
@@ -31,6 +31,15 @@ import Rad2DegAnimation from "./animations/simpleEquations/Rad2DegAnimation";
 import RandomIntegerAnimation from "./animations/simpleEquations/RandomIntegerAnimation";
 import RandomNumberAnimation from "./animations/simpleEquations/RandomNumberAnimation";
 const SiteData = {
+  animations: {
+    BallBounce,
+    BallsBouncingAgainstEachOther,
+    MoveItemAroundCircle,
+    MoveObjectToDestinationPoint,
+    PointTowardsMovingPoint,
+    SineCurveAnimation,
+    DeMystifySineCosine,
+  },
   "useful little things": {
     GetRandomColorAnimation,
     GetHalfwayPointOfLine,
@@ -38,7 +47,7 @@ const SiteData = {
     Star,
     Polygon,
     GetEquilateralTriangleVertices,
-    CircleFromThreePoints_Anim,
+    CircleFromThreePointsAnimation,
     DistributePointsAroundACircle,
     DistanceBetweenTwoPoints,
   },
@@ -54,15 +63,7 @@ const SiteData = {
     LineToRectangleCollision,
     PolygonToPolygonCollision,
   },
-  animations: {
-    BallBounce,
-    BallsBouncingAgainstEachOther,
-    MoveItemAroundCircle,
-    MoveObjectToDestinationPoint,
-    PointTowardsMovingPoint,
-    SineCurveAnimation,
-    DeMystifySineCosine,
-  },
+
   "simple useful equations": {
     CenterOnParentAnimation,
     Deg2RadAnimation,
