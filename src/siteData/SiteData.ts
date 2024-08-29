@@ -23,7 +23,19 @@ import LineToRectangleCollision from "./animations/collisionDetection/LineToRect
 import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonToPolygonCollision";
 import Star from "./animations/trig-animations/StarAnimation";
 import Polygon from "./animations/trig-animations/PolygonAnimation";
+import GetRandomColorAnimation from "./animations/other-animations/GetRandomColorsAnimations";
 const SiteData = {
+  "useful little things": {
+    GetRandomColorAnimation,
+    GetHalfwayPointOfLine,
+    TriangleDataFromLine,
+    Star,
+    Polygon,
+    GetEquilateralTriangleVertices,
+    CircleFromThreePoints_Anim,
+    DistributePointsAroundACircle,
+    DistanceBetweenTwoPoints,
+  },
   "collision detection": {
     PointToCircleCollision,
     PointToRectangle,
@@ -36,17 +48,6 @@ const SiteData = {
     LineToRectangleCollision,
     PolygonToPolygonCollision,
   },
-  "useful little things": {
-    GetHalfwayPointOfLine,
-    TriangleDataFromLine,
-    Star,
-    Polygon,
-    GetEquilateralTriangleVertices,
-    CircleFromThreePoints_Anim,
-    DistributePointsAroundACircle,
-    DistanceBetweenTwoPoints,
-  },
-
   animations: {
     BallBounce,
     BallsBouncingAgainstEachOther,
@@ -56,6 +57,7 @@ const SiteData = {
     SineCurveAnimation,
     DeMystifySineCosine,
   },
+  "simple useful equations": {},
 };
 
 export default SiteData;

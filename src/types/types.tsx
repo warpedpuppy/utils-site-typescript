@@ -14,6 +14,12 @@ export interface AnimationObject {
   extraHTML?: Function;
 }
 
+export interface HSL {
+  H: number;
+  S: number;
+  L: number;
+}
+
 export interface CollisionDetectionObject {
   keyFunction: Function;
   dependencies: string[];
