@@ -1,8 +1,8 @@
 import { Line } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { RectangleObject } from "../utils/animation/Rectangle";
-import { SineCurve } from "../utils/animation/SineCurve";
-import { LinePolygon } from "../utils/collision-detection/LineCollision";
+import { RectangleObject } from "../../formulas/animation/Rectangle";
+import { SineCurve } from "../../formulas/animation/SineCurve";
+import { LinePolygon } from "../../formulas/collision-detection/LineCollision";
 import { Point } from "../../../types/shapes";
 
 class LineToRectangleCollision extends AnimationBaseClass {

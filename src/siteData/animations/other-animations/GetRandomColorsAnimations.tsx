@@ -1,5 +1,5 @@
 import AnimationBaseClass from "../AnimationBaseClass";
-import { GetRandomColors } from "../utils/usefulLittleThings/GetRandomColors";
+import { GetRandomColors } from "../../formulas/usefulLittleThings/GetRandomColors";
 import { HSL } from "../../../types/types";
 class GetRandomColorAnimation extends AnimationBaseClass {
   static t = "get random color";

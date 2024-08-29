@@ -24,6 +24,7 @@ import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonTo
 import Star from "./animations/trig-animations/StarAnimation";
 import Polygon from "./animations/trig-animations/PolygonAnimation";
 import GetRandomColorAnimation from "./animations/other-animations/GetRandomColorsAnimations";
+// import { CenterOnParent } from "./formulas/simpleEquations/CenterOnParent";
 const SiteData = {
   "useful little things": {
     GetRandomColorAnimation,
@@ -57,7 +58,9 @@ const SiteData = {
     SineCurveAnimation,
     DeMystifySineCosine,
   },
-  "simple useful equations": {},
+  "simple useful equations": {
+    // CenterOnParent,
+  },
 };
 
 export default SiteData;

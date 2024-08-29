@@ -1,7 +1,7 @@
 import AnimationBaseClass from "../AnimationBaseClass";
-import { RectangleObject } from "../utils/animation/Rectangle";
-import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
-import { SineCurve } from "../utils/animation/SineCurve";
+import { RectangleObject } from "../../formulas/animation/Rectangle";
+import { PolygonPolygon } from "../../formulas/collision-detection/PolygonCollision";
+import { SineCurve } from "../../formulas/animation/SineCurve";
 import { Point } from "../../../types/shapes";
 class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";

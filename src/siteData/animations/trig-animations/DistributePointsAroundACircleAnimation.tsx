@@ -1,6 +1,6 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { DistributeAroundCircle } from "../utils/animation/DistributeAroundCircle";
+import { DistributeAroundCircle } from "../../formulas/animation/DistributeAroundCircle";
 
 class DistributePointsAroundACircle extends AnimationBaseClass {
   static t: string = "distribute around circle";

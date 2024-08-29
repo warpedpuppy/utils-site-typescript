@@ -1,5 +1,5 @@
 import AnimationBaseClass from "../AnimationBaseClass";
-import { SineCurve } from "../utils/animation/SineCurve";
+import { SineCurve } from "../../formulas/animation/SineCurve";
 class SineCurveAnimation extends AnimationBaseClass {
   static t: string = "sine curve";
   static l: string = "sine-curve";

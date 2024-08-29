@@ -1,6 +1,6 @@
 import { Polygon } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { RectangleObject } from "../utils/animation/Rectangle";
+import { RectangleObject } from "../../formulas/animation/Rectangle";
 class PolygonAnimation extends AnimationBaseClass {
   static t = "draw rectangle (using trig, not rect())";
   static l = "draw-rectangle";

@@ -1,6 +1,6 @@
 import { Ball } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { BallBounce } from "../utils/animation/BallBounce";
+import { BallBounce } from "../../formulas/animation/BallBounce";
 class BallBounceAnimation extends AnimationBaseClass {
   static t = "ball bounce";
   static l = "ball-bounce";

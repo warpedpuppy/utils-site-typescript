@@ -1,8 +1,8 @@
-import { Circle, Point, Polygon } from "../../../types/shapes";
+import { Circle, Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { RectangleObject } from "../utils/animation/Rectangle";
-import { PolygonCircle } from "../utils/collision-detection/PolygonCollision";
-import { SineCurve } from "../utils/animation/SineCurve";
+import { RectangleObject } from "../../formulas/animation/Rectangle";
+import { PolygonCircle } from "../../formulas/collision-detection/PolygonCollision";
+import { SineCurve } from "../../formulas/animation/SineCurve";
 
 class CirceToRectCollision extends AnimationBaseClass {
   static t = "circle to rectangle collision";

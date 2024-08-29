@@ -1,6 +1,6 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { GetPointOnLine } from "../utils/usefulLittleThings/GetPointOnLine";
+import { GetPointOnLine } from "../../formulas/usefulLittleThings/GetPointOnLine";
 import { ReactNode } from "react";
 class GetPointOnLineAnimation extends AnimationBaseClass {
   static t = "get a point on a line";

@@ -1,6 +1,6 @@
 import { Point } from "../../../types/shapes";
-import { GenericObject, Nullable } from "../../../types/types";
-import { EquilateralTriangle } from "../utils/animation/EquilateralTriangle";
+import { GenericObject } from "../../../types/types";
+import { EquilateralTriangle } from "../../formulas/animation/EquilateralTriangle";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class GetEquilateralTriangleVertices extends AnimationBaseClass {

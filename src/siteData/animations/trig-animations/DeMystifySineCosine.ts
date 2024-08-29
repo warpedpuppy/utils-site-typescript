@@ -1,7 +1,7 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { FindPointAroundCircle } from "../utils/animation/FindPointAroundCircle";
-import { SineCurve } from "../utils/animation/SineCurve";
+import { FindPointAroundCircle } from "../../formulas/animation/FindPointAroundCircle";
+import { SineCurve } from "../../formulas/animation/SineCurve";
 class DeMystifySineCosine extends AnimationBaseClass {
   static t: string = "demystify sine and cosine";
   static l: string = "demystify-sine-and-cosine";

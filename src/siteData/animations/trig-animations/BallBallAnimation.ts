@@ -1,5 +1,5 @@
 import { Ball } from "../../../types/shapes";
-import { BallToBallBounce } from "../utils/animation/BallToBallBounce";
+import { BallToBallBounce } from "../../formulas/animation/BallToBallBounce";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class BallsBouncingAgainstEachOther extends AnimationBaseClass {

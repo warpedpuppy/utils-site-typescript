@@ -1,6 +1,6 @@
 import { Point } from "../../../types/shapes";
 import { Nullable } from "../../../types/types";
-import { LineLength } from "../utils/animation/LineLength";
+import { LineLength } from "../../formulas/animation/LineLength";
 import AnimationBaseClass from "../AnimationBaseClass";
 
 class DistanceBetweenTwoPoints extends AnimationBaseClass {

@@ -1,6 +1,6 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { TriangleDataFromLine } from "../utils/usefulLittleThings/TraingleDataFromLine";
+import { TriangleDataFromLine } from "../../formulas/usefulLittleThings/TraingleDataFromLine";
 class TriangleFromLineAnimation extends AnimationBaseClass {
   static t = "get triangle data from line";
   static l = "get-triangle-data-from-line";

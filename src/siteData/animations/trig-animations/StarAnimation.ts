@@ -1,7 +1,7 @@
 import { Polygon } from "../../../types/shapes";
 import { GenericObject } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { StarObject } from "../utils/animation/Star";
+import { StarObject } from "../../formulas/animation/Star";
 
 class AnimationTemplate extends AnimationBaseClass {
   static t = "draw star";

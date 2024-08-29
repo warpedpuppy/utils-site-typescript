@@ -1,6 +1,6 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { GetRotation } from "../utils/animation/GetRotation";
+import { GetRotation } from "../../formulas/animation/GetRotation";
 class PointTowardsMovingPoint extends AnimationBaseClass {
   static t = "point one object towards a moving object";
   static l = "point-one-object-towards-a-moving-object";

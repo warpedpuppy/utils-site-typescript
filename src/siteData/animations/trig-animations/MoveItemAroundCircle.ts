@@ -1,6 +1,5 @@
-import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { FindPointAroundCircle } from "../utils/animation/FindPointAroundCircle";
+import { FindPointAroundCircle } from "../../formulas/animation/FindPointAroundCircle";
 class MoveItemAroundCircle extends AnimationBaseClass {
   static t: string = "find points on a circle";
   static l: string = "find-points-on-a-circle";

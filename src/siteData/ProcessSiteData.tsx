@@ -33,6 +33,7 @@ function ProcessUtils(setClassName: Function, location: string) {
       setActiveLink(innerKey);
     }
     for (key in SiteData) {
+      if (key === "simple useful equations") continue;
       arr.push(<dt key={`sidemenu-dt-${key}`}>{key}</dt>);
       let BigCat: string = key.toString();
       const subObject: GenericObject = SiteData[key];

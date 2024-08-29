@@ -1,7 +1,7 @@
 import { Line } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { LineLine } from "../utils/collision-detection/LineCollision";
-import { SineCurve } from "../utils/animation/SineCurve";
+import { LineLine } from "../../formulas/collision-detection/LineCollision";
+import { SineCurve } from "../../formulas/animation/SineCurve";
 
 class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";

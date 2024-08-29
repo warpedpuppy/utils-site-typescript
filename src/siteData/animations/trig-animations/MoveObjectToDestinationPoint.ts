@@ -1,7 +1,7 @@
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { MoveAlongLine } from "../utils/animation/MoveAlongLine";
-import { GetRotation } from "../utils/animation/GetRotation";
+import { MoveAlongLine } from "../../formulas/animation/MoveAlongLine";
+import { GetRotation } from "../../formulas/animation/GetRotation";
 class MoveObjectToDestinationPoint extends AnimationBaseClass {
   static t = "move object to changing point";
   static l = "move-to-changing-point";

@@ -1,7 +1,7 @@
 import { Circle } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { SineCurve } from "../utils/animation/SineCurve";
-import { PointCircle } from "../utils/collision-detection/PointCollision";
+import { SineCurve } from "../../formulas/animation/SineCurve";
+import { PointCircle } from "../../formulas/collision-detection/PointCollision";
 
 class PointToCircleCollision extends AnimationBaseClass {
   static t = "point to circle collision";

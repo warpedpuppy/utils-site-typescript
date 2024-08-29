@@ -1,6 +1,6 @@
 import { GenericObject } from "../../../types/types";
 import AnimationBaseClass from "../AnimationBaseClass";
-import { CircleFromThreePoints } from "../utils/animation/CircleFromThreePoints";
+import { CircleFromThreePoints } from "../../formulas/animation/CircleFromThreePoints";
 class CircleFromThreePoints_Anim extends AnimationBaseClass {
   static t = "get circle from three points";
   static l = "circle-from-three-points";

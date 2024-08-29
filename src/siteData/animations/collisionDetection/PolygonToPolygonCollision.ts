@@ -1,7 +1,7 @@
 import AnimationBaseClass from "../AnimationBaseClass";
-import { PolygonPolygon } from "../utils/collision-detection/PolygonCollision";
-import { StarObject } from "../utils/animation/Star";
-import { SineCurve } from "../utils/animation/SineCurve";
+import { PolygonPolygon } from "../../formulas/collision-detection/PolygonCollision";
+import { StarObject } from "../../formulas/animation/Star";
+import { SineCurve } from "../../formulas/animation/SineCurve";
 import { Polygon, Point } from "../../../types/shapes";
 class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
