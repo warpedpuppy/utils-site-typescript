@@ -24,7 +24,12 @@ import PolygonToPolygonCollision from "./animations/collisionDetection/PolygonTo
 import Star from "./animations/trig-animations/StarAnimation";
 import Polygon from "./animations/trig-animations/PolygonAnimation";
 import GetRandomColorAnimation from "./animations/other-animations/GetRandomColorsAnimations";
-// import { CenterOnParent } from "./formulas/simpleEquations/CenterOnParent";
+import CenterOnParentAnimation from "./animations/simpleEquations/CenterOnParentAnimation";
+import Deg2RadAnimation from "./animations/simpleEquations/DegToRadAnimation";
+import NumberWithCommasAnimation from "./animations/simpleEquations/NumberWithCommasAnimation";
+import Rad2DegAnimation from "./animations/simpleEquations/Rad2DegAnimation";
+import RandomIntegerAnimation from "./animations/simpleEquations/RandomIntegerAnimation";
+import RandomNumberAnimation from "./animations/simpleEquations/RandomNumberAnimation";
 const SiteData = {
   "useful little things": {
     GetRandomColorAnimation,
@@ -59,7 +64,12 @@ const SiteData = {
     DeMystifySineCosine,
   },
   "simple useful equations": {
-    // CenterOnParent,
+    CenterOnParentAnimation,
+    Deg2RadAnimation,
+    NumberWithCommasAnimation,
+    Rad2DegAnimation,
+    RandomIntegerAnimation,
+    RandomNumberAnimation,
   },
 };
 
