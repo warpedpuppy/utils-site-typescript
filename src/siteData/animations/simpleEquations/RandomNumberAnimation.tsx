@@ -4,7 +4,7 @@ import { RandomNumberBetween } from "../../formulas/simpleEquations/RandomNumber
 class RandomNumberAnimation extends AnimationBaseClass {
   static t = "random number between";
   static l = "random-number-between";
-  static f = RandomNumberBetween.functionString;
+  static f = RandomNumberBetween;
   title = "random number between";
   animationObject: CollisionDetectionObject = RandomNumberBetween;
   init() {

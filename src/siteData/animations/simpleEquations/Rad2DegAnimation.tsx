@@ -4,7 +4,7 @@ import { Rad2Deg } from "../../formulas/simpleEquations/RadToDeg";
 class Rad2DegAnimation extends AnimationBaseClass {
   static t = "radians to degrees";
   static l = "radians-to-degrees";
-  static f = Rad2Deg.functionString;
+  static f = Rad2Deg;
   title = "radians to degrees";
   animationObject: CollisionDetectionObject = Rad2Deg;
   init() {

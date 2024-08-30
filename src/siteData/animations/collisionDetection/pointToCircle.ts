@@ -6,7 +6,7 @@ import { PointCircle } from "../../formulas/collision-detection/PointCollision";
 class PointToCircleCollision extends AnimationBaseClass {
   static t = "point to circle collision";
   static l = "point-to-circle-collision";
-  static f = PointCircle.functionString;
+  static f = PointCircle;
   title = "point to circle collision";
   animationObject = PointCircle;
   circle1: Circle = {

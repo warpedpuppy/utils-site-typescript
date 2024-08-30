@@ -4,7 +4,7 @@ import { RectangleObject } from "../../formulas/animation/Rectangle";
 class PolygonAnimation extends AnimationBaseClass {
   static t = "draw rectangle (using trig, not rect())";
   static l = "draw-rectangle";
-  static f = RectangleObject.functionString;
+  static f = RectangleObject;
   title = "draw rectangle";
   animationObject = RectangleObject;
   rect: Polygon = RectangleObject.keyFunction(200, 300, 0);

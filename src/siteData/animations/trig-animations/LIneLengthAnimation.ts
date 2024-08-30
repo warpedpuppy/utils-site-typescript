@@ -6,7 +6,7 @@ import AnimationBaseClass from "../AnimationBaseClass";
 class DistanceBetweenTwoPoints extends AnimationBaseClass {
   static t = "get line length";
   static l = "line-length";
-  static f = LineLength.functionString;
+  static f = LineLength;
   title = "get line length";
   startPoint: Nullable<Point> = null;
   animationObject = LineLength;

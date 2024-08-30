@@ -5,7 +5,7 @@ import { DistributeAroundCircle } from "../../formulas/animation/DistributeAroun
 class DistributePointsAroundACircle extends AnimationBaseClass {
   static t: string = "distribute around circle";
   static l: string = "distribute-around-circle";
-  static f = DistributeAroundCircle.functionString;
+  static f = DistributeAroundCircle;
   title: string = "distribute around circle";
   totalItems: number = 20;
   animationObject = DistributeAroundCircle;

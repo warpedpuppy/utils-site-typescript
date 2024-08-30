@@ -4,7 +4,7 @@ import { GetRotation } from "../../formulas/animation/GetRotation";
 class PointTowardsMovingPoint extends AnimationBaseClass {
   static t = "point one object towards a moving object";
   static l = "point-one-object-towards-a-moving-object";
-  static f = GetRotation.functionString;
+  static f = GetRotation;
   title = "point one object towards a moving object";
   animationObject = GetRotation;
   img = new Image();

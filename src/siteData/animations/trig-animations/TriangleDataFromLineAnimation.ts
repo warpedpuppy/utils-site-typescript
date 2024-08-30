@@ -4,7 +4,7 @@ import { TriangleDataFromLine } from "../../formulas/usefulLittleThings/Traingle
 class TriangleFromLineAnimation extends AnimationBaseClass {
   static t = "get triangle data from line";
   static l = "get-triangle-data-from-line";
-  static f = TriangleDataFromLine.functionString;
+  static f = TriangleDataFromLine;
   title = "get triangle data from line";
   animationObject = TriangleDataFromLine;
   allowDraw: boolean = false;

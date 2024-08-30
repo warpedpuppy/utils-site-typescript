@@ -8,7 +8,7 @@ import { Point } from "../../../types/shapes";
 class LineToRectangleCollision extends AnimationBaseClass {
   static t = "line to rectangle collision";
   static l = "line-to-rectangle-collision";
-  static f = LinePolygon.functionString;
+  static f = LinePolygon;
   title = "line to rectangle collision";
   animationObject = LinePolygon;
   line: Line = {

@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 class GetPointOnLineAnimation extends AnimationBaseClass {
   static t = "get a point on a line";
   static l = "get-a-point-on-a-line";
-  static f = GetPointOnLine.functionString;
+  static f = GetPointOnLine;
   title = "get a point on a line";
   animationObject = GetPointOnLine;
   perc: number = 0.5;

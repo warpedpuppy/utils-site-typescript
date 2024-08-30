@@ -5,7 +5,7 @@ import { CenterOnParent } from "../../formulas/simpleEquations/CenterOnParent";
 class CenterOnParentAnimation extends AnimationBaseClass {
   static t = "center on parent";
   static l = "center-on-parent";
-  static f = CenterOnParent.functionString;
+  static f = CenterOnParent;
   title = "center on parent";
   animationObject: CollisionDetectionObject = CenterOnParent;
   init() {

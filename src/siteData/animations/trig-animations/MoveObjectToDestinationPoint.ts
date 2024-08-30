@@ -5,7 +5,7 @@ import { GetRotation } from "../../formulas/animation/GetRotation";
 class MoveObjectToDestinationPoint extends AnimationBaseClass {
   static t = "move object to changing point";
   static l = "move-to-changing-point";
-  static f = MoveAlongLine.functionString;
+  static f = MoveAlongLine;
   title: string = "move object to changing point";
   animationObject = MoveAlongLine;
   points = [];

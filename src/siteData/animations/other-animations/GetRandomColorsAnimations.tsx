@@ -4,7 +4,7 @@ import { HSL } from "../../../types/types";
 class GetRandomColorAnimation extends AnimationBaseClass {
   static t = "get random color";
   static l = "get-random-color";
-  static f = GetRandomColors.functionString;
+  static f = GetRandomColors;
   title = "get random color";
   colorString = "all";
   ballRadius = 50;

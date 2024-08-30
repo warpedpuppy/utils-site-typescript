@@ -6,7 +6,7 @@ import { StarObject } from "../../formulas/animation/Star";
 class AnimationTemplate extends AnimationBaseClass {
   static t = "draw star";
   static l = "draw-star";
-  static f = StarObject.functionString;
+  static f = StarObject;
   title = "draw star";
   star: Polygon = StarObject.keyFunction(5, 100, 200, 0, {
     rotate: true,

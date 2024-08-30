@@ -3,7 +3,7 @@ import { FindPointAroundCircle } from "../../formulas/animation/FindPointAroundC
 class MoveItemAroundCircle extends AnimationBaseClass {
   static t: string = "find points on a circle";
   static l: string = "find-points-on-a-circle";
-  static f = FindPointAroundCircle.functionString;
+  static f = FindPointAroundCircle;
   title = "find points on a circle";
   animationObject = FindPointAroundCircle;
   i: number = 0;
