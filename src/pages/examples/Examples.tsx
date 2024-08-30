@@ -15,6 +15,7 @@ function Examples() {
   const [key, setKey] = useState<string>("");
   const [innerKey, setInnerKey] = useState<string>("");
   const [className, setClassName] = useState<any>(["", ""]);
+  const [asdf, setChecklist] = useState<any>(9);
   const { getKeyAndInnerKeyFromLocation, createClassReference } =
     ExamplesUtils();
   const { createChecklist } = CreateChecklists();
@@ -22,7 +23,12 @@ function Examples() {
   function clickHandler(str: string, key: string, innerKey: string) {
     loadCode(key, innerKey);
     navigate(str);
+    setChecklist(str);
   }
+
+  useEffect(() => {
+    console.log("change", Math.random() * 10000);
+  }, []);
 
   const loadCode = useCallback(
     (key: string, innerKey: string) => {
@@ -38,7 +44,6 @@ function Examples() {
 
   useEffect(() => {
     if (!className[0]) return;
-
     setActiveObject(className);
   }, [className, createClassReference]);
 

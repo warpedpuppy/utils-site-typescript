@@ -2,5 +2,8 @@
   dd {
     display: flex;
     cursor: pointer;
+    > div.active {
+      font-weight: bold;
+    }
   }
 }

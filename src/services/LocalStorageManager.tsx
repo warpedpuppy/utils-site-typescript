@@ -1,4 +1,16 @@
 function LocalStorageManager() {
+  function getLocalStorageAsArray() {
+    return localStorage.getItem("functions")
+      ? localStorage.getItem("functions")?.split(",")
+      : [];
+  }
+  function isInLocalStorage(newFunction: string) {
+    let temp = localStorage.getItem("functions")
+      ? localStorage.getItem("functions")?.split(",")
+      : [];
+
+    return temp ? temp.includes(newFunction) : false;
+  }
   function addToLocaStorage(newFunction: string) {
     let temp = localStorage.getItem("functions")
       ? localStorage.getItem("functions")?.split(",")
@@ -26,6 +38,8 @@ function LocalStorageManager() {
   return {
     addToLocaStorage,
     deleteFromLocaStorage,
+    isInLocalStorage,
+    getLocalStorageAsArray,
   };
 }
 
