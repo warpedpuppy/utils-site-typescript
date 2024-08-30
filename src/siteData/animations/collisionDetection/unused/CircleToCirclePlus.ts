@@ -1,6 +1,6 @@
-import { GenericObject } from "../../../types/types";
-import { Point, Circle } from "../../../types/shapes";
-import AnimationBaseClass from "../AnimationBaseClass";
+import { GenericObject } from "../../../../types/types";
+import { Point, Circle } from "../../../../types/shapes";
+import AnimationBaseClass from "../../AnimationBaseClass";
 
 class CircleToCirclePlus extends AnimationBaseClass {
   static t = "circle to circle collision plus extra data";

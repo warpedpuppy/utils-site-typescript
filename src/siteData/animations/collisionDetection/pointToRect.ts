@@ -7,6 +7,7 @@ import { Point } from "../../../types/shapes";
 class PointToRectangle extends AnimationBaseClass {
   static t = "point to polygon collision";
   static l = "point-to-rectangle-collision";
+  static f = PolygonPoint.functionString;
   title = "point to rectangle (or any polygon) collision";
   animationObject = PolygonPoint;
   rect = RectangleObject.keyFunction(200, 300, 0);

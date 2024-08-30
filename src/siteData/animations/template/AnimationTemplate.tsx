@@ -4,6 +4,7 @@ import AnimationBaseClass from "../AnimationBaseClass";
 class AnimationTemplate extends AnimationBaseClass {
   static t = "enter title";
   static l = "enter-title";
+  static f = "";
   title = "enter title";
   animationObject: CollisionDetectionObject = {
     keyFunction: () => {},

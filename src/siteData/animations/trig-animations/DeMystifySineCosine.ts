@@ -5,6 +5,7 @@ import { SineCurve } from "../../formulas/animation/SineCurve";
 class DeMystifySineCosine extends AnimationBaseClass {
   static t: string = "demystify sine and cosine";
   static l: string = "demystify-sine-and-cosine";
+  static f = FindPointAroundCircle.functionString;
   static include: boolean = false;
   title = "demystify sine and cosine";
   animationObject = FindPointAroundCircle;

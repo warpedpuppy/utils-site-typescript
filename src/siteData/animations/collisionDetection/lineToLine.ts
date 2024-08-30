@@ -6,6 +6,7 @@ import { SineCurve } from "../../formulas/animation/SineCurve";
 class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";
   static l = "line-to-line-collision";
+  static f = LineLine.functionString;
   title = "line to line collision";
   animationObject = LineLine;
   line1: Line = {

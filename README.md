@@ -2,9 +2,7 @@
 
 ## to dos:
 
-- random blues
-- random greens
-- random reds
+- review all resize handlers
 - random polys
 - poly to poly mass bounce
 - draw line between two points

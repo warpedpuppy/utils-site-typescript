@@ -5,7 +5,8 @@ import { SineCurve } from "../../formulas/animation/SineCurve";
 import { Polygon, Point } from "../../../types/shapes";
 class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
-  static l = "polygon-to-polygon-ollision";
+  static l = "polygon-to-polygon-collision";
+  static f = PolygonPolygon.functionString;
   title = "polygon to polygon collision";
   star1: Polygon = StarObject.keyFunction(5, 50, 25, 0, {
     rotate: true,

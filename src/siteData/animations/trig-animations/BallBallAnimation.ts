@@ -5,6 +5,7 @@ import AnimationBaseClass from "../AnimationBaseClass";
 class BallsBouncingAgainstEachOther extends AnimationBaseClass {
   static t = "balls bouncing against each other";
   static l = "balls-bouncing-against-each-other";
+  static f = BallToBallBounce.functionString;
   title = "balls bouncing against each other";
   animationObject = BallToBallBounce;
   // vx: number = 4;

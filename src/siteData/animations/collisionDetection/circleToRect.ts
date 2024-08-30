@@ -4,9 +4,10 @@ import { RectangleObject } from "../../formulas/animation/Rectangle";
 import { PolygonCircle } from "../../formulas/collision-detection/PolygonCollision";
 import { SineCurve } from "../../formulas/animation/SineCurve";
 
-class CirceToRectCollision extends AnimationBaseClass {
+class CirceToRectAnimation extends AnimationBaseClass {
   static t = "circle to rectangle collision";
   static l = "circle-to-rectangle-collision";
+  static f = PolygonCircle;
   title = "circle to rectangle collision";
   animationObject = PolygonCircle;
   rect = RectangleObject.keyFunction(100, 100, 0, false);
@@ -74,4 +75,4 @@ class CirceToRectCollision extends AnimationBaseClass {
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
 }
-export default CirceToRectCollision;
+export default CirceToRectAnimation;

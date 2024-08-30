@@ -3,6 +3,7 @@ import { SineCurve } from "../../formulas/animation/SineCurve";
 class SineCurveAnimation extends AnimationBaseClass {
   static t: string = "sine curve";
   static l: string = "sine-curve";
+  static f = SineCurve.functionString;
   animationObject = SineCurve;
   title = "sine curve";
   interval: any = 0;

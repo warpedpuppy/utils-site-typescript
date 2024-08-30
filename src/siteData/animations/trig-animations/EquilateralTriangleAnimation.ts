@@ -6,6 +6,7 @@ import AnimationBaseClass from "../AnimationBaseClass";
 class GetEquilateralTriangleVertices extends AnimationBaseClass {
   static t = "draw equilateral triangle (from radius and center point)";
   static l = "equilateral-trianlge-points";
+  static f = EquilateralTriangle.functionString;
   title = "draw equilateral triangle (from radius and center point)";
   backgroundTris: object[] = [];
   animationObject = EquilateralTriangle;

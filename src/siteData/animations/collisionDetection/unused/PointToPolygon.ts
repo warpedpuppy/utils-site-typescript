@@ -1,4 +1,4 @@
-import AnimationBaseClass from "../AnimationBaseClass";
+import AnimationBaseClass from "../../AnimationBaseClass";
 
 class AnimationTemplate extends AnimationBaseClass {
   static t = "enter title";

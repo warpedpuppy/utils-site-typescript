@@ -1,5 +1,5 @@
-import { Triangle, Point, Circle, Rectangle } from "../../../types/shapes";
-import AnimationBaseClass from "../AnimationBaseClass";
+import { Triangle, Point, Circle, Rectangle } from "../../../../types/shapes";
+import AnimationBaseClass from "../../AnimationBaseClass";
 
 class TriangleToCirclCollision extends AnimationBaseClass {
   static t = "triangle to circle collision";

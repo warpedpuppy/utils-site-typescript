@@ -2,9 +2,10 @@ import { Circle } from "../../../types/shapes";
 import { CircleCircle } from "../../formulas/collision-detection/CircleCollision";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { SineCurve } from "../../formulas/animation/SineCurve";
-class CircleToCircleCollision extends AnimationBaseClass {
+class CircleToCircleAnimation extends AnimationBaseClass {
   static t = "circle to circle collision";
   static l = "circle-to-circle-collision";
+  static f = CircleCircle;
   title = "circle to circle collision";
   animationObject = CircleCircle;
   circle1: Circle = {
@@ -70,4 +71,4 @@ class CircleToCircleCollision extends AnimationBaseClass {
   pointerUpHandler(e: PointerEvent) {}
   pointerMoveHandler(e: PointerEvent) {}
 }
-export default CircleToCircleCollision;
+export default CircleToCircleAnimation;

@@ -4,6 +4,7 @@ import { CircleFromThreePoints } from "../../formulas/animation/CircleFromThreeP
 class CircleFromThreePointsAnimation extends AnimationBaseClass {
   static t = "get circle from three points";
   static l = "circle-from-three-points";
+  static f = CircleFromThreePoints.functionString;
   title = "get circle from three points";
   animationObject = CircleFromThreePoints;
   text: string[] = [];

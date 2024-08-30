@@ -5,6 +5,7 @@ import { SineCurve } from "../../formulas/animation/SineCurve";
 class LineToCircleCollision extends AnimationBaseClass {
   static t = "line to circle collision";
   static l = "line-to-circle-collision";
+  static f = LineCircle.functionString;
   title = "line to circle collision";
   animationObject = LineCircle;
   line: Line = {

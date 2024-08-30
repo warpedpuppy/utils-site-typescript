@@ -4,6 +4,7 @@ import { BallBounce } from "../../formulas/animation/BallBounce";
 class BallBounceAnimation extends AnimationBaseClass {
   static t = "ball bounce";
   static l = "ball-bounce";
+  static f = BallBounce.functionString;
   title = "ball bounce";
   animationObject = BallBounce;
   ball: Ball = { x: 0, y: 0, radius: 10, vx: 4, vy: 1, id: "ball" };

@@ -4,6 +4,7 @@ import { NumberWithCommas } from "../../formulas/simpleEquations/NumberWIthComma
 class NumberWithCommasAnimation extends AnimationBaseClass {
   static t = "format number with commas";
   static l = "format-number-with-commas";
+  static f = NumberWithCommas.functionString;
   title = "format number with commas";
   animationObject: CollisionDetectionObject = NumberWithCommas;
   init() {
