@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useState, useEffect } from "react";
 import "./CreateChecklists.scss";
 import SiteData from "../siteData/SiteData";
-import { CollisionDetectionObject, GenericObject } from "../types/types";
+import { CollisionDetectionObject } from "../types/types";
 import { Nullable } from "../types/types";
 import LocalStorageManager from "./LocalStorageManager";
 import { useLocation } from "react-router-dom";
@@ -25,10 +25,9 @@ function CreateChecklists() {
       .trim();
   };
   useEffect(() => {
-    // set it upon page load
     let tempArray: any = getLocalStorageAsArray();
     setList(tempArray);
-  }, [getLocalStorageAsArray]);
+  }, []);
 
   let createChecklist = useCallback(
     (
