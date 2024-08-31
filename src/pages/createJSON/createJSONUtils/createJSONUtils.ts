@@ -11,6 +11,9 @@ export function CreateJson() {
       Object.entries(objects).forEach((keyValues) => {
         if (arrayOfFormulas.includes(keyValues[0])) {
           str += keyValues[1].f.functionString;
+          keyValues[1].f.dependencies.forEach((dependency: string) => {
+            str += dependency;
+          });
         }
       });
     });
