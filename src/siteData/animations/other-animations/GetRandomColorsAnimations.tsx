@@ -81,7 +81,6 @@ class GetRandomColorAnimation extends AnimationBaseClass {
     let topOffset = (this.canvasHeight - gridHeight) / 2;
     let counter = 0;
 
-    console.log(this.ballHQ * this.ballVQ, "versus", this.colorArray.length);
     for (let i = 0; i < this.ballVQ; i++) {
       for (let j = 0; j < this.ballHQ; j++) {
         let { H, S, L } = this.colorArray[counter];
