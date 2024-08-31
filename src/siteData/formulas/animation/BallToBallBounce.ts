@@ -40,8 +40,11 @@ export const BallToBallBounce: CollisionDetectionObject = {
     let minDist = ball2.radius + ball1.radius;
     if (distance < minDist) {
       let angle = Math.atan2(dy, dx);
+
+      // targetX and targetY preserve the point at which the circle should have stopped before overlapping.  
       let targetX = ball1.x + Math.cos(angle) * minDist;
       let targetY = ball1.y + Math.sin(angle) * minDist;
+
       let xOverlap = targetX - ball2.x;
       let yOverlap = targetY - ball2.y;
       let ax = xOverlap * spring;

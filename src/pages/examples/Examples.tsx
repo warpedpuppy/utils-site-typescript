@@ -6,11 +6,13 @@ import { Nullable } from "../../types/types";
 import CreateChecklists from "../../services/CreateChecklists";
 import { useNavigate } from "react-router-dom";
 import "./Examples.scss";
+import { useParams } from "react-router-dom";
 import SiteData from "../../siteData/SiteData";
 
 function Examples() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { exampleName } = useParams();
   const [activeObject, setActiveObject] = useState<Nullable<any>>(null);
   const [key, setKey] = useState<string>("");
   const [innerKey, setInnerKey] = useState<string>("");
@@ -18,6 +20,12 @@ function Examples() {
   const { getKeyAndInnerKeyFromLocation, createClassReference } =
     ExamplesUtils();
   const { createChecklist } = CreateChecklists();
+
+  useEffect(() => {
+    if (!exampleName) {
+      navigate("examples/ball-bounce");
+    }
+  }, [exampleName, navigate]);
 
   function clickHandler(str: string, key: string, innerKey: string) {
     loadCode(key, innerKey);

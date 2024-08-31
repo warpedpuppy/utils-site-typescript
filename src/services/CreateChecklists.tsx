@@ -17,11 +17,11 @@ function CreateChecklists() {
           <dt key={`createjson-dt-${innerArray[0]}`}>{innerArray[0]}</dt>
         );
         Object.entries(innerArray[1]).forEach((innerInnerArray) => {
-          const { t, f, l } = innerInnerArray[1];
+          const { t, l } = innerInnerArray[1];
 
           if (innerInnerArray[1].include !== false)
             returnArray.push(
-              <dd key={`createjson-dd-${t}`}>
+              <dd key={`createjson-dd-${l}`}>
                 <CheckListCheckbox
                   objectProperty={innerInnerArray[0]}
                   idAttribute={`${l}`}
