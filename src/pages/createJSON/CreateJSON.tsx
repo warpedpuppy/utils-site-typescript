@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./CreateJSON.scss";
-import { GenericObject } from "../../types/types";
+import { useParams } from "react-router-dom";
 import CreateJSONTabs from "./createJSONComponents/createJSONTabs";
 import JSONContent from "./createJSONComponents/JSONContent";
 
@@ -8,10 +8,14 @@ import CreateChecklists from "../../services/CreateChecklists";
 
 function CreateJSON() {
   const [tabBody, setTabBody] = useState<number>(0);
-  const [json, setJSON] = useState<GenericObject>({});
   const { createChecklist } = CreateChecklists();
+  const { tab } = useParams<string>();
 
-  let checklist = createChecklist("create-json-page-checklist", json);
+  useEffect(() => {
+    if (tab) setTabBody(+tab);
+  }, [tab]);
+
+  let checklist = createChecklist("create-json-page-checklist");
 
   return (
     <div id="create-json">
@@ -19,7 +23,7 @@ function CreateJSON() {
       {tabBody === 0 && <div className="tab-content">{checklist}</div>}
       {tabBody === 1 && (
         <div className="tab-content">
-          <JSONContent json={json} />
+          <JSONContent />
         </div>
       )}
     </div>

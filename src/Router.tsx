@@ -25,6 +25,12 @@ const router = createBrowserRouter([
       {
         path: "create-json",
         element: <CreateJSON />,
+        children: [
+          {
+            path: ":tab",
+            element: <CreateJSON />,
+          },
+        ],
       },
       {
         path: "about",
