@@ -2,11 +2,11 @@ import { useRef, useEffect } from "react";
 import LocalStorageManager from "./LocalStorageManager";
 
 function CheckListCheckbox({
+  objectProperty,
   idAttribute,
-  functionName,
 }: {
+  objectProperty: string;
   idAttribute: string;
-  functionName: string;
 }) {
   let checkbox = useRef<HTMLInputElement>(null);
   const { addToLocaStorage, deleteFromLocaStorage, isInLocalStorage } =
@@ -14,15 +14,15 @@ function CheckListCheckbox({
 
   useEffect(() => {
     //check upon page load
-    if (isInLocalStorage(functionName) && checkbox.current)
+    if (isInLocalStorage(objectProperty) && checkbox.current)
       checkbox.current.checked = true;
-  }, [isInLocalStorage, functionName]);
+  }, [isInLocalStorage, objectProperty]);
 
   function changeHandler() {
-    if (isInLocalStorage(functionName)) {
-      deleteFromLocaStorage(functionName);
+    if (isInLocalStorage(objectProperty)) {
+      deleteFromLocaStorage(objectProperty);
     } else {
-      addToLocaStorage(functionName);
+      addToLocaStorage(objectProperty);
     }
   }
 

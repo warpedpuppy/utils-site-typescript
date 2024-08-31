@@ -24,8 +24,8 @@ function CreateChecklists() {
             returnArray.push(
               <dd key={`createjson-dd-${t}`}>
                 <CheckListCheckbox
+                  objectProperty={innerInnerArray[0]}
                   idAttribute={`${l}`}
-                  functionName={getFunctionName(f.functionString)}
                 />
 
                 {clickHandler !== null ? (
