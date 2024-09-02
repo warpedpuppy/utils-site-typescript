@@ -1,16 +1,17 @@
-import { Ball } from "../../../types/shapes";
+import { Ball, Container } from "../../../types/shapes";
 import { CollisionDetectionObject } from "../../../types/types";
 
 export const BallBounce: CollisionDetectionObject = {
-  keyFunction: function BallBounce(ball: Ball, stage: any) {
+  keyFunction: function BallBounce(ball: Ball, stage: Container) {
     let gravity: number = 0.5;
     ball.x += ball.vx;
     ball.y += ball.vy;
     ball.vy += gravity;
-    if (ball.y >= stage.canvasHeight - ball.radius) {
-      ball.vy *= -1;
+    if (ball.y >= stage.height - ball.radius) {
+      ball.y = stage.height - ball.radius;
+      ball.vy = -ball.vy * 0.8;
     }
-    if (ball.x >= stage.canvasWidth) {
+    if (ball.x >= stage.width) {
       ball.vy = 1;
       ball.x = 1;
       ball.y = 1;
@@ -18,15 +19,15 @@ export const BallBounce: CollisionDetectionObject = {
   },
   dependencies: [],
   functionString: `
-  function BallBounce(ball: Circle, stage: any) {
+  function BallBounce(ball: Circle, stage: Container) {
     let gravity: number = 0.5;
     ball.x += ball.vx;
     ball.y += ball.vy;
     ball.vy += gravity;
-    if (ball.y >= stage.canvasHeight - ball.radius) {
+      if (ball.y >= stage.height - ball.radius) {
       ball.vy *= -1;
     }
-    if (ball.x >= stage.canvasWidth) {
+    if (ball.x >= stage.width) {
       ball.vy = 1;
       ball.x = 1;
       ball.y = 1;

@@ -13,9 +13,16 @@ class BallBounceAnimation extends AnimationBaseClass {
   }
   draw = () => {
     if (!this.ctx) return;
+    let stage = {
+      x: 0,
+      y: 0,
+      height: this.canvasHeight,
+      width: this.canvasWidth,
+    };
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.beginPath();
-    BallBounce.keyFunction(this.ball, this);
+
+    BallBounce.keyFunction(this.ball, stage);
     this.ctx.arc(this.ball.x, this.ball.y, this.ball.radius, 0, 2 * Math.PI);
     this.ctx.fill();
     requestAnimationFrame(this.draw);

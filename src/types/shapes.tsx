@@ -18,6 +18,12 @@ export interface Polygon {
   draw: Function;
   drag: boolean;
 }
+export interface Container {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 export interface Vector {
   x: number;
   y: number;
