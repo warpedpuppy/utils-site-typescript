@@ -25,7 +25,8 @@ export const BallBounce: CollisionDetectionObject = {
     ball.y += ball.vy;
     ball.vy += gravity;
       if (ball.y >= stage.height - ball.radius) {
-      ball.vy *= -1;
+      ball.y = stage.height - ball.radius;
+       ball.vy = -ball.vy * 0.8;
     }
     if (ball.x >= stage.width) {
       ball.vy = 1;
