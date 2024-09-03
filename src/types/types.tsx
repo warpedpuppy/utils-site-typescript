@@ -1,3 +1,11 @@
+export interface PrimaryObject {
+  [key: string]: SubObject;
+}
+
+export interface SubObject {
+  [key: string]: AnimationObject;
+}
+
 export interface GenericObject {
   [key: string]: any;
 }
@@ -7,10 +15,10 @@ export interface CanvasObject {
 }
 
 export interface AnimationObject {
-  bf: Function;
   t: string;
   l: string;
-  f: Function;
+  include?: boolean;
+  f: CollisionDetectionObject;
   extraHTML?: Function;
 }
 

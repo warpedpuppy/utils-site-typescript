@@ -30,7 +30,8 @@ import NumberWithCommasAnimation from "./animations/simpleEquations/NumberWithCo
 import Rad2DegAnimation from "./animations/simpleEquations/Rad2DegAnimation";
 import RandomIntegerAnimation from "./animations/simpleEquations/RandomIntegerAnimation";
 import RandomNumberAnimation from "./animations/simpleEquations/RandomNumberAnimation";
-const SiteData = {
+import { PrimaryObject } from "../types/types";
+const SiteData: PrimaryObject = {
   animations: {
     BallBounce,
     BallsBouncingAgainstEachOther,

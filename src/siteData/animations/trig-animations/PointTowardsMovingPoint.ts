@@ -2,10 +2,10 @@ import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { GetRotation } from "../../formulas/animation/GetRotation";
 class PointTowardsMovingPoint extends AnimationBaseClass {
-  static t = "point one object towards a moving object";
-  static l = "point-one-object-towards-a-moving-object";
+  static t = "point object towards another";
+  static l = "point-object-towards-another";
   static f = GetRotation;
-  title = "point one object towards a moving object";
+  title = "point object towards another";
   animationObject = GetRotation;
   img = new Image();
   i = 0;

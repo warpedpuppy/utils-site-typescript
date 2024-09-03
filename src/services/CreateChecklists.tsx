@@ -1,6 +1,6 @@
 import { ReactNode, useCallback } from "react";
 import SiteData from "../siteData/SiteData";
-import { Nullable } from "../types/types";
+import { GenericObject, Nullable } from "../types/types";
 import { useLocation } from "react-router-dom";
 import CheckListCheckbox from "./CheckListCheckbox";
 import "./CreateChecklists.scss";
@@ -12,7 +12,12 @@ function CreateChecklists() {
     (containerClass: string, clickHandler: Nullable<Function> = null) => {
       let returnArray: ReactNode[] = [];
 
-      Object.entries(SiteData).forEach((innerArray) => {
+      let loopingObj = { ...SiteData };
+      if (containerClass.includes("example")) {
+        delete loopingObj["simple useful equations"];
+      }
+
+      Object.entries(loopingObj).forEach((innerArray) => {
         returnArray.push(
           <dt key={`createjson-dt-${innerArray[0]}`}>{innerArray[0]}</dt>
         );
@@ -29,7 +34,11 @@ function CreateChecklists() {
 
                 {clickHandler !== null ? (
                   <div
-                    className={location.pathname.includes(l) ? "active" : ""}
+                    className={
+                      location.pathname.includes(l)
+                        ? "checklist-div active"
+                        : "checklist-div"
+                    }
                     onClick={() =>
                       clickHandler(
                         `/examples/${l}`,
@@ -38,7 +47,8 @@ function CreateChecklists() {
                       )
                     }
                   >
-                    {t}
+                    <div className="hover-anim"></div>
+                    <div className="link-name">{t}</div>
                   </div>
                 ) : (
                   <label htmlFor={`${l}`}>{t}</label>
@@ -49,7 +59,9 @@ function CreateChecklists() {
       });
 
       return (
-        <dl className={`dl-masterclass ${containerClass}`}>{returnArray}</dl>
+        <dl className={`dl-masterclass checklist ${containerClass}`}>
+          {returnArray}
+        </dl>
       );
     },
     [location]

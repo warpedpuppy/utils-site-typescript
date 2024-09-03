@@ -1,12 +1,67 @@
 .dl-masterclass {
-  dd {
-    display: flex;
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 10px;
     cursor: pointer;
-    > div.active {
+  }
+  &.example-page-checklist {
+    dt {
+      color: white;
       font-weight: bold;
+      background-color: var(--site-gray);
     }
-    label {
+    dd {
+      display: flex;
       cursor: pointer;
+      align-items: center;
+      position: relative;
+      input[type="checkbox"] {
+        position: absolute;
+        z-index: 10;
+      }
+      > div.checklist-div {
+        width: 100%;
+        text-align: right;
+        position: relative;
+        z-index: 9;
+        display: flex;
+        justify-content: center;
+        padding: 0.25rem;
+        > .link-name {
+          width: 100%;
+          text-align: right;
+        }
+        > .hover-anim {
+          width: 0;
+          position: absolute;
+          top: 0;
+          transition: all 0.15s;
+        }
+        &:hover .hover-anim {
+          width: 100%;
+          height: 100%;
+          background-color: var(--site-light-gray);
+        }
+        &.active {
+          > .link-name {
+            font-weight: bold;
+          }
+        }
+      }
+      label {
+        cursor: pointer;
+      }
     }
   }
+  // .example-page-checklist {
+  //   .checklist-div {
+  //     background-color: black;
+  //     .hover-anim {
+  //       background-color: pink;
+  //       width: 100%;
+  //       height: 100%;
+  //     }
+  //   }
+  // }
 }
