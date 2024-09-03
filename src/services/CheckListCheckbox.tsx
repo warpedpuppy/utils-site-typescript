@@ -25,9 +25,19 @@ function CheckListCheckbox({
       addToLocaStorage(objectProperty);
     }
   }
+  function mouseEnterHandler() {
+    console.log("enter");
+    //show tooltip
+  }
+  function mouseLeaveHander() {
+    console.log("leave");
+    //hide tooltip
+  }
 
   return (
     <input
+      onMouseEnter={mouseEnterHandler}
+      onMouseLeave={mouseLeaveHander}
       type="checkbox"
       id={idAttribute}
       ref={checkbox}

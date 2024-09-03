@@ -1,14 +1,15 @@
 .dl-masterclass {
   overflow-y: scroll;
-  height: 100vh;
+  max-height: calc(100vh - 50px);
   input[type="checkbox"] {
     width: 20px;
     height: 20px;
-    margin: 10px;
+    margin: 1rem;
     cursor: pointer;
   }
   &.example-page-checklist {
     dt {
+      padding-left: 1rem;
       color: white;
       font-weight: bold;
       background-color: var(--site-gray);

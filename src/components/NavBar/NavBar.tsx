@@ -8,7 +8,7 @@ function NavBar() {
       </Link>
       <div>
         <Link to="/examples">examples</Link>
-        <Link to="/create-json">create json</Link>
+        <Link to="/create-json">create utils file</Link>
         <Link to="/about">about</Link>
       </div>
     </nav>
