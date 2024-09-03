@@ -41,17 +41,6 @@ const SiteData: PrimaryObject = {
     SineCurveAnimation,
     DeMystifySineCosine,
   },
-  "useful little things": {
-    GetRandomColorAnimation,
-    GetHalfwayPointOfLine,
-    TriangleDataFromLine,
-    Star,
-    Polygon,
-    GetEquilateralTriangleVertices,
-    CircleFromThreePointsAnimation,
-    DistributePointsAroundACircle,
-    DistanceBetweenTwoPoints,
-  },
   "collision detection": {
     PointToCircleCollision,
     PointToRectangle,
@@ -64,7 +53,17 @@ const SiteData: PrimaryObject = {
     LineToRectangleCollision,
     PolygonToPolygonCollision,
   },
-
+  "useful little things": {
+    GetRandomColorAnimation,
+    GetHalfwayPointOfLine,
+    TriangleDataFromLine,
+    Star,
+    Polygon,
+    GetEquilateralTriangleVertices,
+    CircleFromThreePointsAnimation,
+    DistributePointsAroundACircle,
+    DistanceBetweenTwoPoints,
+  },
   "simple useful equations": {
     CenterOnParentAnimation,
     Deg2RadAnimation,

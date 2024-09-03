@@ -23,7 +23,7 @@ function Examples() {
 
   useEffect(() => {
     if (!exampleName) {
-      navigate("examples/ball-bounce");
+      navigate("/examples/ball-bounce");
     }
   }, [exampleName, navigate]);
 
