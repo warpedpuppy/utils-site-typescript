@@ -8,6 +8,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
   static l = "polygon-to-polygon-collision";
   static f = PolygonPolygon;
   title = "polygon to polygon collision";
+  fillString: string = "yellow";
   star1: Polygon = StarObject.keyFunction(5, 50, 25, 0, {
     rotate: true,
     rotateSpeed: 2000,
@@ -38,9 +39,10 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       rotateSpeed: 2000,
     });
 
-    this.ctx.strokeStyle = "black";
-    this.ctx.lineWidth = 3;
-
+    this.ctx.fillStyle = "blue";
+    this.ctx.rect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.ctx.fill();
+    this.ctx.fillStyle = this.fillString;
     let vertices1: Point[] = [];
     this.ctx.beginPath();
     this.star2.vertices.forEach((star, i) => {
@@ -55,8 +57,6 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       });
     });
     this.ctx.closePath();
-    this.ctx.stroke();
-
     this.ctx.fill();
 
     let { x, y } = this.makePointMove();
@@ -74,7 +74,6 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       });
     });
     this.ctx.closePath();
-    this.ctx.stroke();
     this.ctx.fill();
 
     if (
@@ -83,9 +82,9 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
         { vertices: vertices2 }
       )
     ) {
-      this.ctx.fillStyle = "red";
+      this.ctx.fillStyle = this.fillString = "green";
     } else {
-      this.ctx.fillStyle = "yellow";
+      this.ctx.fillStyle = this.fillString = "yellow";
     }
 
     requestAnimationFrame(this.draw);
