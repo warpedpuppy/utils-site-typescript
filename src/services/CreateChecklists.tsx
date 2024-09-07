@@ -24,7 +24,6 @@ function CreateChecklists() {
             innerText={innerArray[0]}
             key={`createjson-dt-${innerArray[0]}`}
           />
-          // <dt key={`createjson-dt-${innerArray[0]}`}>{innerArray[0]}</dt>
         );
         Object.entries(innerArray[1]).forEach((innerInnerArray) => {
           const { t, l } = innerInnerArray[1];

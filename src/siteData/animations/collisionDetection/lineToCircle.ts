@@ -34,7 +34,7 @@ class LineToCircleCollision extends AnimationBaseClass {
     if (LineCircle.keyFunction(this.line, this.circle)) {
       this.ctx.fillStyle = "red";
     } else {
-      this.ctx.fillStyle = "transparent";
+      this.ctx.fillStyle = "black";
     }
     this.circle.x = this.halfWidth;
     this.circle.y = this.halfHeight;
@@ -47,7 +47,6 @@ class LineToCircleCollision extends AnimationBaseClass {
       2 * Math.PI
     );
     this.ctx.fill();
-    this.ctx.stroke();
 
     let { x, y } = this.makePointMove();
     let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate / 360));
