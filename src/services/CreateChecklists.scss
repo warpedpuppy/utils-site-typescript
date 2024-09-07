@@ -1,5 +1,6 @@
 .dl-masterclass {
   overflow-y: scroll;
+  border-right: 1px solid var(--site-gray);
   max-height: calc(100vh - 50px);
   input[type="checkbox"] {
     width: 20px;
@@ -13,10 +14,13 @@
       color: white;
       font-weight: bold;
       background-color: var(--site-gray);
+      cursor: pointer;
+      min-width: 330px;
     }
     dd {
       display: flex;
       cursor: pointer;
+
       align-items: center;
       position: relative;
       input[type="checkbox"] {

@@ -40,6 +40,7 @@ export interface Triangle {
 export interface Ball extends ShapeInMotion {
   x: number;
   y: number;
+  color: string;
   radius: number;
 }
 export interface ShapeInMotion {

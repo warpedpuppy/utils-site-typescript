@@ -1,6 +1,7 @@
 import { Ball } from "../../../types/shapes";
 import { BallToBallBounce } from "../../formulas/animation/BallToBallBounce";
 import AnimationBaseClass from "../AnimationBaseClass";
+import { GetRandomColors } from "../../formulas/usefulLittleThings/GetRandomColors";
 
 class BallsBouncingAgainstEachOther extends AnimationBaseClass {
   static t = "balls bouncing against each other";
@@ -36,7 +37,17 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       let radius = Math.random() * 50 + 10;
       let x = Math.random() * (this.canvasWidth - 2 * radius) + radius;
       let y = Math.random() * (this.canvasHeight - 2 * radius) + radius;
-      this.balls[i] = { x, y, radius, id: `${i}`, vx: 1, vy: 1 };
+      const { H, S, L } = GetRandomColors.keyFunction();
+
+      this.balls[i] = {
+        x,
+        y,
+        radius,
+        id: `${i}`,
+        vx: 1,
+        vy: 1,
+        color: `hsla(${H} ${S} ${L} / ${Math.random()})`,
+      };
     }
   }
   draw = () => {
@@ -56,9 +67,11 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       if (!this.ctx) return;
       ball1.x += ball1.vx;
       ball1.y += ball1.vy;
+      this.ctx.fillStyle = ball1.color;
       this.ctx.beginPath();
+
       this.ctx.arc(ball1.x, ball1.y, ball1.radius, 0, 2 * Math.PI);
-      this.ctx.stroke();
+      this.ctx.fill();
       this.balls.forEach((ball2) => {
         BallToBallBounce.keyFunction(ball1, ball2);
       });
