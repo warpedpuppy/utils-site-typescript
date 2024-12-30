@@ -1,6 +1,6 @@
 nav {
   height: 50px;
-  // border-bottom: 1px solid black;
+
   width: 100vw;
   display: flex;
   align-items: center;
@@ -76,6 +76,12 @@ nav {
 
 @media screen and (min-width: 768px) {
   nav {
+    border-bottom: 1px solid black;
+    h1 {
+      height: auto;
+      width: auto;
+      border: none;
+    }
     #hamburger {
       display: none;
     }
