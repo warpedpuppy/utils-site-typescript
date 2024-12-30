@@ -16,7 +16,7 @@ nav {
     height: 50px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid red;
+    border-bottom: 3px solid red;
   }
   #hamburger {
     display: block;
@@ -41,7 +41,7 @@ nav {
       display: block;
       width: 25px;
       height: 3px;
-      background-color: #333;
+      background-color: var(--site-gray);
       margin: 5px;
       transition: transform 0.5s;
     }
