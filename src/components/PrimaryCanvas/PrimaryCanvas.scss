@@ -1,11 +1,11 @@
 #primary-canvas {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 100vw;
   &--header {
-    padding: 1rem 1rem 0.25rem 1rem;
+    // padding: 1rem 1rem 0.25rem 1rem;
     display: flex;
-    position: absolute;
+    // position: absolute;
     flex-direction: column;
     top: 0;
     right: 0;
@@ -35,7 +35,7 @@
       }
     }
     &--canvas-container {
-      position: absolute;
+      // position: absolute;
       z-index: 10;
       top: 0;
       left: 0;

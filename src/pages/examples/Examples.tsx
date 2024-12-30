@@ -66,7 +66,7 @@ function Examples() {
   }, [key, innerKey]);
 
   return (
-    <section id="home-page">
+    <section id="example-page">
       {checklist}
       <PrimaryCanvas activeObject={activeObject} siteData={SiteData} />
     </section>
