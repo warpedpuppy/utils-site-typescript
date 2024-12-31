@@ -25,12 +25,16 @@ function CreateChecklists() {
             key={`createjson-dt-${innerArray[0]}`}
           />
         );
+        let tempArray: ReactNode[] = [];
         Object.entries(innerArray[1]).forEach((innerInnerArray) => {
           const { t, l } = innerInnerArray[1];
 
           if (innerInnerArray[1].include !== false)
-            returnArray.push(
-              <dd key={`createjson-dd-${l}`}>
+            tempArray.push(
+              <div
+                key={`createjson-dd-${l}`}
+                className="individual-checklist-item"
+              >
                 <CheckListCheckbox
                   objectProperty={innerInnerArray[0]}
                   idAttribute={`${l}`}
@@ -57,15 +61,20 @@ function CreateChecklists() {
                 ) : (
                   <label htmlFor={`${l}`}>{t}</label>
                 )}
-              </dd>
+              </div>
             );
         });
+        returnArray.push(
+          <div className="inner-checklist" key="inner-checklist">
+            {tempArray}
+          </div>
+        );
       });
 
       return (
-        <dl className={`dl-masterclass checklist ${containerClass}`}>
+        <div className={`dl-masterclass checklist ${containerClass}`}>
           {returnArray}
-        </dl>
+        </div>
       );
     },
     [location]
