@@ -14,7 +14,8 @@ function CreateChecklists() {
       containerClass: string,
       clickHandler: Nullable<Function> = null,
       open: Nullable<number> = null,
-      setOpen: Nullable<Function> = null
+      setOpen: Nullable<Function> = null,
+      windowWidth: Nullable<number> = null
     ) => {
       let returnArray: ReactNode[] = [];
 
@@ -84,7 +85,11 @@ function CreateChecklists() {
       });
 
       return (
-        <div className={`dl-masterclass checklist ${containerClass}`}>
+        <div
+          className={`dl-masterclass checklist ${containerClass} ${
+            windowWidth && windowWidth > 768 ? "desktop" : "mobile"
+          }`}
+        >
           {returnArray}
         </div>
       );

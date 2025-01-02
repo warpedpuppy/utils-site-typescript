@@ -18,10 +18,22 @@ function Examples() {
   const [innerKey, setInnerKey] = useState<string>("");
   const [className, setClassName] = useState<any>(["", ""]);
   const [open, setOpen] = useState<number>(10);
+  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   const { getKeyAndInnerKeyFromLocation, createClassReference } =
     ExamplesUtils();
   const { createChecklist } = CreateChecklists();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     if (!exampleName) {
@@ -48,7 +60,8 @@ function Examples() {
     "example-page-checklist",
     clickHandler,
     open,
-    setOpen
+    setOpen,
+    windowWidth
   );
 
   useEffect(() => {
