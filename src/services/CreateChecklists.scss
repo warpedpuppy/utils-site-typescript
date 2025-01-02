@@ -13,13 +13,25 @@
     background-color: var(--site-light-gray);
   }
   + .inner-checklist {
-    display: none;
+    max-height: 0;
+    font-size: 0;
+    overflow: hidden;
+    transition: none;
+    position: relative;
+    input {
+      display: none;
+    }
   }
   &.open {
     + .inner-checklist {
-      // position: relative;
-      top: 0;
+      max-height: 500px;
+      font-size: 1rem;
       display: block;
+
+      transition: max-height 1s;
+      input {
+        display: inline-block;
+      }
       .individual-checklist-item {
         display: flex;
         background-color: white;
