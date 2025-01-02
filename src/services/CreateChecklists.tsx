@@ -10,19 +10,28 @@ function CreateChecklists() {
   const location = useLocation();
 
   let createChecklist = useCallback(
-    (containerClass: string, clickHandler: Nullable<Function> = null) => {
+    (
+      containerClass: string,
+      clickHandler: Nullable<Function> = null,
+      open: Nullable<number> = null,
+      setOpen: Nullable<Function> = null
+    ) => {
       let returnArray: ReactNode[] = [];
 
       let loopingObj = { ...SiteData };
       if (containerClass.includes("example")) {
         delete loopingObj["simple useful equations"];
       }
-
-      Object.entries(loopingObj).forEach((innerArray) => {
+      Object.entries(loopingObj).forEach((innerArray, index) => {
         returnArray.push(
           <CheckListDT
             innerText={innerArray[0]}
             key={`createjson-dt-${innerArray[0]}`}
+            open={open}
+            index={index}
+            test={(i: number) => {
+              if (setOpen) setOpen(i);
+            }}
           />
         );
         let tempArray: ReactNode[] = [];
@@ -65,7 +74,10 @@ function CreateChecklists() {
             );
         });
         returnArray.push(
-          <div className="inner-checklist" key="inner-checklist">
+          <div
+            className="inner-checklist"
+            key={`inner-checklist-${innerArray[0]}`}
+          >
             {tempArray}
           </div>
         );

@@ -17,6 +17,8 @@ function Examples() {
   const [key, setKey] = useState<string>("");
   const [innerKey, setInnerKey] = useState<string>("");
   const [className, setClassName] = useState<any>(["", ""]);
+  const [open, setOpen] = useState<number>(10);
+
   const { getKeyAndInnerKeyFromLocation, createClassReference } =
     ExamplesUtils();
   const { createChecklist } = CreateChecklists();
@@ -42,7 +44,12 @@ function Examples() {
     [setClassName]
   );
 
-  let checklist = createChecklist("example-page-checklist", clickHandler);
+  let checklist = createChecklist(
+    "example-page-checklist",
+    clickHandler,
+    open,
+    setOpen
+  );
 
   useEffect(() => {
     if (!className[0]) return;

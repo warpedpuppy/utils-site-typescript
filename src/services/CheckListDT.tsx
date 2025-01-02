@@ -1,11 +1,22 @@
-import { useState } from "react";
-
-function CheckListDT({ innerText }: { innerText: string }) {
-  const [open, setOpen] = useState<string>("");
+import { Nullable } from "../types/types";
+function CheckListDT({
+  innerText,
+  open,
+  index,
+  test,
+}: {
+  innerText: string;
+  open: Nullable<number>;
+  index: Nullable<number>;
+  test: Nullable<Function>;
+}) {
   return (
     <div
-      className={`checklist-catogory ${open}`}
-      onClick={() => setOpen(open === "" ? "open" : "")}
+      className={`checklist-catogory ${open === index ? "open" : ""}`}
+      onClick={() => {
+        console.log(open, index);
+        if (test) test(index);
+      }}
       key={`createjson-dt-${innerText}`}
     >
       {innerText}
