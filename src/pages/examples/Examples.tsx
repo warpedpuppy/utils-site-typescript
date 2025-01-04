@@ -30,6 +30,7 @@ function Examples() {
   }, [exampleName, navigate]);
 
   function clickHandler(str: string, key: string, innerKey: string) {
+    // setOpen(10);
     loadCode(key, innerKey);
     navigate(str);
   }
