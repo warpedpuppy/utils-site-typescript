@@ -45,6 +45,8 @@
 @media screen and (min-width: 768px) {
   .example-page-checklist {
     width: 33.33%;
+    height: calc(100vh - var(--menu-height));
+    overflow: scroll;
   }
   // .checklist-catogory {
   //   display: flex;

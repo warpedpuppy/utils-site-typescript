@@ -27,7 +27,7 @@
     &--text {
       position: relative;
       z-index: 9;
-      padding: 1rem;
+      // padding: 1rem;
       h3 {
         margin: 0.5rem 0;
       }
@@ -54,5 +54,14 @@
     width: 100%;
     position: relative;
     z-index: 10;
+  }
+}
+@media screen and (min-width: 768px) {
+  #primary-canvas {
+    &--content {
+      &--text {
+        padding: 0;
+      }
+    }
   }
 }
