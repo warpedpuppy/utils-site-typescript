@@ -37,6 +37,21 @@
         .individual-checklist-item {
           display: flex;
           background-color: white;
+          cursor: pointer;
+          input {
+            display: block;
+            margin: 0 0.25rem 0 1rem;
+          }
+          .checklist-div {
+            width: 100%;
+            position: relative;
+            .link-name {
+              padding: 0.25rem 0.5rem;
+              font-size: 1rem;
+              font-weight: bold;
+              color: var(--site-gray);
+            }
+          }
         }
       }
     }
@@ -56,12 +71,6 @@
             .checklist-div {
               width: 100%;
               position: relative;
-              .link-name {
-                padding: 0.25rem 0.5rem;
-                font-size: 1rem;
-                font-weight: bold;
-                color: var(--site-gray);
-              }
               .hover-anim {
                 opacity: 0;
                 position: absolute;
