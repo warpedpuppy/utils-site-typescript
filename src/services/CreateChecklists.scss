@@ -55,6 +55,26 @@
             cursor: pointer;
             .checklist-div {
               width: 100%;
+              position: relative;
+              .link-name {
+                padding: 0.25rem 0.5rem;
+                font-size: 1rem;
+                font-weight: bold;
+                color: var(--site-gray);
+              }
+              .hover-anim {
+                opacity: 0;
+                position: absolute;
+                top: 0;
+                left: 0;
+                background-color: rgba($color: #000000, $alpha: 0.5);
+                transition: opacity 0.5s;
+                width: 100%;
+                height: 100%;
+                &:hover {
+                  opacity: 0.5;
+                }
+              }
             }
           }
         }
