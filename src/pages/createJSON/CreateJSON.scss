@@ -3,6 +3,9 @@
   position: relative;
   top: 50px;
   padding-top: 50px;
+  #create-json-container {
+    display: flex;
+  }
   div {
     &#create-json-tabs {
       margin: 0 auto;
