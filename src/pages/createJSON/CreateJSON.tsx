@@ -20,13 +20,19 @@ function CreateJSON() {
   return (
     <div id="create-json">
       <div id="create-json-container">
-        {tabBody === 0 && <div className="tab-content">{checklist}</div>}
-        {tabBody === 1 && (
+        <div className="create-json-container--content">
+          <div className="create-json--tab">see checklist</div>
+          <div className="tab-content">{checklist}</div>
+        </div>
+
+        <div className="create-json-container--content">
           <div className="tab-content">
             <JSONContent />
           </div>
-        )}
-        <CreateJSONTabs setTabBody={setTabBody} tabBody={tabBody} />
+          <div className="create-json--tab">see json</div>
+        </div>
+
+        {/* <CreateJSONTabs setTabBody={setTabBody} tabBody={tabBody} /> */}
       </div>
     </div>
   );
