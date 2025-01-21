@@ -21,9 +21,11 @@ function CreateJSON() {
     <div id="create-json">
       <div id="create-json-container">
         <CreateJSONTabs setTabBody={setTabBody} tabBody={tabBody} />
-        <div className="tab-content">{checklist}</div>
-
-        <div className="tab-content">
+        <div className={`tab-content ${tabBody === 0 ? "active" : ""}`}>
+          {checklist}
+        </div>
+        <div className={`tab-content ${tabBody === 1 ? "active" : ""}`}>
+          <button className="btn btn-primary">print</button>
           <JSONContent />
         </div>
       </div>

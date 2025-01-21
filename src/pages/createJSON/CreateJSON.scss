@@ -3,85 +3,32 @@
   position: relative;
   top: 50px;
   padding-top: 50px;
-  #create-json-container {
-    .create-json--tab {
-      border: 1px solid black;
-      cursor: pointer;
-      padding: 10px;
-      background-color: white;
-    }
-    .create-json-container--content {
-      position: absolute;
-      // width: max-content;
-      width: 1000px;
-      display: flex;
-      // justify-content: center;
-      align-items: flex-start;
-      &:nth-child(1) {
-        top: 0;
-        left: 0;
-      }
-      &:nth-child(2) {
-        top: 50px;
-        left: 100px;
-      }
-      .tab-content {
-        // position: absolute;
-
-        top: 0;
-        background-color: white;
-        // &:nth-child(1) {
-        //   top: -10px;
-        //   left: -10px;
-        // }
-      }
-    }
+  #create-json-tabs {
+    margin: 0 auto;
+    width: 100%;
   }
-  div {
-    &#create-json-tabs {
-      margin: 0 auto;
-      width: 100%;
-    }
-    &.tab-content {
+  #create-json-container {
+    margin: 0 20px;
+    .tab-content {
+      display: none;
       border: 1px solid black;
+      border-top-right-radius: 10px;
       padding: 10px;
       width: 100%;
       margin: 0 auto;
+      button {
+        float: right;
+      }
       pre {
         font-size: 0.75rem;
         line-height: 0.75rem;
       }
-    }
-    .json-dd {
-      display: flex;
-      align-items: center;
-      margin: 10px 0;
-      input[type="checkbox"] {
-        cursor: pointer;
-        margin-right: 10px;
-        -webkit-appearance: none;
-        width: 20px;
-        height: 20px;
-        background: white;
-        border-radius: 5px;
-        border: 1px solid var(--site-gray);
-        &:checked {
-          background: var(--site-blue);
-        }
+      &.active {
+        display: block;
       }
     }
   }
 }
 
-// @media screen and (min-width: 768px) {
-//   #create-json {
-//     div {
-//       // &#create-json-tabs {
-//       //   width: 50%;
-//       // }
-//       // &.tab-content {
-//       //   width: 50%;
-//       // }
-//     }
-//   }
-// }
+@media screen and (min-width: 768px) {
+}
