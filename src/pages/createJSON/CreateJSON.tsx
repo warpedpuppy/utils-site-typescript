@@ -17,6 +17,13 @@ function CreateJSON() {
 
   let checklist = createChecklist("create-json-page-checklist");
 
+  function copyToClipboard() {
+    let json = document.querySelector("pre code");
+    if (json) {
+      navigator.clipboard.writeText(json.textContent || "");
+    }
+  }
+
   return (
     <div id="create-json">
       <div id="create-json-container">
@@ -25,7 +32,9 @@ function CreateJSON() {
           {checklist}
         </div>
         <div className={`tab-content ${tabBody === 1 ? "active" : ""}`}>
-          <button className="btn btn-primary">print</button>
+          <button className="btn btn-primary" onClick={copyToClipboard}>
+            copy to clipboard
+          </button>
           <JSONContent />
         </div>
       </div>
