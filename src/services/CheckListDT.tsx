@@ -19,7 +19,7 @@ function CheckListDT({
       key={`createjson-dt-${innerText}`}
     >
       {innerText}
-      <span>{open === index ? "-" : "+"} </span>
+      <span className="open-indicator">{open === index ? "-" : "+"} </span>
     </div>
   );
 }
