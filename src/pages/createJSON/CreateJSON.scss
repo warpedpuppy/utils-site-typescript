@@ -28,6 +28,18 @@
       }
     }
   }
+  .checklist-category {
+    background-color: var(--site-gray);
+    color: white;
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+  }
+  .individual-checklist-item {
+    padding: 0.25rem 0.5rem;
+    input {
+      margin-right: 0.5rem;
+    }
+  }
 }
 
 @media screen and (min-width: 768px) {

@@ -1,5 +1,5 @@
 .example-page-checklist {
-  .checklist-catogory {
+  .checklist-category {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -62,7 +62,7 @@
     width: 33.33%;
     height: calc(100vh - var(--menu-height));
     overflow: scroll;
-    .checklist-catogory {
+    .checklist-category {
       &.open {
         + .inner-checklist {
           .individual-checklist-item {

@@ -12,7 +12,7 @@ function CheckListDT({
 }) {
   return (
     <div
-      className={`checklist-catogory ${open === index ? "open" : ""}`}
+      className={`checklist-category ${open === index ? "open" : ""}`}
       onClick={() => {
         if (test) test(open === index ? 10 : index);
       }}
