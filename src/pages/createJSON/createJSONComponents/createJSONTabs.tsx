@@ -26,6 +26,12 @@ function CreateJSONTabs({
       >
         view/copy json
       </div>
+      <div
+        className={tabBody === 2 ? "active-tab" : ""}
+        onClick={() => onClickHandler(2)}
+      >
+        supporting interfaces
+      </div>
     </div>
   );
 }

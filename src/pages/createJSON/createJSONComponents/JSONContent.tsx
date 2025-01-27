@@ -4,11 +4,7 @@ import "./JSONContent.scss";
 function JSONContent() {
   let formattedJSON: any = CreateJson();
 
-  return (
-    <pre>
-      <code>{formattedJSON}</code>
-    </pre>
-  );
+  return <pre className="functions-pre">{formattedJSON}</pre>;
 }
 
 export default JSONContent;

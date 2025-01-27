@@ -18,8 +18,27 @@ export const BallBounce: CollisionDetectionObject = {
     }
   },
   dependencies: [],
+  interfaces: ["Ball", "Container"],
+  // interfaces: function () {
+  //   let ball: Ball = {
+  //     x: 0,
+  //     y: 0,
+  //     radius: 10,
+  //     vx: 4,
+  //     vy: 1,
+  //     id: "ball",
+  //     color: "black",
+  //   };
+  //   let container: Container = {
+  //     x: 0,
+  //     y: 0,
+  //     width: 10,
+  //     height: 10,
+  //   };
+  //   return [ball, container];
+  // },
   functionString: `
-  function BallBounce(ball: Circle, stage: Container) {
+  function BallBounce(ball: Ball, stage: Container) {
     let gravity: number = 0.5;
     ball.x += ball.vx;
     ball.y += ball.vy;

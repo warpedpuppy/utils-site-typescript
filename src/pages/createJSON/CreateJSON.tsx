@@ -5,6 +5,7 @@ import CreateJSONTabs from "./createJSONComponents/createJSONTabs";
 import JSONContent from "./createJSONComponents/JSONContent";
 
 import CreateChecklists from "../../services/CreateChecklists";
+import { ShapesString } from "../../types/shapes";
 
 function CreateJSON() {
   const [tabBody, setTabBody] = useState<number>(0);
@@ -17,8 +18,8 @@ function CreateJSON() {
 
   let checklist = createChecklist("create-json-page-checklist");
 
-  function copyToClipboard() {
-    let json = document.querySelector("pre code");
+  function copyToClipboard(str: string) {
+    let json = document.querySelector(str);
     if (json) {
       navigator.clipboard.writeText(json.textContent || "");
     }
@@ -32,10 +33,22 @@ function CreateJSON() {
           {checklist}
         </div>
         <div className={`tab-content ${tabBody === 1 ? "active" : ""}`}>
-          <button className="btn btn-primary" onClick={copyToClipboard}>
+          <button
+            className="btn btn-primary"
+            onClick={() => copyToClipboard(".functions-pre")}
+          >
             copy to clipboard
           </button>
           <JSONContent />
+        </div>
+        <div className={`tab-content ${tabBody === 2 ? "active" : ""}`}>
+          <button
+            className="btn btn-primary"
+            onClick={() => copyToClipboard(".shapes-pre")}
+          >
+            copy shapes to clipboard
+          </button>
+          <pre className="shapes-pre">{ShapesString}</pre>
         </div>
       </div>
     </div>

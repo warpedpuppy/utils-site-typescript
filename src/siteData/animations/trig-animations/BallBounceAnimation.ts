@@ -5,6 +5,7 @@ class BallBounceAnimation extends AnimationBaseClass {
   static t = "ball bounce";
   static l = "ball-bounce";
   static f = BallBounce;
+  static relatedObject = BallBounce;
   title = "ball bounce";
   animationObject = BallBounce;
   ball: Ball = {

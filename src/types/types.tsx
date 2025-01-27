@@ -18,6 +18,7 @@ export interface AnimationObject {
   t: string;
   l: string;
   include?: boolean;
+  relatedObject?: CollisionDetectionObject;
   f: CollisionDetectionObject;
   extraHTML?: Function;
 }
@@ -31,6 +32,7 @@ export interface HSL {
 export interface CollisionDetectionObject {
   keyFunction: Function;
   dependencies: string[];
+  interfaces?: string[];
   functionString: string;
 }
 
