@@ -13,6 +13,8 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
   arrowPoint: Point = { x: 0, y: 0 };
   img = new Image();
   ratio = 0;
+  quadrantCounter = 0;
+  quadrant: Point[] = [];
   keyFunction(origin: Point, destination: Point, ratio: number) {
     let x = origin.x + ratio * (destination.x - origin.x);
     let y = origin.y + ratio * (destination.y - origin.y);
@@ -22,6 +24,33 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     let a = startPoint.x - endPoint.x;
     let b = startPoint.y - endPoint.y;
     return Math.sqrt(a * a + b * b);
+  }
+  createNewDestinationPoint(quadrant: number) {
+    if (quadrant === 0) {
+      return {
+        x: Math.random() * (this.halfWidth / 2),
+        y: Math.random() * (this.halfHeight / 2),
+      };
+    } else if (quadrant === 1) {
+      return {
+        x: Math.random() * this.halfWidth + this.halfWidth,
+        y: Math.random() * (this.halfHeight / 2),
+      };
+    } else if (quadrant === 2) {
+      return {
+        x: Math.random() * (this.halfWidth / 2),
+        y: Math.random() * this.halfHeight + this.halfHeight,
+      };
+    } else if (quadrant === 3) {
+      return {
+        x: Math.random() * this.halfWidth + this.halfWidth,
+        y: Math.random() * this.halfHeight + this.halfHeight,
+      };
+    }
+    return {
+      x: Math.random() * this.halfWidth,
+      y: Math.random() * this.halfHeight,
+    };
   }
   init() {
     if (this.textDiv) {
@@ -55,10 +84,14 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
   }
   drawDot = () => {
     this.ratio = 0;
-    this.dotNew = {
-      x: Math.floor(Math.random() * this.canvasWidth),
-      y: Math.floor(Math.random() * this.canvasHeight),
-    };
+
+    this.dotNew = this.createNewDestinationPoint(this.quadrantCounter);
+
+    if (this.quadrantCounter < 3) {
+      this.quadrantCounter++;
+    } else {
+      this.quadrantCounter = 0;
+    }
   };
   draw = () => {
     if (!this.canvas || !this.ctx) return;
