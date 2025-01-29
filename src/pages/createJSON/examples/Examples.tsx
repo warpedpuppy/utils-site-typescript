@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import PrimaryCanvas from "../../components/PrimaryCanvas/PrimaryCanvas";
+import PrimaryCanvas from "../../../components/PrimaryCanvas/PrimaryCanvas";
 import ExamplesUtils from "./ExamplesUtils";
-import { Nullable } from "../../types/types";
-import CreateChecklists from "../../services/CreateChecklists";
+import { Nullable } from "../../../types/types";
+import CreateChecklists from "../../../services/CreateChecklists";
 import { useNavigate } from "react-router-dom";
 import "./Examples.scss";
 import { useParams } from "react-router-dom";
-import SiteData from "../../siteData/SiteData";
+import SiteData from "../../../siteData/SiteData";
 
 function Examples() {
   const location = useLocation();

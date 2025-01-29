@@ -1,0 +1,14 @@
+#about-wrapper {
+  position: relative;
+  top: 50px;
+  &--inner {
+    margin: 0 auto;
+    width: fit-content;
+    max-width: 80%;
+    text-align: left;
+    padding-top: 20px;
+    p {
+      margin: 10px 0;
+    }
+  }
+}

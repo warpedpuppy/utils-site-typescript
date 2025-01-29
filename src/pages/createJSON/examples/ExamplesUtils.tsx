@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { GenericObject } from "../../types/types";
+import { GenericObject } from "../../../types/types";
 function ExamplesUtils() {
   const getKeyAndInnerKeyFromLocation = useCallback(
     (siteData: GenericObject, location: string) => {
