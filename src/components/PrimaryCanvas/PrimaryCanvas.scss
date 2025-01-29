@@ -27,7 +27,7 @@
     &--text {
       position: relative;
       z-index: 9;
-      // padding: 1rem;
+      padding: 1rem;
       h3 {
         margin: 0.5rem 0;
       }
@@ -36,7 +36,7 @@
       }
     }
     &--canvas-container {
-      // position: absolute;
+      position: absolute;
       z-index: 9;
       top: 0;
       left: 0;
@@ -57,13 +57,13 @@
   }
 }
 @media screen and (min-width: 768px) {
-  #primary-canvas {
-    &--header {
-    }
-    &--content {
-      &--text {
-        padding: 0;
-      }
-    }
-  }
+  // #primary-canvas {
+  //   &--header {
+  //   }
+  //   &--content {
+  //     &--text {
+  //       padding: 1rem;
+  //     }
+  //   }
+  // }
 }

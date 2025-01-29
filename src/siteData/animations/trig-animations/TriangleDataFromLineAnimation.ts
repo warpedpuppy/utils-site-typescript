@@ -74,6 +74,7 @@ class TriangleFromLineAnimation extends AnimationBaseClass {
       x: Math.floor(e.pageX - this.left),
       y: Math.floor(e.pageY - this.top),
     };
+    console.log(this.startPoint);
     this.allowDraw = true;
   }
   pointerMoveHandler(e: PointerEvent) {

@@ -52,6 +52,7 @@ class AnimationBaseClass {
   }
   resizeHandler = () => {
     if (!this.canvas || !this.ctx) return;
+
     if (this.cont) {
       this.canvas.width = this.canvasWidth = this.cont.clientWidth;
       this.canvas.height = this.canvasHeight = this.cont.clientHeight;

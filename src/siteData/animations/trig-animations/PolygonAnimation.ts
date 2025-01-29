@@ -14,6 +14,9 @@ class PolygonAnimation extends AnimationBaseClass {
   }
   init() {
     this.draw();
+    if (this.textDiv)
+      this.textDiv.innerHTML = `
+        <p>By avoiding the rect() function, you can more easily perform collision detection.</p>`;
   }
   draw = () => {
     if (!this.ctx) return;
