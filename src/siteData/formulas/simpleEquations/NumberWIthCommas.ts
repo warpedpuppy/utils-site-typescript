@@ -7,6 +7,6 @@ export const NumberWithCommas: CollisionDetectionObject = {
   dependencies: [],
   functionString: `
 function NumberWithCommas(x: number) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return x.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");
 }`,
 };

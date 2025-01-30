@@ -1,4 +1,3 @@
-import { Nullable } from "../../../types/types";
 import { Point } from "../../../types/shapes";
 import AnimationBaseClass from "../../../siteData/animations/AnimationBaseClass";
 class MoveObjectToDestinationPoint extends AnimationBaseClass {
