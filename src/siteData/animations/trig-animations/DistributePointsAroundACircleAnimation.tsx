@@ -55,6 +55,8 @@ class DistributePointsAroundACircle extends AnimationBaseClass {
 
     let radius = this.cosWave(100, 100, 0.001);
 
+    this.ctx.strokeStyle = "rgba(255,255,255,0.3)";
+    this.ctx.lineWidth = 1;
     this.ctx.beginPath();
     this.ctx.moveTo(this.halfWidth, 0);
     this.ctx.lineTo(this.halfWidth, this.canvasHeight);
@@ -71,7 +73,7 @@ class DistributePointsAroundACircle extends AnimationBaseClass {
     );
     points.forEach((point: Point) => {
       if (!this.ctx) return;
-      this.ctx.strokeStyle = "rgba(0 0 0 / 0.5)";
+      this.ctx.strokeStyle = "rgba(255,255,255,0.3)";
       this.ctx.lineWidth = 2;
 
       this.ctx.beginPath();

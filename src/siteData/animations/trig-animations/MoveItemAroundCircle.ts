@@ -42,7 +42,7 @@ class MoveItemAroundCircle extends AnimationBaseClass {
     this.ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
     this.ctx.lineWidth = 1;
     this.ctx.beginPath();
     this.ctx.moveTo(this.halfWidth, this.halfHeight);

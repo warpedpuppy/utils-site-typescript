@@ -34,6 +34,8 @@ class PointTowardsMovingPoint extends AnimationBaseClass {
     if (!this.canvas || !this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
 
+    this.ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    this.ctx.lineWidth = 1;
     this.ctx.beginPath();
     this.ctx.moveTo(0, this.halfHeight);
     this.ctx.lineTo(this.canvasWidth, this.halfHeight);
@@ -48,7 +50,7 @@ class PointTowardsMovingPoint extends AnimationBaseClass {
     this.ctx.arc(this.halfWidth, this.halfHeight, 200, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    this.ctx.strokeStyle = "grey";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.4)";
     this.ctx.lineWidth = 2;
 
     let point = this.pointsAroundCircle(

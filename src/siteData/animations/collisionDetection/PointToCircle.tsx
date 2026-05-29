@@ -36,7 +36,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     if (PointCircle.keyFunction({ x, y }, this.circle2)) {
       this.ctx.fillStyle = "red";
     } else {
-      this.ctx.fillStyle = "black";
+      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
     }
 
     this.ctx.beginPath();
@@ -50,7 +50,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.ctx.fill();
 
     this.ctx.beginPath();
-    this.ctx.fillStyle = "black";
+    this.ctx.fillStyle = "#f97316"; /* bright dot so user can see the moving point */
     this.ctx.arc(x, y, this.circle1.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
