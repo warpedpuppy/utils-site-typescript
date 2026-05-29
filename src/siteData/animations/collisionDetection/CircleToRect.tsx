@@ -37,7 +37,7 @@ class CirceToRectAnimation extends AnimationBaseClass {
     if (PolygonCircle.keyFunction(this.rect, this.circle)) {
       this.ctx.fillStyle = "red";
     } else {
-      this.ctx.fillStyle = "black";
+      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
     }
 
     this.ctx.beginPath();

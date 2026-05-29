@@ -28,7 +28,7 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     this.ctx.lineWidth = 3;
 
     // ADJACENT
-    this.ctx.strokeStyle = "blue";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.55)";
     this.ctx.lineWidth = 0.25;
     this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
     this.ctx.lineTo(this.endPoint.x, this.startPoint.y);
