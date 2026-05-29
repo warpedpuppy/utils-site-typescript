@@ -3,33 +3,69 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 :root {
-  --site-gray: rgba(0, 0, 0, 0.5);
-  --site-light-gray: rgba(0, 0, 0, 0.05);
-  --site-blue: #abd;
-  --menu-height: 50px;
+  --menu-height:   50px;
+  --bg:            #0d0f1a;
+  --bg-surface:    #161929;
+  --bg-elevated:   #1e2235;
+  --border:        rgba(255, 255, 255, 0.07);
+  --border-bright: rgba(255, 255, 255, 0.14);
+  --accent:        #818cf8;
+  --accent-dim:    rgba(129, 140, 248, 0.15);
+  --accent-glow:   rgba(129, 140, 248, 0.25);
+  --text:          #e2e4f0;
+  --text-muted:    #8890b0;
+  --text-code:     #a5b4fc;
+  --code-bg:       #090b13;
+  --green:         #34d399;
+  --red:           #f87171;
+
+  /* legacy aliases so we don't have to touch animation canvas code */
+  --site-gray:       rgba(255, 255, 255, 0.55);
+  --site-light-gray: rgba(255, 255, 255, 0.07);
+  --site-blue:       var(--accent);
 }
+
 body {
-  font-size: 18px;
-  color: var(--site-gray);
-  line-height: 30px;
+  font-size: 16px;
+  color: var(--text);
+  background-color: var(--bg);
+  line-height: 1.6;
 }
+
 a {
   text-decoration: none;
-  color: var(--site-gray);
-  font-weight: bold;
+  color: var(--accent);
+  font-weight: 600;
+  transition: color 0.15s;
+  &:hover {
+    color: var(--text);
+    text-decoration: none;
+  }
 }
 
 button {
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  border: 1px solid var(--site-gray);
-  font-size: 14px;
+  padding: 0.45rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-bright);
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
+  background: var(--bg-elevated);
+  color: var(--text);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  &:hover {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
 }
+
 pre {
   white-space: pre-wrap;
 }
+
 .text-container-div {
   min-height: 500px;
 }

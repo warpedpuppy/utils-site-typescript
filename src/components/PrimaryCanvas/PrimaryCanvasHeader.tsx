@@ -16,7 +16,7 @@ function PrimaryCanvasHeader({
   }, [instanceOfClass]);
   return (
     <div id="primary-canvas--header">
-      <button onClick={() => showEquationHandler()}>see equation</button>
+      <button onClick={() => showEquationHandler()}>{ '{ }' } view code</button>
       <div id="primary-canvas--header_extra_html">{html}</div>
     </div>
   );
