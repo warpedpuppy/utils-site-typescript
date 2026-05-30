@@ -27,6 +27,8 @@ class PolygonAnimation extends AnimationBaseClass {
       rotateSpeed: 1000,
       clockwise: true,
     });
+    this.ctx.strokeStyle = "rgba(255,255,255,0.85)";
+    this.ctx.lineWidth = 2;
     this.ctx.beginPath();
     this.rect.vertices.forEach((corner, i) => {
       let { x, y } = corner;
@@ -40,7 +42,7 @@ class PolygonAnimation extends AnimationBaseClass {
     });
     this.ctx.closePath();
     this.ctx.stroke();
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   keyFunction() {}
   pointerDownHandler(e: PointerEvent) {}

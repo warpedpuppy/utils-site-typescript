@@ -81,7 +81,7 @@ class PointTowardsMovingPoint extends AnimationBaseClass {
     this.ctx.drawImage(this.img, this.halfWidth - 50, this.halfHeight - 25);
     this.ctx.resetTransform();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 }
 export default PointTowardsMovingPoint;

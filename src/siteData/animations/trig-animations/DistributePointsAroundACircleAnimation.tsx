@@ -86,7 +86,7 @@ class DistributePointsAroundACircle extends AnimationBaseClass {
       this.ctx.lineTo(point.x, point.y);
       this.ctx.stroke();
     });
-    requestAnimationFrame(this.draw.bind(this));
+    this.raf(this.draw);
   };
 }
 export default DistributePointsAroundACircle;

@@ -93,7 +93,7 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
       2 * Math.PI
     );
     this.ctx.stroke();
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   getHypAngle(originPoint: Point, destinationPoint: Point) {
     return Math.atan2(

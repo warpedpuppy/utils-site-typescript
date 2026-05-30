@@ -87,7 +87,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       this.ctx.fillStyle = this.fillString = "yellow";
     }
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
