@@ -54,7 +54,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.ctx.arc(x, y, this.circle1.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   makePointMove() {
     let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);

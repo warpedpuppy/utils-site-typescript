@@ -33,6 +33,8 @@ class AnimationTemplate extends AnimationBaseClass {
         width: this.canvasWidth,
       };
     }
+    this.ctx.strokeStyle = "rgba(255,255,255,0.85)";
+    this.ctx.lineWidth = 2;
     this.ctx.beginPath();
     this.star = StarObject.keyFunction(5, 70, 200, 0, {
       rotate: true,
@@ -48,7 +50,7 @@ class AnimationTemplate extends AnimationBaseClass {
     this.ctx.closePath();
     this.ctx.stroke();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   keyFunction() {}
   pointerDownHandler(e: PointerEvent) {}

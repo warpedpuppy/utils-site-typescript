@@ -107,7 +107,7 @@ class QuadraticBezierAnimation extends AnimationBaseClass {
     });
 
     ctx.textAlign = "left";
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 
   private hitTest(x: number, y: number): HandleKey | null {

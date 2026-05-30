@@ -141,7 +141,7 @@ class DeMystifySineCosine extends AnimationBaseClass {
       <p>The cosine of angle 'B' is the relationship between the two green lines: ${smallGreenLineHeight} / 100.</p><p>We can use cosine to calculate the x value of the triangle/s hypotenuse because it represents horizontal proportion.</p> 
     `;
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   distanceBetweenPoints(startPoint: Point, endPoint: Point) {
     let a = startPoint.x - endPoint.x;

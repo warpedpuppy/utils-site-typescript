@@ -86,7 +86,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     this.ctx.resetTransform();
     this.ratio += 0.0001;
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 }
 export default MoveObjectToDestinationPoint;
