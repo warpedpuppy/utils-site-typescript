@@ -3,54 +3,71 @@ import { CollisionDetectionObject } from "../../../types/types";
 
 export const BallBounce: CollisionDetectionObject = {
   keyFunction: function BallBounce(ball: Ball, stage: Container) {
-    let gravity: number = 0.5;
-    ball.x += ball.vx;
-    ball.y += ball.vy;
+    const gravity     = 0.4;
+    const restitution = 0.72;   // fraction of speed kept after each wall/floor hit
+    const friction    = 0.985;  // horizontal damping applied on every floor bounce
+
     ball.vy += gravity;
+    ball.x  += ball.vx;
+    ball.y  += ball.vy;
+
+    // Floor
     if (ball.y >= stage.height - ball.radius) {
-      ball.y = stage.height - ball.radius;
-      ball.vy = -ball.vy * 0.8;
+      ball.y  = stage.height - ball.radius;
+      ball.vy = -Math.abs(ball.vy) * restitution;
+      ball.vx *= friction;
     }
-    if (ball.x >= stage.width) {
-      ball.vy = 1;
-      ball.x = 1;
-      ball.y = 1;
+
+    // Ceiling
+    if (ball.y <= ball.radius) {
+      ball.y  = ball.radius;
+      ball.vy = Math.abs(ball.vy);
+    }
+
+    // Right wall
+    if (ball.x >= stage.width - ball.radius) {
+      ball.x  = stage.width - ball.radius;
+      ball.vx = -Math.abs(ball.vx) * restitution;
+    }
+
+    // Left wall
+    if (ball.x <= ball.radius) {
+      ball.x  = ball.radius;
+      ball.vx = Math.abs(ball.vx) * restitution;
     }
   },
   dependencies: [],
   interfaces: ["Ball", "Container"],
-  // interfaces: function () {
-  //   let ball: Ball = {
-  //     x: 0,
-  //     y: 0,
-  //     radius: 10,
-  //     vx: 4,
-  //     vy: 1,
-  //     id: "ball",
-  //     color: "black",
-  //   };
-  //   let container: Container = {
-  //     x: 0,
-  //     y: 0,
-  //     width: 10,
-  //     height: 10,
-  //   };
-  //   return [ball, container];
-  // },
   functionString: `
   function BallBounce(ball: Ball, stage: Container) {
-    let gravity: number = 0.5;
-    ball.x += ball.vx;
-    ball.y += ball.vy;
+    const gravity     = 0.4;
+    const restitution = 0.72;
+    const friction    = 0.985;
+
     ball.vy += gravity;
-      if (ball.y >= stage.height - ball.radius) {
-      ball.y = stage.height - ball.radius;
-       ball.vy = -ball.vy * 0.8;
+    ball.x  += ball.vx;
+    ball.y  += ball.vy;
+
+    // Floor
+    if (ball.y >= stage.height - ball.radius) {
+      ball.y  = stage.height - ball.radius;
+      ball.vy = -Math.abs(ball.vy) * restitution;
+      ball.vx *= friction;
     }
-    if (ball.x >= stage.width) {
-      ball.vy = 1;
-      ball.x = 1;
-      ball.y = 1;
+    // Ceiling
+    if (ball.y <= ball.radius) {
+      ball.y  = ball.radius;
+      ball.vy = Math.abs(ball.vy);
+    }
+    // Right wall
+    if (ball.x >= stage.width - ball.radius) {
+      ball.x  = stage.width - ball.radius;
+      ball.vx = -Math.abs(ball.vx) * restitution;
+    }
+    // Left wall
+    if (ball.x <= ball.radius) {
+      ball.x  = ball.radius;
+      ball.vx = Math.abs(ball.vx) * restitution;
     }
   }
   `,
