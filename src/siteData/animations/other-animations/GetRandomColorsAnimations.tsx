@@ -95,7 +95,7 @@ class GetRandomColorAnimation extends AnimationBaseClass {
       }
     }
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   keyFunction() {}
   pointerDownHandler(e: PointerEvent) {}

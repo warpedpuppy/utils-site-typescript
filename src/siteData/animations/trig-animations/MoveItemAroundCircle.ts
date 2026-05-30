@@ -54,7 +54,7 @@ class MoveItemAroundCircle extends AnimationBaseClass {
     this.ctx.lineTo(point.x, this.halfHeight);
     this.ctx.stroke();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 }
 export default MoveItemAroundCircle;

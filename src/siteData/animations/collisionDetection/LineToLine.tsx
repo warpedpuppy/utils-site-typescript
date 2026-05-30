@@ -66,7 +66,7 @@ class LineToLineCollision extends AnimationBaseClass {
     this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);
     this.ctx.stroke();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}

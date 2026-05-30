@@ -11,6 +11,9 @@ import DistributePointsAroundACircle from "./animations/trig-animations/Distribu
 import DeMystifySineCosine from "./animations/trig-animations/DeMystifySineCosine";
 import BallBounce from "./animations/trig-animations/BallBounceAnimation";
 import BallsBouncingAgainstEachOther from "./animations/trig-animations/BallBallAnimation";
+import LerpAnimation from "./animations/trig-animations/LerpAnimation";
+import EasingAnimation from "./animations/trig-animations/EasingAnimation";
+import QuadraticBezierAnimation from "./animations/trig-animations/QuadraticBezierAnimation";
 import PointToCircleCollision from "./animations/collisionDetection/PointToCircle";
 import CircleToCircleCollision from "./animations/collisionDetection/CircleToCircle";
 import RectToRect from "./animations/collisionDetection/RectToRect";
@@ -35,6 +38,9 @@ const SiteData: PrimaryObject = {
   animations: {
     BallBounce,
     BallsBouncingAgainstEachOther,
+    LerpAnimation,
+    EasingAnimation,
+    QuadraticBezierAnimation,
     MoveItemAroundCircle,
     MoveObjectToDestinationPoint,
     PointTowardsMovingPoint,

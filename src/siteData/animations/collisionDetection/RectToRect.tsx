@@ -68,7 +68,7 @@ class RectToRect extends AnimationBaseClass {
     this.ctx.closePath();
     this.ctx.fill();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
