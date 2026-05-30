@@ -22,7 +22,7 @@ class DeMystifySineCosine extends AnimationBaseClass {
     if (!this.canvas || !this.ctx) return;
     this.ctx.font = "bold 18px Arial";
     this.ctx.clearRect(0, 0, this.canvas?.width, this.canvas?.height);
-    this.ctx.strokeStyle = "rgba(0 0 0 /0.5)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.35)";
     this.ctx.lineWidth = this.thinLine;
 
     this.ctx.beginPath();
@@ -42,7 +42,7 @@ class DeMystifySineCosine extends AnimationBaseClass {
     this.ctx.lineTo(this.canvasWidth * 0.33, this.halfHeight - 100);
     this.ctx.stroke();
 
-    this.ctx.strokeStyle = "rgba(0 0 0 /0.5)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.35)";
     this.ctx.lineWidth = this.thinLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.66, 0);
@@ -56,7 +56,7 @@ class DeMystifySineCosine extends AnimationBaseClass {
     this.ctx.lineTo(this.canvasWidth * 0.66, this.halfHeight - 100);
     this.ctx.stroke();
 
-    this.ctx.strokeStyle = "rgba(0 0 0 /0.5)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.35)";
     this.ctx.lineWidth = this.thinLine;
 
     this.ctx.beginPath();
@@ -77,7 +77,7 @@ class DeMystifySineCosine extends AnimationBaseClass {
       perc1
     );
 
-    this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
     this.ctx.lineWidth = this.thinLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.33, this.halfHeight);
@@ -108,7 +108,7 @@ class DeMystifySineCosine extends AnimationBaseClass {
       })
     );
 
-    this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
     this.ctx.lineWidth = this.thinLine;
     this.ctx.beginPath();
     this.ctx.moveTo(this.canvasWidth * 0.66, this.halfHeight);

@@ -36,7 +36,7 @@ class CircleToCircleAnimation extends AnimationBaseClass {
     if (CircleCircle.keyFunction(this.circle1, this.circle2)) {
       this.ctx.fillStyle = "red";
     } else {
-      this.ctx.fillStyle = "black";
+      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
     }
     this.circle1.x = this.halfWidth;
     this.circle1.y = this.halfHeight;

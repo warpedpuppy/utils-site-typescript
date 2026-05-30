@@ -28,7 +28,7 @@ class RectToRect extends AnimationBaseClass {
     if (PolygonPolygon.keyFunction(this.rect1, this.rect2)) {
       this.ctx.fillStyle = "red";
     } else {
-      this.ctx.fillStyle = "black";
+      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
     }
     this.ctx.lineWidth = 3;
     this.ctx.beginPath();

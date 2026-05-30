@@ -39,7 +39,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       rotateSpeed: 2000,
     });
 
-    this.ctx.fillStyle = "blue";
+    this.ctx.fillStyle = "#1e1b4b"; /* dark indigo — keeps star colours readable */
     this.ctx.rect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fill();
     this.ctx.fillStyle = this.fillString;

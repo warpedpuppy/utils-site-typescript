@@ -43,7 +43,7 @@ class PointToRectangle extends AnimationBaseClass {
     ) {
       this.ctx.fillStyle = "red";
     } else {
-      this.ctx.fillStyle = "black";
+      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
     }
 
     this.rect = RectangleObject.keyFunction(100, 100, 0, {
@@ -63,7 +63,7 @@ class PointToRectangle extends AnimationBaseClass {
     this.ctx.closePath();
     this.ctx.fill();
 
-    this.ctx.fillStyle = "black";
+    this.ctx.fillStyle = "#f97316"; /* bright dot — always visible on dark bg */
     this.ctx.beginPath();
     this.ctx.arc(
       this.circle1.x,

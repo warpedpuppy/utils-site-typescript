@@ -14,7 +14,9 @@ function Home() {
     <section id="home-page">
       <div id="home-page--text-container">
         <div id="home-page--text-container_inner">
-          <p>A collection of useful functions for animation.</p>
+          <h2>utilspalooza</h2>
+          <p>A living reference of animation formulas — collision detection, trig, easing, and more — with live canvas demos and one-click code export.</p>
+          <a href="/examples">Browse examples →</a>
         </div>
       </div>
       <div id="home-page--canvas-container"></div>

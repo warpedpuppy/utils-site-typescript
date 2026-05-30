@@ -32,7 +32,7 @@ class TriangleFromLineAnimation extends AnimationBaseClass {
     this.ctx.stroke();
     this.ctx.fillText("A", this.startPoint.x, this.startPoint.y);
 
-    this.ctx.strokeStyle = "grey";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.4)";
     this.ctx.lineWidth = 0.25;
     this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
     this.ctx.lineTo(this.endPoint.x, this.startPoint.y);

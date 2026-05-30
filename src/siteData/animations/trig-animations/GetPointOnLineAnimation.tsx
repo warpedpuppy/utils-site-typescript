@@ -44,7 +44,7 @@ class GetPointOnLineAnimation extends AnimationBaseClass {
     if (!this.ctx || !this.canvas || !this.startPoint || !this.endPoint) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    this.ctx.strokeStyle = "rgba(0 0 0 /0.5)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.5)";
     this.ctx.lineWidth = 10;
     this.ctx.beginPath();
     this.ctx.moveTo(this.startPoint.x, this.startPoint.y);

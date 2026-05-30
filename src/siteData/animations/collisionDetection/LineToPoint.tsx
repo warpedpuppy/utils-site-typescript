@@ -37,8 +37,8 @@ class LineToPointCollision extends AnimationBaseClass {
       this.ctx.fillStyle = "red";
       this.ctx.strokeStyle = "red";
     } else {
-      this.ctx.fillStyle = "black";
-      this.ctx.strokeStyle = "black";
+      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
+      this.ctx.strokeStyle = "rgba(255,255,255,0.85)";
     }
 
     let { x, y } = this.makePointMove();
