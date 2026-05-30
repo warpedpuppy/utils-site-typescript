@@ -77,7 +77,7 @@ class LerpAnimation extends AnimationBaseClass {
     ctx.font = "12px monospace";
     ctx.fillText(`lerp factor: ${this.lerpFactor.toFixed(3)}`, 12, this.canvasHeight - 14);
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 
   extraHTML = () => {

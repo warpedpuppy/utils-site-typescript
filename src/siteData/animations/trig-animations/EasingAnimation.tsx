@@ -113,7 +113,7 @@ class EasingAnimation extends AnimationBaseClass {
     });
 
     ctx.textAlign = "left";
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 
   pointerDownHandler(_e: PointerEvent) {}

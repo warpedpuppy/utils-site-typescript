@@ -51,18 +51,29 @@ class GetPointOnLineAnimation extends AnimationBaseClass {
     this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
     this.ctx.stroke();
 
-    this.ctx.strokeStyle = "red";
     let point: Point = GetPointOnLine.keyFunction(
       this.startPoint,
       this.endPoint,
       this.perc
     );
 
+    // Draw the point — filled circle so it's always clearly visible
+    this.ctx.fillStyle = "#f97316";   // orange — visible on any dark background
     this.ctx.beginPath();
-    this.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-    this.ctx.stroke();
-    if (this.textDiv) this.textDiv.innerHTML = `Click and drag to draw a line`;
-    requestAnimationFrame(this.draw);
+    this.ctx.arc(point.x, point.y, 7, 0, 2 * Math.PI);
+    this.ctx.fill();
+
+    // Show the coordinates and percentage in the info area
+    if (this.textDiv) {
+      this.textDiv.innerHTML = `
+        <p>Click and drag to draw a line.</p>
+        <p>
+          Point at <strong>${Math.round(this.perc * 100)}%</strong>:
+          x&nbsp;=&nbsp;<strong>${Math.round(point.x)}</strong>,
+          y&nbsp;=&nbsp;<strong>${Math.round(point.y)}</strong>
+        </p>`;
+    }
+    this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {
     this.startPoint = {

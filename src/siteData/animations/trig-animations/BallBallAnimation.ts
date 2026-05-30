@@ -78,7 +78,7 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       this.keepOnScreen(ball1);
       this.imposeSpeedLimit(ball1);
     });
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   imposeSpeedLimit(ball1: Ball) {
     if (ball1.vx > this.speedLimit) ball1.vx = this.speedLimit;

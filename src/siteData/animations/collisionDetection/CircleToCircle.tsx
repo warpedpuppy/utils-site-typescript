@@ -64,7 +64,7 @@ class CircleToCircleAnimation extends AnimationBaseClass {
     );
     this.ctx.fill();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 
   pointerDownHandler(e: PointerEvent) {}
