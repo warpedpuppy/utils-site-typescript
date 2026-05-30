@@ -73,7 +73,7 @@ class PointToRectangle extends AnimationBaseClass {
       2 * Math.PI
     );
     this.ctx.fill();
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}

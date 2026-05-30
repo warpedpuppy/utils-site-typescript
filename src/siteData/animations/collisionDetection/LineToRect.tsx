@@ -71,7 +71,7 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
     this.ctx.stroke();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}

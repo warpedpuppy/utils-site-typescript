@@ -76,7 +76,7 @@ class BallBounceAnimation extends AnimationBaseClass {
     ctx.arc(this.ball.x, this.ball.y, this.ball.radius, 0, Math.PI * 2);
     ctx.fill();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 
   pointerDownHandler(_e: PointerEvent) {}

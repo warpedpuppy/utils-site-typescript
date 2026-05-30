@@ -67,7 +67,7 @@ class LineToCircleCollision extends AnimationBaseClass {
     if (this.rotate > 360) {
       this.rotate = 0;
     }
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}

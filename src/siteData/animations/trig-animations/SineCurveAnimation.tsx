@@ -111,7 +111,7 @@ class SineCurveAnimation extends AnimationBaseClass {
     this.ctx.arc(this.halfWidth, this.halfHeight + val, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 }
 export default SineCurveAnimation;
