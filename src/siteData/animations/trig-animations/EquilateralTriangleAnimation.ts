@@ -45,7 +45,7 @@ class GetEquilateralTriangleVertices extends AnimationBaseClass {
         tri.centerPoint,
         this.angle || tri.angle
       );
-      this.ctx.strokeStyle = "rgba(0 0 0 / 0.25)";
+      this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
       this.ctx.lineWidth = 1;
       this.ctx.beginPath();
       this.ctx.moveTo(point1.x, point1.y);

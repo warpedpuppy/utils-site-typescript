@@ -1,19 +1,35 @@
 #create-json-tabs {
   display: flex;
+  padding: 0 0.75rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+
   div {
-    border: 1px solid black;
-    border-bottom: none;
-    padding: 10px;
-    margin: 0 10px 0 0;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    padding: 0.45rem 0.9rem;
+    margin: 0 2px 0 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
     cursor: pointer;
-    background-color: white;
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
     position: relative;
-    top: 0;
-    transition: top 0.25s;
+    bottom: -1px;
+    transition: color 0.15s, background 0.15s;
+
+    &:hover {
+      color: var(--text);
+      background: var(--bg-elevated);
+    }
+
     &.active-tab {
-      top: 2px;
+      color: var(--accent);
+      background: var(--bg);
+      border-color: var(--border-bright);
+      border-bottom-color: var(--bg);
     }
   }
 }

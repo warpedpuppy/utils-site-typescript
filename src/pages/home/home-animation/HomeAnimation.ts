@@ -114,7 +114,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     this.ctx.rotate(angle);
     this.ctx.translate(-newPoint.x, -newPoint.y);
 
-    this.ctx.strokeStyle = "rgba(0 0 0 / 0.5)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.35)";
     this.ctx.lineWidth = 1;
     this.ctx.beginPath();
     this.ctx.arc(this.arrowPoint.x, this.arrowPoint.y, 100, 0, 2 * Math.PI);
@@ -129,7 +129,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     this.ctx.resetTransform();
     this.ratio += 0.0001;
 
-    this.ctx.strokeStyle = "rgba(0 0 0 / 0.5)";
+    this.ctx.strokeStyle = "rgba(255,255,255,0.35)";
     this.ctx.lineWidth = 0.5;
     this.ctx.beginPath();
     this.ctx.arc(this.arrowPoint.x, this.arrowPoint.y, 100, 0, 2 * Math.PI);
@@ -150,6 +150,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     this.ctx.stroke();
 
     this.ctx.font = "bold 12px Verdana";
+    this.ctx.fillStyle = "rgba(255,255,255,0.75)";
     this.ctx.fillText(
       `${Math.floor((angle * 180) / Math.PI)} degrees`,
       this.arrowPoint.x - 35,

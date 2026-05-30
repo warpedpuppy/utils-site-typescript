@@ -15,7 +15,7 @@ class BallBounceAnimation extends AnimationBaseClass {
     vx: 4,
     vy: 1,
     id: "ball",
-    color: "black",
+    color: "#818cf8",
   };
   init() {
     this.draw();
@@ -32,6 +32,7 @@ class BallBounceAnimation extends AnimationBaseClass {
     this.ctx.beginPath();
 
     BallBounce.keyFunction(this.ball, stage);
+    this.ctx.fillStyle = this.ball.color;
     this.ctx.arc(this.ball.x, this.ball.y, this.ball.radius, 0, 2 * Math.PI);
     this.ctx.fill();
     requestAnimationFrame(this.draw);
