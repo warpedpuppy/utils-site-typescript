@@ -62,6 +62,29 @@ button {
   }
 }
 
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  &:hover {
+    background: var(--accent);
+    opacity: 0.88;
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  border-color: var(--border-bright);
+  color: var(--text-muted);
+  &:hover {
+    color: var(--text);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+}
+
 pre {
   white-space: pre-wrap;
 }

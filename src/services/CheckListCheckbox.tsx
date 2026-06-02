@@ -24,6 +24,7 @@ function CheckListCheckbox({
     } else {
       addToLocaStorage(objectProperty);
     }
+    window.dispatchEvent(new CustomEvent("formulaSelectionChanged"));
   }
   function mouseEnterHandler() {
     console.log("enter");

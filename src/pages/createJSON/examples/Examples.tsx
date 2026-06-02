@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import PrimaryCanvas from "../../../components/PrimaryCanvas/PrimaryCanvas";
 import ExamplesUtils from "./ExamplesUtils";
@@ -75,6 +76,13 @@ function Examples() {
 
   return (
     <section id="example-page">
+      <Helmet>
+        <title>Animation Examples — Utilspalooza</title>
+        <meta name="description" content="Browse live canvas animation demos: ball bounce, collision detection, bezier curves, sine waves, easing, and more. Click any formula to see it animate in real time." />
+        <link rel="canonical" href="https://utilspalooza.com/examples" />
+        <meta property="og:url" content="https://utilspalooza.com/examples" />
+        <meta property="og:title" content="Animation Examples — Utilspalooza" />
+      </Helmet>
       {checklist}
       <PrimaryCanvas activeObject={activeObject} siteData={SiteData} />
     </section>

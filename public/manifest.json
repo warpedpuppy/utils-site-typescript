@@ -1,11 +1,22 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "name": "Utilspalooza",
+  "short_name": "Utilspalooza",
+  "description": "Canvas animation formulas with live demos and one-click TypeScript/JavaScript export.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0d0f1a",
+  "background_color": "#0d0f1a",
   "icons": [
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "logo192.png",
@@ -17,9 +28,5 @@
       "type": "image/png",
       "sizes": "512x512"
     }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  ]
 }
