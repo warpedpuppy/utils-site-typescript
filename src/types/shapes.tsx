@@ -49,6 +49,58 @@ export interface ShapeInMotion {
   id: string;
 }
 
+export const InterfaceMap: Record<string, string> = {
+  Point: `interface Point {
+  x: number;
+  y: number;
+}`,
+  Circle: `interface Circle {
+  x: number;
+  y: number;
+  radius: number;
+}`,
+  Rectangle: `interface Rectangle extends ShapeInMotion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}`,
+  Polygon: `interface Polygon {
+  vertices: Vector[];
+  draw: Function;
+  drag: boolean;
+}`,
+  Container: `interface Container {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}`,
+  Vector: `interface Vector {
+  x: number;
+  y: number;
+}`,
+  Line: `interface Line {
+  startPoint: Point;
+  endPoint: Point;
+}`,
+  Triangle: `interface Triangle {
+  point1: Point;
+  point2: Point;
+  point3: Point;
+}`,
+  Ball: `interface Ball extends ShapeInMotion {
+  x: number;
+  y: number;
+  radius: number;
+}`,
+  ShapeInMotion: `interface ShapeInMotion {
+  vx: number;
+  vy: number;
+  id: string;
+}`,
+};
+
 export const ShapesString = `
 export interface Point {
   x: number;

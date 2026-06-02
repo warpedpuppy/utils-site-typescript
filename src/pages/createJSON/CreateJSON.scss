@@ -3,6 +3,17 @@
   position: relative;
   top: 50px;
   padding-top: 50px;
+  #download-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 0.5rem 0 0.75rem;
+    #download-bar-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+  }
   #create-json-tabs {
     margin: 0 auto;
     width: 100%;

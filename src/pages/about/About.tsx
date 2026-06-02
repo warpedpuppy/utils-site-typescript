@@ -1,8 +1,16 @@
+import { Helmet } from "react-helmet-async";
 import "./About.scss";
 
 function About() {
   return (
     <div id="about-wrapper">
+      <Helmet>
+        <title>About — Utilspalooza</title>
+        <meta name="description" content="Utilspalooza is a canvas animation formula reference built by Ted Walther, a software engineer and educator in Maine. Learn what it is and how to use it." />
+        <link rel="canonical" href="https://utilspalooza.com/about" />
+        <meta property="og:url" content="https://utilspalooza.com/about" />
+        <meta property="og:title" content="About — Utilspalooza" />
+      </Helmet>
       <div id="about-wrapper--inner">
         <h2>What is Utilspalooza?</h2>
         <p>
