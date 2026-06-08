@@ -34,27 +34,20 @@ class CirceToRectAnimation extends AnimationBaseClass {
     this.circle.x = this.halfWidth;
     this.circle.y = this.halfHeight;
 
-    if (PolygonCircle.keyFunction(this.rect, this.circle)) {
-      this.ctx.fillStyle = "red";
-    } else {
-      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
-    }
-
-    this.ctx.beginPath();
-    this.ctx.arc(
-      this.circle.x,
-      this.circle.y,
-      this.circle.radius,
-      0,
-      2 * Math.PI
-    );
-    this.ctx.fill();
-
     let { x, y } = this.makePointMove();
     this.rect = RectangleObject.keyFunction(100, 100, 0, {
       rotate: true,
       rotateSpeed: 1000,
     });
+
+    const hit = PolygonCircle.keyFunction(this.rect, this.circle);
+
+    this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
+    this.ctx.beginPath();
+    this.ctx.arc(this.circle.x, this.circle.y, this.circle.radius, 0, 2 * Math.PI);
+    this.ctx.fill();
+
+    this.ctx.fillStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();
     this.rect.vertices.forEach((rect: Point, i: number) => {
       rect.x += x;

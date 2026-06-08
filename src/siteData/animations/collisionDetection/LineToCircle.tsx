@@ -31,22 +31,8 @@ class LineToCircleCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (LineCircle.keyFunction(this.line, this.circle)) {
-      this.ctx.fillStyle = "red";
-    } else {
-      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
-    }
     this.circle.x = this.halfWidth;
     this.circle.y = this.halfHeight;
-    this.ctx.beginPath();
-    this.ctx.arc(
-      this.circle.x,
-      this.circle.y,
-      this.circle.radius,
-      0,
-      2 * Math.PI
-    );
-    this.ctx.fill();
 
     let { x, y } = this.makePointMove();
     let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate / 360));
@@ -56,6 +42,14 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.line.startPoint = { x: x1, y: y1 };
     this.line.endPoint = { x: x2, y: y2 };
 
+    const hit = LineCircle.keyFunction(this.line, this.circle);
+
+    this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
+    this.ctx.beginPath();
+    this.ctx.arc(this.circle.x, this.circle.y, this.circle.radius, 0, 2 * Math.PI);
+    this.ctx.fill();
+
+    this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.lineWidth = 3;
     this.ctx.beginPath();
     this.ctx.moveTo(x1, y1);

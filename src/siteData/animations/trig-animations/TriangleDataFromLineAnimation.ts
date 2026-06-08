@@ -23,6 +23,7 @@ class TriangleFromLineAnimation extends AnimationBaseClass {
     )
       return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = "rgba(255,255,255,0.85)";
 
     this.ctx.beginPath();
     this.ctx.strokeStyle = "green";
@@ -32,8 +33,8 @@ class TriangleFromLineAnimation extends AnimationBaseClass {
     this.ctx.stroke();
     this.ctx.fillText("A", this.startPoint.x, this.startPoint.y);
 
-    this.ctx.strokeStyle = "rgba(255,255,255,0.4)";
-    this.ctx.lineWidth = 0.25;
+    this.ctx.strokeStyle = "rgba(255,255,255,0.65)";
+    this.ctx.lineWidth = 1;
     this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
     this.ctx.lineTo(this.endPoint.x, this.startPoint.y);
     this.ctx.stroke();
@@ -60,6 +61,8 @@ class TriangleFromLineAnimation extends AnimationBaseClass {
         `;
 
     this.ctx.beginPath();
+    this.ctx.strokeStyle = "rgba(255,255,255,0.55)";
+    this.ctx.lineWidth = 1;
     this.ctx.arc(this.startPoint.x, this.startPoint.y, radius, 0, 2 * Math.PI);
     this.ctx.stroke();
     this.raf(this.draw);

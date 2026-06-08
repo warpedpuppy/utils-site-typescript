@@ -23,13 +23,11 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     if (!this.canvas || !this.ctx || !this.startPoint || !this.endPoint) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.font = "bold 12px Verdana";
-    this.ctx.beginPath();
-    this.ctx.strokeStyle = "green";
-    this.ctx.lineWidth = 3;
+    this.ctx.fillStyle = "rgba(255,255,255,0.85)";
 
     // ADJACENT
     this.ctx.strokeStyle = "rgba(255,255,255,0.55)";
-    this.ctx.lineWidth = 0.25;
+    this.ctx.lineWidth = 1;
     this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
     this.ctx.lineTo(this.endPoint.x, this.startPoint.y);
     let adjacent = LineLength.keyFunction({
@@ -40,7 +38,7 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     this.ctx.fillText(
       `${Math.abs(adjacent)} pixels`,
       this.startPoint.x + adjacent / 2,
-      this.startPoint.y
+      this.startPoint.y - 10
     );
     this.ctx.stroke();
 
@@ -56,7 +54,7 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     this.ctx.translate(this.endPoint.x, textY);
     this.ctx.rotate(Math.PI / 2);
     this.ctx.translate(-this.endPoint.x, -textY);
-    this.ctx.fillText(`${Math.abs(opposite)} pixels`, this.endPoint.x, textY);
+    this.ctx.fillText(`${Math.abs(opposite)} pixels`, this.endPoint.x, textY + 14);
     this.ctx.stroke();
     this.ctx.resetTransform();
 
@@ -67,6 +65,8 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
         endPoint: this.endPoint,
       })
     );
+    this.ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    this.ctx.lineWidth = 2;
     this.ctx.moveTo(this.startPoint.x, this.startPoint.y);
     this.ctx.lineTo(this.endPoint.x, this.endPoint.y);
     this.ctx.stroke();
@@ -79,12 +79,14 @@ class DistanceBetweenTwoPoints extends AnimationBaseClass {
     this.ctx.fillText(
       `${Math.abs(hypotenuse)} pixels`,
       this.startPoint.x + hypotenuse * 0.25,
-      textY
+      textY - 12
     );
     this.ctx.stroke();
     this.ctx.resetTransform();
 
     this.ctx.beginPath();
+    this.ctx.strokeStyle = "rgba(255,255,255,0.55)";
+    this.ctx.lineWidth = 1;
     this.ctx.arc(
       this.startPoint.x,
       this.startPoint.y,

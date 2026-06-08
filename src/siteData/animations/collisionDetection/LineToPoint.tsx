@@ -33,29 +33,26 @@ class LineToPointCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (LinePoint.keyFunction(this.line, this.point)) {
-      this.ctx.fillStyle = "red";
-      this.ctx.strokeStyle = "red";
-    } else {
-      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
-      this.ctx.strokeStyle = "rgba(255,255,255,0.85)";
-    }
-
     let { x, y } = this.makePointMove();
     this.point.x = x;
     this.point.y = y;
 
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, this.circle.radius, 0, 2 * Math.PI);
-    this.ctx.fill();
-
-    this.ctx.lineWidth = 3;
     this.line.startPoint = { x: this.halfWidth - 200, y: this.halfHeight };
     this.line.endPoint = { x: this.halfWidth + 200, y: this.halfHeight };
+
+    const hit = LinePoint.keyFunction(this.line, this.point);
+
+    this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
+    this.ctx.lineWidth = 3;
     this.ctx.beginPath();
     this.ctx.moveTo(this.halfWidth - 200, this.halfHeight);
     this.ctx.lineTo(this.halfWidth + 200, this.halfHeight);
     this.ctx.stroke();
+
+    this.ctx.fillStyle = "#f97316";
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, this.circle.radius, 0, 2 * Math.PI);
+    this.ctx.fill();
 
     this.raf(this.draw);
   };

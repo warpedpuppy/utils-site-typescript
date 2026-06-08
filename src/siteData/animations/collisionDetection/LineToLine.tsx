@@ -32,12 +32,6 @@ class LineToLineCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (LineLine.keyFunction(this.line1, this.line2).hit) {
-      this.ctx.strokeStyle = "red";
-    } else {
-      this.ctx.strokeStyle = "rgba(255,255,255,0.85)";
-    }
-
     this.ctx.lineWidth = 3;
 
     let { x, y } = this.makePointMove();
@@ -46,21 +40,22 @@ class LineToLineCollision extends AnimationBaseClass {
     let x2 = x - this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
     let y2 = y - this.lineLength * Math.sin(2 * Math.PI * (this.rotate1 / 360));
     this.rotate1++;
-    if (this.rotate1 > 360) {
-      this.rotate1 = 0;
-    }
+    if (this.rotate1 > 360) this.rotate1 = 0;
 
     this.line1.startPoint = { x: x1, y: y1 };
     this.line1.endPoint = { x: x2, y: y2 };
+    this.line2.startPoint = { x: this.halfWidth - 100, y: this.halfHeight };
+    this.line2.endPoint = { x: this.halfWidth + 100, y: this.halfHeight };
 
+    const hit = LineLine.keyFunction(this.line1, this.line2).hit;
+
+    this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();
     this.ctx.moveTo(this.line1.startPoint.x, this.line1.startPoint.y);
     this.ctx.lineTo(this.line1.endPoint.x, this.line1.endPoint.y);
     this.ctx.stroke();
 
-    this.line2.startPoint = { x: this.halfWidth - 100, y: this.halfHeight };
-    this.line2.endPoint = { x: this.halfWidth + 100, y: this.halfHeight };
-
+    this.ctx.strokeStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();
     this.ctx.moveTo(this.line2.startPoint.x, this.line2.startPoint.y);
     this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);

@@ -36,6 +36,7 @@ class GetRandomColorAnimation extends AnimationBaseClass {
       return (
         <button
           key={`color-button${i}`}
+          className="btn-primary"
           onClick={() => this.colorChangeHandler(color)}
         >
           {color}
@@ -84,9 +85,16 @@ class GetRandomColorAnimation extends AnimationBaseClass {
     for (let i = 0; i < this.ballVQ; i++) {
       for (let j = 0; j < this.ballHQ; j++) {
         let { H, S, L } = this.colorArray[counter];
-        this.ctx.fillStyle = `hsl(${H} ${S} ${L})`;
         let x = leftOffset + this.ballRadius + this.ballDiameter * j;
         let y = topOffset + this.ballRadius + this.ballDiameter * i;
+        const gr = this.ctx.createRadialGradient(
+          x - this.ballRadius * 0.32, y - this.ballRadius * 0.32, 0,
+          x, y, this.ballRadius
+        );
+        gr.addColorStop(0,    `hsl(${H} ${S}% ${Math.min(95, L + 25)}%)`);
+        gr.addColorStop(0.55, `hsl(${H} ${S}% ${L}%)`);
+        gr.addColorStop(1,    `hsl(${H} ${S}% ${Math.max(5, L - 25)}%)`);
+        this.ctx.fillStyle = gr;
         this.ctx.beginPath();
         this.ctx.arc(x, y, this.ballRadius, 0, 2 * Math.PI);
         this.ctx.closePath();
