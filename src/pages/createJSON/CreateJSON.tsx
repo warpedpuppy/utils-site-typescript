@@ -6,17 +6,37 @@ import CreateJSONTabs from "./createJSONComponents/createJSONTabs";
 import JSONContent from "./createJSONComponents/JSONContent";
 
 import CreateChecklists from "../../services/CreateChecklists";
-import { ShapesString } from "../../types/shapes";
-import { downloadTsExport, downloadJsExport } from "./createJSONUtils/createJSONUtils";
+import { InterfaceMap } from "../../types/shapes";
+import SiteData from "../../siteData/SiteData";
+import { downloadTsExport, downloadJsExport, INTERFACE_ORDER } from "./createJSONUtils/createJSONUtils";
 
 function getSelectionCount(): number {
   const raw = localStorage.getItem("functions");
   return raw ? raw.split(",").filter(Boolean).length : 0;
 }
 
+function getSelectedInterfaceNames(): string[] {
+  const selected = (localStorage.getItem("functions") ?? "").split(",").filter(Boolean);
+  const names = new Set<string>();
+  Object.values(SiteData).forEach((objects) => {
+    Object.entries(objects).forEach(([key, value]) => {
+      if (selected.includes(key)) {
+        (value.f.interfaces ?? []).forEach((iface: string) => {
+          names.add(iface);
+          if (iface === "Ball" || iface === "Rectangle") names.add("ShapeInMotion");
+          if (iface === "Polygon") names.add("Vector");
+          if (iface === "Line" || iface === "Triangle") names.add("Point");
+        });
+      }
+    });
+  });
+  return INTERFACE_ORDER.filter((name) => names.has(name));
+}
+
 function CreateJSON() {
   const [tabBody, setTabBody] = useState<number>(0);
   const [selectionCount, setSelectionCount] = useState<number>(getSelectionCount);
+  const [selectedInterfaces, setSelectedInterfaces] = useState<string[]>(getSelectedInterfaceNames);
   const { createChecklist } = CreateChecklists();
   const { tab } = useParams<string>();
 
@@ -27,6 +47,9 @@ function CreateJSON() {
   useEffect(() => {
     function handleSelectionChange() {
       setSelectionCount(getSelectionCount());
+      const ifaces = getSelectedInterfaceNames();
+      setSelectedInterfaces(ifaces);
+      if (ifaces.length === 0) setTabBody((t) => (t === 2 ? 0 : t));
     }
     window.addEventListener("formulaSelectionChanged", handleSelectionChange);
     return () => window.removeEventListener("formulaSelectionChanged", handleSelectionChange);
@@ -62,7 +85,7 @@ function CreateJSON() {
             </button>
           </div>
         )}
-        <CreateJSONTabs setTabBody={setTabBody} tabBody={tabBody} />
+        <CreateJSONTabs setTabBody={setTabBody} tabBody={tabBody} hasInterfaces={selectedInterfaces.length > 0} />
         <div className={`tab-content ${tabBody === 0 ? "active" : ""}`}>
           {checklist}
         </div>
@@ -75,15 +98,19 @@ function CreateJSON() {
           </button>
           <JSONContent />
         </div>
-        <div className={`tab-content ${tabBody === 2 ? "active" : ""}`}>
-          <button
-            className="btn btn-primary"
-            onClick={() => copyToClipboard(".shapes-pre")}
-          >
-            copy shapes to clipboard
-          </button>
-          <pre className="shapes-pre">{ShapesString}</pre>
-        </div>
+        {selectedInterfaces.length > 0 && (
+          <div className={`tab-content ${tabBody === 2 ? "active" : ""}`}>
+            <button
+              className="btn btn-primary"
+              onClick={() => copyToClipboard(".shapes-pre")}
+            >
+              copy interfaces to clipboard
+            </button>
+            <pre className="shapes-pre">
+              {selectedInterfaces.map((name) => `export ${InterfaceMap[name]}`).join("\n\n")}
+            </pre>
+          </div>
+        )}
       </div>
     </div>
   );
