@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 function CreateJSONTabs({
   setTabBody,
   tabBody,
+  hasInterfaces,
 }: {
   setTabBody: Function;
   tabBody: number;
+  hasInterfaces: boolean;
 }) {
   let navigate = useNavigate();
   function onClickHandler(tabNumber: number) {
@@ -26,12 +28,14 @@ function CreateJSONTabs({
       >
         view/copy functions
       </div>
-      <div
-        className={tabBody === 2 ? "active-tab" : ""}
-        onClick={() => onClickHandler(2)}
-      >
-        supporting interfaces
-      </div>
+      {hasInterfaces && (
+        <div
+          className={tabBody === 2 ? "active-tab" : ""}
+          onClick={() => onClickHandler(2)}
+        >
+          supporting interfaces
+        </div>
+      )}
     </div>
   );
 }

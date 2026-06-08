@@ -44,7 +44,7 @@ function stripTypeScript(code: string): string {
 }
 
 // Interfaces that must be declared before others that extend them.
-const INTERFACE_ORDER = [
+export const INTERFACE_ORDER = [
   "Point",
   "Vector",
   "ShapeInMotion",
