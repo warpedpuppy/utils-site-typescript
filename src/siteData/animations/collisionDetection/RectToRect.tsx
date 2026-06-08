@@ -24,20 +24,19 @@ class RectToRect extends AnimationBaseClass {
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.ctx.fillStyle = "transparent";
-    if (PolygonPolygon.keyFunction(this.rect1, this.rect2)) {
-      this.ctx.fillStyle = "red";
-    } else {
-      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
-    }
-    this.ctx.lineWidth = 3;
-    this.ctx.beginPath();
-
     let { x, y } = this.makePointMove();
     this.rect1 = RectangleObject.keyFunction(100, 100, 0, {
       rotate: true,
       rotateSpeed: 1000,
     });
+    this.rect2 = RectangleObject.keyFunction(100, 100, 0, {
+      rotate: true,
+      rotateSpeed: 1000,
+    });
+
+    const hit = PolygonPolygon.keyFunction(this.rect1, this.rect2);
+
+    this.ctx.fillStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();
     this.rect1.vertices.forEach((rect: Point, i: number) => {
       rect.x += x;
@@ -51,10 +50,7 @@ class RectToRect extends AnimationBaseClass {
     this.ctx.closePath();
     this.ctx.fill();
 
-    this.rect2 = RectangleObject.keyFunction(100, 100, 0, {
-      rotate: true,
-      rotateSpeed: 1000,
-    });
+    this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();
     this.rect2.vertices.forEach((rect: Point, i: number) => {
       rect.x += this.halfWidth;

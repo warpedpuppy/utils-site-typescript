@@ -8,7 +8,6 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
   static l = "polygon-to-polygon-collision";
   static f = PolygonPolygon;
   title = "polygon to polygon collision";
-  fillString: string = "yellow";
   star1: Polygon = StarObject.keyFunction(5, 50, 25, 0, {
     rotate: true,
     rotateSpeed: 2000,
@@ -39,53 +38,42 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       rotateSpeed: 2000,
     });
 
-    this.ctx.fillStyle = "#1e1b4b"; /* dark indigo — keeps star colours readable */
+    this.ctx.fillStyle = "#1e1b4b";
     this.ctx.rect(0, 0, this.canvasWidth, this.canvasHeight);
     this.ctx.fill();
-    this.ctx.fillStyle = this.fillString;
+
     let vertices1: Point[] = [];
-    this.ctx.beginPath();
-    this.star2.vertices.forEach((star, i) => {
-      if (i === 0) {
-        this.ctx?.moveTo(this.halfWidth + star.x, this.halfHeight + star.y);
-      } else {
-        this.ctx?.lineTo(this.halfWidth + star.x, this.halfHeight + star.y);
-      }
-      vertices1.push({
-        x: this.halfWidth + star.x,
-        y: this.halfHeight + star.y,
-      });
+    this.star2.vertices.forEach((star) => {
+      vertices1.push({ x: this.halfWidth + star.x, y: this.halfHeight + star.y });
     });
-    this.ctx.closePath();
-    this.ctx.fill();
 
     let { x, y } = this.makePointMove();
     let vertices2: Point[] = [];
+    this.star1.vertices.forEach((star) => {
+      vertices2.push({ x: x + star.x, y: y + star.y });
+    });
+
+    const hit = PolygonPolygon.keyFunction({ vertices: vertices1 }, { vertices: vertices2 });
+
+    // large center star
+    this.ctx.fillStyle = hit ? "#22d3ee" : "#facc15";
     this.ctx.beginPath();
-    this.star1.vertices.forEach((star, i) => {
-      if (i === 0) {
-        this.ctx?.moveTo(x + star.x, y + star.y);
-      } else {
-        this.ctx?.lineTo(x + star.x, y + star.y);
-      }
-      vertices2.push({
-        x: x + star.x,
-        y: y + star.y,
-      });
+    vertices1.forEach((pt, i) => {
+      if (i === 0) this.ctx?.moveTo(pt.x, pt.y);
+      else this.ctx?.lineTo(pt.x, pt.y);
     });
     this.ctx.closePath();
     this.ctx.fill();
 
-    if (
-      PolygonPolygon.keyFunction(
-        { vertices: vertices1 },
-        { vertices: vertices2 }
-      )
-    ) {
-      this.ctx.fillStyle = this.fillString = "green";
-    } else {
-      this.ctx.fillStyle = this.fillString = "yellow";
-    }
+    // small moving star
+    this.ctx.fillStyle = hit ? "#ef4444" : "#fb923c";
+    this.ctx.beginPath();
+    vertices2.forEach((pt, i) => {
+      if (i === 0) this.ctx?.moveTo(pt.x, pt.y);
+      else this.ctx?.lineTo(pt.x, pt.y);
+    });
+    this.ctx.closePath();
+    this.ctx.fill();
 
     this.raf(this.draw);
   };

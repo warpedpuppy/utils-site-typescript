@@ -33,35 +33,23 @@ class CircleToCircleAnimation extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    if (CircleCircle.keyFunction(this.circle1, this.circle2)) {
-      this.ctx.fillStyle = "red";
-    } else {
-      this.ctx.fillStyle = "rgba(255,255,255,0.85)";
-    }
     this.circle1.x = this.halfWidth;
     this.circle1.y = this.halfHeight;
 
     const { x, y } = this.makePointMove();
     this.circle2.x = x;
     this.circle2.y = y;
+
+    const hit = CircleCircle.keyFunction(this.circle1, this.circle2);
+
+    this.ctx.fillStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();
-    this.ctx.arc(
-      this.circle2.x,
-      this.circle2.y,
-      this.circle2.radius,
-      0,
-      2 * Math.PI
-    );
+    this.ctx.arc(this.circle2.x, this.circle2.y, this.circle2.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
+    this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();
-    this.ctx.arc(
-      this.circle1.x,
-      this.circle1.y,
-      this.circle1.radius,
-      0,
-      2 * Math.PI
-    );
+    this.ctx.arc(this.circle1.x, this.circle1.y, this.circle1.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
     this.raf(this.draw);

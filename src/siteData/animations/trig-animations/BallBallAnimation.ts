@@ -3,6 +3,12 @@ import { BallToBallBounce } from "../../formulas/animation/BallToBallBounce";
 import AnimationBaseClass from "../AnimationBaseClass";
 import { GetRandomColors } from "../../formulas/usefulLittleThings/GetRandomColors";
 
+interface GradientBall extends Ball {
+  h: number;
+  s: number;
+  l: number;
+}
+
 class BallsBouncingAgainstEachOther extends AnimationBaseClass {
   static t = "balls bouncing against each other";
   static l = "balls-bouncing-against-each-other";
@@ -15,7 +21,7 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
   // y: number = 1;
   // ballRadius: number = 10;
   ballQ: number = 20;
-  balls: Ball[] = [];
+  balls: GradientBall[] = [];
   // spring = 0.05;
   speedLimit = 5;
   storeCanvasSize = { width: 0, height: 0 };
@@ -46,7 +52,10 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
         id: `${i}`,
         vx: 1,
         vy: 1,
-        color: `hsla(${H} ${S} ${L} / ${Math.random()})`,
+        color: `hsl(${H} ${S}% ${L}%)`,
+        h: H,
+        s: S,
+        l: L,
       };
     }
   }
@@ -67,9 +76,19 @@ class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       if (!this.ctx) return;
       ball1.x += ball1.vx;
       ball1.y += ball1.vy;
-      this.ctx.fillStyle = ball1.color;
+      const gr = this.ctx.createRadialGradient(
+        ball1.x - ball1.radius * 0.32,
+        ball1.y - ball1.radius * 0.32,
+        0,
+        ball1.x,
+        ball1.y,
+        ball1.radius
+      );
+      gr.addColorStop(0, `hsl(${ball1.h} ${ball1.s}% ${Math.min(95, ball1.l + 25)}%)`);
+      gr.addColorStop(0.55, `hsl(${ball1.h} ${ball1.s}% ${ball1.l}%)`);
+      gr.addColorStop(1, `hsl(${ball1.h} ${ball1.s}% ${Math.max(5, ball1.l - 25)}%)`);
+      this.ctx.fillStyle = gr;
       this.ctx.beginPath();
-
       this.ctx.arc(ball1.x, ball1.y, ball1.radius, 0, 2 * Math.PI);
       this.ctx.fill();
       this.balls.forEach((ball2) => {
