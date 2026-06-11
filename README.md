@@ -4,8 +4,6 @@
 
 > **The Naked Math Behind Canvas Animations — Handcrafted from First Principles.**
 
-> **The Naked Math Behind Canvas Animations — Handcrafted in TypeScript.**
-
 **[Utilspalooza](https://utilspalooza.com)** is an interactive, zero-dependency visual laboratory built for developers who want to understand _how_ the magic works. Instead of hiding equations behind heavy, black-box animation frameworks, this sandbox uses raw **HTML5 Canvas**, native math vectors, and strict **TypeScript** to break down physics and geometry code from first principles.
 
 ---
