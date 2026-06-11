@@ -1,8 +1,8 @@
 # 🎡 Utilspalooza
 
-[![TypeScript](https://shields.io)](https://typescriptlang.org)
-[![Vite](https://shields.io)](https://vitejs.dev)
-[![Live Demo](https://shields.io)](https://utilspalooza.com)
+**[ [Live Visual Lab](https://utilspalooza.com) ]** &middot; **[ [TypeScript 5.x](https://typescriptlang.org) ]** &middot; **[ [Built with Vite](https://vitejs.dev) ]**
+
+> **The Naked Math Behind Canvas Animations — Handcrafted from First Principles.**
 
 > **The Naked Math Behind Canvas Animations — Handcrafted in TypeScript.**
 
