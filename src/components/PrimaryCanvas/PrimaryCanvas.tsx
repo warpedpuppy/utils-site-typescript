@@ -55,7 +55,7 @@ function PrimaryCanvas(props: any) {
       {/* <canvas width="1000" height="1000" ref={canvasRef}></canvas> */}
       <div id="primary-canvas--content">
         <div id="primary-canvas--content--text"></div>
-        <div id="primary-canvas--content--canvas-container2"></div>
+        <div id="primary-canvas--content--canvas-container"></div>
       </div>
       {showModal && (
         <Modal

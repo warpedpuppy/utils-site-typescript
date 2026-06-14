@@ -10,6 +10,12 @@ import SineCurve from "./animations/trig/SineCurve";
 import DistributePointsAroundACircle from "./animations/trig/DistributePointsAroundACircle";
 import DeMystifySineCosine from "./animations/trig/DeMystifySineCosine";
 
+// New sections
+import BezierCurves from "./animations/geometry/BezierCurves";
+import FourierEpicycles from "./animations/fourier/FourierEpicycles";
+import GameOfLife from "./animations/automata/GameOfLife";
+import FlowField from "./animations/noise/FlowField";
+
 const SiteData = {
   trig: {
     DistributePointsAroundACircle,
@@ -25,6 +31,16 @@ const SiteData = {
   },
   geometry: {
     GetHalfwayPointOfLine,
+    BezierCurves,
+  },
+  fourier: {
+    FourierEpicycles,
+  },
+  automata: {
+    GameOfLife,
+  },
+  noise: {
+    FlowField,
   },
   collissionDetection: {},
 };
