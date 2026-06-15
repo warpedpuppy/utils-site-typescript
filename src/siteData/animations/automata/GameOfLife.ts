@@ -1,5 +1,78 @@
 import Template from "../animationTemplate";
 
+const ELI5 = `🧬 Conway's Game of Life — What's going on?
+
+This is a "cellular automaton" — a grid of cells that are either alive or dead.
+Every tick, the whole grid updates at once using just 4 rules:
+
+  1. A live cell with fewer than 2 live neighbors → dies (underpopulation)
+  2. A live cell with 2 or 3 live neighbors    → survives
+  3. A live cell with more than 3 live neighbors → dies (overpopulation)
+  4. A dead cell with exactly 3 live neighbors  → becomes alive (reproduction)
+
+That's it. Four rules. Yet from these rules emerge:
+  - Stable shapes that never change (still lifes)
+  - Shapes that oscillate back and forth (oscillators like the blinker)
+  - Shapes that travel across the grid (spaceships like the glider)
+  - Machines that generate infinite gliders (the Glider Gun)
+
+No one designed these behaviors — they emerge from the rules.
+
+This is a foundational idea in complexity theory: simple local rules
+can produce astonishingly complex global behavior.
+
+Click or drag on the grid to draw cells. Use the controls to run it.`;
+
+import { CollisionDetectionObject } from "../../../types/types";
+
+function nextGeneration(grid: Uint8Array, cols: number, rows: number): Uint8Array {
+  const next = new Uint8Array(grid.length);
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      let neighbors = 0;
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const r = (row + dr + rows) % rows;
+          const c = (col + dc + cols) % cols;
+          neighbors += grid[r * cols + c];
+        }
+      }
+      const alive = grid[row * cols + col];
+      next[row * cols + col] =
+        alive ? (neighbors === 2 || neighbors === 3 ? 1 : 0)
+              : (neighbors === 3 ? 1 : 0);
+    }
+  }
+  return next;
+}
+
+const GameOfLifeFormula: CollisionDetectionObject = {
+  keyFunction: nextGeneration,
+  dependencies: [],
+  functionString: `function nextGeneration(grid: Uint8Array, cols: number, rows: number): Uint8Array {
+  const next = new Uint8Array(grid.length);
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      let neighbors = 0;
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const r = (row + dr + rows) % rows;
+          const c = (col + dc + cols) % cols;
+          neighbors += grid[r * cols + c];
+        }
+      }
+      const alive = grid[row * cols + col];
+      next[row * cols + col] =
+        alive ? (neighbors === 2 || neighbors === 3 ? 1 : 0)
+              : (neighbors === 3 ? 1 : 0);
+    }
+  }
+  return next;
+}`,
+};
+
 const CELL = 12; // px per cell
 
 // Preset patterns (relative cell coords)
@@ -32,7 +105,10 @@ const PRESETS: Record<string, number[][]> = {
 class GameOfLife extends Template {
   static t = "Conway's Game of Life";
   static l = "game-of-life";
+  static f = GameOfLifeFormula;
   title = "Conway's Game of Life";
+
+  animationObject = GameOfLifeFormula;
 
   cols: number = 0;
   rows: number = 0;
@@ -46,30 +122,8 @@ class GameOfLife extends Template {
   paintValue: number = 1;
   animId: number = 0;
   controlsDiv: HTMLDivElement | null = null;
+  infoPanel: HTMLDivElement | null = null;
   genSpan: HTMLSpanElement | null = null;
-
-  keyFunction(grid: Uint8Array, cols: number, rows: number): Uint8Array {
-    // Conway rules: live cell with 2-3 neighbors survives; dead cell with 3 neighbors born
-    const next = new Uint8Array(grid.length);
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        let neighbors = 0;
-        for (let dr = -1; dr <= 1; dr++) {
-          for (let dc = -1; dc <= 1; dc++) {
-            if (dr === 0 && dc === 0) continue;
-            const r = (row + dr + rows) % rows;
-            const c = (col + dc + cols) % cols;
-            neighbors += grid[r * cols + c];
-          }
-        }
-        const alive = grid[row * cols + col];
-        next[row * cols + col] =
-          alive ? (neighbors === 2 || neighbors === 3 ? 1 : 0)
-                : (neighbors === 3 ? 1 : 0);
-      }
-    }
-    return next;
-  }
 
   setupGrid() {
     this.cols = Math.floor(this.canvasWidth / CELL);
@@ -103,7 +157,7 @@ class GameOfLife extends Template {
   }
 
   tick() {
-    this.grid = this.keyFunction(this.grid, this.cols, this.rows);
+    this.grid = nextGeneration(this.grid, this.cols, this.rows);
     this.generation++;
     if (this.genSpan) this.genSpan.textContent = `gen: ${this.generation}`;
   }
@@ -112,12 +166,12 @@ class GameOfLife extends Template {
     if (!this.cont) return;
     this.controlsDiv = document.createElement("div");
     this.controlsDiv.style.cssText =
-      "position:absolute;top:8px;left:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;z-index:10;background:rgba(255,255,255,0.88);padding:6px 10px;border-radius:6px;font-family:monospace;font-size:12px;max-width:90%;";
+      "position:absolute;top:8px;left:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;z-index:10;background:rgba(15,15,26,0.92);color:#d0ffd0;border:1px solid rgba(57,255,20,0.3);padding:6px 10px;border-radius:6px;font-family:monospace;font-size:12px;max-width:90%;";
 
-    const makeBtn = (label: string, onClick: () => void, color = "#fff") => {
+    const makeBtn = (label: string, onClick: () => void, color = "rgba(57,255,20,0.15)") => {
       const b = document.createElement("button");
       b.textContent = label;
-      b.style.cssText = `padding:3px 8px;cursor:pointer;border:1px solid #aaa;border-radius:4px;background:${color};font-family:monospace;font-size:12px;`;
+      b.style.cssText = `padding:3px 8px;cursor:pointer;border:1px solid rgba(57,255,20,0.4);border-radius:4px;background:${color};color:#d0ffd0;font-family:monospace;font-size:12px;`;
       b.addEventListener("click", onClick);
       return b;
     };
@@ -159,7 +213,7 @@ class GameOfLife extends Template {
     this.controlsDiv.appendChild(speedLabel);
 
     const speedSel = document.createElement("select");
-    speedSel.style.cssText = "font-family:monospace;font-size:12px;border-radius:4px;border:1px solid #aaa;";
+    speedSel.style.cssText = "font-family:monospace;font-size:12px;border-radius:4px;border:1px solid rgba(57,255,20,0.4);background:rgba(57,255,20,0.1);color:#d0ffd0;";
     [["slow", "250"], ["medium", "100"], ["fast", "40"], ["turbo", "16"]].forEach(([label, val]) => {
       const opt = document.createElement("option");
       opt.value = val;
@@ -178,11 +232,31 @@ class GameOfLife extends Template {
 
     this.genSpan = document.createElement("span");
     this.genSpan.textContent = "gen: 0";
-    this.genSpan.style.color = "#555";
+    this.genSpan.style.color = "#39ff14";
     this.controlsDiv.appendChild(this.genSpan);
+
+    // Info panel
+    this.infoPanel = document.createElement("div");
+    this.infoPanel.style.cssText =
+      "display:none;position:absolute;top:56px;left:8px;width:420px;background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,0.4);";
+    this.infoPanel.textContent = ELI5;
+    const closeInfo = document.createElement("button");
+    closeInfo.textContent = "✕";
+    closeInfo.style.cssText = "position:absolute;top:8px;right:8px;background:none;border:none;color:#cdd6f4;cursor:pointer;font-size:14px;";
+    closeInfo.addEventListener("click", () => { this.infoPanel!.style.display = "none"; });
+    this.infoPanel.appendChild(closeInfo);
+
+    const infoBtn = makeBtn("? explain", () => {
+      this.infoPanel!.style.display = this.infoPanel!.style.display === "none" ? "block" : "none";
+    });
+    infoBtn.style.background = "rgba(57,255,20,0.3)";
+    infoBtn.style.color = "#d0ffd0";
+    infoBtn.style.borderColor = "rgba(57,255,20,0.6)";
+    this.controlsDiv.appendChild(infoBtn);
 
     (this.cont as HTMLElement).style.position = "relative";
     this.cont.appendChild(this.controlsDiv);
+    this.cont.appendChild(this.infoPanel);
   }
 
   init() {
@@ -200,10 +274,13 @@ class GameOfLife extends Template {
   drawGrid() {
     if (!this.ctx || !this.canvas) return;
     const ctx = this.ctx;
-    ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    // Grid lines
-    ctx.strokeStyle = "rgba(0,0,0,0.06)";
+    // Dark background
+    ctx.fillStyle = "#0f0f1a";
+    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    // Grid lines (subtle on dark bg)
+    ctx.strokeStyle = "rgba(255,255,255,0.05)";
     ctx.lineWidth = 0.5;
     for (let c = 0; c <= this.cols; c++) {
       ctx.beginPath();
@@ -218,8 +295,8 @@ class GameOfLife extends Template {
       ctx.stroke();
     }
 
-    // Cells
-    ctx.fillStyle = "#2c3e50";
+    // Cells — bright lime green on dark bg
+    ctx.fillStyle = "#39ff14";
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         if (this.grid[r * this.cols + c]) {
@@ -257,9 +334,8 @@ class GameOfLife extends Template {
   stop() {
     cancelAnimationFrame(this.animId);
     clearInterval(this.tickInterval);
-    if (this.controlsDiv && this.controlsDiv.parentNode) {
-      this.controlsDiv.parentNode.removeChild(this.controlsDiv);
-    }
+    if (this.controlsDiv?.parentNode) this.controlsDiv.parentNode.removeChild(this.controlsDiv);
+    if (this.infoPanel?.parentNode) this.infoPanel.parentNode.removeChild(this.infoPanel);
     super.stop();
   }
 }

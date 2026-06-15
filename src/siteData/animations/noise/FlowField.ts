@@ -1,4 +1,32 @@
 import Template from "../animationTemplate";
+import { CollisionDetectionObject } from "../../../types/types";
+
+
+const ELI5 = `🌊 Perlin Flow Field — What's going on?
+
+Each particle follows an invisible "wind map" made of Perlin noise.
+
+PERLIN NOISE is a way to make smooth random numbers. Unlike pure random
+(which jumps around chaotically), Perlin noise changes gradually — nearby
+points get similar values. That's what makes it look organic and natural.
+
+HOW THE FIELD WORKS:
+  1. Divide the canvas into an invisible grid
+  2. At each grid point, compute a noise value → turn it into an angle (0–2π)
+  3. Each particle reads the angle at its position and steers that direction
+  4. The noise slowly "flows" over time (z-offset), so the whole field evolves
+
+THE MATH:
+  angle = perlin2(x * scale, y * scale + time) × 4π
+  vx += cos(angle) × force
+  vy += sin(angle) × force
+
+The permutation table is the key trick: Ken Perlin (1983) shuffled 0–255
+into a lookup table so gradient directions could be computed cheaply
+without storing them explicitly.
+
+Real-world uses: cloud/terrain generation in games, smoke/fire VFX,
+procedural textures, organic animation paths.`;
 
 // Permutation-table Perlin noise (classic Ken Perlin implementation)
 function buildPermTable(): number[] {
@@ -37,6 +65,44 @@ function perlin2(x: number, y: number): number {
   );
 }
 
+function getFlowAngle(x: number, y: number, scale: number, z: number): number {
+  return perlin2(x * scale, y * scale + z) * Math.PI * 4;
+}
+
+const FlowFieldFormula: CollisionDetectionObject = {
+  keyFunction: getFlowAngle,
+  dependencies: [],
+  functionString: `function buildPermTable(): number[] {
+  const p = Array.from({ length: 256 }, (_, i) => i);
+  for (let i = 255; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [p[i], p[j]] = [p[j], p[i]];
+  }
+  return [...p, ...p];
+}
+function fade(t: number) { return t * t * t * (t * (t * 6 - 15) + 10); }
+function lerp(a: number, b: number, t: number) { return a + t * (b - a); }
+function grad(hash: number, x: number, y: number): number {
+  const h = hash & 3;
+  const u = h < 2 ? x : y, v = h < 2 ? y : x;
+  return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
+}
+function perlin2(x: number, y: number): number {
+  const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+  x -= Math.floor(x); y -= Math.floor(y);
+  const u = fade(x), v = fade(y);
+  const a = perm[X] + Y, b = perm[X + 1] + Y;
+  return lerp(
+    lerp(grad(perm[a], x, y), grad(perm[b], x - 1, y), u),
+    lerp(grad(perm[a+1], x, y-1), grad(perm[b+1], x-1, y-1), u),
+    v
+  );
+}
+function getFlowAngle(x: number, y: number, scale: number, z: number): number {
+  return perlin2(x * scale, y * scale + z) * Math.PI * 4;
+}`,
+};
+
 interface Particle {
   x: number;
   y: number;
@@ -50,7 +116,10 @@ interface Particle {
 class FlowField extends Template {
   static t = "Perlin noise flow field";
   static l = "flow-field";
+  static f = FlowFieldFormula;
   title = "Perlin noise flow field";
+
+  animationObject = FlowFieldFormula;
 
   particles: Particle[] = [];
   numParticles: number = 600;
@@ -61,6 +130,7 @@ class FlowField extends Template {
   zSpeed: number = 0.0005;
   animId: number = 0;
   controlsDiv: HTMLDivElement | null = null;
+  infoPanel: HTMLDivElement | null = null;
 
   // Off-screen trail canvas for persistent blending
   trailCanvas: HTMLCanvasElement | null = null;
@@ -97,13 +167,13 @@ class FlowField extends Template {
     if (!this.cont) return;
     this.controlsDiv = document.createElement("div");
     this.controlsDiv.style.cssText =
-      "position:absolute;top:8px;left:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;z-index:10;background:rgba(255,255,255,0.88);padding:6px 10px;border-radius:6px;font-family:monospace;font-size:12px;";
+      "position:absolute;top:8px;left:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;z-index:10;background:rgba(10,10,20,0.92);color:#e0e8ff;border:1px solid rgba(150,180,255,0.3);padding:6px 10px;border-radius:6px;font-family:monospace;font-size:12px;";
 
     const makeBtn = (label: string, fn: () => void) => {
       const b = document.createElement("button");
       b.textContent = label;
       b.style.cssText =
-        "padding:3px 8px;cursor:pointer;border:1px solid #aaa;border-radius:4px;background:#fff;font-family:monospace;font-size:12px;";
+        "padding:3px 8px;cursor:pointer;border:1px solid rgba(150,180,255,0.4);border-radius:4px;background:rgba(100,140,255,0.15);color:#e0e8ff;font-family:monospace;font-size:12px;";
       b.addEventListener("click", fn);
       return b;
     };
@@ -156,8 +226,28 @@ class FlowField extends Template {
       makeSlider("trail", 10, 100, this.trailLength, 5, (v) => { this.trailLength = v; })
     );
 
+    // Info panel
+    this.infoPanel = document.createElement("div");
+    this.infoPanel.style.cssText =
+      "display:none;position:absolute;top:56px;left:8px;width:420px;background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,0.4);";
+    this.infoPanel.textContent = ELI5;
+    const closeInfo = document.createElement("button");
+    closeInfo.textContent = "✕";
+    closeInfo.style.cssText = "position:absolute;top:8px;right:8px;background:none;border:none;color:#cdd6f4;cursor:pointer;font-size:14px;";
+    closeInfo.addEventListener("click", () => { this.infoPanel!.style.display = "none"; });
+    this.infoPanel.appendChild(closeInfo);
+
+    const infoBtn = makeBtn("? explain", () => {
+      this.infoPanel!.style.display = this.infoPanel!.style.display === "none" ? "block" : "none";
+    });
+    infoBtn.style.background = "rgba(100,140,255,0.3)";
+    infoBtn.style.color = "#e0e8ff";
+    infoBtn.style.borderColor = "rgba(150,180,255,0.6)";
+    this.controlsDiv.appendChild(infoBtn);
+
     (this.cont as HTMLElement).style.position = "relative";
     this.cont.appendChild(this.controlsDiv);
+    this.cont.appendChild(this.infoPanel);
   }
 
   init() {
@@ -265,9 +355,8 @@ class FlowField extends Template {
 
   stop() {
     cancelAnimationFrame(this.animId);
-    if (this.controlsDiv && this.controlsDiv.parentNode) {
-      this.controlsDiv.parentNode.removeChild(this.controlsDiv);
-    }
+    if (this.controlsDiv?.parentNode) this.controlsDiv.parentNode.removeChild(this.controlsDiv);
+    if (this.infoPanel?.parentNode) this.infoPanel.parentNode.removeChild(this.infoPanel);
     this.trailCanvas = null;
     this.trailCtx = null;
     super.stop();

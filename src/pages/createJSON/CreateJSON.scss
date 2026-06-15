@@ -1,28 +1,73 @@
 #create-json {
-  width: 50%;
-  margin: 30px auto;
-  div {
-    &.tab-content {
-      border: 1px solid black;
-      padding: 10px;
+  width: 100%;
+  position: relative;
+  top: 50px;
+  padding-top: 50px;
+  #download-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 0.5rem 0 0.75rem;
+    #download-bar-count {
+      font-size: 0.82rem;
+      color: var(--text-muted);
     }
-    .json-dd {
-      display: flex;
-      align-items: center;
-      margin: 10px 0;
-      input[type="checkbox"] {
-        cursor: pointer;
-        margin-right: 10px;
-        -webkit-appearance: none;
-        width: 20px;
-        height: 20px;
-        background: white;
-        border-radius: 5px;
-        border: 1px solid var(--site-gray);
-        &:checked {
-          background: var(--site-blue);
-        }
+  }
+  #create-json-tabs {
+    margin: 0 auto;
+    width: 100%;
+  }
+  #create-json-container {
+    margin: 0 20px;
+    .tab-content {
+      display: none;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 14px;
+      width: 100%;
+      margin: 0 auto;
+      background: var(--bg);
+      color: var(--text);
+      button {
+        float: right;
+      }
+      pre {
+        font-size: 0.75rem;
+        line-height: 1.5;
+        color: var(--text-code);
+        background: var(--code-bg);
+        border-radius: 6px;
+        padding: 10px;
+        overflow-x: auto;
+      }
+      &.active {
+        display: block;
       }
     }
   }
+  .checklist-category {
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+  .individual-checklist-item {
+    padding: 0.25rem 0.5rem;
+    input {
+      margin-right: 0.5rem;
+    }
+  }
+  .open-indicator {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 768px) {
 }

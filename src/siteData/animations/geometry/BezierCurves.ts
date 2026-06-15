@@ -1,5 +1,29 @@
 import Template from "../animationTemplate";
-import { Point } from "../../../types/types";
+import { CollisionDetectionObject } from "../../../types/types";
+
+interface Point { x: number; y: number; }
+
+const ELI5 = `〰️ Bézier Curves — What's going on?
+
+A Bézier curve is a smooth curve defined by "control points."
+The endpoints (P0, P3) are where the curve starts and ends.
+The middle points (P1, P2) are like magnets that pull the curve toward them
+without the curve actually touching them.
+
+The math uses something called "lerp" (linear interpolation):
+  lerp(A, B, t) = A + t * (B - A)
+  When t=0 you're at A. When t=1 you're at B. In between, you're... in between.
+
+The de Casteljau algorithm (what you see animated) works like this:
+  1. Draw lines between all control points
+  2. Find the midpoint on each line at time t
+  3. Connect THOSE midpoints and find THEIR midpoint at t
+  4. Keep going until one point remains — that's the curve point at t
+
+As t goes from 0 → 1, that final point traces the entire curve.
+
+Drag the colored dots to reshape the curve in real time.
+Real-world uses: font design, SVG paths, CSS animations, game movement paths.`;
 
 interface ControlPoint extends Point {
   dragging: boolean;
@@ -25,10 +49,34 @@ function deCasteljau(pts: Point[], t: number): { point: Point; levels: Point[][]
   return { point: current[0], levels };
 }
 
+const BezierFormula: CollisionDetectionObject = {
+  keyFunction: deCasteljau,
+  functionString: `function deCasteljau(pts: Point[], t: number): { point: Point; levels: Point[][] } {
+  const levels: Point[][] = [pts.map(p => ({ ...p }))];
+  let current = pts.map(p => ({ ...p }));
+  while (current.length > 1) {
+    const next: Point[] = [];
+    for (let i = 0; i < current.length - 1; i++) {
+      next.push({
+        x: (1 - t) * current[i].x + t * current[i + 1].x,
+        y: (1 - t) * current[i].y + t * current[i + 1].y,
+      });
+    }
+    levels.push(next);
+    current = next;
+  }
+  return { point: current[0], levels };
+}`,
+    dependencies: [],
+};
+
 class BezierCurves extends Template {
   static t = "Bézier curves";
   static l = "bezier-curves";
+  static f = BezierFormula;
   title = "Bézier curves";
+
+  animationObject = BezierFormula;
 
   controlPoints: ControlPoint[] = [];
   animT: number = 0;
@@ -37,6 +85,7 @@ class BezierCurves extends Template {
   dragIndex: number = -1;
   POINT_RADIUS = 10;
   controlsDiv: HTMLDivElement | null = null;
+  infoPanel: HTMLDivElement | null = null;
   mode: number = 3; // 2=quadratic, 3=cubic, 4=quartic
 
   keyFunction(controlPoints: Point[], t: number): Point {
@@ -96,12 +145,40 @@ class BezierCurves extends Template {
     );
 
     const hint = document.createElement("span");
-    hint.textContent = " — drag the colored points";
+    hint.textContent = "drag the colored points";
     hint.style.color = "#666";
     this.controlsDiv.appendChild(hint);
 
+    const makeBtn = (label: string, fn: () => void) => {
+      const b = document.createElement("button");
+      b.textContent = label;
+      b.style.cssText = "padding:3px 8px;cursor:pointer;border:1px solid #aaa;border-radius:4px;background:#fff;font-family:monospace;font-size:12px;";
+      b.addEventListener("click", fn);
+      return b;
+    };
+
+    // Info panel
+    this.infoPanel = document.createElement("div");
+    this.infoPanel.style.cssText =
+      "display:none;position:absolute;top:56px;left:8px;width:400px;background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,0.4);";
+    this.infoPanel.textContent = ELI5;
+    const closeInfo = document.createElement("button");
+    closeInfo.textContent = "✕";
+    closeInfo.style.cssText = "position:absolute;top:8px;right:8px;background:none;border:none;color:#cdd6f4;cursor:pointer;font-size:14px;";
+    closeInfo.addEventListener("click", () => { this.infoPanel!.style.display = "none"; });
+    this.infoPanel.appendChild(closeInfo);
+
+    const infoBtn = makeBtn("? explain", () => {
+      this.infoPanel!.style.display = this.infoPanel!.style.display === "none" ? "block" : "none";
+    });
+    infoBtn.style.background = "#6c8ebf";
+    infoBtn.style.color = "#fff";
+    infoBtn.style.borderColor = "#6c8ebf";
+    this.controlsDiv.appendChild(infoBtn);
+
     (this.cont as HTMLElement).style.position = "relative";
     this.cont.appendChild(this.controlsDiv);
+    this.cont.appendChild(this.infoPanel);
   }
 
   init() {
@@ -239,9 +316,8 @@ class BezierCurves extends Template {
 
   stop() {
     cancelAnimationFrame(this.animId);
-    if (this.controlsDiv && this.controlsDiv.parentNode) {
-      this.controlsDiv.parentNode.removeChild(this.controlsDiv);
-    }
+    if (this.controlsDiv?.parentNode) this.controlsDiv.parentNode.removeChild(this.controlsDiv);
+    if (this.infoPanel?.parentNode) this.infoPanel.parentNode.removeChild(this.infoPanel);
     super.stop();
   }
 }

@@ -1,0 +1,12 @@
+#example-page {
+  position: relative;
+  top: 50px;
+  width: 100vw;
+}
+
+@media screen and (min-width: 768px) {
+  #example-page {
+    display: flex;
+    position: fixed;
+  }
+}

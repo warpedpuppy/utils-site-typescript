@@ -1,23 +1,44 @@
+export interface PrimaryObject {
+  [key: string]: SubObject;
+}
+
+export interface SubObject {
+  [key: string]: AnimationObject;
+}
+
 export interface GenericObject {
   [key: string]: any;
 }
-export type Point = {
-  x: number;
-  y: number;
-};
 
-// canvas
-
-export type CanvasObject = {
+export interface CanvasObject {
   activeObject: AnimationObject;
-};
+}
 
-export type AnimationObject = {
-  bf: Function;
+export interface AnimationObject {
   t: string;
   l: string;
-  f: Function;
+  include?: boolean;
+  relatedObject?: CollisionDetectionObject;
+  f: CollisionDetectionObject;
   extraHTML?: Function;
-};
+}
+
+export interface HSL {
+  H: number;
+  S: number;
+  L: number;
+}
+
+export interface CollisionDetectionObject {
+  keyFunction: Function;
+  dependencies: string[];
+  interfaces?: string[];
+  functionString: string;
+}
 
 export type Nullable<T> = T | null;
+
+export interface Point {
+  x: number;
+  y: number;
+}

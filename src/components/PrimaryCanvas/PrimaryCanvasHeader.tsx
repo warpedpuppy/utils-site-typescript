@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 
 function PrimaryCanvasHeader({
-  title,
   instanceOfClass,
   showEquationHandler,
 }: {
-  title: string;
   instanceOfClass: any;
   showEquationHandler: Function;
 }) {
@@ -18,9 +16,8 @@ function PrimaryCanvasHeader({
   }, [instanceOfClass]);
   return (
     <div id="primary-canvas--header">
-      <h3>{title}</h3>
-      {html}
-      <button onClick={() => showEquationHandler()}>see equation</button>
+      <button onClick={() => showEquationHandler()}>{ '{ }' } view code</button>
+      <div id="primary-canvas--header_extra_html">{html}</div>
     </div>
   );
 }
