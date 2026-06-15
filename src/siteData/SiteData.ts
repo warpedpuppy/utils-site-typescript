@@ -44,6 +44,7 @@ import FlowField from "./animations/noise/FlowField";
 import WaveInterference from "./animations/quantum/WaveInterference";
 import GravitationalLensing from "./animations/relativity/GravitationalLensing";
 import OrbitalPrecession from "./animations/relativity/OrbitalPrecession";
+import Phyllotaxis from "./animations/botany/Phyllotaxis";
 
 const SiteData: PrimaryObject = {
   animations: {
@@ -106,6 +107,9 @@ const SiteData: PrimaryObject = {
   relativity: {
     GravitationalLensing,
     OrbitalPrecession,
+  },
+  botany: {
+    Phyllotaxis,
   },
 };
 
