@@ -124,6 +124,7 @@ class GameOfLife extends Template {
   controlsDiv: HTMLDivElement | null = null;
   infoPanel: HTMLDivElement | null = null;
   genSpan: HTMLSpanElement | null = null;
+  playBtn: HTMLButtonElement | null = null;
 
   setupGrid() {
     this.cols = Math.floor(this.canvasWidth / CELL);
@@ -176,24 +177,24 @@ class GameOfLife extends Template {
       return b;
     };
 
-    const playBtn = makeBtn("▶ play", () => {
+    this.playBtn = makeBtn("▶ play", () => {
       if (this.running) {
         this.running = false;
         clearInterval(this.tickInterval);
-        playBtn.textContent = "▶ play";
+        this.playBtn!.textContent = "▶ play";
       } else {
         this.running = true;
         this.tickInterval = setInterval(() => this.tick(), this.speed);
-        playBtn.textContent = "⏸ pause";
+        this.playBtn!.textContent = "⏸ pause";
       }
     });
 
-    this.controlsDiv.appendChild(playBtn);
+    this.controlsDiv.appendChild(this.playBtn);
     this.controlsDiv.appendChild(makeBtn("step", () => this.tick()));
     this.controlsDiv.appendChild(makeBtn("clear", () => {
       this.running = false;
       clearInterval(this.tickInterval);
-      playBtn.textContent = "▶ play";
+      if (this.playBtn) this.playBtn.textContent = "▶ play";
       this.grid.fill(0);
       this.generation = 0;
       if (this.genSpan) this.genSpan.textContent = "gen: 0";
@@ -264,6 +265,9 @@ class GameOfLife extends Template {
     this.loadPreset("glider");
     this.addControls();
     this.renderLoop();
+    this.running = true;
+    this.tickInterval = setInterval(() => this.tick(), this.speed);
+    if (this.playBtn) this.playBtn.textContent = "⏸ pause";
   }
 
   renderLoop = () => {
