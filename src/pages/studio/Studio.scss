@@ -1,0 +1,219 @@
+#studio-page {
+  display: flex;
+  height: calc(100vh - 56px); // Account for navbar
+  background: #0a0a0f;
+  color: #e6dcc8;
+
+  #studio-container {
+    display: flex;
+    width: 100%;
+    gap: 0;
+  }
+
+  #studio-sidebar {
+    width: 280px;
+    background: #0f0f1a;
+    border-right: 1px solid rgba(255, 200, 80, 0.15);
+    padding: 24px 16px;
+    overflow-y: auto;
+    flex-shrink: 0;
+
+    h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: #ffe090;
+      font-family: "Space Grotesk", sans-serif;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar-subtitle {
+      font-size: 11px;
+      color: #a0a080;
+      margin: 0 0 16px 0;
+      font-family: "Space Mono", monospace;
+      line-height: 1.4;
+    }
+
+    .studio-intro {
+      border-top: 1px solid rgba(255, 200, 80, 0.1);
+      border-bottom: 1px solid rgba(255, 200, 80, 0.1);
+      padding: 14px 0;
+      margin-bottom: 20px;
+
+      p {
+        font-size: 11px;
+        color: #c0b090;
+        line-height: 1.6;
+        margin: 0 0 12px;
+
+        strong {
+          color: #ffe090;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .studio-how-to-use {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .how-step {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 11px;
+      color: #a0b8c0;
+      line-height: 1.4;
+
+      .step-num {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(100, 200, 255, 0.15);
+        border: 1px solid rgba(100, 200, 255, 0.3);
+        color: #a0d0ff;
+        font-size: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+      }
+
+      em {
+        font-style: normal;
+        color: #a0d0ff;
+      }
+    }
+
+    .projects-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #606050;
+      margin: 0 0 10px;
+    }
+
+    .projects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .project-item {
+      padding: 12px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(100, 200, 255, 0.2);
+      background: rgba(100, 200, 255, 0.05);
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: rgba(100, 200, 255, 0.4);
+        background: rgba(100, 200, 255, 0.1);
+      }
+
+      &.active {
+        border-color: rgba(100, 200, 255, 0.7);
+        background: rgba(100, 200, 255, 0.15);
+        box-shadow: 0 0 12px rgba(100, 200, 255, 0.2);
+
+        .project-title {
+          color: #a0d0ff;
+          font-weight: 500;
+        }
+      }
+
+      .project-title {
+        font-size: 13px;
+        color: #e6dcc8;
+        font-family: "Space Grotesk", sans-serif;
+        transition: color 0.2s ease;
+      }
+    }
+  }
+
+  #studio-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    #studio-project-header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 10px 20px;
+      background: rgba(15, 15, 26, 0.9);
+      border-bottom: 1px solid rgba(100, 200, 255, 0.12);
+
+      #studio-project-title {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #a0d0ff;
+        white-space: nowrap;
+      }
+
+      #studio-project-blurb {
+        font-family: "Space Mono", monospace;
+        font-size: 11px;
+        color: #708090;
+        line-height: 1.4;
+      }
+    }
+
+    #studio-canvas-container {
+      flex: 1;
+      position: relative;
+      background: #0a0a0f;
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 56px);
+
+    #studio-container {
+      flex-direction: column;
+    }
+
+    #studio-sidebar {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 200, 80, 0.15);
+      max-height: 200px;
+      padding: 16px;
+
+      .projects-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .project-item {
+        flex: 1;
+        min-width: 120px;
+      }
+    }
+
+    #studio-content {
+      #studio-canvas-container {
+        min-height: 400px;
+      }
+    }
+  }
+}
