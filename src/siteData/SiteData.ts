@@ -41,6 +41,9 @@ import BezierCurves from "./animations/geometry/BezierCurves";
 import FourierEpicycles from "./animations/fourier/FourierEpicycles";
 import GameOfLife from "./animations/automata/GameOfLife";
 import FlowField from "./animations/noise/FlowField";
+import WaveInterference from "./animations/quantum/WaveInterference";
+import GravitationalLensing from "./animations/relativity/GravitationalLensing";
+import OrbitalPrecession from "./animations/relativity/OrbitalPrecession";
 
 const SiteData: PrimaryObject = {
   animations: {
@@ -96,6 +99,13 @@ const SiteData: PrimaryObject = {
   },
   noise: {
     FlowField,
+  },
+  quantum: {
+    WaveInterference,
+  },
+  relativity: {
+    GravitationalLensing,
+    OrbitalPrecession,
   },
 };
 

@@ -239,7 +239,7 @@ class GameOfLife extends Template {
     // Info panel
     this.infoPanel = document.createElement("div");
     this.infoPanel.style.cssText =
-      "display:none;position:absolute;top:56px;left:8px;width:420px;background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,0.4);";
+      "display:none;position:absolute;top:56px;left:8px;width:420px;max-height:70vh;overflow-y:auto;background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:8px;font-family:monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;z-index:20;box-shadow:0 4px 20px rgba(0,0,0,0.4);";
     this.infoPanel.textContent = ELI5;
     const closeInfo = document.createElement("button");
     closeInfo.textContent = "✕";
