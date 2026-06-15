@@ -1,15 +1,32 @@
 import "./NavBar.scss";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 function NavBar() {
+  const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setCollapsed(false);
+  }, [location.pathname]);
+
   return (
     <nav>
-      <Link to="/">
-        <h1>utilspalooza</h1>
-      </Link>
-      <div>
-        <Link to="/">home</Link>
+      <h1>
+        <Link to="/">utilspalooza</Link>
+      </h1>
+
+      <div
+        id="hamburger"
+        onClick={() => setCollapsed(!collapsed)}
+        className={collapsed ? "collapsed" : ""}
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div id="nav-links" className={collapsed ? "collapsed" : ""}>
         <Link to="/examples">examples</Link>
-        <Link to="/create-json">create json</Link>
+        <Link to="/create-json">create utils file</Link>
         <Link to="/about">about</Link>
       </div>
     </nav>

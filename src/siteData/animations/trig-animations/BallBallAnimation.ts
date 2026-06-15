@@ -1,0 +1,130 @@
+import { Ball } from "../../../types/shapes";
+import { BallToBallBounce } from "../../formulas/animation/BallToBallBounce";
+import AnimationBaseClass from "../AnimationBaseClass";
+import { GetRandomColors } from "../../formulas/usefulLittleThings/GetRandomColors";
+
+interface GradientBall extends Ball {
+  h: number;
+  s: number;
+  l: number;
+}
+
+class BallsBouncingAgainstEachOther extends AnimationBaseClass {
+  static t = "balls bouncing against each other";
+  static l = "balls-bouncing-against-each-other";
+  static f = BallToBallBounce;
+  title = "balls bouncing against each other";
+  animationObject = BallToBallBounce;
+  // vx: number = 4;
+  // vy: number = 1;
+  // x: number = 1;
+  // y: number = 1;
+  // ballRadius: number = 10;
+  ballQ: number = 20;
+  balls: GradientBall[] = [];
+  // spring = 0.05;
+  speedLimit = 5;
+  storeCanvasSize = { width: 0, height: 0 };
+  init() {
+    if (this.textDiv) this.textDiv.innerHTML = `<h2>${this.title}</h2>`;
+    this.storeCanvasSize = {
+      width: this.canvasWidth,
+      height: this.canvasHeight,
+    };
+    this.createBalls();
+    this.draw();
+  }
+  createBalls() {
+    this.balls = [];
+    let totalArea = this.canvasWidth * this.canvasHeight;
+    this.ballQ = Math.floor(totalArea / 20000);
+
+    for (let i = 0; i < this.ballQ; i++) {
+      let radius = Math.random() * 50 + 10;
+      let x = Math.random() * (this.canvasWidth - 2 * radius) + radius;
+      let y = Math.random() * (this.canvasHeight - 2 * radius) + radius;
+      const { H, S, L } = GetRandomColors.keyFunction();
+
+      this.balls[i] = {
+        x,
+        y,
+        radius,
+        id: `${i}`,
+        vx: 1,
+        vy: 1,
+        color: `hsl(${H} ${S}% ${L}%)`,
+        h: H,
+        s: S,
+        l: L,
+      };
+    }
+  }
+  draw = () => {
+    if (!this.ctx) return;
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    if (
+      this.canvasHeight !== this.storeCanvasSize.height ||
+      this.canvasWidth !== this.storeCanvasSize.width
+    ) {
+      this.createBalls();
+      this.storeCanvasSize = {
+        width: this.canvasWidth,
+        height: this.canvasHeight,
+      };
+    }
+    this.balls.forEach((ball1) => {
+      if (!this.ctx) return;
+      ball1.x += ball1.vx;
+      ball1.y += ball1.vy;
+      const gr = this.ctx.createRadialGradient(
+        ball1.x - ball1.radius * 0.32,
+        ball1.y - ball1.radius * 0.32,
+        0,
+        ball1.x,
+        ball1.y,
+        ball1.radius
+      );
+      gr.addColorStop(0, `hsl(${ball1.h} ${ball1.s}% ${Math.min(95, ball1.l + 25)}%)`);
+      gr.addColorStop(0.55, `hsl(${ball1.h} ${ball1.s}% ${ball1.l}%)`);
+      gr.addColorStop(1, `hsl(${ball1.h} ${ball1.s}% ${Math.max(5, ball1.l - 25)}%)`);
+      this.ctx.fillStyle = gr;
+      this.ctx.beginPath();
+      this.ctx.arc(ball1.x, ball1.y, ball1.radius, 0, 2 * Math.PI);
+      this.ctx.fill();
+      this.balls.forEach((ball2) => {
+        BallToBallBounce.keyFunction(ball1, ball2);
+      });
+      this.keepOnScreen(ball1);
+      this.imposeSpeedLimit(ball1);
+    });
+    this.raf(this.draw);
+  };
+  imposeSpeedLimit(ball1: Ball) {
+    if (ball1.vx > this.speedLimit) ball1.vx = this.speedLimit;
+    if (ball1.vy > this.speedLimit) ball1.vy = this.speedLimit;
+  }
+  keepOnScreen(ball1: Ball) {
+    if (ball1.y > this.canvasHeight - ball1.radius) {
+      ball1.y = this.canvasHeight - ball1.radius;
+      ball1.vy *= -1;
+    }
+
+    if (ball1.y < ball1.radius) {
+      ball1.y = ball1.radius;
+      ball1.vy *= -1;
+    }
+
+    if (ball1.x > this.canvasWidth - ball1.radius) {
+      ball1.x = this.canvasWidth - ball1.radius;
+      ball1.vx *= -1;
+    }
+    if (ball1.x < ball1.radius) {
+      ball1.x = ball1.radius;
+      ball1.vx *= -1;
+    }
+  }
+  pointerDownHandler(e: PointerEvent) {}
+  pointerUpHandler(e: PointerEvent) {}
+  pointerMoveHandler(e: PointerEvent) {}
+}
+export default BallsBouncingAgainstEachOther;
