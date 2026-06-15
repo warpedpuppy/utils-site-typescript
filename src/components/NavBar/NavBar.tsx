@@ -26,6 +26,7 @@ function NavBar() {
       </div>
       <div id="nav-links" className={collapsed ? "collapsed" : ""}>
         <Link to="/examples">examples</Link>
+        <Link to="/studio">build with it</Link>
         <Link to="/create-json">create utils file</Link>
         <Link to="/about">about</Link>
       </div>

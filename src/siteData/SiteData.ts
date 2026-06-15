@@ -46,6 +46,8 @@ import GravitationalLensing from "./animations/relativity/GravitationalLensing";
 import OrbitalPrecession from "./animations/relativity/OrbitalPrecession";
 import Phyllotaxis from "./animations/botany/Phyllotaxis";
 
+// Studio projects are loaded directly in Studio.tsx to avoid import issues
+
 const SiteData: PrimaryObject = {
   animations: {
     BallBounce,

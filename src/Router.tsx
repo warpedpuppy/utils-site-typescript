@@ -4,6 +4,7 @@ import Home from "./pages/home/Home";
 import About from "./pages/about/About";
 import Examples from "./pages/createJSON/examples/Examples";
 import CreateJSON from "./pages/createJSON/CreateJSON";
+import Studio from "./pages/studio/Studio";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,16 @@ const router = createBrowserRouter([
           {
             path: ":exampleName",
             element: <Examples />,
+          },
+        ],
+      },
+      {
+        path: "studio",
+        element: <Studio />,
+        children: [
+          {
+            path: ":projectName",
+            element: <Studio />,
           },
         ],
       },
