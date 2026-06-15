@@ -64,18 +64,12 @@ class LineToCircleCollision extends AnimationBaseClass {
     if (hit) {
       this.ctx.font = "bold 26px 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      // chromatic glitch layers
-      this.ctx.shadowBlur = 0;
       this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
       this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
       this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
       this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      // neon core
-      this.ctx.shadowColor = "#00ffff";
-      this.ctx.shadowBlur = 30;
       this.ctx.fillStyle = "#e0f7ff";
       this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.shadowBlur = 0;
       this.ctx.textAlign = "left";
     }
 

@@ -35,6 +35,9 @@ function CreateChecklists() {
             <div key="section-ai" className="checklist-section-header ai-made">AI Made</div>
           );
         }
+        const firstEntry = Object.entries(innerArray[1]).find(
+          ([, v]: any) => v.include !== false
+        );
         returnArray.push(
           <CheckListDT
             innerText={innerArray[0]}
@@ -43,6 +46,10 @@ function CreateChecklists() {
             index={index}
             test={(i: number) => {
               if (setOpen) setOpen(i);
+              if (clickHandler && i !== 10 && firstEntry) {
+                const [itemKey, itemVal] = firstEntry as [string, any];
+                clickHandler(`/examples/${itemVal.l}`, innerArray[0], itemKey);
+              }
             }}
           />
         );
