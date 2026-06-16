@@ -16,6 +16,8 @@ function Studio() {
   const { projectName } = useParams();
   const navigate = useNavigate();
   const [activeProject, setActiveProject] = useState<{ Cls: any } | null>(null);
+  const [selectedPenKey, setSelectedPenKey] = useState(CODEPEN_GALLERY[0]?.key ?? "");
+  const selectedPen = CODEPEN_GALLERY.find((item) => item.key === selectedPenKey) ?? CODEPEN_GALLERY[0];
 
   const projects = [
     {
@@ -120,7 +122,45 @@ function Studio() {
           </header>
 
           <section className="gallery-section">
-            <h2 className="gallery-section-label">Projects</h2>
+            <h2 className="gallery-section-label">Tinker in CodePen</h2>
+            <p className="gallery-section-sub">
+              Pick any animation and open a complete, dependency-free CodePen — same math, plain JS, no build step.
+            </p>
+            <form
+              className="codepen-picker-form"
+              action={CODEPEN_ENDPOINT}
+              method="POST"
+              target="_blank"
+            >
+              <input type="hidden" name="data" value={JSON.stringify(selectedPen?.payload ?? CODEPEN_GALLERY[0].payload)} />
+              <select
+                className="codepen-picker-select"
+                value={selectedPenKey}
+                onChange={(e) => setSelectedPenKey(e.target.value)}
+              >
+                {(() => {
+                  const pensByGroup = CODEPEN_GALLERY.reduce<Record<string, typeof CODEPEN_GALLERY>>((acc, item) => {
+                    const g = item.group ?? "Other";
+                    (acc[g] ??= []).push(item);
+                    return acc;
+                  }, {});
+                  return Object.entries(pensByGroup).map(([group, items]) => (
+                    <optgroup key={group} label={group}>
+                      {items.map((item) => (
+                        <option key={item.key} value={item.key}>{item.label}</option>
+                      ))}
+                    </optgroup>
+                  ));
+                })()}
+              </select>
+              <button type="submit" className="codepen-picker-btn">
+                Tinker in CodePen ↗
+              </button>
+            </form>
+          </section>
+
+          <section className="gallery-section">
+            <h2 className="gallery-section-label">Advanced</h2>
             <p className="gallery-section-sub">Interactive demos that compose the site's math into something real.</p>
             <div className="project-grid">
               {projects.map((project) => (
@@ -141,33 +181,6 @@ function Studio() {
               ))}
             </div>
           </section>
-
-          <section className="gallery-section">
-            <h2 className="gallery-section-label">Tinker in CodePen</h2>
-            <p className="gallery-section-sub">
-              Take any single animation apart. Each opens a complete, dependency-free
-              CodePen — same math, plain JS, no build step.
-            </p>
-            <div className="codepen-grid">
-              {CODEPEN_GALLERY.map((item) => (
-                // Real <form> + native submit button: a scripted form.submit() to
-                // target="_blank" gets blocked as a popup; a genuine click never does.
-                <form
-                  key={item.key}
-                  className="codepen-card"
-                  action={CODEPEN_ENDPOINT}
-                  method="POST"
-                  target="_blank"
-                >
-                  <input type="hidden" name="data" value={JSON.stringify(item.payload)} />
-                  <button type="submit" className="codepen-open-btn">
-                    <span className="codepen-item-title">{item.label} ↗</span>
-                    <span className="codepen-item-blurb">{item.blurb}</span>
-                  </button>
-                </form>
-              ))}
-            </div>
-          </section>
         </div>
       ) : (
         /* ─── Focused workspace ───────────────────────────────────────── */
@@ -185,7 +198,7 @@ function Studio() {
               </div>
               <p className="ws-blurb">{current.blurb}</p>
             </div>
-            <nav className="ws-switcher" aria-label="Switch project">
+            <div role="navigation" className="ws-switcher" aria-label="Switch project">
               {projects.map((p, i) => (
                 <button
                   key={p.key}
@@ -196,7 +209,7 @@ function Studio() {
                   {p.title}
                 </button>
               ))}
-            </nav>
+            </div>
           </header>
 
           <div id="ws-canvas-host">

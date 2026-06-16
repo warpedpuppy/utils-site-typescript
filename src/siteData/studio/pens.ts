@@ -10,6 +10,7 @@
 
 import { CodePenPayload } from "./codepen";
 import { AUDIO_VISUALIZER_PEN } from "./AudioVisualizerWireframe";
+import { EXAMPLE_PENS } from "./pens-examples";
 
 // ── shared CSS used by the canvas-fills-the-page pens ────────────────────────
 const FULLSCREEN_CSS = `* { margin: 0; padding: 0; box-sizing: border-box; }
@@ -338,6 +339,7 @@ export interface CodePenGalleryItem {
   key: string;
   label: string;
   blurb: string;
+  group?: string;
   payload: CodePenPayload;
 }
 
@@ -345,19 +347,23 @@ export const CODEPEN_GALLERY: CodePenGalleryItem[] = [
   {
     key: "phyllotaxis",
     label: "Phyllotaxis",
+    group: "Math & Physics",
     blurb: "Golden-angle sunflower packing (Vogel's model).",
     payload: PHYLLOTAXIS_PEN,
   },
   {
     key: "flow-field",
     label: "Perlin Flow Field",
+    group: "Math & Physics",
     blurb: "Particles steered by an evolving Perlin noise field.",
     payload: FLOW_FIELD_PEN,
   },
   {
     key: "audio-visualizer",
     label: "Audio Visualizer",
+    group: "Animations",
     blurb: "Circular FFT display; one line away from a live mic.",
     payload: AUDIO_VISUALIZER_PEN,
   },
+  ...EXAMPLE_PENS,
 ];
