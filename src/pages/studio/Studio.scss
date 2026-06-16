@@ -248,43 +248,6 @@
       color: #717a8b;
       line-height: 1.4;
     }
-
-    .ws-switcher {
-      flex-shrink: 0;
-      display: flex;
-      gap: 6px;
-      max-width: 40%;
-      overflow-x: auto;
-      padding-bottom: 2px;
-
-      &::-webkit-scrollbar { height: 4px; }
-      &::-webkit-scrollbar-thumb { background: rgba(120, 170, 235, 0.3); border-radius: 2px; }
-    }
-
-    .ws-pill {
-      flex-shrink: 0;
-      max-width: 130px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      background: transparent;
-      border: 1px solid rgba(120, 170, 235, 0.18);
-      color: #8893a8;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 11px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.18s ease;
-
-      &:hover { color: #cfe0f2; border-color: rgba(120, 170, 235, 0.4); }
-      &.active {
-        color: #0a0a0f;
-        background: #9fc1ff;
-        border-color: #9fc1ff;
-        font-weight: 600;
-      }
-    }
   }
 
   #ws-canvas-host {
@@ -302,8 +265,6 @@
     #ws-header {
       flex-wrap: wrap;
       gap: 10px;
-
-      .ws-switcher { max-width: 100%; order: 3; width: 100%; }
     }
   }
 }
