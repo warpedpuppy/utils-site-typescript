@@ -59,17 +59,7 @@ const PHYLLOTAXIS_HTML = `<canvas id="canvas"></canvas>
   <button id="color">color: gradient</button>
 </div>`;
 
-const PHYLLOTAXIS_JS = `// ─── canvas setup (what the site's Template base class normally does) ─────────
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-function resize() {
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-}
-window.addEventListener('resize', resize);
-resize();
-
-const GOLDEN_ANGLE = 137.50776405003785; // ← (2 − φ) × 360, the whole show
+const PHYLLOTAXIS_JS = `const GOLDEN_ANGLE = 137.50776405003785; // ← (2 − φ) × 360, the whole show
 
 // ─── the core algorithm — Vogel's model (1979) ──────────────────────────────
 // Seed n sits at angle n×φ and radius c×√n. That is the entire thing — the
@@ -79,6 +69,16 @@ function phyllotaxisPoint(n, angleDeg, scale) {
   const r = scale * Math.sqrt(n);              // √n keeps area-density constant
   return [r * Math.cos(theta), r * Math.sin(theta)];
 }
+
+// ─── canvas setup (what the site's Template base class normally does) ─────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() {
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+}
+window.addEventListener('resize', resize);
+resize();
 
 // ─── state (wired to the controls below) ────────────────────────────────────
 let angleDeg = GOLDEN_ANGLE;
@@ -164,6 +164,7 @@ const PHYLLOTAXIS_PEN: CodePenPayload = {
   html: PHYLLOTAXIS_HTML,
   css: FULLSCREEN_CSS,
   js: PHYLLOTAXIS_JS,
+  editors: "001",
 };
 
 // ─── Perlin Flow Field ───────────────────────────────────────────────────────
@@ -176,20 +177,7 @@ const FLOW_FIELD_HTML = `<canvas id="canvas"></canvas>
   <label>trail <input type="range" id="trail" min="10" max="100" step="5" value="40"> <span id="trail-val">40</span></label>
 </div>`;
 
-const FLOW_FIELD_JS = `// ─── canvas setup (what the site's Template base class normally does) ─────────
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-// off-screen canvas accumulates the glowing trails
-const trail = document.createElement('canvas');
-const trailCtx = trail.getContext('2d');
-function resize() {
-  canvas.width = trail.width = canvas.clientWidth;
-  canvas.height = trail.height = canvas.clientHeight;
-}
-window.addEventListener('resize', () => { resize(); resetParticles(); });
-resize();
-
-// ─── Perlin noise (classic Ken Perlin permutation-table implementation) ──────
+const FLOW_FIELD_JS = `// ─── Perlin noise (classic Ken Perlin permutation-table implementation) ──────
 function buildPermTable() {
   const p = Array.from({ length: 256 }, (_, i) => i);
   for (let i = 255; i > 0; i--) {            // Fisher–Yates shuffle
@@ -205,7 +193,6 @@ function grad(hash, x, y) {
   const u = h < 2 ? x : y, v = h < 2 ? y : x;
   return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
 }
-let perm = buildPermTable();
 function perlin2(x, y) {
   const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
   x -= Math.floor(x); y -= Math.floor(y);
@@ -224,6 +211,19 @@ function getFlowAngle(x, y, scale, z) {
   return perlin2(x * scale, y * scale + z) * Math.PI * 4; // ← the field lives here
 }
 
+// ─── canvas setup (what the site's Template base class normally does) ─────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+// off-screen canvas accumulates the glowing trails
+const trail = document.createElement('canvas');
+const trailCtx = trail.getContext('2d');
+function resize() {
+  canvas.width = trail.width = canvas.clientWidth;
+  canvas.height = trail.height = canvas.clientHeight;
+}
+window.addEventListener('resize', () => { resize(); resetParticles(); });
+resize();
+
 // ─── state (wired to the controls below) ────────────────────────────────────
 let numParticles = 600;
 let speed = 2.5;
@@ -231,6 +231,7 @@ let fieldScale = 0.003; // noise zoom
 let trailLength = 40;
 let zOffset = 0;        // animate the noise field over time
 const zSpeed = 0.0005;
+let perm = buildPermTable();
 let particles = [];
 
 function spawn() {
@@ -332,6 +333,7 @@ const FLOW_FIELD_PEN: CodePenPayload = {
   html: FLOW_FIELD_HTML,
   css: FULLSCREEN_CSS,
   js: FLOW_FIELD_JS,
+  editors: "001",
 };
 
 // ─── the gallery ─────────────────────────────────────────────────────────────

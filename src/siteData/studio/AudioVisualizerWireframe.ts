@@ -207,6 +207,7 @@ export const AUDIO_VISUALIZER_PEN: CodePenPayload = {
   html: CODEPEN_HTML,
   css: CODEPEN_CSS,
   js: CODEPEN_JS,
+  editors: "001",
 };
 
 class AudioVisualizerWireframe extends Template {
