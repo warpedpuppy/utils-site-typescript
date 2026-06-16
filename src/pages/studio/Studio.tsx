@@ -4,6 +4,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./Studio.scss";
 import StudioCanvas from "./StudioCanvas";
 import AudioVisualizerWireframe from "../../siteData/studio/AudioVisualizerWireframe";
+import GenerativeLogoTracer from "../../siteData/studio/GenerativeLogoTracer";
+import OrganicTerrainMap from "../../siteData/studio/OrganicTerrainMap";
+import ParticleConstellation from "../../siteData/studio/ParticleConstellation";
+import PhysicsToy from "../../siteData/studio/PhysicsToy";
+import GenerativeWallpaper from "../../siteData/studio/GenerativeWallpaper";
+import { CODEPEN_GALLERY } from "../../siteData/studio/pens";
+import { CODEPEN_ENDPOINT } from "../../siteData/studio/codepen";
 
 function Studio() {
   const { projectName } = useParams();
@@ -15,17 +22,57 @@ function Studio() {
       key: "AudioVisualizerWireframe",
       title: AudioVisualizerWireframe.t,
       label: AudioVisualizerWireframe.l,
+      math: "Fourier DFT",
       blurb: "A circular FFT display built from synthetic sine waves. Swap one line for a real microphone.",
       ProjectClass: AudioVisualizerWireframe,
+    },
+    {
+      key: "GenerativeLogoTracer",
+      title: GenerativeLogoTracer.t,
+      label: GenerativeLogoTracer.l,
+      math: "Fourier DFT + Bézier",
+      blurb: "Author a shape as Bézier curves, then watch a chain of rotating circles redraw it. The 'circles' slider is Fourier compression you can see.",
+      ProjectClass: GenerativeLogoTracer,
+    },
+    {
+      key: "OrganicTerrainMap",
+      title: OrganicTerrainMap.t,
+      label: OrganicTerrainMap.l,
+      math: "Perlin + marching squares",
+      blurb: "Fractal noise becomes a tinted heightmap; marching squares traces clean contour lines you can export as SVG.",
+      ProjectClass: OrganicTerrainMap,
+    },
+    {
+      key: "ParticleConstellation",
+      title: ParticleConstellation.t,
+      label: ParticleConstellation.l,
+      math: "Phyllotaxis + Lerp + Perlin",
+      blurb: "Particles glide from chaos into a golden-angle lattice via eased Lerp, then breathe through a Perlin drift field.",
+      ProjectClass: ParticleConstellation,
+    },
+    {
+      key: "PhysicsToy",
+      title: PhysicsToy.t,
+      label: PhysicsToy.l,
+      math: "Orbital + Bounce + Collision",
+      blurb: "Gravity, wall bounce, and elastic collision sharing one loop. Zero gravity is billiards; crank it up for a solar system.",
+      ProjectClass: PhysicsToy,
+    },
+    {
+      key: "GenerativeWallpaper",
+      title: GenerativeWallpaper.t,
+      label: GenerativeWallpaper.l,
+      math: "Bézier + Perlin + color",
+      blurb: "Bézier petals varied by a Perlin field, clipped per cell so the pattern tiles seamlessly. Download a PNG for any CSS background.",
+      ProjectClass: GenerativeWallpaper,
     },
   ];
 
   // Handle redirect on initial load
   useEffect(() => {
-    if (!projectName && projects.length > 0) {
-      navigate(`/studio/${projects[0].label}`);
-    }
-  }, [projectName, navigate, projects]);
+    // No auto-redirect: a bare /studio shows the gallery landing.
+    if (!projectName) setActiveProject(null);
+  }, [projectName]);
 
   // Load project when URL changes
   useEffect(() => {
@@ -44,8 +91,12 @@ function Studio() {
     navigate(`/studio/${label}`);
   }
 
+  const activeIndex = projects.findIndex((p) => p.label === projectName);
+  const current = activeIndex >= 0 ? projects[activeIndex] : null;
+  const chips = (math: string) => math.split("+").map((c) => c.trim());
+
   return (
-    <section id="studio-page">
+    <section id="studio-page" className={current ? "in-workspace" : "in-gallery"}>
       <Helmet>
         <title>Build With It — Utilspalooza</title>
         <meta
@@ -55,61 +106,108 @@ function Studio() {
         <link rel="canonical" href="https://utilspalooza.com/studio" />
       </Helmet>
 
-      <div id="studio-container">
-        <aside id="studio-sidebar">
-          <h2>Build With It</h2>
-          <p className="sidebar-subtitle">From "how does it work?" to "how do I use it?"</p>
-
-          <div className="studio-intro">
-            <p>
-              The <strong>Examples</strong> section explains the math. This section shows you
-              how to wire that math into real code — each project is a small,
-              complete thing a developer might actually ship.
+      {!current ? (
+        /* ─── Gallery landing ─────────────────────────────────────────── */
+        <div id="studio-gallery">
+          <header className="gallery-hero">
+            <h1>Build With It</h1>
+            <p className="hero-tagline">
+              The <strong>Examples</strong> section explains the math. This is where you
+              use it. Every tile is a small, complete thing you could ship — watch it
+              run, read <em>why</em> it's built that way, then open it in CodePen and
+              make it yours.
             </p>
-            <div className="studio-how-to-use">
-              <div className="how-step"><span className="step-num">1</span><span>Watch the live demo on the canvas</span></div>
-              <div className="how-step"><span className="step-num">2</span><span>Read the <em>Design Decisions</em> panel → to understand the <em>why</em> behind each choice</span></div>
-              <div className="how-step"><span className="step-num">3</span><span>Hit <em>copy starter code</em> for a paste-ready starting point</span></div>
-            </div>
-          </div>
+          </header>
 
-          <h3 className="projects-label">Projects</h3>
-          <div className="projects-list">
-            {projects.length > 0 ? (
-              projects.map((project) => (
-                <div
+          <section className="gallery-section">
+            <h2 className="gallery-section-label">Projects</h2>
+            <p className="gallery-section-sub">Interactive demos that compose the site's math into something real.</p>
+            <div className="project-grid">
+              {projects.map((project) => (
+                <button
                   key={project.key}
-                  className={`project-item ${
-                    projectName === project.label ? "active" : ""
-                  }`}
+                  className="project-card"
                   onClick={() => clickHandler(project.label)}
                 >
-                  <div className="project-title">{project.title}</div>
-                </div>
-              ))
+                  <div className="card-chips">
+                    {chips(project.math).map((c) => (
+                      <span key={c} className="chip">{c}</span>
+                    ))}
+                  </div>
+                  <h3 className="card-title">{project.title}</h3>
+                  <p className="card-blurb">{project.blurb}</p>
+                  <span className="card-open">Open demo →</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="gallery-section">
+            <h2 className="gallery-section-label">Tinker in CodePen</h2>
+            <p className="gallery-section-sub">
+              Take any single animation apart. Each opens a complete, dependency-free
+              CodePen — same math, plain JS, no build step.
+            </p>
+            <div className="codepen-grid">
+              {CODEPEN_GALLERY.map((item) => (
+                // Real <form> + native submit button: a scripted form.submit() to
+                // target="_blank" gets blocked as a popup; a genuine click never does.
+                <form
+                  key={item.key}
+                  className="codepen-card"
+                  action={CODEPEN_ENDPOINT}
+                  method="POST"
+                  target="_blank"
+                >
+                  <input type="hidden" name="data" value={JSON.stringify(item.payload)} />
+                  <button type="submit" className="codepen-open-btn">
+                    <span className="codepen-item-title">{item.label} ↗</span>
+                    <span className="codepen-item-blurb">{item.blurb}</span>
+                  </button>
+                </form>
+              ))}
+            </div>
+          </section>
+        </div>
+      ) : (
+        /* ─── Focused workspace ───────────────────────────────────────── */
+        <div id="studio-workspace">
+          <header id="ws-header">
+            <button className="ws-back" onClick={() => navigate("/studio")}>← All projects</button>
+            <div className="ws-titleblock">
+              <div className="ws-titlerow">
+                <span className="ws-title">{current.title}</span>
+                <span className="ws-chips">
+                  {chips(current.math).map((c) => (
+                    <span key={c} className="chip">{c}</span>
+                  ))}
+                </span>
+              </div>
+              <p className="ws-blurb">{current.blurb}</p>
+            </div>
+            <nav className="ws-switcher" aria-label="Switch project">
+              {projects.map((p, i) => (
+                <button
+                  key={p.key}
+                  className={`ws-pill ${i === activeIndex ? "active" : ""}`}
+                  title={p.title}
+                  onClick={() => clickHandler(p.label)}
+                >
+                  {p.title}
+                </button>
+              ))}
+            </nav>
+          </header>
+
+          <div id="ws-canvas-host">
+            {activeProject ? (
+              <StudioCanvas activeProject={activeProject} siteData={{}} />
             ) : (
-              <p style={{ color: "#a0a080", fontSize: "12px" }}>No projects found</p>
+              <div style={{ padding: "20px", color: "#a0a080" }}>Loading…</div>
             )}
           </div>
-        </aside>
-
-        <main id="studio-content">
-          {(() => {
-            const project = projects.find(p => p.label === projectName);
-            return project ? (
-              <div id="studio-project-header">
-                <span id="studio-project-title">{project.title}</span>
-                <span id="studio-project-blurb">{project.blurb}</span>
-              </div>
-            ) : null;
-          })()}
-          {activeProject ? (
-            <StudioCanvas activeProject={activeProject} siteData={{}} />
-          ) : (
-            <div style={{ padding: "20px", color: "#a0a080" }}>Loading...</div>
-          )}
-        </main>
-      </div>
+        </div>
+      )}
     </section>
   );
 }
