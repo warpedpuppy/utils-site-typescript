@@ -1,4 +1,5 @@
 import Template from "../animations/animationTemplate";
+import { buildCodePenForm, CodePenPayload } from "./codepen";
 
 const DESIGN_NOTES_HTML = `
 <h4>Why circular?</h4>
@@ -199,31 +200,14 @@ document.getElementById('smooth').addEventListener('input', e => {
 
 loop();`;
 
-function openInCodePen() {
-  const data = JSON.stringify({
-    title: "Audio Visualizer Wireframe",
-    description: "Circular FFT display. Runs with synthetic data immediately — click 'start mic' to wire in a real microphone via Web Audio API.",
-    html: CODEPEN_HTML,
-    css: CODEPEN_CSS,
-    js: CODEPEN_JS,
-  });
-
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = "https://codepen.io/pen/define";
-  form.target = "_blank";
-  form.style.display = "none";
-
-  const input = document.createElement("input");
-  input.type = "hidden";
-  input.name = "data";
-  input.value = data;
-
-  form.appendChild(input);
-  document.body.appendChild(form);
-  form.submit();
-  setTimeout(() => document.body.removeChild(form), 500);
-}
+export const AUDIO_VISUALIZER_PEN: CodePenPayload = {
+  title: "Audio Visualizer Wireframe",
+  description:
+    "Circular FFT display. Runs with synthetic data immediately — click 'start mic' to wire in a real microphone via Web Audio API.",
+  html: CODEPEN_HTML,
+  css: CODEPEN_CSS,
+  js: CODEPEN_JS,
+};
 
 class AudioVisualizerWireframe extends Template {
   static t = "Audio Visualizer Wireframe";
@@ -372,8 +356,11 @@ class AudioVisualizerWireframe extends Template {
         <input type="range" id="avw-smooth" min="0" max="0.98" step="0.01" value="${this.smoothing}" style="width:70px">
         <span id="avw-smooth-val">${this.smoothing.toFixed(2)}</span>
       </label>
-      <button id="avw-codepen" style="${btnStyle}">open in CodePen ↗</button>
     `;
+
+    // Append the CodePen form as a real DOM element (not via innerHTML) so the
+    // large JSON payload is stored verbatim as a property — no attribute escaping.
+    panel.appendChild(buildCodePenForm(AUDIO_VISUALIZER_PEN, "open in CodePen ↗", btnStyle));
 
     this.cont.appendChild(panel);
 
@@ -389,8 +376,6 @@ class AudioVisualizerWireframe extends Template {
       const v = document.getElementById("avw-smooth-val");
       if (v) v.textContent = this.smoothing.toFixed(2);
     });
-
-    document.getElementById("avw-codepen")?.addEventListener("click", openInCodePen);
   }
 
   private injectNotes() {
