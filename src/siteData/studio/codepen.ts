@@ -16,6 +16,7 @@ export interface CodePenPayload {
   html: string;
   css: string;
   js: string;
+  editors?: string;
 }
 
 const CODEPEN_ENDPOINT = "https://codepen.io/pen/define";
