@@ -52,7 +52,10 @@ export function makeControlPanel(): HTMLDivElement {
   return panel;
 }
 
-export function makeButton(label: string, onClick: () => void): HTMLButtonElement {
+export function makeButton(
+  label: string,
+  onClick: () => void,
+): HTMLButtonElement {
   const b = document.createElement("button");
   b.textContent = label;
   b.style.cssText = STUDIO_BTN_STYLE;
@@ -72,11 +75,21 @@ export function makeSlider(opts: {
   format?: (v: number) => string;
   onChange: (v: number) => void;
 }): HTMLElement {
-  const { label, min, max, value, step, width = "84px", format, onChange } = opts;
+  const {
+    label,
+    min,
+    max,
+    value,
+    step,
+    width = "84px",
+    format,
+    onChange,
+  } = opts;
   const fmt = format ?? ((v: number) => String(v));
 
   const wrap = document.createElement("label");
-  wrap.style.cssText = "display:flex;gap:7px;align-items:center;white-space:nowrap;";
+  wrap.style.cssText =
+    "display:flex;gap:7px;align-items:center;white-space:nowrap;";
 
   const lbl = document.createElement("span");
   lbl.textContent = label;
@@ -118,7 +131,7 @@ export function createPerlin2(): (x: number, y: number) => number {
     const h = hash & 3;
     const u = h < 2 ? x : y;
     const v = h < 2 ? y : x;
-    return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
+    return (h & 1 ? -u : u) + (h & 2 ? -v : v);
   };
   return (x: number, y: number) => {
     const X = Math.floor(x) & 255;
@@ -132,7 +145,7 @@ export function createPerlin2(): (x: number, y: number) => number {
     return lerp(
       lerp(grad(perm[a], x, y), grad(perm[b], x - 1, y), u),
       lerp(grad(perm[a + 1], x, y - 1), grad(perm[b + 1], x - 1, y - 1), u),
-      v
+      v,
     );
   };
 }
@@ -146,7 +159,7 @@ export const easeInOut = (t: number) =>
 export function appendCodePenButton(
   panel: HTMLElement,
   payload: CodePenPayload,
-  label = "open in CodePen ↗"
+  label = "open in CodePen ↗",
 ): void {
   panel.appendChild(buildCodePenForm(payload, label, STUDIO_BTN_STYLE));
 }
