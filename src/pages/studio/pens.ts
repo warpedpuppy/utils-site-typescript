@@ -346,6 +346,7 @@ export interface CodePenGalleryItem {
 }
 
 export const CODEPEN_GALLERY: CodePenGalleryItem[] = [
+  ...EXAMPLE_PENS,
   {
     key: "phyllotaxis",
     label: "Phyllotaxis",
@@ -363,9 +364,8 @@ export const CODEPEN_GALLERY: CodePenGalleryItem[] = [
   {
     key: "audio-visualizer",
     label: "Audio Visualizer",
-    group: "Animations",
+    group: "Math & Physics",
     blurb: "Circular FFT display; one line away from a live mic.",
     payload: AUDIO_VISUALIZER_PEN,
   },
-  ...EXAMPLE_PENS,
 ];
