@@ -46,6 +46,7 @@ import { drawMoveToDestination } from "../../core-animations/MoveToDestination";
 import { drawPointTowards } from "../../core-animations/PointTowards";
 import { drawSineCurve } from "../../core-animations/SineCurve";
 import { drawDeMystifySineCosine } from "../../core-animations/DeMystifySineCosine";
+import { drawPointToCircleFunctionString } from "../../core-animations/PointToCircle";
 
 export interface ExamplePen {
   group: string;
@@ -939,8 +940,8 @@ draw();`;
 // ─────────────────────────────────────────────────────────────────────────────
 
 const POINT_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${pointToCircle.toString()}
+const POINT_CIRCLE_JS = `// ─── canonical draw function from core-animations ──────────────────────────
+${drawPointToCircleFunctionString}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -949,37 +950,10 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
-
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  let px = cx + Math.sin(Date.now() * 0.001) * 150;
-  let py = cy + Math.sin(Date.now() * 0.0008) * 150;
-
-  let hit = pointToCircle(px, py, cx, cy, 100);
-
-  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.arc(cx, cy, 100, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#f97316';
-  ctx.beginPath();
-  ctx.arc(px, py, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (hit) drawCollisionText(cx);
-
+  drawPointToCircle(ctx, canvas.width, canvas.height, Date.now());
   requestAnimationFrame(draw);
 }
 
