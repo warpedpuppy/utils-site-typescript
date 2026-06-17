@@ -181,7 +181,7 @@ function Studio() {
               </button>
             </form>
           </section>
-
+          {/* 
           <section className="gallery-section">
             <h2 className="gallery-section-label">Advanced</h2>
             <p className="gallery-section-sub">
@@ -208,7 +208,7 @@ function Studio() {
                 </button>
               ))}
             </div>
-          </section>
+          </section> */}
         </div>
       ) : (
         /* ─── Focused workspace ───────────────────────────────────────── */
