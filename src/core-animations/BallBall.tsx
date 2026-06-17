@@ -1,7 +1,7 @@
 import { Ball } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { BallToBallBounce as ballToBallBouncePhysics } from "../core-functions/BallToBallBounce";
-import { BallToBallBounce as ballToBallBounceFormula } from "../siteData/formulas/animation/BallToBallBounce";
+import { BallToBallBounce as ballToBallBounceFormula } from "../pages/createJSON/formulas/animation/BallToBallBounce";
 
 interface GradientBall extends Ball {
   h: number;

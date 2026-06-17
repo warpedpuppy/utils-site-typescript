@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { getPointOnLine as GetPointOnLineFunc } from "../core-functions/GetPointOnLine";
-import { GetPointOnLine as getPointOnLineFormula } from "../siteData/formulas/animation/GetPointOnLine";
+import { GetPointOnLine as getPointOnLineFormula } from "../pages/createJSON/formulas/animation/GetPointOnLine";
 
 function drawGetPointOnLine(
   ctx: any,

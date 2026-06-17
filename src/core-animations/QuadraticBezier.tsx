@@ -1,6 +1,6 @@
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { QuadraticBezier } from "../core-functions/QuadraticBezier";
-import { QuadraticBezier as quadraticBezierFormula } from "../siteData/formulas/animation/QuadraticBezier";
+import { QuadraticBezier as quadraticBezierFormula } from "../pages/createJSON/formulas/animation/QuadraticBezier";
 import { Point } from "../types/shapes";
 
 type HandleKey = "p0" | "p1" | "p2";

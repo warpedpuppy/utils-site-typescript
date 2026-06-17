@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { distribute } from "../core-functions/DistributeAroundCircle";
-import { DistributeAroundCircle as distributeFormula } from "../siteData/formulas/animation/DistributeAroundCircle";
+import { DistributeAroundCircle as distributeFormula } from "../pages/createJSON/formulas/animation/DistributeAroundCircle";
 
 function cosWave(startValue: number, differential: number, speed: number): number {
   const currentDate = new Date();

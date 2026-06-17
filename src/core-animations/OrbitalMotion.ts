@@ -1,6 +1,6 @@
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { FindPointAroundCircle } from "../core-functions/FindPointAroundCircle";
-import { SphereLighting } from "../siteData/formulas/animation/OrbitalMotion";
+import { SphereLighting } from "../pages/createJSON/formulas/animation/OrbitalMotion";
 
 // SphereLighting calculates the highlight position on a sphere given the orbiter and light source positions
 // (Implementation moved to formulas/animation/OrbitalMotion.ts to satisfy CollisionDetectionObject interface)

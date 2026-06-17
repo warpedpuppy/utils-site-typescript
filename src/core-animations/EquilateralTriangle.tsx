@@ -1,8 +1,8 @@
 import { Point } from "../types/shapes";
 import { GenericObject } from "../types/types";
 import { EquilateralTriangle as EquilateralTriangleFunc } from "../core-functions/EquilateralTriangle";
-import { EquilateralTriangle as equilateralTriangleFormula } from "../siteData/formulas/animation/EquilateralTriangle";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import { EquilateralTriangle as equilateralTriangleFormula } from "../pages/createJSON/formulas/animation/EquilateralTriangle";
+import AnimationBaseClass from "./AnimationBaseClass";
 
 function drawEquilateralTriangle(
   ctx: any,

@@ -1,6 +1,6 @@
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { Lerp as lerpFunction } from "../core-functions/Lerp";
-import { Lerp as lerpFormula } from "../siteData/formulas/animation/Lerp";
+import { Lerp as lerpFormula } from "../pages/createJSON/formulas/animation/Lerp";
 import { Point } from "../types/shapes";
 
 function drawLerp(

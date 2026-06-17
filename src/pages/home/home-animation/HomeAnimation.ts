@@ -1,5 +1,5 @@
 import { Point } from "../../../types/shapes";
-import AnimationBaseClass from "../../../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "../../../core-animations/AnimationBaseClass";
 class MoveObjectToDestinationPoint extends AnimationBaseClass {
   static t = "move object to changing point";
   static l = "move-to-changing-point";

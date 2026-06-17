@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { GetRotation } from "../core-functions/GetRotation";
-import { GetRotation as getRotationFormula } from "../siteData/formulas/animation/GetRotation";
+import { GetRotation as getRotationFormula } from "../pages/createJSON/formulas/animation/GetRotation";
 
 function pointsAroundCircle(
   circleCenter: Point,

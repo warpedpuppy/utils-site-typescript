@@ -1,5 +1,5 @@
 import { ReactNode, useCallback } from "react";
-import SiteData from "../siteData/SiteData";
+import SiteData from "../SiteData";
 import { Nullable } from "../types/types";
 import { useLocation } from "react-router-dom";
 import CheckListCheckbox from "./CheckListCheckbox";

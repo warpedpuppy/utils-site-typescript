@@ -1,5 +1,5 @@
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
-import { Easing as easingFormula } from "../siteData/formulas/animation/Easing";
+import AnimationBaseClass from "./AnimationBaseClass";
+import { Easing as easingFormula } from "../pages/createJSON/formulas/animation/Easing";
 
 // ── Easing helpers ────────────────────────────────────────────────────────────
 

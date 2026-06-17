@@ -3,14 +3,14 @@ import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate } from "react-router-dom";
 import "./Studio.scss";
 import StudioCanvas from "./StudioCanvas";
-import AudioVisualizerWireframe from "../../siteData/studio/AudioVisualizerWireframe";
-import GenerativeLogoTracer from "../../siteData/studio/GenerativeLogoTracer";
-import OrganicTerrainMap from "../../siteData/studio/OrganicTerrainMap";
-import ParticleConstellation from "../../siteData/studio/ParticleConstellation";
-import PhysicsToy from "../../siteData/studio/PhysicsToy";
-import GenerativeWallpaper from "../../siteData/studio/GenerativeWallpaper";
-import { CODEPEN_GALLERY } from "../../siteData/studio/pens";
-import { CODEPEN_ENDPOINT } from "../../siteData/studio/codepen";
+import AudioVisualizerWireframe from "./AudioVisualizerWireframe";
+import GenerativeLogoTracer from "./GenerativeLogoTracer";
+import OrganicTerrainMap from "./OrganicTerrainMap";
+import ParticleConstellation from "./ParticleConstellation";
+import PhysicsToy from "./PhysicsToy";
+import GenerativeWallpaper from "./GenerativeWallpaper";
+import { CODEPEN_GALLERY } from "./pens";
+import { CODEPEN_ENDPOINT } from "./codepen";
 
 const projects = [
   {

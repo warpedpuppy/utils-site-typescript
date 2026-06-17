@@ -7,7 +7,7 @@ import JSONContent from "./createJSONComponents/JSONContent";
 
 import CreateChecklists from "../../services/CreateChecklists";
 import { InterfaceMap } from "../../types/shapes";
-import SiteData from "../../siteData/SiteData";
+import SiteData from "../../SiteData";
 import { downloadTsExport, downloadJsExport, INTERFACE_ORDER } from "./createJSONUtils/createJSONUtils";
 
 function getSelectionCount(): number {

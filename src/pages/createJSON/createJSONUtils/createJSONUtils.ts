@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import LocalStorageManager from "../../../services/LocalStorageManager";
-import SiteData from "../../../siteData/SiteData";
+import SiteData from "../../../SiteData";
 import { InterfaceMap } from "../../../types/shapes";
 
 export function CreateJson() {
