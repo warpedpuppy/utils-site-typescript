@@ -5,6 +5,7 @@ import { LineLine as LineLineImported } from "../../../../../core-functions/Coll
 export const LineLine: CollisionDetectionObject = {
   keyFunction: LineLineImported,
   dependencies: [],
+  interfaces: ["Line"],
   functionString: `
 function LineLine(line1: Line, line2: Line) {
   let uA =

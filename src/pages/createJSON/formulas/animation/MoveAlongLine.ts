@@ -19,6 +19,7 @@ export const MoveAlongLine: CollisionDetectionObject = {
     return { x, y };
   },
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function MoveAlongLine(
     origin: Point,

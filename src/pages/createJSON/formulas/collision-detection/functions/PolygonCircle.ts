@@ -7,6 +7,7 @@ import { PolygonCircle as PolygonCircleImported } from "../../../../../core-func
 export const PolygonCircle: CollisionDetectionObject = {
   keyFunction: PolygonCircleImported,
   dependencies: [LineCircle.functionString, PolygonPoint.functionString],
+  interfaces: ["Circle", "Polygon"],
   functionString: `
 export function PolygonCircle(polygon: Polygon, circle: Circle) {
   let next = 0;

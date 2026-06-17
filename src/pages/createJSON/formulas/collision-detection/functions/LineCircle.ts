@@ -12,6 +12,7 @@ export const LineCircle: CollisionDetectionObject = {
     LinePoint.functionString,
     LineLength.functionString,
   ],
+  interfaces: ["Circle", "Line"],
   functionString: `
   function LineCircle(line: Line, circle: Circle) {
     let inside1 = PointCircle(line.startPoint, circle);

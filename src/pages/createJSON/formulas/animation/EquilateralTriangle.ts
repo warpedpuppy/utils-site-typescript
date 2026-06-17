@@ -31,6 +31,7 @@ export const EquilateralTriangle: CollisionDetectionObject = {
     return { point1, point2, point3 };
   },
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function EquilateralTriangle(
     radius: number,

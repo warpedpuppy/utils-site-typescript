@@ -8,6 +8,7 @@ import { getPointOnLine } from "../../../../core-functions/GetPointOnLine";
 export const GetPointOnLine: CollisionDetectionObject = {
   keyFunction: getPointOnLine,
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function getPointOnLine(
     startPoint: Point,

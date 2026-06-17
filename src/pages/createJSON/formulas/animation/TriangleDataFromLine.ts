@@ -30,6 +30,7 @@ function calculateTriangleData(startPoint: Point, endPoint: Point) {
 export const TriangleDataFromLine: CollisionDetectionObject = {
   keyFunction: calculateTriangleData,
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function calculateTriangleData(startPoint: Point, endPoint: Point) {
     let hypotenuse = LineLength({ startPoint, endPoint });

@@ -5,6 +5,7 @@ import { PolygonPoint as PolygonPointImported } from "../../../../../core-functi
 export const PolygonPoint: CollisionDetectionObject = {
   keyFunction: PolygonPointImported,
   dependencies: [],
+  interfaces: ["Point", "Polygon"],
   functionString: `
 function PolygonPoint(polygon: Polygon, point: Point) {
   let collision = false;
