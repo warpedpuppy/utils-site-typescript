@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import ExamplesUtils from "../../pages/createJSON/examples/ExamplesUtils";
+import ExamplesUtils from "../../pages/examples/ExamplesUtils";
 import "./PrimaryCanvas.scss";
 
 import CanvasContainer from "./CanvasContainer";

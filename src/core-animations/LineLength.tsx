@@ -1,8 +1,8 @@
 import { Point } from "../types/shapes";
 import { Nullable } from "../types/types";
 import { LineLength as LineLengthFunc } from "../core-functions/LineLength";
-import { LineLength as lineLengthFormula } from "../siteData/formulas/animation/LineLength";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import { LineLength as lineLengthFormula } from "../pages/createJSON/formulas/animation/LineLength";
+import AnimationBaseClass from "./AnimationBaseClass";
 
 function drawLineLength(
   ctx: any,

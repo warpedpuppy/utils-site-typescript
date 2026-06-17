@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { MoveAlongLine } from "../core-functions/MoveAlongLine";
-import { MoveAlongLine as moveAlongLineFormula } from "../siteData/formulas/animation/MoveAlongLine";
+import { MoveAlongLine as moveAlongLineFormula } from "../pages/createJSON/formulas/animation/MoveAlongLine";
 import { GetRotation } from "../core-functions/GetRotation";
 
 function drawMoveToDestination(

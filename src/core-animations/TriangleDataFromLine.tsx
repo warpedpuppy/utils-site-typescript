@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { LineLength as LineLengthFunc } from "../core-functions/LineLength";
-import { TriangleDataFromLine as triangleDataFromLineFormula } from "../siteData/formulas/animation/TriangleDataFromLine";
+import { TriangleDataFromLine as triangleDataFromLineFormula } from "../pages/createJSON/formulas/animation/TriangleDataFromLine";
 
 function calculateTriangleData(startPoint: Point, endPoint: Point) {
   let hypotenuse = LineLengthFunc({ startPoint, endPoint });

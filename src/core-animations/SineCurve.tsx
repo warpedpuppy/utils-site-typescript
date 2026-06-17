@@ -1,6 +1,6 @@
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { SineCurve } from "../core-functions/SineCurve";
-import { SineCurve as sineCurveFormula } from "../siteData/formulas/animation/SineCurve";
+import { SineCurve as sineCurveFormula } from "../pages/createJSON/formulas/animation/SineCurve";
 
 function drawSineCurve(
   ctx: any,

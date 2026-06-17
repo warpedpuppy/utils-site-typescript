@@ -1,8 +1,8 @@
 import { Polygon } from "../types/shapes";
 import { GenericObject } from "../types/types";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { DrawStar } from "../core-functions/Star";
-import { StarObject as starFormula } from "../siteData/formulas/animation/Star";
+import { StarObject as starFormula } from "../pages/createJSON/formulas/animation/Star";
 
 function drawStar(ctx: any, star: any, halfWidth: any, halfHeight: any): void {
   ctx.strokeStyle = "rgba(255,255,255,0.85)";

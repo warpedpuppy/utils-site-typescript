@@ -1,7 +1,7 @@
 import { GenericObject } from "../types/types";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { CircleFromThreePoints as CircleFromThreePointsFunc } from "../core-functions/CircleFromThreePoints";
-import { CircleFromThreePoints as circleFromThreePointsFormula } from "../siteData/formulas/animation/CircleFromThreePoints";
+import { CircleFromThreePoints as circleFromThreePointsFormula } from "../pages/createJSON/formulas/animation/CircleFromThreePoints";
 
 function drawCircleFromThreePoints(
   ctx: any,

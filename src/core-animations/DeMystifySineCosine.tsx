@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { FindPointAroundCircle } from "../core-functions/FindPointAroundCircle";
-import { FindPointAroundCircle as findPointAroundCircleFormula } from "../siteData/formulas/animation/FindPointAroundCircle";
+import { FindPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
 import { SineCurve } from "../core-functions/SineCurve";
 
 function distanceBetweenPoints(startPoint: Point, endPoint: Point): number {

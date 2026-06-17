@@ -1,7 +1,7 @@
 import { Polygon } from "../types/shapes";
-import AnimationBaseClass from "../siteData/animations/AnimationBaseClass";
+import AnimationBaseClass from "./AnimationBaseClass";
 import { CreateRect as Rectangle } from "../core-functions/Rectangle";
-import { RectangleObject as rectangleFormula } from "../siteData/formulas/animation/Rectangle";
+import { RectangleObject as rectangleFormula } from "../pages/createJSON/formulas/animation/Rectangle";
 
 function drawPolygon(ctx: any, rect: any, halfWidth: any, halfHeight: any): void {
   ctx.strokeStyle = "rgba(255,255,255,0.85)";

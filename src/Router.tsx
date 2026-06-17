@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import OuterShell from "./pages/OuterShell";
 import Home from "./pages/home/Home";
 import About from "./pages/about/About";
-import Examples from "./pages/createJSON/examples/Examples";
+import Examples from "./pages/examples/Examples";
 import CreateJSON from "./pages/createJSON/CreateJSON";
 import Studio from "./pages/studio/Studio";
 
