@@ -20,6 +20,7 @@ export const DistributeAroundCircle: CollisionDetectionObject = {
     return returnArray;
   },
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function distribute(
     circleCenter: Point,

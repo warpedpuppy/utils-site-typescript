@@ -14,6 +14,7 @@ export const FindPointAroundCircle: CollisionDetectionObject = {
     return { x, y };
   },
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function FindPointAroundCircle(
     circleCenter: Point,

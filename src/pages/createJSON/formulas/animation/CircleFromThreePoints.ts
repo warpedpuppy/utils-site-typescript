@@ -45,6 +45,7 @@ export const CircleFromThreePoints: CollisionDetectionObject = {
     return { radius, center: { x, y } };
   },
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function CircleFromThreePoints(
     point1: Point,

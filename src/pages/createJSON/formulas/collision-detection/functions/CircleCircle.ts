@@ -5,6 +5,7 @@ import { CircleCircle as CircleCircleImported } from "../../../../../core-functi
 export const CircleCircle: CollisionDetectionObject = {
   keyFunction: CircleCircleImported,
   dependencies: [],
+  interfaces: ["Circle"],
   functionString: `
 export function CircleCircle(circle1: Circle, circle2: Circle) {
   let distX = circle1.x - circle2.x;

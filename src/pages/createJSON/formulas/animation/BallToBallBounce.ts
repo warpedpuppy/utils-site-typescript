@@ -27,6 +27,7 @@ export const BallToBallBounce: CollisionDetectionObject = {
     }
   },
   dependencies: [],
+  interfaces: ["Ball"],
   functionString: `
   function BallToBallBounce(
     ball1: Ball,

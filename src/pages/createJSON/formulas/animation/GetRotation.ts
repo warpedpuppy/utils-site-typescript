@@ -12,6 +12,7 @@ export const GetRotation: CollisionDetectionObject = {
     );
   },
   dependencies: [],
+  interfaces: ["Point"],
   functionString: `
   function GetRotation(
     currentPoint: Point,

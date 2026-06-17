@@ -12,6 +12,7 @@ export const PolygonPolygon: CollisionDetectionObject = {
     PolygonLine.functionString,
     LineLine.functionString,
   ],
+  interfaces: ["Polygon"],
   functionString: `
 function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   let next = 0;

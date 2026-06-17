@@ -6,6 +6,7 @@ import { PolygonLine as PolygonLineImported } from "../../../../../core-function
 export const PolygonLine: CollisionDetectionObject = {
   keyFunction: PolygonLineImported,
   dependencies: [LineLine.functionString],
+  interfaces: ["Line", "Polygon"],
   functionString: `
 function PolygonLine(polygon: Polygon, line: Line) {
   

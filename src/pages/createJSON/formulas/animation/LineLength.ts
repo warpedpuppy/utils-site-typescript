@@ -9,6 +9,7 @@ export const LineLength: CollisionDetectionObject = {
     return Math.sqrt(a * a + b * b);
   },
   dependencies: [],
+  interfaces: ["Line"],
   functionString: `
 function LineLength(line: Line) {
   const { startPoint, endPoint } = line;

@@ -83,8 +83,6 @@ canvas { display: block; width: 100vw; height: 100vh; }
 const BALL_BOUNCE_HTML = `<canvas id="canvas"></canvas>`;
 const BALL_BOUNCE_JS = `${BallBounce.keyFunction.toString()}
 
-${drawBallBounce.toString()}
-
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -105,7 +103,46 @@ function init() {
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawBallBounce(ctx, ball, { width: canvas.width, height: canvas.height });
+
+  BallBounce(ball, { width: canvas.width, height: canvas.height });
+
+  // ── Shadow on the floor ────────────────────────────────────────────────
+  const maxDist = canvas.height - ball.radius;
+  const distFrac = Math.max(0, 1 - (canvas.height - ball.radius - ball.y) / maxDist);
+  const shadowAlpha = distFrac * 0.45;
+  const shadowRx = ball.radius * (0.7 + distFrac * 0.8);
+  const shadowRy = ball.radius * 0.22;
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,' + shadowAlpha + ')';
+  ctx.beginPath();
+  ctx.ellipse(
+    ball.x,
+    canvas.height - 3,
+    Math.max(shadowRx, 4),
+    Math.max(shadowRy, 2),
+    0, 0, Math.PI * 2
+  );
+  ctx.fill();
+  ctx.restore();
+
+  // ── Ball with radial gradient ──────────────────────────────────────────
+  const gr = ctx.createRadialGradient(
+    ball.x - ball.radius * 0.32,
+    ball.y - ball.radius * 0.32,
+    0,
+    ball.x,
+    ball.y,
+    ball.radius
+  );
+  gr.addColorStop(0, '#c7d2fe');
+  gr.addColorStop(0.55, '#818cf8');
+  gr.addColorStop(1, '#3730a3');
+
+  ctx.fillStyle = gr;
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fill();
 
   requestAnimationFrame(draw);
 }
@@ -117,8 +154,6 @@ draw();`;
 const BALLS_BOUNCING_HTML = `<canvas id="canvas"></canvas>`;
 const BALLS_BOUNCING_JS = `${BallToBallBounce.keyFunction.toString()}
 
-${drawBallBall.toString()}
-
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -129,7 +164,6 @@ resize();
 // ─── state ───────────────────────────────────────────────────────────────────
 function spawnBalls() {
   let n = Math.max(5, Math.floor(canvas.width * canvas.height / 20000));
-  const COLORS = ['#818cf8', '#a78bfa', '#c4b5fd', '#6366f1', '#8b5cf6', '#7c3aed'];
   return Array.from({ length: n }, (_, i) => {
     let radius = Math.random() * 40 + 10;
     return {
@@ -146,11 +180,59 @@ function spawnBalls() {
 }
 
 let balls = spawnBalls();
+const SPEED_LIMIT = 5;
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawBallBall(ctx, balls, canvas.width, canvas.height);
+
+  balls.forEach((ball1) => {
+    ball1.x += ball1.vx;
+    ball1.y += ball1.vy;
+
+    const gr = ctx.createRadialGradient(
+      ball1.x - ball1.radius * 0.32,
+      ball1.y - ball1.radius * 0.32,
+      0,
+      ball1.x,
+      ball1.y,
+      ball1.radius
+    );
+    gr.addColorStop(0, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + Math.min(95, ball1.l + 25) + '%)');
+    gr.addColorStop(0.55, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + ball1.l + '%)');
+    gr.addColorStop(1, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + Math.max(5, ball1.l - 25) + '%)');
+
+    ctx.fillStyle = gr;
+    ctx.beginPath();
+    ctx.arc(ball1.x, ball1.y, ball1.radius, 0, 2 * Math.PI);
+    ctx.fill();
+
+    balls.forEach((ball2) => {
+      BallToBallBounce(ball1, ball2);
+    });
+
+    // Keep on screen
+    if (ball1.y > canvas.height - ball1.radius) {
+      ball1.y = canvas.height - ball1.radius;
+      ball1.vy *= -1;
+    }
+    if (ball1.y < ball1.radius) {
+      ball1.y = ball1.radius;
+      ball1.vy *= -1;
+    }
+    if (ball1.x > canvas.width - ball1.radius) {
+      ball1.x = canvas.width - ball1.radius;
+      ball1.vx *= -1;
+    }
+    if (ball1.x < ball1.radius) {
+      ball1.x = ball1.radius;
+      ball1.vx *= -1;
+    }
+
+    // Impose speed limit
+    if (ball1.vx > SPEED_LIMIT) ball1.vx = SPEED_LIMIT;
+    if (ball1.vy > SPEED_LIMIT) ball1.vy = SPEED_LIMIT;
+  });
 
   requestAnimationFrame(draw);
 }
@@ -170,8 +252,8 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let orbiter = { x: 0, y: 0, vx: 0, vy: 0, color: '#818cf8' };
-let sun = { x: 0, y: 0, mass: 100, radius: 20, color: '#fcd34d' };
+let orbiter = { x: 0, y: 0, vx: 0, vy: 0 };
+let sun = { x: 0, y: 0, mass: 100, radius: 60 };
 
 function init() {
   sun.x = canvas.width / 2;
@@ -188,21 +270,54 @@ function draw() {
 
   gravitationalStep(orbiter, sun);
 
-  ctx.fillStyle = sun.color;
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, sun.radius, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = orbiter.color;
-  ctx.beginPath();
-  ctx.arc(orbiter.x, orbiter.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.2)';
+  // Faint orbit circle
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.arc(sun.x, sun.y, 150, 0, Math.PI * 2);
   ctx.stroke();
+
+  // Sun with radial gradient
+  const sunGr = ctx.createRadialGradient(sun.x, sun.y, 0, sun.x, sun.y, sun.radius);
+  sunGr.addColorStop(0, '#fff7a1');
+  sunGr.addColorStop(0.5, '#fde047');
+  sunGr.addColorStop(0.8, '#f97316');
+  sunGr.addColorStop(1, '#7c2d12');
+
+  ctx.fillStyle = sunGr;
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, sun.radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Sun corona glow ring
+  ctx.strokeStyle = 'rgba(253, 224, 71, 0.3)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, sun.radius + 12, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Orbiter with motion-aware lighting
+  const dx = orbiter.x - sun.x;
+  const dy = orbiter.y - sun.y;
+  const highlightX = orbiter.x - dx * 0.15;
+  const highlightY = orbiter.y - dy * 0.15;
+
+  const orbiterGr = ctx.createRadialGradient(
+    highlightX,
+    highlightY,
+    0,
+    orbiter.x,
+    orbiter.y,
+    22
+  );
+  orbiterGr.addColorStop(0, '#bfdbfe');
+  orbiterGr.addColorStop(0.5, '#3b82f6');
+  orbiterGr.addColorStop(1, '#1e1b4b');
+
+  ctx.fillStyle = orbiterGr;
+  ctx.beginPath();
+  ctx.arc(orbiter.x, orbiter.y, 22, 0, Math.PI * 2);
+  ctx.fill();
 
   requestAnimationFrame(draw);
 }
@@ -229,7 +344,7 @@ resize();
 // ─── state ───────────────────────────────────────────────────────────────────
 let target = { x: 0, y: 0 };
 let follower = { x: 0, y: 0 };
-let lerpFactor = 0.05;
+let lerpFactor = 0.08;
 
 function init() {
   target.x = canvas.width / 2 + 100;
@@ -258,23 +373,34 @@ init();
 draw();`;
 
 // ── Easing Functions ────────────────────────────────────────────────────────
-const EASING_HTML = `<canvas id="canvas"></canvas>
-<div id="controls">
-  <button id="reset">Reset</button>
-  <label>easing: <select id="easing">
-    <option value="linear">Linear</option>
-    <option value="easeIn">Ease In</option>
-    <option value="easeOut">Ease Out</option>
-    <option value="easeInOut">Ease InOut</option>
-  </select></label>
-</div>`;
-const EASING_JS = `${linear.toString()}
-${easeIn.toString()}
-${easeOut.toString()}
-${easeInOut.toString()}
-const easingFuncs = { linear, easeIn, easeOut, easeInOut };
+const EASING_HTML = `<canvas id="canvas"></canvas>`;
+const EASING_JS = `// ─── easing functions ──────────────────────────────────────────────────────
+const linear = (t) => t;
+const easeInQuad = (t) => t * t;
+const easeOutQuad = (t) => 1 - (1 - t) * (1 - t);
+const easeInOutQuad = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const easeOutElastic = (t) => {
+  const c5 = (2 * Math.PI) / 4.5;
+  return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c5) + 1;
+};
+const easeOutBounce = (t) => {
+  const n1 = 7.5625, d1 = 2.75;
+  if (t < 1 / d1) return n1 * t * t;
+  else if (t < 2 / d1) return n1 * (t -= 1.5 / d1) * t + 0.75;
+  else if (t < 2.5 / d1) return n1 * (t -= 2.25 / d1) * t + 0.9375;
+  else return n1 * (t -= 2.625 / d1) * t + 0.984375;
+};
 
-${drawEasing.toString()}
+const PERIOD_MS = 2800;
+const PAUSE_MS = 500;
+const TRACKS = [
+  { name: 'linear', color: '#94a3b8', fn: linear },
+  { name: 'ease-in-quad', color: '#60a5fa', fn: easeInQuad },
+  { name: 'ease-out-quad', color: '#34d399', fn: easeOutQuad },
+  { name: 'ease-in-out-quad', color: '#a78bfa', fn: easeInOutQuad },
+  { name: 'ease-out-elastic', color: '#f472b6', fn: easeOutElastic },
+  { name: 'ease-out-bounce', color: '#fb923c', fn: easeOutBounce }
+];
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -283,44 +409,50 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-// ─── state ───────────────────────────────────────────────────────────────────
-let easingMode = 'easeInOut';
-let startTime = Date.now();
-const duration = 2000;
-
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let elapsed = (Date.now() - startTime) % (duration * 2);
-  let t = (elapsed % duration) / duration;
-  if (elapsed > duration) t = 1 - t;
+  let elapsed = Date.now() % (PERIOD_MS + PAUSE_MS);
+  let t = elapsed < PERIOD_MS ? elapsed / PERIOD_MS : 1;
 
-  let easeFunc = easingFuncs[easingMode];
-  let eased = easeFunc(t);
+  TRACKS.forEach((track, idx) => {
+    const trackY = (idx + 1) * (canvas.height / (TRACKS.length + 1));
+    const ballR = Math.max(4, canvas.height / (TRACKS.length + 1) * 0.3);
+    const eased = track.fn(t);
+    const x = canvas.width * 0.1 + eased * (canvas.width * 0.8);
 
-  drawEasing(ctx, canvas.width, canvas.height, t, eased);
+    // Draw glow ring
+    ctx.strokeStyle = track.color;
+    ctx.globalAlpha = 0.3;
+    ctx.lineWidth = ballR;
+    ctx.beginPath();
+    ctx.arc(x, trackY, ballR * 1.5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Draw ball
+    ctx.fillStyle = track.color;
+    ctx.beginPath();
+    ctx.arc(x, trackY, ballR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw track name right-aligned
+    ctx.font = '11px monospace';
+    ctx.fillStyle = track.color;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(track.name, canvas.width * 0.95, trackY);
+  });
 
   requestAnimationFrame(draw);
 }
-
-document.getElementById('easing').addEventListener('change', e => {
-  easingMode = e.target.value;
-});
-document.getElementById('reset').addEventListener('click', () => {
-  startTime = Date.now();
-});
 
 draw();`;
 
 // ── Quadratic Bézier ────────────────────────────────────────────────────────
-const QUADRATIC_BEZIER_HTML = `<canvas id="canvas"></canvas>
-<div id="controls">
-  <label>t: <input type="range" id="t" min="0" max="100" step="1" value="50"></label>
-</div>`;
+const QUADRATIC_BEZIER_HTML = `<canvas id="canvas"></canvas>`;
 const QUADRATIC_BEZIER_JS = `${QuadraticBezier.keyFunction.toString()}
-
-${drawQuadraticBezier.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -330,23 +462,99 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let t = 0.5;
+const HANDLE_RADIUS = 14;
+const HIT_SLOP = 6;
+let p0 = { x: canvas.width * 0.2, y: canvas.height * 0.7 };
+let p1 = { x: canvas.width * 0.5, y: canvas.height * 0.2 };
+let p2 = { x: canvas.width * 0.8, y: canvas.height * 0.7 };
+let draggingPoint = null;
+
+function pointDistance(p1, p2) {
+  const dx = p2.x - p1.x, dy = p2.y - p1.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let p0 = { x: canvas.width * 0.2, y: canvas.height * 0.7 };
-  let p1 = { x: canvas.width * 0.5, y: canvas.height * 0.2 };
-  let p2 = { x: canvas.width * 0.8, y: canvas.height * 0.7 };
+  // Dashed control polygon
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath();
+  ctx.moveTo(p0.x, p0.y);
+  ctx.lineTo(p1.x, p1.y);
+  ctx.lineTo(p2.x, p2.y);
+  ctx.stroke();
+  ctx.setLineDash([]);
 
-  drawQuadraticBezier(ctx, canvas.width, canvas.height, p0, p1, p2, t);
+  // Draw Bézier curve (100 steps)
+  ctx.strokeStyle = '#818cf8';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (let i = 0; i <= 100; i++) {
+    const t = i / 100;
+    const pt = QuadraticBezier(t, p0, p1, p2);
+    if (i === 0) ctx.moveTo(pt.x, pt.y);
+    else ctx.lineTo(pt.x, pt.y);
+  }
+  ctx.stroke();
+
+  // Oscillating dot
+  const dotT = (Math.sin(Date.now() * 0.003) + 1) / 2;
+  const dotPt = QuadraticBezier(dotT, p0, p1, p2);
+  ctx.fillStyle = '#f97316';
+  ctx.beginPath();
+  ctx.arc(dotPt.x, dotPt.y, 7, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw control points
+  const points = [
+    { pt: p0, color: '#34d399', label: 'P0' },
+    { pt: p1, color: '#f472b6', label: 'P1' },
+    { pt: p2, color: '#34d399', label: 'P2' }
+  ];
+
+  points.forEach(({ pt, color, label }) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, HANDLE_RADIUS, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#0a0a0f';
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, pt.x, pt.y);
+  });
 
   requestAnimationFrame(draw);
 }
 
-document.getElementById('t').addEventListener('input', e => {
-  t = parseInt(e.target.value) / 100;
+canvas.addEventListener('pointerdown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  if (pointDistance({ x: mx, y: my }, p0) < HANDLE_RADIUS + HIT_SLOP) {
+    draggingPoint = p0;
+  } else if (pointDistance({ x: mx, y: my }, p1) < HANDLE_RADIUS + HIT_SLOP) {
+    draggingPoint = p1;
+  } else if (pointDistance({ x: mx, y: my }, p2) < HANDLE_RADIUS + HIT_SLOP) {
+    draggingPoint = p2;
+  }
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (!draggingPoint) return;
+  const rect = canvas.getBoundingClientRect();
+  draggingPoint.x = e.clientX - rect.left;
+  draggingPoint.y = e.clientY - rect.top;
+});
+
+canvas.addEventListener('pointerup', () => {
+  draggingPoint = null;
 });
 
 draw();`;
@@ -354,12 +562,14 @@ draw();`;
 // ── Find Points on a Circle ─────────────────────────────────────────────────
 const FIND_POINTS_CIRCLE_HTML = `<canvas id="canvas"></canvas>
 <div id="controls">
-  <label>points: <input type="range" id="points" min="3" max="20" step="1" value="8"></label>
-  <label>radius: <input type="range" id="radius" min="30" max="150" step="10" value="100"></label>
+  <label>points: <input type="range" id="points" min="5" max="100" step="5" value="20"></label>
 </div>`;
 const FIND_POINTS_CIRCLE_JS = `${DistributeAroundCircle.keyFunction.toString()}
 
-${drawDistributeAroundCircle.toString()}
+// ─── cosWave helper ─────────────────────────────────────────────────────────
+function cosWave(s, d, sp) {
+  return s + Math.cos(Date.now() * sp) * d;
+}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -369,8 +579,7 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let numPoints = 8;
-let radius = 100;
+let numPoints = 20;
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -378,7 +587,28 @@ function draw() {
 
   let cx = canvas.width / 2, cy = canvas.height / 2;
 
-  drawDistributeAroundCircle(ctx, { x: cx, y: cy }, radius, numPoints);
+  // Oscillating circle radius
+  let radius = cosWave(100, 100, 0.001);
+
+  // Draw circle
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Get points around circle
+  let points = DistributeAroundCircle({ x: cx, y: cy }, radius, numPoints);
+
+  // Draw lines from center to each point
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1;
+  points.forEach((pt) => {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(pt.x, pt.y);
+    ctx.stroke();
+  });
 
   requestAnimationFrame(draw);
 }
@@ -386,17 +616,35 @@ function draw() {
 document.getElementById('points').addEventListener('input', e => {
   numPoints = parseInt(e.target.value);
 });
-document.getElementById('radius').addEventListener('input', e => {
-  radius = parseInt(e.target.value);
-});
 
 draw();`;
 
 // ── Move Object to Changing Point ───────────────────────────────────────────
 const MOVE_TO_DESTINATION_HTML = `<canvas id="canvas"></canvas>`;
-const MOVE_TO_DESTINATION_JS = `${moveToward.toString()}
+const MOVE_TO_DESTINATION_JS = `// ─── moveToward function ───────────────────────────────────────────────────
+function moveToward(obj, dest, speed) {
+  let dx = dest.x - obj.x, dy = dest.y - obj.y;
+  let dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist > speed) { obj.x += (dx / dist) * speed; obj.y += (dy / dist) * speed; }
+  else { obj.x = dest.x; obj.y = dest.y; }
+  return Math.atan2(dy, dx);
+}
 
-${drawMoveToDestination.toString()}
+// ─── drawArrow helper ───────────────────────────────────────────────────────
+function drawArrow(ctx, x, y, angle, size, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(size, 0);
+  ctx.lineTo(-size, size * 0.6);
+  ctx.lineTo(-size * 0.3, 0);
+  ctx.lineTo(-size, -size * 0.6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -416,7 +664,16 @@ function draw() {
   dest.x = canvas.width / 2 + Math.sin(Date.now() * 0.0005) * 150;
   dest.y = canvas.height / 2 + Math.cos(Date.now() * 0.0003) * 100;
 
-  drawMoveToDestination(ctx, obj, dest, canvas.width, canvas.height);
+  const angle = moveToward(obj, dest, 2);
+
+  // Draw moving target (green)
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath();
+  ctx.arc(dest.x, dest.y, 8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw arrow pointing toward target
+  drawArrow(ctx, obj.x, obj.y, angle, 12, '#f97316');
 
   requestAnimationFrame(draw);
 }
@@ -427,7 +684,21 @@ draw();`;
 const POINT_TOWARDS_HTML = `<canvas id="canvas"></canvas>`;
 const POINT_TOWARDS_JS = `${GetRotation.keyFunction.toString()}
 
-${drawPointTowards.toString()}
+// ─── drawArrow helper ───────────────────────────────────────────────────────
+function drawArrow(ctx, x, y, angle, size, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(size, 0);
+  ctx.lineTo(-size, size * 0.6);
+  ctx.lineTo(-size * 0.3, 0);
+  ctx.lineTo(-size, -size * 0.6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -437,16 +708,52 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let pointer = { x: canvas.width * 0.2, y: canvas.height * 0.5 };
-let target = { x: canvas.width * 0.8, y: canvas.height * 0.5 };
+let pointer = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
+let target = { x: 0, y: 0 };
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  target.y = canvas.height / 2 + Math.sin(Date.now() * 0.0005) * 80;
+  // Orbiting target
+  let t = Date.now() * 0.001;
+  let cx = canvas.width / 2, cy = canvas.height / 2;
+  for (let i = 0; i < 360; i += 6) {
+    const angle = i * Math.PI / 180;
+    target.x = cx + Math.cos(angle) * 200;
+    target.y = cy + Math.sin(angle) * 200;
+  }
+  target.x = cx + Math.cos(t) * 200;
+  target.y = cy + Math.sin(t) * 200;
 
-  drawPointTowards(ctx, pointer, target, canvas.width, canvas.height);
+  // Draw circle
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 200, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Draw target point
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath();
+  ctx.arc(target.x, target.y, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw crosshair at center
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - 20, cy);
+  ctx.lineTo(cx + 20, cy);
+  ctx.moveTo(cx, cy - 20);
+  ctx.lineTo(cx, cy + 20);
+  ctx.stroke();
+
+  // Get rotation toward target
+  const angle = GetRotation(pointer, target);
+
+  // Draw arrow pointing toward target
+  drawArrow(ctx, pointer.x, pointer.y, angle, 12, '#f97316');
 
   requestAnimationFrame(draw);
 }
@@ -460,8 +767,6 @@ const SINE_CURVE_HTML = `<canvas id="canvas"></canvas><div id="controls">
   <label>speed: <input type="range" id="speed" min="0.0005" max="0.05" step="0.005" value="0.005"></label>
 </div>`;
 const SINE_CURVE_JS = `${SineCurve.toString()}
-
-${drawSineCurve.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -479,7 +784,32 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  drawSineCurve(ctx, canvas.width, canvas.height, startValue, differential, speed);
+  let cx = canvas.width / 2, cy = canvas.height / 2;
+
+  // Green axes
+  ctx.strokeStyle = '#34d399';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, cy);
+  ctx.lineTo(canvas.width, cy);
+  ctx.moveTo(cx, 0);
+  ctx.lineTo(cx, canvas.height);
+  ctx.stroke();
+
+  // Green circle
+  ctx.strokeStyle = '#34d399';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 200, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Small green circle oscillating on y-axis
+  let value = SineCurve(startValue, differential, speed);
+  let oscY = cy + value - 100;
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath();
+  ctx.arc(cx, oscY, 20, 0, Math.PI * 2);
+  ctx.fill();
 
   requestAnimationFrame(draw);
 }
@@ -498,9 +828,7 @@ draw();`;
 
 // ── Demystify Sine & Cosine ────────────────────────────────────────────────
 const DEMYSTIFY_SINE_COSINE_HTML = `<canvas id="canvas"></canvas>`;
-const DEMYSTIFY_SINE_COSINE_JS = `${unitCirclePoint.toString()}
-
-${drawDeMystifySineCosine.toString()}
+const DEMYSTIFY_SINE_COSINE_JS = `${SineCurve.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -513,7 +841,93 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  drawDeMystifySineCosine(ctx, canvas.width, canvas.height);
+  let cy = canvas.height / 2;
+  let x1 = canvas.width / 3;    // 33% axis
+  let x2 = canvas.width * 2 / 3; // 66% axis
+  let centerX = canvas.width / 2; // horizontal axis
+  const RADIUS = 100;
+
+  // Draw axes (green)
+  ctx.strokeStyle = '#34d399';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, cy);
+  ctx.lineTo(canvas.width, cy);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x1, 0);
+  ctx.lineTo(x1, canvas.height);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x2, 0);
+  ctx.lineTo(x2, canvas.height);
+  ctx.stroke();
+
+  // Draw circles
+  ctx.strokeStyle = '#34d399';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(x1, cy, RADIUS, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(x2, cy, RADIUS, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Spin points on circles
+  let t = Date.now() * 0.001;
+  let cos1 = Math.cos(t);
+  let sin1 = Math.sin(t);
+  let pt1x = x1 + cos1 * RADIUS;
+  let pt1y = cy + sin1 * RADIUS;
+
+  let cos2 = Math.cos(t);
+  let sin2 = Math.sin(t);
+  let pt2x = x2 + cos2 * RADIUS;
+  let pt2y = cy + sin2 * RADIUS;
+
+  // First circle: red sine line, green cosine line
+  ctx.strokeStyle = '#ef4444'; // red for sine
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(pt1x, pt1y);
+  ctx.lineTo(pt1x, cy);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#34d399'; // green for cosine
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(pt1x, pt1y);
+  ctx.lineTo(x1, pt1y);
+  ctx.stroke();
+
+  // Unit lines at origin
+  ctx.strokeStyle = '#34d399'; // green
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x1, cy);
+  ctx.lineTo(x1 + RADIUS, cy);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#ef4444'; // red
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x1, cy);
+  ctx.lineTo(x1, cy - RADIUS);
+  ctx.stroke();
+
+  // Spinning points
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath();
+  ctx.arc(pt1x, pt1y, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath();
+  ctx.arc(pt2x, pt2y, 5, 0, Math.PI * 2);
+  ctx.fill();
 
   requestAnimationFrame(draw);
 }
@@ -554,12 +968,12 @@ function draw() {
 
   let hit = pointToCircle(px, py, cx, cy, 100);
 
-  ctx.fillStyle = hit ? '#ff1744' : '#ffffff';
+  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
   ctx.beginPath();
   ctx.arc(cx, cy, 100, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = '#818cf8';
+  ctx.fillStyle = '#f97316';
   ctx.beginPath();
   ctx.arc(px, py, 5, 0, Math.PI * 2);
   ctx.fill();
@@ -572,8 +986,27 @@ function draw() {
 draw();`;
 
 const POINT_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_RECT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${pointToRect.toString()}
+const POINT_RECT_JS = `// ─── ray-casting point-in-polygon test ────────────────────────────────────
+function polyContainsPoint(pts, px, py) {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y;
+    const xj = pts[j].x, yj = pts[j].y;
+    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
+      inside = !inside;
+  }
+  return inside;
+}
+
+function buildRect(cx, cy, hw, hh, angle) {
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  return [
+    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
+    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
+    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
+    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
+  ];
+}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -595,25 +1028,30 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let rx = canvas.width / 2 - 75;
-  let ry = canvas.height / 2 - 50;
-  let rw = 150;
-  let rh = 100;
+  let cx = canvas.width / 2, cy = canvas.height / 2;
+  let angle = Date.now() * 0.001;
+  let rect = buildRect(cx, cy, 50, 50, angle);
 
-  let px = canvas.width / 2 + Math.sin(Date.now() * 0.001) * 200;
-  let py = canvas.height / 2 + Math.sin(Date.now() * 0.0008) * 150;
+  let px = cx + Math.sin(Date.now() * 0.001) * 200;
+  let py = cy + Math.sin(Date.now() * 0.0008) * 150;
 
-  let hit = pointToRect(px, py, rx, ry, rw, rh);
+  let hit = polyContainsPoint(rect, px, py);
 
-  ctx.fillStyle = hit ? '#ff1744' : '#ffffff';
-  ctx.fillRect(rx, ry, rw, rh);
+  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.moveTo(rect[0].x, rect[0].y);
+  for (let i = 1; i < rect.length; i++) {
+    ctx.lineTo(rect[i].x, rect[i].y);
+  }
+  ctx.closePath();
+  ctx.fill();
 
-  ctx.fillStyle = '#818cf8';
+  ctx.fillStyle = '#f97316';
   ctx.beginPath();
   ctx.arc(px, py, 5, 0, Math.PI * 2);
   ctx.fill();
 
-  if (hit) drawCollisionText(canvas.width / 2);
+  if (hit) drawCollisionText(cx);
 
   requestAnimationFrame(draw);
 }
@@ -645,19 +1083,19 @@ function draw() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   let cx = canvas.width / 2, cy = canvas.height / 2;
-  let c1x = cx, c1y = cy, c1r = 60;
+  let c1x = cx, c1y = cy, c1r = 100;
   let c2x = cx + Math.sin(Date.now() * 0.001) * 200;
   let c2y = cy + Math.sin(Date.now() * 0.0008) * 150;
-  let c2r = 40;
+  let c2r = 100;
 
   let hit = circleToCircle(c1x, c1y, c1r, c2x, c2y, c2r);
 
-  ctx.fillStyle = hit ? '#ff1744' : '#ffffff';
+  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
   ctx.beginPath();
   ctx.arc(c1x, c1y, c1r, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = hit ? '#ff1744' : '#a78bfa';
+  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
   ctx.beginPath();
   ctx.arc(c2x, c2y, c2r, 0, Math.PI * 2);
   ctx.fill();
@@ -670,8 +1108,41 @@ function draw() {
 draw();`;
 
 const CIRCLE_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const CIRCLE_RECT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${circleToRect.toString()}
+const CIRCLE_RECT_JS = `// ─── polygon-circle overlap test ───────────────────────────────────────────
+function polyContainsPoint(pts, px, py) {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y;
+    const xj = pts[j].x, yj = pts[j].y;
+    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
+      inside = !inside;
+  }
+  return inside;
+}
+
+function buildRect(cx, cy, hw, hh, angle) {
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  return [
+    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
+    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
+    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
+    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
+  ];
+}
+
+function circleOverlapsPoly(cx, cy, cr, pts) {
+  if (polyContainsPoint(pts, cx, cy)) return true;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const x0 = pts[j].x, y0 = pts[j].y;
+    const x1 = pts[i].x, y1 = pts[i].y;
+    const dx = x1 - x0, dy = y1 - y0;
+    const t = Math.max(0, Math.min(1, ((cx - x0) * dx + (cy - y0) * dy) / (dx * dx + dy * dy)));
+    const px = x0 + t * dx, py = y0 + t * dy;
+    const dist = Math.sqrt((cx - px) * (cx - px) + (cy - py) * (cy - py));
+    if (dist < cr) return true;
+  }
+  return false;
+}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -693,23 +1164,29 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let rx = canvas.width / 2 - 60, ry = canvas.height / 2 - 40;
-  let rw = 120, rh = 80;
-  let cx = canvas.width / 2 + Math.sin(Date.now() * 0.001) * 200;
-  let cy = canvas.height / 2 + Math.sin(Date.now() * 0.0008) * 150;
-  let cr = 35;
+  let centerX = canvas.width / 2, centerY = canvas.height / 2;
+  let angle = Date.now() * 0.001;
+  let rect = buildRect(centerX + Math.sin(Date.now() * 0.0005) * 100, centerY, 50, 50, angle);
 
-  let hit = circleToRect(cx, cy, cr, rx, ry, rw, rh);
+  let cx = centerX, cy = centerY, cr = 100;
 
-  ctx.fillStyle = hit ? '#ff1744' : '#ffffff';
-  ctx.fillRect(rx, ry, rw, rh);
+  let hit = circleOverlapsPoly(cx, cy, cr, rect);
 
-  ctx.fillStyle = hit ? '#ff1744' : '#a78bfa';
+  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
   ctx.beginPath();
   ctx.arc(cx, cy, cr, 0, Math.PI * 2);
   ctx.fill();
 
-  if (hit) drawCollisionText(canvas.width / 2);
+  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.moveTo(rect[0].x, rect[0].y);
+  for (let i = 1; i < rect.length; i++) {
+    ctx.lineTo(rect[i].x, rect[i].y);
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  if (hit) drawCollisionText(centerX);
 
   requestAnimationFrame(draw);
 }
@@ -740,25 +1217,36 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let x1 = canvas.width * 0.2, y1 = canvas.height / 2;
-  let x2 = canvas.width * 0.8, y2 = canvas.height / 2;
-  let cx = canvas.width / 2 + Math.sin(Date.now() * 0.001) * 150;
-  let cy = canvas.height / 2 + Math.sin(Date.now() * 0.0008) * 150;
-  let cr = 30;
+  let centerX = canvas.width / 2, centerY = canvas.height / 2;
+
+  // Static circle
+  let cx = centerX, cy = centerY, cr = 100;
+
+  // Moving and rotating line
+  let lineAngle = Date.now() * 0.003;
+  let lineCx = centerX + Math.sin(Date.now() * 0.0005) * 150;
+  let lineCy = centerY;
+  const lineLen = 50;
+  let x1 = lineCx + Math.cos(lineAngle) * lineLen;
+  let y1 = lineCy + Math.sin(lineAngle) * lineLen;
+  let x2 = lineCx - Math.cos(lineAngle) * lineLen;
+  let y2 = lineCy - Math.sin(lineAngle) * lineLen;
 
   let hit = lineToCircle(x1, y1, x2, y2, cx, cy, cr);
 
-  ctx.strokeStyle = '#ffffff';
+  // Draw static circle
+  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Draw moving line
+  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
-
-  ctx.fillStyle = hit ? '#ff1744' : '#a78bfa';
-  ctx.beginPath();
-  ctx.arc(cx, cy, cr, 0, Math.PI * 2);
-  ctx.fill();
 
   if (hit) drawCollisionText(canvas.width / 2);
 
@@ -791,27 +1279,38 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let x1 = canvas.width * 0.1, y1 = canvas.height * 0.2;
-  let x2 = canvas.width * 0.9, y2 = canvas.height * 0.8;
-  let x3 = canvas.width * 0.1 + Math.sin(Date.now() * 0.001) * 150;
-  let y3 = canvas.height / 2;
-  let x4 = canvas.width * 0.9 - Math.sin(Date.now() * 0.001) * 150;
-  let y4 = canvas.height / 2 + Math.sin(Date.now() * 0.0008) * 150;
+  let centerX = canvas.width / 2, centerY = canvas.height / 2;
 
-  let hit = lineToLine(x1, y1, x2, y2, x3, y3, x4, y4);
+  // Static horizontal line (blue)
+  let x1 = centerX - 100, y1 = centerY;
+  let x2 = centerX + 100, y2 = centerY;
 
-  ctx.strokeStyle = '#ffffff';
+  // Moving and rotating line (red)
+  let angle1 = Date.now() * 0.003;
+  let x3 = centerX + Math.sin(Date.now() * 0.0005) * 150;
+  let y3 = centerY;
+  const len = 100;
+  let x3a = x3 + Math.cos(angle1) * len;
+  let y3a = y3 + Math.sin(angle1) * len;
+  let x3b = x3 - Math.cos(angle1) * len;
+  let y3b = y3 - Math.sin(angle1) * len;
+
+  let hit = lineToLine(x1, y1, x2, y2, x3a, y3a, x3b, y3b);
+
+  // Draw static line (cyan when hit)
+  ctx.strokeStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
 
-  ctx.strokeStyle = hit ? '#ff1744' : '#a78bfa';
+  // Draw moving line (red when hit)
+  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(x3, y3);
-  ctx.lineTo(x4, y4);
+  ctx.moveTo(x3a, y3a);
+  ctx.lineTo(x3b, y3b);
   ctx.stroke();
 
   if (hit) drawCollisionText(canvas.width / 2);
@@ -845,21 +1344,24 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let x1 = canvas.width * 0.2, y1 = canvas.height / 2;
-  let x2 = canvas.width * 0.8, y2 = canvas.height / 2;
-  let px = canvas.width / 2 + Math.sin(Date.now() * 0.001) * 150;
-  let py = canvas.height / 2 + Math.sin(Date.now() * 0.0008) * 150;
+  let centerX = canvas.width / 2, centerY = canvas.height / 2;
+  let x1 = centerX - 150, y1 = centerY;
+  let x2 = centerX + 150, y2 = centerY;
+  let px = centerX + Math.sin(Date.now() * 0.001) * 150;
+  let py = centerY + Math.sin(Date.now() * 0.0008) * 150;
 
   let hit = lineToPoint(x1, y1, x2, y2, px, py, 20);
 
-  ctx.strokeStyle = '#ffffff';
+  // Line changes color on hit
+  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
 
-  ctx.fillStyle = hit ? '#ff1744' : '#a78bfa';
+  // Dot is always orange, never changes color
+  ctx.fillStyle = '#f97316';
   ctx.beginPath();
   ctx.arc(px, py, 5, 0, Math.PI * 2);
   ctx.fill();
@@ -895,23 +1397,34 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let rx = canvas.width / 2 - 60, ry = canvas.height / 2 - 40;
-  let rw = 120, rh = 80;
-  let x1 = canvas.width * 0.1 + Math.sin(Date.now() * 0.001) * 100;
-  let y1 = canvas.height * 0.2;
-  let x2 = canvas.width * 0.9 - Math.sin(Date.now() * 0.001) * 100;
-  let y2 = canvas.height * 0.8;
+  let centerX = canvas.width / 2, centerY = canvas.height / 2;
 
-  let hit = lineToRect(x1, y1, x2, y2, rx, ry, rw, rh);
+  // Static rect at center
+  let rx = centerX - 50, ry = centerY - 50;
+  let rw = 100, rh = 100;
 
-  ctx.fillStyle = hit ? '#ff1744' : '#ffffff';
+  // Moving and rotating line
+  let angle = Date.now() * 0.003;
+  let x1 = centerX + Math.sin(Date.now() * 0.0005) * 150;
+  let y1 = centerY;
+  const lineLen = 100;
+  let x2 = x1 + Math.cos(angle) * lineLen;
+  let y2 = y1 + Math.sin(angle) * lineLen;
+  let x3 = x1 - Math.cos(angle) * lineLen;
+  let y3 = y1 - Math.sin(angle) * lineLen;
+
+  let hit = lineToRect(x2, y2, x3, y3, rx, ry, rw, rh);
+
+  // Rect doesn't change color
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.fillRect(rx, ry, rw, rh);
 
-  ctx.strokeStyle = hit ? '#ff1744' : '#a78bfa';
+  // Line doesn't change color either
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)';
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x3, y3);
   ctx.stroke();
 
   if (hit) drawCollisionText(canvas.width / 2);
@@ -922,8 +1435,33 @@ function draw() {
 draw();`;
 
 const RECT_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const RECT_RECT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${rectToRect.toString()}
+const RECT_RECT_JS = `// ─── polygon-polygon SAT test ──────────────────────────────────────────────
+function polyContainsPoint(pts, px, py) {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y;
+    const xj = pts[j].x, yj = pts[j].y;
+    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
+      inside = !inside;
+  }
+  return inside;
+}
+
+function buildRect(cx, cy, hw, hh, angle) {
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  return [
+    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
+    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
+    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
+    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
+  ];
+}
+
+function polyPolyOverlap(p1, p2) {
+  for (let i = 0; i < p1.length; i++) if (polyContainsPoint(p2, p1[i].x, p1[i].y)) return true;
+  for (let i = 0; i < p2.length; i++) if (polyContainsPoint(p1, p2[i].x, p2[i].y)) return true;
+  return false;
+}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -941,25 +1479,39 @@ function drawCollisionText(x) {
   ctx.textAlign = "left";
 }
 
+function drawPoly(pts, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    ctx.lineTo(pts[i].x, pts[i].y);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let x1 = canvas.width / 2 - 60, y1 = canvas.height / 2 - 40;
-  let w1 = 120, h1 = 80;
-  let x2 = canvas.width / 2 + Math.sin(Date.now() * 0.001) * 150;
-  let y2 = canvas.height / 2 + Math.sin(Date.now() * 0.0008) * 120;
-  let w2 = 100, h2 = 70;
+  let cx = canvas.width / 2, cy = canvas.height / 2;
 
-  let hit = rectToRect(x1, y1, w1, h1, x2, y2, w2, h2);
+  // Rect1: moving and rotating
+  let rect1x = cx + Math.sin(Date.now() * 0.0005) * 150;
+  let rect1y = cy;
+  let angle1 = Date.now() * 0.001;
+  let rect1 = buildRect(rect1x, rect1y, 50, 50, angle1);
 
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(x1, y1, w1, h1);
+  // Rect2: at center, rotating
+  let angle2 = Date.now() * 0.0008;
+  let rect2 = buildRect(cx, cy, 50, 50, angle2);
 
-  ctx.fillStyle = hit ? '#ff1744' : '#a78bfa';
-  ctx.fillRect(x2, y2, w2, h2);
+  let hit = polyPolyOverlap(rect1, rect2);
 
-  if (hit) drawCollisionText(canvas.width / 2);
+  drawPoly(rect1, hit ? '#ef4444' : 'rgba(255,255,255,0.85)');
+  drawPoly(rect2, hit ? '#22d3ee' : 'rgba(255,255,255,0.85)');
+
+  if (hit) drawCollisionText(cx);
 
   requestAnimationFrame(draw);
 }
@@ -970,6 +1522,36 @@ const POLYGON_POLYGON_HTML = `<canvas id="canvas"></canvas>`;
 const POLYGON_POLYGON_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${polygonToPolygon.toString()}
 
+// ─── buildStar helper ──────────────────────────────────────────────────────
+function buildStar(cx, cy, spikes, outer, inner, angleOffset) {
+  const pts = [];
+  const step = Math.PI / spikes;
+  for (let i = 0; i < 2 * spikes; i++) {
+    const r = i % 2 === 0 ? outer : inner;
+    const a = i * step + (angleOffset || 0);
+    pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+  }
+  return pts;
+}
+
+// ─── polyContainsPoint helper ──────────────────────────────────────────────
+function polyContainsPoint(pts, px, py) {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y;
+    const xj = pts[j].x, yj = pts[j].y;
+    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
+      inside = !inside;
+  }
+  return inside;
+}
+
+function polyPolyOverlap(p1, p2) {
+  for (let i = 0; i < p1.length; i++) if (polyContainsPoint(p2, p1[i].x, p1[i].y)) return true;
+  for (let i = 0; i < p2.length; i++) if (polyContainsPoint(p1, p2[i].x, p2[i].y)) return true;
+  return false;
+}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -986,7 +1568,7 @@ function drawCollisionText(x) {
   ctx.textAlign = "left";
 }
 
-function drawPoly(points, color, fill) {
+function drawPoly(points, color) {
   ctx.fillStyle = color;
   ctx.beginPath();
   ctx.moveTo(points[0].x, points[0].y);
@@ -994,35 +1576,28 @@ function drawPoly(points, color, fill) {
     ctx.lineTo(points[i].x, points[i].y);
   }
   ctx.closePath();
-  if (fill) ctx.fill(); else ctx.stroke();
+  ctx.fill();
 }
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
+  ctx.fillStyle = '#1e1b4b';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  let t = Date.now() * 0.0005;
   let cx = canvas.width / 2, cy = canvas.height / 2;
+  let t = Date.now() * 0.001;
 
-  let poly1 = [
-    {x: cx - 50, y: cy - 50},
-    {x: cx + 50, y: cy - 50},
-    {x: cx + 50, y: cy + 50},
-    {x: cx - 50, y: cy + 50}
-  ];
+  // Large 9-spike star at center (yellow/cyan)
+  let star1 = buildStar(cx, cy, 9, 150, 25, 0);
 
-  let dx = Math.sin(t) * 120;
-  let dy = Math.sin(t * 0.8) * 100;
-  let poly2 = [
-    {x: cx + dx - 40, y: cy + dy - 30},
-    {x: cx + dx + 40, y: cy + dy - 30},
-    {x: cx + dx + 20, y: cy + dy + 40}
-  ];
+  // Small 5-spike star moving (orange/red)
+  let star2x = cx + Math.sin(t * 0.8) * 200;
+  let star2y = cy + Math.cos(t * 0.6) * 150;
+  let star2 = buildStar(star2x, star2y, 5, 50, 15, t);
 
-  let hit = polygonToPolygon(poly1, poly2);
+  let hit = polyPolyOverlap(star1, star2);
 
-  drawPoly(poly1, hit ? '#ff1744' : '#ffffff', true);
-  drawPoly(poly2, hit ? '#ff1744' : '#a78bfa', true);
+  drawPoly(star1, hit ? '#22d3ee' : '#facc15');
+  drawPoly(star2, hit ? '#ef4444' : '#fb923c');
 
   if (hit) drawCollisionText(cx);
 

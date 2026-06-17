@@ -6,6 +6,7 @@ import { LinePoint as LinePointImported } from "../../../../../core-functions/Co
 export const LinePoint: CollisionDetectionObject = {
   keyFunction: LinePointImported,
   dependencies: [LineLength.functionString],
+  interfaces: ["Point", "Line"],
   functionString: `
 function LinePoint(line: Line, point: Point) {
   
