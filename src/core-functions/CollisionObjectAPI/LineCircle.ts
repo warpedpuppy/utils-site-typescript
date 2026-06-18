@@ -1,8 +1,9 @@
 import { PointCircle } from "./PointCircle";
 import { LinePoint } from "./LinePoint";
 import { LineLength } from "../LineLength";
+import { Line, Circle } from '../../types/shapes';
 
-export function LineCircle(line: any, circle: any) {
+export function LineCircle(line: Line, circle: Circle) {
   let inside1 = PointCircle(line.startPoint, circle);
   let inside2 = PointCircle(line.endPoint, circle);
   if (inside1 || inside2) return true;

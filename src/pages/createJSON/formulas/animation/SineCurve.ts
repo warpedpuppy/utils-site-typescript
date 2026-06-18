@@ -1,26 +1,10 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { SineCurve as SineCurveFn } from "../../../../core-functions/SineCurve";
+import SineCurveSource from "../../../../core-functions/SineCurve.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const SineCurve: CollisionDetectionObject = {
-  keyFunction: function SineCurve(
-    startingValue: number,
-    differential: number,
-    speed: number
-  ) {
-    const currentDate = new Date();
-    return (
-      startingValue + Math.sin(currentDate.getTime() * speed) * differential
-    );
-  },
+  keyFunction: SineCurveFn,
   dependencies: [],
-  functionString: ` 
-  function SineCurve(
-    startingValue: number,
-    differential: number,
-    speed: number
-  ) {
-    const currentDate = new Date();
-    return (
-      startingValue + Math.sin(currentDate.getTime() * speed) * differential
-    );
-  }`,
+  functionString: extractFunctionString(SineCurveSource),
 };

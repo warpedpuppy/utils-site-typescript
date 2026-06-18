@@ -1,7 +1,7 @@
 export function sphereLighting(
-  sphere: any,
-  lightSource: any,
-  highlightReach: any = 0.4
+  sphere: { x: number; y: number; radius: number },
+  lightSource: { x: number; y: number },
+  highlightReach: number = 0.4
 ) {
   const angleToLight = Math.atan2(
     lightSource.y - sphere.y,

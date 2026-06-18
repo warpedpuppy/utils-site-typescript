@@ -36,6 +36,110 @@ This environment is intentionally lean to ensure nothing abstracts the math:
 
 ---
 
+## 📚 Core Functions Reference
+
+All mathematical utilities are collected in `src/core-functions/` — the canonical source of truth for every formula used throughout the site. Each function is fully typed and ready to import.
+
+### Physics & Motion
+
+| Function | Purpose |
+|----------|---------|
+| `BallBounce(ball, stage)` | Gravity, wall bouncing, and friction physics |
+| `BallToBallBounce(ball1, ball2, spring)` | Spring-based elastic collision between two objects |
+| `MoveAlongLine(origin, destination, ratio)` | Linear interpolation along a line |
+| `MoveToward(current, target, speed)` | Constant-speed movement toward a target |
+| `OrbitalMotion::gravitationalStep(orbiter, body)` | Newtonian gravitational physics step |
+| `SphereLighting(sphere, lightSource, reach)` | Radial highlight position for lit sphere effect |
+
+### Geometry & Shapes
+
+| Function | Purpose |
+|----------|---------|
+| `CircleFromThreePoints(p1, p2, p3)` | Find circumcircle from three points |
+| `DistributeAroundCircle(center, radius, count)` | Evenly space points on a circle |
+| `EquilateralTriangle(radius, center, angle)` | Generate three equilateral points around a center |
+| `FindPointAroundCircle(center, radius, percent)` | Get point at given percent around circle perimeter |
+| `GetPointOnLine(start, end, t)` | Linear interpolation point on a line (t = 0–1) |
+| `GetRotation(from, to)` | Angle from one point to another (radians) |
+| `GetTriangleData(p1, p2)` | Hypotenuse, angle, opposite/adjacent sides from line |
+| `LineLength(line)` | Distance between line start and end points |
+| `QuadraticBezier(t, p0, p1, p2)` | De Casteljau quadratic curve at parameter t |
+| `Rectangle(width, height, angle, options)` | Generate rotatable rectangle vertices |
+| `Star::DrawStar(spikes, inner, outer, angle)` | Generate star polygon vertices |
+| `BezierCurve()` | Bézier interpolation utility |
+| `UnitCirclePoint(angle)` | Point on unit circle at given angle |
+
+### Math & Interpolation
+
+| Function | Purpose |
+|----------|---------|
+| `Lerp(a, b, t)` | Linear interpolation between two numbers |
+| `Easing::easeInOut()` | Common easing functions (linear, quad, elastic, bounce) |
+| `DegToRad(degrees)` | Convert degrees to radians |
+| `RadToDeg(radians)` | Convert radians to degrees |
+| `SineCurve(start, differential, speed)` | Oscillating sine wave value |
+| `SineWave()` | Wave generation utility |
+| `RandomNumberBetween(min, max)` | Random decimal in range |
+| `RandomIntegerBetween(min, max)` | Random integer in range |
+| `NumberWithCommas(x)` | Format number with thousands separators |
+| `CenterOnParent(item, parent)` | Calculate centered position within container |
+
+### Collision Detection — Object API
+
+These functions use structured types (`Point`, `Circle`, `Line`, `Polygon`):
+
+| Function | Signature |
+|----------|-----------|
+| `PointCircle(point, circle)` | Point inside/touching circle |
+| `CircleCircle(c1, c2)` | Two circles overlapping |
+| `LinePoint(line, point)` | Point on/near line segment |
+| `LineCircle(line, circle)` | Line segment touching circle |
+| `LineLine(line1, line2)` | Two line segments intersecting |
+| `PolygonPoint(polygon, point)` | Point inside polygon (ray-casting) |
+| `PolygonCircle(polygon, circle)` | Polygon edges/interior vs circle |
+| `PolygonLine(polygon, line)` | Polygon edges vs line segment |
+| `PolygonPolygon(poly1, poly2)` | Two polygons overlapping |
+
+### Collision Detection — Flat API
+
+These functions use individual x, y, w, h parameters (legacy):
+
+| Function | Purpose |
+|----------|---------|
+| `PointToCircle(px, py, cx, cy, r)` | Point vs circle collision |
+| `PointToRect(px, py, rx, ry, w, h)` | Point vs rectangle collision |
+| `CircleToCircle(x1, y1, r1, x2, y2, r2)` | Circle vs circle |
+| `CircleToRect(cx, cy, r, rx, ry, w, h)` | Circle vs rectangle |
+| `LineToPoint(x1, y1, x2, y2, px, py)` | Line segment vs point |
+| `LineToCircle(x1, y1, x2, y2, cx, cy, r)` | Line vs circle |
+| `LineToLine(x1, y1, x2, y2, x3, y3, x4, y4)` | Line vs line |
+| `LineToRect(x1, y1, x2, y2, rx, ry, w, h)` | Line vs rectangle |
+| `RectToRect(x1, y1, w1, h1, x2, y2, w2, h2)` | Rectangle vs rectangle |
+| `PolygonToPolygon()` | Polygon vs polygon |
+
+### Complex Algorithms
+
+| Function | Purpose |
+|----------|---------|
+| `DFT()` | Discrete Fourier Transform for epicycles |
+| `GameOfLife()` | Conway's Game of Life rules |
+| `WaveAmplitude()` | Wave interference amplitude calculation |
+| `LensDeflection()` | Gravitational lensing deflection angle |
+| `GRStep()` | General relativity orbital precession step |
+| `GetRandomColors(hueFilter)` | Random HSL color in range (blue/green/etc) |
+| `Distance(p1, p2)` | Euclidean distance between two points |
+
+### Drawing Helpers
+
+| Function | Purpose |
+|----------|---------|
+| `DrawStar(cx, cy, spikes, inner, outer, angle)` | Render star to canvas context |
+| `DrawRectWithTrig(cx, cy, w, h, angle)` | Render rotated rectangle to canvas |
+| `DrawEquilateralTriangle(cx, cy, size, angle)` | Render equilateral triangle to canvas |
+| `DistributeAroundCircleFlat(cx, cy, r, count)` | Points on circle (flat API) |
+
+---
+
 ## 💻 Spin Up the Lab Locally
 
 Clone and run the environment locally to start injecting your own custom equations into the rendering pipeline.

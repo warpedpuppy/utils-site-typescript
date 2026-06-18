@@ -1,5 +1,7 @@
+import { Point } from '../types/shapes';
+
 export function distribute(
-  circleCenter: { x: number; y: number },
+  circleCenter: Point,
   radius: number,
   totalItems: number
 ) {

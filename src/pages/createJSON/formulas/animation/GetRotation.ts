@@ -1,26 +1,11 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { Point } from "../../../../types/shapes";
+import { GetRotation as GetRotationFn } from "../../../../core-functions/GetRotation";
+import GetRotationSource from "../../../../core-functions/GetRotation.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const GetRotation: CollisionDetectionObject = {
-  keyFunction: function GetRotation(
-    currentPoint: Point,
-    destinationPoint: Point
-  ) {
-    return Math.atan2(
-      destinationPoint.y - currentPoint.y,
-      destinationPoint.x - currentPoint.x
-    );
-  },
+  keyFunction: GetRotationFn,
   dependencies: [],
   interfaces: ["Point"],
-  functionString: `
-  function GetRotation(
-    currentPoint: Point,
-    destinationPoint: Point
-  ) {
-    return Math.atan2(
-      destinationPoint.y - currentPoint.y,
-      destinationPoint.x - currentPoint.x
-    );
-  }`,
+  functionString: extractFunctionString(GetRotationSource),
 };

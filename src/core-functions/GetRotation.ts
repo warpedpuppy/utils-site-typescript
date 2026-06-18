@@ -1,6 +1,8 @@
+import { Point } from '../types/shapes';
+
 export function GetRotation(
-  currentPoint: { x: number; y: number },
-  destinationPoint: { x: number; y: number }
+  currentPoint: Point,
+  destinationPoint: Point
 ) {
   return Math.atan2(
     destinationPoint.y - currentPoint.y,

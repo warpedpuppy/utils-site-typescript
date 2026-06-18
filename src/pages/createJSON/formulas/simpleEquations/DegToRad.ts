@@ -1,12 +1,10 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { Deg2Rad as Deg2RadFn } from "../../../../core-functions/DegToRad";
+import Deg2RadSource from "../../../../core-functions/DegToRad.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const Deg2Rad: CollisionDetectionObject = {
-  keyFunction: function Deg2Rad(degree: number) {
-    return degree * (Math.PI / 180);
-  },
+  keyFunction: Deg2RadFn,
   dependencies: [],
-  functionString: `
-function deg2rad(degree: number) {
-  return degree * (Math.PI / 180);
-}`,
+  functionString: extractFunctionString(Deg2RadSource),
 };

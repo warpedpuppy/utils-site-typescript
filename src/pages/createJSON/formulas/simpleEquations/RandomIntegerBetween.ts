@@ -1,14 +1,10 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { RandomIntegerBetween as RandomIntegerBetweenFn } from "../../../../core-functions/RandomIntegerBetween";
+import RandomIntegerBetweenSource from "../../../../core-functions/RandomIntegerBetween.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const RandomIntegerBetween: CollisionDetectionObject = {
-  keyFunction: function RandomIntegerBetween(min: number, max: number) {
-    max++;
-    return Math.floor(Math.random() * (max - min) + min);
-  },
+  keyFunction: RandomIntegerBetweenFn,
   dependencies: [],
-  functionString: `
-function RandomIntegerBetween(min: number, max: number) {
-  max++;
-  return Math.floor(Math.random() * (max - min) + min);
-}`,
+  functionString: extractFunctionString(RandomIntegerBetweenSource),
 };

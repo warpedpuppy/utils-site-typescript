@@ -1,16 +1,11 @@
-import { Point, Circle } from "../../../../../types/shapes";
 import { CollisionDetectionObject } from "../../../../../types/types";
 import { PointCircle as PointCircleImported } from "../../../../../core-functions/CollisionObjectAPI/PointCircle";
+import PointCircleSource from "../../../../../core-functions/CollisionObjectAPI/PointCircle.ts?raw";
+import { extractFunctionString } from "../../extractFunctionString";
 
 export const PointCircle: CollisionDetectionObject = {
   keyFunction: PointCircleImported,
   dependencies: [],
   interfaces: ["Point", "Circle"],
-  functionString: `
-function PointCircle(point: Point, circle: Circle) {
-  let distX = point.x - circle.x;
-  let distY = point.y - circle.y;
-  let distance = Math.sqrt(distX * distX + distY * distY);
-  return distance <= circle.radius;
-}`,
+  functionString: extractFunctionString(PointCircleSource),
 };

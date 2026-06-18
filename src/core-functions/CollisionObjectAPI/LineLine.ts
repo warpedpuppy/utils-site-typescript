@@ -1,4 +1,6 @@
-export function LineLine(line1: any, line2: any) {
+import { Line } from '../../types/shapes';
+
+export function LineLine(line1: Line, line2: Line) {
   let uA =
     ((line2.endPoint.x - line2.startPoint.x) *
       (line1.startPoint.y - line2.startPoint.y) -

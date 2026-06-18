@@ -1,17 +1,10 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { CenterOnParent as CenterOnParentFn } from "../../../../core-functions/CenterOnParent";
+import CenterOnParentSource from "../../../../core-functions/CenterOnParent.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const CenterOnParent: CollisionDetectionObject = {
-  keyFunction: function CenterOnParent(item: any, parent: any) {
-    let x = (parent.width - item.width) / 2;
-    let y = (parent.height - item.height) / 2;
-    return { x, y };
-  },
+  keyFunction: CenterOnParentFn,
   dependencies: [],
-  functionString: `
-function centerOnParent(item: any, parent: any) {
-  let x = (parent.width - item.width) / 2;
-  let y = (parent.height - item.height) / 2;
-  return { x, y };
-}
-`,
+  functionString: extractFunctionString(CenterOnParentSource),
 };

@@ -1,7 +1,9 @@
+import { Point } from '../types/shapes';
+
 export function MoveAlongLine(
-  origin: any,
-  destination: any,
-  ratio: any
+  origin: Point,
+  destination: Point,
+  ratio: number
 ) {
   let x = origin.x + ratio * (destination.x - origin.x);
   let y = origin.y + ratio * (destination.y - origin.y);

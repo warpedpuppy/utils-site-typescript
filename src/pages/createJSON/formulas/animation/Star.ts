@@ -1,68 +1,12 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { DrawStar as DrawStarFn } from "../../../../core-functions/Star";
+import StarSource from "../../../../core-functions/Star.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const StarObject: CollisionDetectionObject = {
-  keyFunction: function (
-    spikes: number,
-    innerRadius: number,
-    outerRadius: number,
-    angle: number = 0,
-    options: {
-      rotate: boolean;
-      rotateSpeed: number;
-      clockwise: boolean;
-    } = { rotate: false, rotateSpeed: 1000, clockwise: true }
-  ) {
-    let vertices = [];
-    let rot = 0;
-    let step = Math.PI / spikes;
-    const currentDate = new Date();
-    let rotateQ = options.rotate
-      ? currentDate.getTime() / options.rotateSpeed
-      : 0;
-    if (options.clockwise === false) rotateQ *= -1;
-    for (let i = 0; i < spikes; i++) {
-      let x = Math.cos(angle + rot + rotateQ) * outerRadius;
-      let y = Math.sin(angle + rot + rotateQ) * outerRadius;
-      vertices.push({ x, y });
-      rot += step;
-      x = Math.cos(angle + rot + rotateQ) * innerRadius;
-      y = Math.sin(angle + rot + rotateQ) * innerRadius;
-      vertices.push({ x, y });
-      rot += step;
-    }
-    return { vertices };
-  },
+  keyFunction: DrawStarFn,
   dependencies: [],
-  functionString: `
-function DrawStar (
-    spikes: number,
-    innerRadius: number,
-    outerRadius: number,
-    angle: number = 0,
-    options: {
-      rotate: boolean;
-      rotateSpeed: number;
-    } = { rotate: false, rotateSpeed: 1000 }
-  ) {
-    let vertices = [];
-    let rot = 0;
-    let step = Math.PI / spikes;
-    const currentDate = new Date();
-    let rotateQ = options.rotate
-      ? currentDate.getTime() / options.rotateSpeed
-      : 0;
-    for (let i = 0; i < spikes; i++) {
-      let x = Math.cos(angle + rot + rotateQ) * outerRadius;
-      let y = Math.sin(angle + rot + rotateQ) * outerRadius;
-      vertices.push({ x, y });
-      rot += step;
-      x = Math.cos(angle + rot + rotateQ) * innerRadius;
-      y = Math.sin(angle + rot + rotateQ) * innerRadius;
-      vertices.push({ x, y });
-      rot += step;
-    }
-    return vertices;
-  }`,
+  functionString: extractFunctionString(StarSource),
 };
 
 // export class Star {

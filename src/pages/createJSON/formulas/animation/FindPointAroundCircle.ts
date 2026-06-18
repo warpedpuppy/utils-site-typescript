@@ -1,30 +1,11 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { Point } from "../../../../types/shapes";
+import { FindPointAroundCircle as FindPointAroundCircleFn } from "../../../../core-functions/FindPointAroundCircle";
+import FindPointAroundCircleSource from "../../../../core-functions/FindPointAroundCircle.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const FindPointAroundCircle: CollisionDetectionObject = {
-  keyFunction: function FindPointAroundCircle(
-    circleCenter: Point,
-    radius: number,
-    percentageAroundCircle: number
-  ) {
-    let totalCircleRadians = Math.PI * 2;
-    let percent = percentageAroundCircle / 100;
-    const x = circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
-    const y = circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
-    return { x, y };
-  },
+  keyFunction: FindPointAroundCircleFn,
   dependencies: [],
   interfaces: ["Point"],
-  functionString: `
-  function FindPointAroundCircle(
-    circleCenter: Point,
-    radius: number,
-    percentageAroundCircle: number
-  ) {
-    let totalCircleRadians = Math.PI * 2;
-    let percent = percentageAroundCircle / 100;
-    const x = circleCenter.x + radius * Math.cos(totalCircleRadians * percent);
-    const y = circleCenter.y + radius * Math.sin(totalCircleRadians * percent);
-    return { x, y };
-  }`,
+  functionString: extractFunctionString(FindPointAroundCircleSource),
 };

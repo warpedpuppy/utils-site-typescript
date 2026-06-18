@@ -1,21 +1,11 @@
-import { Line } from "../../../../types/shapes";
 import { CollisionDetectionObject } from "../../../../types/types";
+import { LineLength as LineLengthFn } from "../../../../core-functions/LineLength";
+import LineLengthSource from "../../../../core-functions/LineLength.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const LineLength: CollisionDetectionObject = {
-  keyFunction: function LineLength(line: Line) {
-    const { startPoint, endPoint } = line;
-    let a = startPoint.x - endPoint.x;
-    let b = startPoint.y - endPoint.y;
-    return Math.sqrt(a * a + b * b);
-  },
+  keyFunction: LineLengthFn,
   dependencies: [],
   interfaces: ["Line"],
-  functionString: `
-function LineLength(line: Line) {
-  const { startPoint, endPoint } = line;
-  let a = startPoint.x - endPoint.x;
-  let b = startPoint.y - endPoint.y;
-  return Math.sqrt(a * a + b * b);
-}
-  `,
+  functionString: extractFunctionString(LineLengthSource),
 };
