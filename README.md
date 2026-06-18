@@ -1,212 +1,240 @@
-# 🎡 Utilspalooza
+# Utilspalooza
 
-**[ [Live Visual Lab](https://utilspalooza.com) ]** &middot; **[ [TypeScript 5.x](https://typescriptlang.org) ]** &middot; **[ [Built with Vite](https://vitejs.dev) ]**
+**[ [utilspalooza.com](https://utilspalooza.com) ]** &middot; **[ [TypeScript 5.x](https://typescriptlang.org) ]** &middot; **[ [Vite](https://vitejs.dev) ]**
 
-> **The Naked Math Behind Canvas Animations — Handcrafted from First Principles.**
+> The naked math behind canvas animations — handcrafted from first principles.
 
-**[Utilspalooza](https://utilspalooza.com)** is an interactive, zero-dependency visual laboratory built for developers who want to understand _how_ the magic works. Instead of hiding equations behind heavy, black-box animation frameworks, this sandbox uses raw **HTML5 Canvas**, native math vectors, and strict **TypeScript** to break down physics and geometry code from first principles.
-
----
-
-## 🚀 Live Visual Laboratory
-
-Explore the math engines and tweak constants in real-time: **[utilspalooza.com](https://utilspalooza.com)**
+An interactive visual laboratory for developers who want to see *how* the math works. Raw HTML5 Canvas, no external physics engines, strict TypeScript.
 
 ---
 
-## 🧮 What's Inside: The Math & Physics Core
+## ✏️ Adding a New Animation
 
-Every single component in this project pairs a mathematical utility function with a dedicated, isolated rendering engine. You can dive straight into the source code to see:
+Every animation in this site has exactly three canonical files. Never write the same math in two places.
 
-- **Vector Mechanics:** Pure coordinate calculations handling velocity vectors, gravity constants, and momentum transfer (check out the `ballBounce` engine).
-- **Friction & Elasticity Matrices:** Raw coefficient math simulating kinetic energy loss during boundary impacts without external engines.
-- **Trigonometric Oscillations:** Handcoded wave functions, angular rotation matrices, and smooth step interpolations.
-- **Predictable Canvas State Loops:** Clean `requestAnimationFrame` lifecycle hooks that demonstrate how to manage delta time and prevent frame drops.
+> **The iron rule:** if a function exists in `core-functions/`, import it. Never copy-paste it.
 
 ---
 
-## 🛠️ The DIY Tech Stack
+### Step 1 — Write the pure math (`src/core-functions/`)
 
-This environment is intentionally lean to ensure nothing abstracts the math:
+Just the equation. No canvas, no React, no browser APIs.
 
-- **Bundler & Build Pipeline:** [Vite](https://vitejs.dev) (For near-instantaneous Hot Module Replacement while tweaking math variables)
-- **Language Core:** [TypeScript](https://typescriptlang.org) (Strict structural typings ensuring coordinate payloads are perfectly mapped)
-- **Graphics UI:** Pure HTML5 Canvas API (No WebGL wrapper libraries, no external physics injectors)
-- **Layout Layer:** React 18 & Modular SCSS (Serving purely as the UI control deck for updating simulation parameters)
+```typescript
+// Named export. Concrete types. Self-contained — no imports from the rest of the site.
+export function myFunction(x: number, y: number): number {
+  return Math.sqrt(x * x + y * y);
+}
+```
 
----
-
-## 📚 Core Functions Reference
-
-All mathematical utilities are collected in `src/core-functions/` — the canonical source of truth for every formula used throughout the site. Each function is fully typed and ready to import.
-
-### Physics & Motion
-
-| Function | Purpose |
-|----------|---------|
-| `BallBounce(ball, stage)` | Gravity, wall bouncing, and friction physics |
-| `BallToBallBounce(ball1, ball2, spring)` | Spring-based elastic collision between two objects |
-| `MoveAlongLine(origin, destination, ratio)` | Linear interpolation along a line |
-| `MoveToward(current, target, speed)` | Constant-speed movement toward a target |
-| `OrbitalMotion::gravitationalStep(orbiter, body)` | Newtonian gravitational physics step |
-| `SphereLighting(sphere, lightSource, reach)` | Radial highlight position for lit sphere effect |
-
-### Geometry & Shapes
-
-| Function | Purpose |
-|----------|---------|
-| `CircleFromThreePoints(p1, p2, p3)` | Find circumcircle from three points |
-| `DistributeAroundCircle(center, radius, count)` | Evenly space points on a circle |
-| `EquilateralTriangle(radius, center, angle)` | Generate three equilateral points around a center |
-| `FindPointAroundCircle(center, radius, percent)` | Get point at given percent around circle perimeter |
-| `GetPointOnLine(start, end, t)` | Linear interpolation point on a line (t = 0–1) |
-| `GetRotation(from, to)` | Angle from one point to another (radians) |
-| `GetTriangleData(p1, p2)` | Hypotenuse, angle, opposite/adjacent sides from line |
-| `LineLength(line)` | Distance between line start and end points |
-| `QuadraticBezier(t, p0, p1, p2)` | De Casteljau quadratic curve at parameter t |
-| `Rectangle(width, height, angle, options)` | Generate rotatable rectangle vertices |
-| `Star::DrawStar(spikes, inner, outer, angle)` | Generate star polygon vertices |
-| `BezierCurve()` | Bézier interpolation utility |
-| `UnitCirclePoint(angle)` | Point on unit circle at given angle |
-
-### Math & Interpolation
-
-| Function | Purpose |
-|----------|---------|
-| `Lerp(a, b, t)` | Linear interpolation between two numbers |
-| `Easing::easeInOut()` | Common easing functions (linear, quad, elastic, bounce) |
-| `DegToRad(degrees)` | Convert degrees to radians |
-| `RadToDeg(radians)` | Convert radians to degrees |
-| `SineCurve(start, differential, speed)` | Oscillating sine wave value |
-| `SineWave()` | Wave generation utility |
-| `RandomNumberBetween(min, max)` | Random decimal in range |
-| `RandomIntegerBetween(min, max)` | Random integer in range |
-| `NumberWithCommas(x)` | Format number with thousands separators |
-| `CenterOnParent(item, parent)` | Calculate centered position within container |
-
-### Collision Detection — Object API
-
-These functions use structured types (`Point`, `Circle`, `Line`, `Polygon`):
-
-| Function | Signature |
-|----------|-----------|
-| `PointCircle(point, circle)` | Point inside/touching circle |
-| `CircleCircle(c1, c2)` | Two circles overlapping |
-| `LinePoint(line, point)` | Point on/near line segment |
-| `LineCircle(line, circle)` | Line segment touching circle |
-| `LineLine(line1, line2)` | Two line segments intersecting |
-| `PolygonPoint(polygon, point)` | Point inside polygon (ray-casting) |
-| `PolygonCircle(polygon, circle)` | Polygon edges/interior vs circle |
-| `PolygonLine(polygon, line)` | Polygon edges vs line segment |
-| `PolygonPolygon(poly1, poly2)` | Two polygons overlapping |
-
-### Collision Detection — Flat API
-
-These functions use individual x, y, w, h parameters (legacy):
-
-| Function | Purpose |
-|----------|---------|
-| `PointToCircle(px, py, cx, cy, r)` | Point vs circle collision |
-| `PointToRect(px, py, rx, ry, w, h)` | Point vs rectangle collision |
-| `CircleToCircle(x1, y1, r1, x2, y2, r2)` | Circle vs circle |
-| `CircleToRect(cx, cy, r, rx, ry, w, h)` | Circle vs rectangle |
-| `LineToPoint(x1, y1, x2, y2, px, py)` | Line segment vs point |
-| `LineToCircle(x1, y1, x2, y2, cx, cy, r)` | Line vs circle |
-| `LineToLine(x1, y1, x2, y2, x3, y3, x4, y4)` | Line vs line |
-| `LineToRect(x1, y1, x2, y2, rx, ry, w, h)` | Line vs rectangle |
-| `RectToRect(x1, y1, w1, h1, x2, y2, w2, h2)` | Rectangle vs rectangle |
-| `PolygonToPolygon()` | Polygon vs polygon |
-
-### Complex Algorithms
-
-| Function | Purpose |
-|----------|---------|
-| `DFT()` | Discrete Fourier Transform for epicycles |
-| `GameOfLife()` | Conway's Game of Life rules |
-| `WaveAmplitude()` | Wave interference amplitude calculation |
-| `LensDeflection()` | Gravitational lensing deflection angle |
-| `GRStep()` | General relativity orbital precession step |
-| `GetRandomColors(hueFilter)` | Random HSL color in range (blue/green/etc) |
-| `Distance(p1, p2)` | Euclidean distance between two points |
-
-### Drawing Helpers
-
-| Function | Purpose |
-|----------|---------|
-| `DrawStar(cx, cy, spikes, inner, outer, angle)` | Render star to canvas context |
-| `DrawRectWithTrig(cx, cy, w, h, angle)` | Render rotated rectangle to canvas |
-| `DrawEquilateralTriangle(cx, cy, size, angle)` | Render equilateral triangle to canvas |
-| `DistributeAroundCircleFlat(cx, cy, r, count)` | Points on circle (flat API) |
+- **Named export** (not `export default`) — the function name must survive `.toString()` for CodePen embedding.
+- **Concrete TypeScript types** — use `Point`, `Circle`, `Line` etc. from `../types/shapes`, not `any`.
+- **No site imports** — this file should work pasted into any JS project.
 
 ---
 
-## 💻 Spin Up the Lab Locally
+### Step 2 — Write the animation (`src/core-animations/`)
 
-Clone and run the environment locally to start injecting your own custom equations into the rendering pipeline.
+One file, two jobs: a standalone `drawX()` function for CodePen, and a default class for the Examples page.
 
-### Setup
+```typescript
+import AnimationBaseClass from "./AnimationBaseClass";
+import { myFunction } from "../core-functions/MyFunction";
+import { MyFormula } from "../pages/createJSON/formulas/animation/MyFormula";
 
-1. **Clone the repository:**
+// Job 1: standalone draw function for CodePen (.toString() embeds this as plain JS)
+// Must be self-contained — no references to module-level imports inside the function body.
+export function drawMyAnimation(ctx: any, canvasWidth: any, canvasHeight: any): void {
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  // draw using myFunction(...)
+}
 
-   ```bash
-   git clone https://github.com
-   cd utils-site-typescript
-   ```
+const ELI5 = `🔵 My Animation — One-Line Takeaway
 
-2. **Install the lightweight dependencies:**
+The sentence a user can repeat to a colleague: "This shows that ..."
 
-   ```bash
-   npm install
-   ```
+HOW IT WORKS:
+  The algorithm in plain English.
 
-3. **Ignite the Vite dev server:**
+WHY THIS WORKS:
+  The non-obvious insight.
 
-   ```bash
-   npm run dev
-   ```
+CONTROLS
+  • Slider name — what it does`;
 
-4. **Start Modding:**
-   Open your browser to the local Vite port. Try editing the acceleration vectors inside the `src/` functions directly—the browser will hot-reload your physics changes instantly without resetting the control deck state.
+// Job 2: animation class for the Examples page
+export default class MyAnimationClass extends AnimationBaseClass {
+  static t = "my animation title";   // human-readable title
+  static l = "my-animation-title";   // URL slug (kebab-case)
+  static f = MyFormula;
+  title = "my animation title";
+  animationObject = MyFormula;
 
----
+  init() {
+    if (this.textDiv) this.textDiv.innerHTML = ELI5.replace(/\n/g, "<br>");
+    this.draw();
+  }
 
-## 🏗️ Architecture for Math Exploration
+  draw = () => {
+    if (!this.canvas || !this.ctx) return;
+    drawMyAnimation(this.ctx, this.canvasWidth, this.canvasHeight);
+    this.raf(this.draw);
+  };
 
-```text
-├── src/
-│   ├── functions/       # 🧠 THE CORE MATH: Pure TypeScript utility logic files
-│   │   └── ...          # (Look here for raw formulas, bounding collision checks, etc.)
-│   ├── components/      # 🖥️ THE CANVAS RENDERS: Wrappers that bind math arrays to the screen
-│   │   └── ballBounce/  # Real-time interactive canvas engine demonstrating vector bounces
-│   └── styles/          # 🎨 Clean SCSS workspace configuration files
-├── html-explanations/   # 📝 Engineering teardowns and geometric guides for individual modules
-└── vite.config.ts       # Optimized dev engine pipeline config
+  pointerDownHandler(_e: PointerEvent) {}
+  pointerMoveHandler(_e: PointerEvent) {}
+  pointerUpHandler(_e: PointerEvent) {}
+}
 ```
 
 ---
 
-## 🤝 Fork & Hack
+### Step 3 — Write the formula wrapper (`src/pages/createJSON/formulas/animation/`)
 
-Want to see your favorite geometric formula visualized? Contributions that add new mathematical utility files or interactive canvas playgrounds are highly welcome.
+A thin shim so the "Create Utils File" page can expose your function. The `?raw` import (Vite feature) reads the source file as a string at build time — the displayed and downloaded code always matches the real source automatically.
 
-1. Fork this sandbox repository.
-2. Draft a new functional formula module inside `src/functions/`.
-3. Scaffold a vanilla canvas visualizer to render your vector matrices.
-4. Submit a Pull Request so we can expand the laboratory map!
+```typescript
+import { CollisionDetectionObject } from "../../../../types/types";
+import { myFunction } from "../../../../core-functions/MyFunction";
+import MyFunctionSource from "../../../../core-functions/MyFunction.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
+
+export const MyFormula: CollisionDetectionObject = {
+  keyFunction: myFunction,
+  dependencies: [],
+  interfaces: [],    // e.g. ["Point"] if your function takes a Point
+  functionString: extractFunctionString(MyFunctionSource),
+};
+```
+
+---
+
+### Step 4 — Register in `src/SiteData.ts`
+
+```typescript
+import MyAnimationClass from "./core-animations/MyAnimation";
+
+const SiteData: PrimaryObject = {
+  animations: {
+    // ... existing ...
+    MyAnimationClass,  // position here = order in the sidebar
+  },
+};
+```
+
+Your animation now appears on the `/examples` page.
+
+---
+
+### Step 5 — Add a CodePen entry (`src/pages/studio/pens-examples.ts`)
+
+```typescript
+import { drawMyAnimation } from "../../core-animations/MyAnimation";
+
+// In EXAMPLE_PENS array:
+{
+  group: "animations",
+  key: "my-animation-title",
+  label: "My Animation Title",
+  blurb: "One sentence: what does it show?",
+  payload: {
+    title: "My Animation Title",
+    js: buildCodePenJS(drawMyAnimation.toString()),
+    css: FULLSCREEN_CSS,
+    html: CANVAS_HTML,
+  },
+},
+```
+
+`drawMyAnimation.toString()` produces vanilla JS because there's no TypeScript syntax or imports in the function body.
+
+---
+
+## 🗂️ Adding a New Category
+
+Add a key to `src/SiteData.ts`:
+
+```typescript
+const SiteData: PrimaryObject = {
+  // ... existing ...
+  topology: {
+    MyNewAnimation,
+  },
+};
+```
+
+That's it. The category header appears in the sidebar automatically. No routing changes, no config files. Use the same string as `group` in any CodePen entries for that category.
+
+---
+
+## ✅ Checklist
+
+```
+[ ] src/core-functions/MyFunction.ts          — pure math, named export, concrete types
+[ ] src/core-animations/MyAnimation.ts        — drawX() + default class + ELI5 string
+[ ] src/pages/createJSON/formulas/animation/  — formula wrapper via ?raw + extractFunctionString
+[ ] src/SiteData.ts                           — import + register under the right category
+[ ] src/pages/studio/pens-examples.ts         — CodePen entry using drawX.toString()
+[ ] npm run build                             — zero TypeScript errors
+```
+
+---
+
+## 🏗️ Architecture
+
+```text
+src/
+├── core-functions/     ← The math. One file per function. No canvas, no React.
+├── core-animations/    ← One file per animation. Source for both Examples page and CodePen.
+│   ├── AnimationBaseClass.tsx
+│   └── animationTemplate.tsx
+├── pages/
+│   ├── examples/       ← /examples page
+│   ├── studio/         ← /studio page (Build With It + CodePen pens)
+│   └── createJSON/
+│       └── formulas/   ← Wrappers that expose functions to "Create Utils File"
+├── SiteData.ts         ← The governing document (see below)
+└── types/              ← Shared TypeScript interfaces
+```
+
+### The governing document
+
+`src/SiteData.ts` is the entire table of contents. It's a TypeScript object — not JSON, not XML. The keys are category names; the values are objects of animation classes. Whatever is in here appears in the `/examples` sidebar, in that order, with those category headers.
+
+```typescript
+const SiteData = {
+  "animations": { BallBounce, LerpAnimation, ... },
+  "collision detection": { PointToCircleCollision, ... },
+  "fourier": { FourierEpicycles },
+  // new key here → new category in sidebar, automatically
+};
+```
+
+---
+
+## 💻 Running Locally
+
+```bash
+git clone https://github.com/warpedpuppy/utils-site-typescript
+cd utils-site-typescript
+npm install
+npm run dev
+```
+
+---
+
+## 🤝 Contributing
+
+Follow the five-step checklist. One hard constraint: **one canonical source per function**. If you find yourself writing the same equation in two files, stop — put it in `core-functions/` and import from there.
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+MIT. See `LICENSE`.
 
 ## 🤖 A Note on AI & Engineering Integrity
 
-The core mathematics, formulas, and rendering logic in this laboratory were handcrafted from first principles. However, AI tools have played a growing role in this project over time — and I believe in being transparent about that.
+The core mathematics, formulas, and rendering logic were handcrafted from first principles. AI tools have played a growing role over time, and I believe in being transparent about that.
 
-**Any code that originated with AI will be explicitly identified as such** — both in the source file comments and in the "AI Made" section of the examples page on the site. The older animations (collision detection, trig utilities, etc.) are entirely hand-written. The newer sections (Fourier epicycles, Game of Life, Perlin flow fields, Bézier curves) were AI-generated and are labeled accordingly.
-
-Beyond code generation, AI was also used for:
-
-- **Memory Leak Auditing:** Web applications utilizing heavy HTML5 Canvas rendering cycles and continuous `requestAnimationFrame` hooks are highly prone to memory overhead issues. I had AI scrutinize my component lifecycles, which successfully pinpointed and repaired several nuanced canvas cache and listener leaks.
-- **Documentation Architecture:** This very README, along with its strategic positioning for the creative coding community, was co-authored alongside AI to ensure maximum scannability and structural clarity.
+**Any code that originated with AI is explicitly identified** — both in source file comments and in the "AI Made" section of the examples page. The older animations (collision detection, trig utilities) are entirely hand-written. The newer sections (Fourier epicycles, Game of Life, Perlin flow fields, Bézier curves) were AI-generated and are labeled accordingly.
