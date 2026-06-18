@@ -1,12 +1,10 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { NumberWithCommas as NumberWithCommasFn } from "../../../../core-functions/NumberWithCommas";
+import NumberWithCommasSource from "../../../../core-functions/NumberWithCommas.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const NumberWithCommas: CollisionDetectionObject = {
-  keyFunction: function NumberWithCommas(x: number) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  },
+  keyFunction: NumberWithCommasFn,
   dependencies: [],
-  functionString: `
-function NumberWithCommas(x: number) {
-  return x.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");
-}`,
+  functionString: extractFunctionString(NumberWithCommasSource),
 };

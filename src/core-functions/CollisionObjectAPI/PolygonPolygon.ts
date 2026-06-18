@@ -1,7 +1,8 @@
 import { PolygonPoint } from "./PolygonPoint";
 import { PolygonLine } from "./PolygonLine";
+import { Polygon } from '../../types/shapes';
 
-export function PolygonPolygon(polygon1: any, polygon2: any) {
+export function PolygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   let next = 0;
   const { vertices } = polygon1;
   for (let current = 0; current < vertices.length; current++) {

@@ -2,7 +2,12 @@ import { CodePenPayload } from "./codepen";
 import { BallBounce } from "../../pages/createJSON/formulas/animation/BallBounce";
 import { BallToBallBounce } from "../../pages/createJSON/formulas/animation/BallToBallBounce";
 import { Lerp } from "../../pages/createJSON/formulas/animation/Lerp";
-import { linear, easeIn, easeOut, easeInOut } from "../../core-functions/Easing";
+import {
+  linear,
+  easeIn,
+  easeOut,
+  easeInOut,
+} from "../../core-functions/Easing";
 import { QuadraticBezier } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
 import { DistributeAroundCircle } from "../../pages/createJSON/formulas/animation/DistributeAroundCircle";
 import { GetRotation } from "../../pages/createJSON/formulas/animation/GetRotation";

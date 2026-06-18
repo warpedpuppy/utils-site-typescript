@@ -1,7 +1,8 @@
 import { LineCircle } from "./LineCircle";
 import { PolygonPoint } from "./PolygonPoint";
+import { Polygon, Circle } from '../../types/shapes';
 
-export function PolygonCircle(polygon: any, circle: any) {
+export function PolygonCircle(polygon: Polygon, circle: Circle) {
   // go through each of the vertices, plus
   // the next vertex in the list
   let next = 0;

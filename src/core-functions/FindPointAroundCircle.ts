@@ -1,7 +1,9 @@
+import { Point } from '../types/shapes';
+
 export function FindPointAroundCircle(
-  circleCenter: any,
-  radius: any,
-  percentageAroundCircle: any
+  circleCenter: Point,
+  radius: number,
+  percentageAroundCircle: number
 ) {
   let totalCircleRadians = Math.PI * 2;
   let percent = percentageAroundCircle / 100;

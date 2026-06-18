@@ -6,28 +6,13 @@
 // right place to start.
 
 import { CollisionDetectionObject } from "../../../../types/types";
-import { Point } from "../../../../types/shapes";
+import { MoveAlongLine as MoveAlongLineFn } from "../../../../core-functions/MoveAlongLine";
+import MoveAlongLineSource from "../../../../core-functions/MoveAlongLine.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const MoveAlongLine: CollisionDetectionObject = {
-  keyFunction: function MoveAlongLine(
-    origin: Point,
-    destination: Point,
-    ratio: number
-  ) {
-    let x = origin.x + ratio * (destination.x - origin.x);
-    let y = origin.y + ratio * (destination.y - origin.y);
-    return { x, y };
-  },
+  keyFunction: MoveAlongLineFn,
   dependencies: [],
   interfaces: ["Point"],
-  functionString: `
-  function MoveAlongLine(
-    origin: Point,
-    destination: Point,
-    ratio: number
-  ) {
-    let x = origin.x + ratio * (destination.x - origin.x);
-    let y = origin.y + ratio * (destination.y - origin.y);
-    return { x, y };
-  }`,
+  functionString: extractFunctionString(MoveAlongLineSource),
 };

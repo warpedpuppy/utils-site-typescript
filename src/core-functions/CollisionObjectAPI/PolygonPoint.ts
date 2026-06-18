@@ -1,4 +1,6 @@
-export function PolygonPoint(polygon: any, point: any) {
+import { Polygon, Point } from '../../types/shapes';
+
+export function PolygonPoint(polygon: Polygon, point: Point) {
   let collision = false;
 
   // go through each of the vertices, plus the next

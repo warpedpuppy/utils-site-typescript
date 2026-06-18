@@ -1,6 +1,7 @@
 import { LineLine } from "./LineLine";
+import { Polygon, Line } from '../../types/shapes';
 
-export function PolygonLine(polygon: any, line: any) {
+export function PolygonLine(polygon: Polygon, line: Line) {
   // go through each of the vertices, plus the next
   // vertex in the list
   let next = 0;

@@ -1,7 +1,9 @@
+import { Point } from '../types/shapes';
+
 export function EquilateralTriangle(
-  radius: any,
-  centerPoint: any,
-  angle: any
+  radius: number,
+  centerPoint: Point,
+  angle: number
 ) {
   let allRadiansInACircle = 2 * Math.PI;
   let point1 = {

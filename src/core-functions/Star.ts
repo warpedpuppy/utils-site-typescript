@@ -1,18 +1,26 @@
 export function DrawStar(
-  spikes: any,
-  innerRadius: any,
-  outerRadius: any,
-  angle: any = 0,
-  options: any = { rotate: false, rotateSpeed: 1000, clockwise: true }
+  spikes: number,
+  innerRadius: number,
+  outerRadius: number,
+  angle: number = 0,
+  options: {
+    rotate?: boolean;
+    rotateSpeed?: number;
+    clockwise?: boolean;
+  } = { rotate: false, rotateSpeed: 1000, clockwise: true }
 ) {
-  let vertices = [];
+  let vertices: { x: number; y: number }[] = [];
   let rot = 0;
   let step = Math.PI / spikes;
   const currentDate = new Date();
-  let rotateQ = options.rotate
-    ? currentDate.getTime() / options.rotateSpeed
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+
+  let rotateQ = rotate
+    ? currentDate.getTime() / rotateSpeed
     : 0;
-  if (options.clockwise === false) rotateQ *= -1;
+  if (!clockwise) rotateQ *= -1;
   for (let i = 0; i < spikes; i++) {
     let x = Math.cos(angle + rot + rotateQ) * outerRadius;
     let y = Math.sin(angle + rot + rotateQ) * outerRadius;

@@ -1,7 +1,9 @@
+import { Point } from '../types/shapes';
+
 export function CircleFromThreePoints(
-  point1: any,
-  point2: any,
-  point3: any
+  point1: Point,
+  point2: Point,
+  point3: Point
 ) {
   let x12 = point1.x - point2.x;
   let x13 = point1.x - point3.x;

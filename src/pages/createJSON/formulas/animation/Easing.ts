@@ -1,11 +1,10 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { easeInOut as easeInOutFn } from "../../../../core-functions/Easing";
 
-// The keyFunction is easeInOutQuad — the most widely used easing.
+// The keyFunction is easeInOut — the most widely used easing.
 // The functionString shows the full family so users can copy what they need.
 export const Easing: CollisionDetectionObject = {
-  keyFunction: function easeInOutQuad(t: number): number {
-    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-  },
+  keyFunction: easeInOutFn,
   dependencies: [],
   functionString: `
   // t must be in the range 0–1 (proportion through the animation).

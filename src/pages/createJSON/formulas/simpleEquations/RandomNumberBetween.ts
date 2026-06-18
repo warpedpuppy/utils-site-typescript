@@ -1,15 +1,10 @@
 import { CollisionDetectionObject } from "../../../../types/types";
+import { RandomNumberBetween as RandomNumberBetweenFn } from "../../../../core-functions/RandomNumberBetween";
+import RandomNumberBetweenSource from "../../../../core-functions/RandomNumberBetween.ts?raw";
+import { extractFunctionString } from "../extractFunctionString";
 
 export const RandomNumberBetween: CollisionDetectionObject = {
-  keyFunction: function randoRandomNumberBetweenmNumberBetween(
-    min: number,
-    max: number
-  ) {
-    return Math.random() * (max - min) + min;
-  },
+  keyFunction: RandomNumberBetweenFn,
   dependencies: [],
-  functionString: `
-function RandomNumberBetween(min: number, max: number) {
-    return Math.random() * (max - min) + min;
-}`,
+  functionString: extractFunctionString(RandomNumberBetweenSource),
 };

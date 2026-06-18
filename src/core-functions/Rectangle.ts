@@ -2,16 +2,20 @@ import { LineLength } from "./LineLength";
 import { GetRotation } from "./GetRotation";
 
 export function CreateRect(
-  width: any,
-  height: any,
-  angle: any = 0,
-  options: any = {
+  width: number,
+  height: number,
+  angle: number = 0,
+  options: {
+    rotate?: boolean;
+    rotateSpeed?: number;
+    clockwise?: boolean;
+  } = {
     rotate: false,
     rotateSpeed: 1000,
     clockwise: true,
   }
 ) {
-  let vertices: any[] = [];
+  let vertices: { x: number; y: number }[] = [];
 
   let x = width / 2;
   let y = height / 2;
@@ -28,11 +32,14 @@ export function CreateRect(
   });
 
   const currentDate = new Date();
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
 
-  let rotateQ = options.rotate
-    ? currentDate.getTime() / options.rotateSpeed
+  let rotateQ = rotate
+    ? currentDate.getTime() / rotateSpeed
     : 0;
-  let spinDirection = options.clockwise
+  let spinDirection = clockwise
     ? [-rotateQ, rotateQ]
     : [rotateQ, -rotateQ];
 
