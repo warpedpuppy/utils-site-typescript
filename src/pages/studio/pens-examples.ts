@@ -29,13 +29,12 @@ import { getPointOnLine } from "@utilspalooza/core/GetPointOnLine";
 import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
 import { starVertices } from "@utilspalooza/core/Star";
 import { createRect } from "@utilspalooza/core/Rectangle";
-import { drawEquilateralTriangle } from "@utilspalooza/core/DrawEquilateralTriangle";
+import { drawEquilateralTriangle } from "./pen-snippets";
 import { circleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
-import { distributeAroundCircle } from "@utilspalooza/core/DistributeAroundCircleFlat";
 import { distance } from "@utilspalooza/core/Distance";
 import { bezierPoint } from "@utilspalooza/core/BezierCurve";
 import { dft } from "@utilspalooza/core/DFT";
-import { step } from "@utilspalooza/core/GameOfLife";
+import { gameOfLifeStep } from "@utilspalooza/core/GameOfLife";
 import { waveAmplitude } from "@utilspalooza/core/WaveAmplitude";
 import { lensDeflection } from "@utilspalooza/core/LensDeflection";
 import { grStep } from "@utilspalooza/core/GRStep";
@@ -2637,7 +2636,7 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><button id="reset">Reset</button><button id="toggle">Pause/Play</button></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${step.toString()}
+${gameOfLifeStep.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2660,7 +2659,7 @@ function randomizeGrid() {
 }
 
 function draw() {
-  if (!paused) grid = step(grid, cols, rows);
+  if (!paused) grid = gameOfLifeStep(grid, cols, rows);
 
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
