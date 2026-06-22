@@ -1,4 +1,5 @@
-// Auto-generated barrel for @utilspalooza/core
+// Auto-generated barrel for @utilspalooza/core — DO NOT EDIT BY HAND.
+// Regenerate with: npm run barrel
 export * from './types';
 export * from './BallBounce';
 export * from './BallToBallBounce';
