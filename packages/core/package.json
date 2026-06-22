@@ -19,9 +19,10 @@
   "files": ["dist"],
   "sideEffects": false,
   "scripts": {
-    "build": "tsup",
+    "barrel": "node scripts/generate-barrel.mjs",
+    "build": "npm run barrel && tsup",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "tsup"
+    "prepublishOnly": "npm run barrel && tsup"
   },
   "publishConfig": { "access": "public" },
   "devDependencies": {
