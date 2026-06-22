@@ -6,5 +6,6 @@ import { extractFunctionString } from "../extractFunctionString";
 export const SphereLighting: CollisionDetectionObject = {
   keyFunction: sphereLightingFn,
   dependencies: [],
+  interfaces: ["Point"],
   functionString: extractFunctionString(SphereLightingSource),
 };

@@ -1,3 +1,4 @@
+import { Point } from './types';
 export function starVertices(
   spikes: number,
   innerRadius: number,
@@ -9,7 +10,7 @@ export function starVertices(
     clockwise?: boolean;
   } = { rotate: false, rotateSpeed: 1000, clockwise: true }
 ) {
-  let vertices: { x: number; y: number }[] = [];
+  let vertices: Point[] = [];
   let rot = 0;
   let step = Math.PI / spikes;
   const currentDate = new Date();

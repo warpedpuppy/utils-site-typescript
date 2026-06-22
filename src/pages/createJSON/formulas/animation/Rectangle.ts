@@ -8,5 +8,6 @@ import { extractFunctionString } from "../extractFunctionString";
 export const RectangleObject: CollisionDetectionObject = {
   keyFunction: CreateRectFn,
   dependencies: [lineLength.functionString, getRotation.functionString],
+  interfaces: ["Point"],
   functionString: extractFunctionString(RectangleSource),
 };

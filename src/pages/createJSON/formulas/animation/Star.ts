@@ -6,6 +6,7 @@ import { extractFunctionString } from "../extractFunctionString";
 export const StarObject: CollisionDetectionObject = {
   keyFunction: DrawStarFn,
   dependencies: [],
+  interfaces: ["Point"],
   functionString: extractFunctionString(StarSource),
 };
 

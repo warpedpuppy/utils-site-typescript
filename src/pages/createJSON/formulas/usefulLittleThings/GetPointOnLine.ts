@@ -6,5 +6,6 @@ import { extractFunctionString } from "../extractFunctionString";
 export const GetPointOnLine: CollisionDetectionObject = {
   keyFunction: getPointOnLineFn,
   dependencies: [],
+  interfaces: ["Point"],
   functionString: extractFunctionString(GetPointOnLineSource),
 };

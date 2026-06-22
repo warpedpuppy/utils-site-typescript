@@ -1,6 +1,7 @@
+import { Point } from './types';
 export function sphereLighting(
   sphere: { x: number; y: number; radius: number },
-  lightSource: { x: number; y: number },
+  lightSource: Point,
   highlightReach: number = 0.4
 ) {
   const angleToLight = Math.atan2(
