@@ -1,4 +1,5 @@
-export function dft(pts: { x: number; y: number }[]): { freq: number; amp: number; phase: number }[] {
+import { Point } from './types';
+export function dft(pts: Point[]): { freq: number; amp: number; phase: number }[] {
   const N = pts.length;
   const X: { freq: number; amp: number; phase: number }[] = [];
   for (let k = 0; k < N; k++) {

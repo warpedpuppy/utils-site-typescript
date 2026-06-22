@@ -6,5 +6,6 @@ import { extractFunctionString } from "../extractFunctionString";
 export const triangleDataFromLine: CollisionDetectionObject = {
   keyFunction: TriangleDataFromLineFn,
   dependencies: [],
+  interfaces: ["Point"],
   functionString: extractFunctionString(TriangleDataFromLineSource),
 };

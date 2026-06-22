@@ -1,4 +1,5 @@
-export function bezierPoint(p0: { x: number; y: number }, p1: { x: number; y: number }, p2: { x: number; y: number }, p3: { x: number; y: number }, t: number): { x: number; y: number } {
+import { Point } from './types';
+export function bezierPoint(p0: Point, p1: Point, p2: Point, p3: Point, t: number): Point {
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
   let q0 = {x: lerp(p0.x, p1.x, t), y: lerp(p0.y, p1.y, t)};
   let q1 = {x: lerp(p1.x, p2.x, t), y: lerp(p1.y, p2.y, t)};

@@ -1,3 +1,4 @@
+import { Point } from './types';
 import { lineLength } from "./LineLength";
 import { getRotation } from "./GetRotation";
 
@@ -15,11 +16,11 @@ export function createRect(
     clockwise: true,
   }
 ) {
-  let vertices: { x: number; y: number }[] = [];
+  let vertices: Point[] = [];
 
   let x = width / 2;
   let y = height / 2;
-  let center: { x: number; y: number } = { x: 0, y: 0 };
+  let center: Point = { x: 0, y: 0 };
 
   let dist = lineLength({
     startPoint: center,
