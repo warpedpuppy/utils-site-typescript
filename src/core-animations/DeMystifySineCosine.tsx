@@ -1,8 +1,8 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { FindPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
-import { FindPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
-import { SineCurve } from "@utilspalooza/core/SineCurve";
+import { findPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
+import { findPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
+import { sineCurve } from "@utilspalooza/core/SineCurve";
 
 function distanceBetweenPoints(startPoint: Point, endPoint: Point): number {
   let a = startPoint.x - endPoint.x;
@@ -66,8 +66,8 @@ function drawDeMystifySineCosine(
   ctx.arc(canvasWidth * 0.66, halfHeight, 100, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let perc1 = SineCurve(62.5, 12.5, 0.001);
-  let point1 = FindPointAroundCircle(
+  let perc1 = sineCurve(62.5, 12.5, 0.001);
+  let point1 = findPointAroundCircle(
     {
       x: canvasWidth * 0.33,
       y: halfHeight,
@@ -90,8 +90,8 @@ function drawDeMystifySineCosine(
   ctx.lineTo(point1.x, halfHeight);
   ctx.stroke();
 
-  let perc2 = SineCurve(-12.5, 12.5, 0.001);
-  let point2 = FindPointAroundCircle(
+  let perc2 = sineCurve(-12.5, 12.5, 0.001);
+  let point2 = findPointAroundCircle(
     {
       x: canvasWidth * 0.66,
       y: halfHeight,

@@ -1,13 +1,13 @@
 import { CollisionDetectionObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { CenterOnParent } from "../pages/createJSON/formulas/simpleEquations/CenterOnParent";
+import { centerOnParent } from "../pages/createJSON/formulas/simpleEquations/CenterOnParent";
 
 class CenterOnParentAnimation extends AnimationBaseClass {
   static t = "center on parent";
   static l = "center-on-parent";
-  static f = CenterOnParent;
+  static f = centerOnParent;
   title = "center on parent";
-  animationObject: CollisionDetectionObject = CenterOnParent;
+  animationObject: CollisionDetectionObject = centerOnParent;
   init() {
     this.draw();
   }

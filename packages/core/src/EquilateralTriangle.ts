@@ -1,6 +1,6 @@
 import { Point } from './types';
 
-export function EquilateralTriangle(
+export function equilateralTriangle(
   radius: number,
   centerPoint: Point,
   angle: number

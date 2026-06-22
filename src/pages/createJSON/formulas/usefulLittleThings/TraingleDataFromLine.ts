@@ -1,9 +1,9 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { TriangleDataFromLine as TriangleDataFromLineFn } from "@utilspalooza/core/GetTriangleData";
+import { triangleDataFromLine as TriangleDataFromLineFn } from "@utilspalooza/core/GetTriangleData";
 import TriangleDataFromLineSource from "@utilspalooza/core/GetTriangleData.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
-export const TriangleDataFromLine: CollisionDetectionObject = {
+export const triangleDataFromLine: CollisionDetectionObject = {
   keyFunction: TriangleDataFromLineFn,
   dependencies: [],
   functionString: extractFunctionString(TriangleDataFromLineSource),

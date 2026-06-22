@@ -1,6 +1,6 @@
 import { Point } from './types';
 
-export function QuadraticBezier(t: number, p0: Point, p1: Point, p2: Point) {
+export function quadraticBezier(t: number, p0: Point, p1: Point, p2: Point) {
   const mt = 1 - t;
   return {
     x: mt * mt * p0.x + 2 * mt * t * p1.x + t * t * p2.x,

@@ -1,4 +1,4 @@
-// NOTE: GetPointOnLine and MoveAlongLine are mathematically identical
+// NOTE: GetPointOnLine and moveAlongLine are mathematically identical
 // both compute linear interpolation between two points: x = start.x + t*(end.x - start.x).
 
 import { CollisionDetectionObject } from "../../../../types/types";

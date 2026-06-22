@@ -1,6 +1,6 @@
-import { RandomIntegerBetween } from "./RandomIntegerBetween";
+import { randomIntegerBetween } from "./RandomIntegerBetween";
 
-export function GetRandomColors(str: string = "all") {
+export function getRandomColors(str: string = "all") {
   let range = [0, 360];
   if (str.includes("blue")) {
     range = [200, 250];
@@ -15,8 +15,8 @@ export function GetRandomColors(str: string = "all") {
   } else {
     range = [0, 360];
   }
-  let H = RandomIntegerBetween(range[0], range[1]);
-  let S = RandomIntegerBetween(50, 100);
-  let L = RandomIntegerBetween(25, 75);
+  let H = randomIntegerBetween(range[0], range[1]);
+  let S = randomIntegerBetween(50, 100);
+  let L = randomIntegerBetween(25, 75);
   return { H, S, L };
 }

@@ -1,16 +1,16 @@
-import { LineLength } from "../LineLength";
+import { lineLength } from "../LineLength";
 import { Line, Point } from '../types';
 
-export function LinePoint(line: Line, point: Point) {
+export function linePoint(line: Line, point: Point) {
   // get distance from the point to the two ends of the line
   let tempLine: Line = { startPoint: line.startPoint, endPoint: point };
-  let d1 = LineLength(tempLine);
+  let d1 = lineLength(tempLine);
 
   tempLine = { startPoint: line.endPoint, endPoint: point };
-  let d2 = LineLength(tempLine);
+  let d2 = lineLength(tempLine);
 
   // get the length of the line
-  let lineLen = LineLength(line);
+  let lineLen = lineLength(line);
 
   // since floats are so minutely accurate, add
   // a little buffer zone that will give collision

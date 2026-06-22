@@ -1,12 +1,12 @@
 import { CollisionDetectionObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { RandomIntegerBetween } from "../pages/createJSON/formulas/simpleEquations/RandomIntegerBetween";
+import { randomIntegerBetween } from "../pages/createJSON/formulas/simpleEquations/RandomIntegerBetween";
 class RandomIntegerAnimation extends AnimationBaseClass {
   static t = "random integer between";
   static l = "random-integer-between";
-  static f = RandomIntegerBetween;
+  static f = randomIntegerBetween;
   title = "random integer between";
-  animationObject: CollisionDetectionObject = RandomIntegerBetween;
+  animationObject: CollisionDetectionObject = randomIntegerBetween;
   init() {
     this.draw();
   }

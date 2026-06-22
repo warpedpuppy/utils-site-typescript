@@ -1,17 +1,17 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { GetRandomColors } from "../pages/createJSON/formulas/usefulLittleThings/GetRandomColors";
+import { getRandomColors } from "../pages/createJSON/formulas/usefulLittleThings/GetRandomColors";
 import { HSL } from "../types/types";
 class GetRandomColorAnimation extends AnimationBaseClass {
   static t = "get random color";
   static l = "get-random-color";
-  static f = GetRandomColors;
+  static f = getRandomColors;
   title = "get random color";
   colorString = "all";
   ballRadius = 50;
   colorArray: HSL[] = [];
   ballDiameter: number = 0;
   totalBalls: number = 0;
-  animationObject = GetRandomColors;
+  animationObject = getRandomColors;
   storeDimensions = {
     width: this.canvasWidth,
     height: this.canvasHeight,
@@ -53,7 +53,7 @@ class GetRandomColorAnimation extends AnimationBaseClass {
   createColorArray = (totalBalls: number) => {
     this.colorArray = [];
     for (let i = 0; i < totalBalls; i++) {
-      let { H, S, L } = GetRandomColors.keyFunction(this.colorString);
+      let { H, S, L } = getRandomColors.keyFunction(this.colorString);
       this.colorArray.push({ H, S, L });
     }
   };

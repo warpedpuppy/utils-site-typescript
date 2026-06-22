@@ -1,13 +1,13 @@
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { LineCircle } from "./LineCircle";
-import { PolygonPoint } from "./PolygonPoint";
-import { PolygonCircle as PolygonCircleImported } from "@utilspalooza/core/CollisionObjectAPI/PolygonCircle";
+import { lineCircle } from "./LineCircle";
+import { polygonPoint } from "./PolygonPoint";
+import { polygonCircle as PolygonCircleImported } from "@utilspalooza/core/CollisionObjectAPI/PolygonCircle";
 import PolygonCircleSource from "@utilspalooza/core/CollisionObjectAPI/PolygonCircle.ts?raw";
 import { extractFunctionString } from "../../extractFunctionString";
 
-export const PolygonCircle: CollisionDetectionObject = {
+export const polygonCircle: CollisionDetectionObject = {
   keyFunction: PolygonCircleImported,
-  dependencies: [LineCircle.functionString, PolygonPoint.functionString],
+  dependencies: [lineCircle.functionString, polygonPoint.functionString],
   interfaces: ["Circle", "Polygon"],
   functionString: extractFunctionString(PolygonCircleSource),
 };

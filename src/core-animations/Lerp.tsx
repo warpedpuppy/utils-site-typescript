@@ -1,6 +1,6 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { Lerp as lerpFunction } from "@utilspalooza/core/Lerp";
-import { Lerp as lerpFormula } from "../pages/createJSON/formulas/animation/Lerp";
+import { lerp as lerpFunction } from "@utilspalooza/core/Lerp";
+import { lerp as lerpFormula } from "../pages/createJSON/formulas/animation/Lerp";
 import { Point } from "../types/shapes";
 
 function drawLerp(
@@ -84,7 +84,7 @@ class LerpAnimation extends AnimationBaseClass {
     this.target.x = this.halfWidth + Math.sin(this.autoT) * this.halfWidth * 0.55;
     this.target.y = this.halfHeight + Math.sin(this.autoT * 1.7) * this.halfHeight * 0.38;
 
-    // Lerp the follower toward the target
+    // lerp the follower toward the target
     this.follower.x = lerpFunction(this.follower.x, this.target.x, this.lerpFactor) as number;
     this.follower.y = lerpFunction(this.follower.y, this.target.y, this.lerpFactor) as number;
 

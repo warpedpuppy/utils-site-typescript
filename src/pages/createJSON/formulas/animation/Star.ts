@@ -1,5 +1,5 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { DrawStar as DrawStarFn } from "@utilspalooza/core/Star";
+import { starVertices as DrawStarFn } from "@utilspalooza/core/Star";
 import StarSource from "@utilspalooza/core/Star.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 

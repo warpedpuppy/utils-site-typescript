@@ -1,7 +1,7 @@
 import { Circle } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
-import { PointCircle } from "../pages/createJSON/formulas/collision-detection/PointCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { pointCircle } from "../pages/createJSON/formulas/collision-detection/PointCollision";
 
 export function drawPointToCircle(
   ctx: CanvasRenderingContext2D,
@@ -15,10 +15,10 @@ export function drawPointToCircle(
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   const circle = { x: halfWidth, y: halfHeight, radius: 100 };
-  const x = SineCurve.keyFunction(halfWidth, 200, 0.001);
-  const y = SineCurve.keyFunction(halfHeight, 200, 0.001);
+  const x = sineCurve.keyFunction(halfWidth, 200, 0.001);
+  const y = sineCurve.keyFunction(halfHeight, 200, 0.001);
 
-  const hit = PointCircle.keyFunction({ x, y }, circle);
+  const hit = pointCircle.keyFunction({ x, y }, circle);
   ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
 
   ctx.beginPath();
@@ -44,16 +44,16 @@ export function drawPointToCircle(
 }
 
 // Export the function strings for CodePen pens
-export const drawPointToCircleFunctionString = `// ─── SineCurve function ─────────────────────────────────────────────────────
-function SineCurve(startingValue, differential, speed) {
+export const drawPointToCircleFunctionString = `// ─── sineCurve function ─────────────────────────────────────────────────────
+function sineCurve(startingValue, differential, speed) {
   const currentDate = new Date();
   return (
     startingValue + Math.sin(currentDate.getTime() * speed) * differential
   );
 }
 
-// ─── PointCircle collision detection ────────────────────────────────────────
-function PointCircle(point, circle) {
+// ─── pointCircle collision detection ────────────────────────────────────────
+function pointCircle(point, circle) {
   let distX = point.x - circle.x;
   let distY = point.y - circle.y;
   let distance = Math.sqrt(distX * distX + distY * distY);
@@ -68,10 +68,10 @@ function drawPointToCircle(ctx, canvasWidth, canvasHeight, time) {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   const circle = { x: halfWidth, y: halfHeight, radius: 100 };
-  const x = SineCurve(halfWidth, 200, 0.001);
-  const y = SineCurve(halfHeight, 200, 0.001);
+  const x = sineCurve(halfWidth, 200, 0.001);
+  const y = sineCurve(halfHeight, 200, 0.001);
 
-  const hit = PointCircle({ x, y }, circle);
+  const hit = pointCircle({ x, y }, circle);
   ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
 
   ctx.beginPath();
@@ -99,9 +99,9 @@ function drawPointToCircle(ctx, canvasWidth, canvasHeight, time) {
 class PointToCircleCollision extends AnimationBaseClass {
   static t = "point to circle collision";
   static l = "point-to-circle-collision";
-  static f = PointCircle;
+  static f = pointCircle;
   title = "point to circle collision";
-  animationObject = PointCircle;
+  animationObject = pointCircle;
   circle1: Circle = {
     x: this.canvasWidth * 0.33,
     y: this.halfHeight,
@@ -126,7 +126,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.circle2.y = this.halfHeight;
     let { x, y } = this.makePointMove();
 
-    const hit = PointCircle.keyFunction({ x, y }, this.circle2);
+    const hit = pointCircle.keyFunction({ x, y }, this.circle2);
     this.ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
 
     this.ctx.beginPath();
@@ -159,8 +159,8 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.raf(this.draw);
   };
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   pointerDownHandler(e: PointerEvent) {}

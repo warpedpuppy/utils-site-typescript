@@ -1,9 +1,9 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { GetRandomColors as GetRandomColorsFn } from "@utilspalooza/core/GetRandomColors";
+import { getRandomColors as GetRandomColorsFn } from "@utilspalooza/core/GetRandomColors";
 import GetRandomColorsSource from "@utilspalooza/core/GetRandomColors.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
-export const GetRandomColors: CollisionDetectionObject = {
+export const getRandomColors: CollisionDetectionObject = {
   keyFunction: GetRandomColorsFn,
   dependencies: [],
   functionString: extractFunctionString(GetRandomColorsSource),

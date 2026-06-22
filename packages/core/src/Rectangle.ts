@@ -1,7 +1,7 @@
-import { LineLength } from "./LineLength";
-import { GetRotation } from "./GetRotation";
+import { lineLength } from "./LineLength";
+import { getRotation } from "./GetRotation";
 
-export function CreateRect(
+export function createRect(
   width: number,
   height: number,
   angle: number = 0,
@@ -21,12 +21,12 @@ export function CreateRect(
   let y = height / 2;
   let center: { x: number; y: number } = { x: 0, y: 0 };
 
-  let dist = LineLength({
+  let dist = lineLength({
     startPoint: center,
     endPoint: { x, y },
   });
 
-  let atan2 = GetRotation(center, {
+  let atan2 = getRotation(center, {
     x,
     y,
   });

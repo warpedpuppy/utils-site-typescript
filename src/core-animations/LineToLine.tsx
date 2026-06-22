@@ -1,14 +1,14 @@
 import { Line } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { LineLine } from "../pages/createJSON/formulas/collision-detection/LineCollision";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { lineLine } from "../pages/createJSON/formulas/collision-detection/LineCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 
 class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";
   static l = "line-to-line-collision";
-  static f = LineLine;
+  static f = lineLine;
   title = "line to line collision";
-  animationObject = LineLine;
+  animationObject = lineLine;
   line1: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },
@@ -24,8 +24,8 @@ class LineToLineCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {
@@ -47,7 +47,7 @@ class LineToLineCollision extends AnimationBaseClass {
     this.line2.startPoint = { x: this.halfWidth - 100, y: this.halfHeight };
     this.line2.endPoint = { x: this.halfWidth + 100, y: this.halfHeight };
 
-    const hit = LineLine.keyFunction(this.line1, this.line2).hit;
+    const hit = lineLine.keyFunction(this.line1, this.line2).hit;
 
     this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();

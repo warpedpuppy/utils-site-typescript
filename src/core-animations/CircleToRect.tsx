@@ -1,15 +1,15 @@
 import { Circle, Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { RectangleObject } from "../pages/createJSON/formulas/animation/Rectangle";
-import { PolygonCircle } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { polygonCircle } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 
 class CirceToRectAnimation extends AnimationBaseClass {
   static t = "circle to rectangle collision";
   static l = "circle-to-rectangle-collision";
-  static f = PolygonCircle;
+  static f = polygonCircle;
   title = "circle to rectangle collision";
-  animationObject = PolygonCircle;
+  animationObject = polygonCircle;
   rect = RectangleObject.keyFunction(100, 100, 0, false);
   circle: Circle = {
     x: this.halfWidth,
@@ -23,8 +23,8 @@ class CirceToRectAnimation extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {
@@ -40,7 +40,7 @@ class CirceToRectAnimation extends AnimationBaseClass {
       rotateSpeed: 1000,
     });
 
-    const hit = PolygonCircle.keyFunction(this.rect, this.circle);
+    const hit = polygonCircle.keyFunction(this.rect, this.circle);
 
     this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();

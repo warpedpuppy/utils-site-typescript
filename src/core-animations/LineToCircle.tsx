@@ -1,13 +1,13 @@
 import { Line, Circle } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { LineCircle } from "../pages/createJSON/formulas/collision-detection/LineCollision";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { lineCircle } from "../pages/createJSON/formulas/collision-detection/LineCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 class LineToCircleCollision extends AnimationBaseClass {
   static t = "line to circle collision";
   static l = "line-to-circle-collision";
-  static f = LineCircle;
+  static f = lineCircle;
   title = "line to circle collision";
-  animationObject = LineCircle;
+  animationObject = lineCircle;
   line: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },
@@ -23,8 +23,8 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {
@@ -42,7 +42,7 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.line.startPoint = { x: x1, y: y1 };
     this.line.endPoint = { x: x2, y: y2 };
 
-    const hit = LineCircle.keyFunction(this.line, this.circle);
+    const hit = lineCircle.keyFunction(this.line, this.circle);
 
     this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();

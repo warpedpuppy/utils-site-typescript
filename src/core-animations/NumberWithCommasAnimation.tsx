@@ -1,12 +1,12 @@
 import { CollisionDetectionObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { NumberWithCommas } from "../pages/createJSON/formulas/simpleEquations/NumberWIthCommas";
+import { numberWithCommas } from "../pages/createJSON/formulas/simpleEquations/NumberWIthCommas";
 class NumberWithCommasAnimation extends AnimationBaseClass {
   static t = "format number with commas";
   static l = "format-number-with-commas";
-  static f = NumberWithCommas;
+  static f = numberWithCommas;
   title = "format number with commas";
-  animationObject: CollisionDetectionObject = NumberWithCommas;
+  animationObject: CollisionDetectionObject = numberWithCommas;
   init() {
     this.draw();
   }

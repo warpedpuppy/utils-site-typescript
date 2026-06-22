@@ -1,6 +1,6 @@
 import { Ball, Container } from './types';
 
-export function BallBounce(ball: Ball, stage: Container) {
+export function ballBounce(ball: Ball, stage: Container) {
   const gravity = 0.4;
   const restitution = 0.72;
   const friction = 0.985;

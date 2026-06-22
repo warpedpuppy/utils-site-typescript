@@ -1,9 +1,9 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { QuadraticBezier as QuadraticBezierFn } from "@utilspalooza/core/QuadraticBezier";
+import { quadraticBezier as QuadraticBezierFn } from "@utilspalooza/core/QuadraticBezier";
 import QuadraticBezierSource from "@utilspalooza/core/QuadraticBezier.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
-export const QuadraticBezier: CollisionDetectionObject = {
+export const quadraticBezier: CollisionDetectionObject = {
   keyFunction: QuadraticBezierFn,
   dependencies: [],
   interfaces: ["Point"],

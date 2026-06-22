@@ -1,13 +1,13 @@
 import { Circle } from "../types/shapes";
-import { CircleCircle } from "../pages/createJSON/formulas/collision-detection/CircleCollision";
+import { circleCircle } from "../pages/createJSON/formulas/collision-detection/CircleCollision";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 class CircleToCircleAnimation extends AnimationBaseClass {
   static t = "circle to circle collision";
   static l = "circle-to-circle-collision";
-  static f = CircleCircle;
+  static f = circleCircle;
   title = "circle to circle collision";
-  animationObject = CircleCircle;
+  animationObject = circleCircle;
   circle1: Circle = {
     x: this.canvasWidth * 0.5,
     y: this.halfHeight,
@@ -25,8 +25,8 @@ class CircleToCircleAnimation extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {
@@ -40,7 +40,7 @@ class CircleToCircleAnimation extends AnimationBaseClass {
     this.circle2.x = x;
     this.circle2.y = y;
 
-    const hit = CircleCircle.keyFunction(this.circle1, this.circle2);
+    const hit = circleCircle.keyFunction(this.circle1, this.circle2);
 
     this.ctx.fillStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();

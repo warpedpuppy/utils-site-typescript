@@ -3,13 +3,13 @@ import GetHalfwayPointOfLine from "./core-animations/GetPointOnLine";
 import GetEquilateralTriangleVertices from "./core-animations/EquilateralTriangle";
 import MoveObjectToDestinationPoint from "./core-animations/MoveToDestination";
 import DistanceBetweenTwoPoints from "./core-animations/LineLength";
-import TriangleDataFromLine from "./core-animations/TriangleDataFromLine";
+import triangleDataFromLine from "./core-animations/TriangleDataFromLine";
 import PointTowardsMovingPoint from "./core-animations/PointTowards";
 import MoveItemAroundCircle from "./core-animations/MoveItemAroundCircle";
 import SineCurveAnimation from "./core-animations/SineCurve";
 import DistributePointsAroundACircle from "./core-animations/DistributeAroundCircle";
 import DeMystifySineCosine from "./core-animations/DeMystifySineCosine";
-import BallBounce from "./core-animations/BallBounce";
+import ballBounce from "./core-animations/BallBounce";
 import BallsBouncingAgainstEachOther from "./core-animations/BallBall";
 import OrbitalMotionAnimation from "./core-animations/OrbitalMotion";
 import LerpAnimation from "./core-animations/Lerp";
@@ -50,7 +50,7 @@ import Phyllotaxis from "./core-animations/Phyllotaxis";
 
 const SiteData: PrimaryObject = {
   animations: {
-    BallBounce,
+    ballBounce,
     BallsBouncingAgainstEachOther,
     OrbitalMotionAnimation,
     LerpAnimation,
@@ -77,7 +77,7 @@ const SiteData: PrimaryObject = {
   "useful little things": {
     GetRandomColorAnimation,
     GetHalfwayPointOfLine,
-    TriangleDataFromLine,
+    triangleDataFromLine,
     Star,
     Polygon,
     GetEquilateralTriangleVertices,
