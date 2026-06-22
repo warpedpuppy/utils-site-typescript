@@ -4,19 +4,27 @@
   "description": "Framework-agnostic, typed math & geometry functions for canvas/creative coding.",
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.global.js",
+  "jsdelivr": "./dist/index.global.js",
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
-  "files": [
-    "dist",
-    "src"
-  ],
+  "files": ["dist"],
   "sideEffects": false,
-  "publishConfig": {
-    "access": "public"
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "tsup"
+  },
+  "publishConfig": { "access": "public" },
+  "devDependencies": {
+    "tsup": "^8.0.0"
   }
 }
