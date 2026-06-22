@@ -1,6 +1,6 @@
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { CircleCircle as CircleCircleImported } from "../../../../../core-functions/CollisionObjectAPI/CircleCircle";
-import CircleCircleSource from "../../../../../core-functions/CollisionObjectAPI/CircleCircle.ts?raw";
+import { CircleCircle as CircleCircleImported } from "@utilspalooza/core/CollisionObjectAPI/CircleCircle";
+import CircleCircleSource from "@utilspalooza/core/CollisionObjectAPI/CircleCircle.ts?raw";
 import { extractFunctionString } from "../../extractFunctionString";
 
 export const CircleCircle: CollisionDetectionObject = {

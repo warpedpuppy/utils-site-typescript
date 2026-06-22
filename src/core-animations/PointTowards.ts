@@ -1,6 +1,6 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { GetRotation } from "../core-functions/GetRotation";
+import { GetRotation } from "@utilspalooza/core/GetRotation";
 import { GetRotation as getRotationFormula } from "../pages/createJSON/formulas/animation/GetRotation";
 
 function pointsAroundCircle(

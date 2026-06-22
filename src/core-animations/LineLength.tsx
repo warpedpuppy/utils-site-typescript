@@ -1,6 +1,6 @@
 import { Point } from "../types/shapes";
 import { Nullable } from "../types/types";
-import { LineLength as LineLengthFunc } from "../core-functions/LineLength";
+import { LineLength as LineLengthFunc } from "@utilspalooza/core/LineLength";
 import { LineLength as lineLengthFormula } from "../pages/createJSON/formulas/animation/LineLength";
 import AnimationBaseClass from "./AnimationBaseClass";
 

@@ -1,6 +1,6 @@
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { PolygonPoint as PolygonPointImported } from "../../../../../core-functions/CollisionObjectAPI/PolygonPoint";
-import PolygonPointSource from "../../../../../core-functions/CollisionObjectAPI/PolygonPoint.ts?raw";
+import { PolygonPoint as PolygonPointImported } from "@utilspalooza/core/CollisionObjectAPI/PolygonPoint";
+import PolygonPointSource from "@utilspalooza/core/CollisionObjectAPI/PolygonPoint.ts?raw";
 import { extractFunctionString } from "../../extractFunctionString";
 
 export const PolygonPoint: CollisionDetectionObject = {

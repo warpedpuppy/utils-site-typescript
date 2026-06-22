@@ -2,7 +2,11 @@
   "name": "utils_ts",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
+    "@utilspalooza/core": "*",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

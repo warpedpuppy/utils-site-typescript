@@ -1,6 +1,6 @@
 import { Polygon } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { CreateRect as Rectangle } from "../core-functions/Rectangle";
+import { CreateRect as Rectangle } from "@utilspalooza/core/Rectangle";
 import { RectangleObject as rectangleFormula } from "../pages/createJSON/formulas/animation/Rectangle";
 
 function drawPolygon(ctx: any, rect: any, halfWidth: any, halfHeight: any): void {

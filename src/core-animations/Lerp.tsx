@@ -1,5 +1,5 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { Lerp as lerpFunction } from "../core-functions/Lerp";
+import { Lerp as lerpFunction } from "@utilspalooza/core/Lerp";
 import { Lerp as lerpFormula } from "../pages/createJSON/formulas/animation/Lerp";
 import { Point } from "../types/shapes";
 

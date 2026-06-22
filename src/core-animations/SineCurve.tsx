@@ -1,5 +1,5 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { SineCurve } from "../core-functions/SineCurve";
+import { SineCurve } from "@utilspalooza/core/SineCurve";
 import { SineCurve as sineCurveFormula } from "../pages/createJSON/formulas/animation/SineCurve";
 
 function drawSineCurve(
