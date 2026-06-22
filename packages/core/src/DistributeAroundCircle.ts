@@ -1,12 +1,12 @@
 import { Point } from './types';
 
-export function distribute(
+export function distributeAroundCircle(
   circleCenter: Point,
   radius: number,
   totalItems: number
-) {
+): Point[] {
   const totalCircleRadians = Math.PI * 2;
-  const returnArray = [];
+  const returnArray: Point[] = [];
   for (let i = 0; i < totalItems; i++) {
     const percent = i / totalItems;
     returnArray.push({

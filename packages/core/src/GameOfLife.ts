@@ -11,7 +11,7 @@ function countNeighbors(grid: ArrayLike<number>, x: number, y: number, cols: num
   return count;
 }
 
-export function step(grid: ArrayLike<number>, cols: number, rows: number): Uint8Array {
+export function gameOfLifeStep(grid: ArrayLike<number>, cols: number, rows: number): Uint8Array {
   let next = new Uint8Array(cols * rows);
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
