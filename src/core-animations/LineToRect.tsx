@@ -1,7 +1,7 @@
 import { Line } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { RectangleObject } from "../pages/createJSON/formulas/animation/Rectangle";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 import { LinePolygon } from "../pages/createJSON/formulas/collision-detection/LineCollision";
 import { Point } from "../types/shapes";
 
@@ -22,8 +22,8 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {

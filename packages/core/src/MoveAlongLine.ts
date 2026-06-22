@@ -1,6 +1,6 @@
 import { Point } from './types';
 
-export function MoveAlongLine(
+export function moveAlongLine(
   origin: Point,
   destination: Point,
   ratio: number

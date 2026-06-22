@@ -1,8 +1,8 @@
-import { LineCircle } from "./LineCircle";
-import { PolygonPoint } from "./PolygonPoint";
+import { lineCircle } from "./LineCircle";
+import { polygonPoint } from "./PolygonPoint";
 import { Polygon, Circle } from '../types';
 
-export function PolygonCircle(polygon: Polygon, circle: Circle) {
+export function polygonCircle(polygon: Polygon, circle: Circle) {
   // go through each of the vertices, plus
   // the next vertex in the list
   let next = 0;
@@ -21,7 +21,7 @@ export function PolygonCircle(polygon: Polygon, circle: Circle) {
     // check for collision between the circle and
     // a line formed between the two vertices
     let line = { startPoint, endPoint };
-    let collision = LineCircle(line, circle);
+    let collision = lineCircle(line, circle);
     if (collision) return true;
   }
 
@@ -31,7 +31,7 @@ export function PolygonCircle(polygon: Polygon, circle: Circle) {
   // following code to also test if the center of the
   // circle is inside the polygon
 
-  let centerInside = PolygonPoint(polygon, {
+  let centerInside = polygonPoint(polygon, {
     x: circle.x,
     y: circle.y,
   });

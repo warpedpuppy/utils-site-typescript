@@ -1,7 +1,7 @@
 import { GenericObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { CircleFromThreePoints as CircleFromThreePointsFunc } from "@utilspalooza/core/CircleFromThreePoints";
-import { CircleFromThreePoints as circleFromThreePointsFormula } from "../pages/createJSON/formulas/animation/CircleFromThreePoints";
+import { circleFromThreePoints as CircleFromThreePointsFunc } from "@utilspalooza/core/CircleFromThreePoints";
+import { circleFromThreePoints as circleFromThreePointsFormula } from "../pages/createJSON/formulas/animation/CircleFromThreePoints";
 
 function drawCircleFromThreePoints(
   ctx: any,

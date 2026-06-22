@@ -1,6 +1,6 @@
 import { Point } from './types';
 
-export function CircleFromThreePoints(
+export function circleFromThreePoints(
   point1: Point,
   point2: Point,
   point3: Point

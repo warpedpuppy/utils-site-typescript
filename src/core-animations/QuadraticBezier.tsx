@@ -1,6 +1,6 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { QuadraticBezier } from "@utilspalooza/core/QuadraticBezier";
-import { QuadraticBezier as quadraticBezierFormula } from "../pages/createJSON/formulas/animation/QuadraticBezier";
+import { quadraticBezier } from "@utilspalooza/core/QuadraticBezier";
+import { quadraticBezier as quadraticBezierFormula } from "../pages/createJSON/formulas/animation/QuadraticBezier";
 import { Point } from "../types/shapes";
 
 type HandleKey = "p0" | "p1" | "p2";
@@ -34,14 +34,14 @@ function drawQuadraticBezier(
   ctx.lineWidth = 3;
   ctx.beginPath();
   for (let i = 0; i <= 100; i++) {
-    const pt = QuadraticBezier(i / 100, p0, p1, p2) as Point;
+    const pt = quadraticBezier(i / 100, p0, p1, p2) as Point;
     i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y);
   }
   ctx.stroke();
 
   // ── Moving dot (oscillates along the curve) ───────────────────────────
   const tDot = (Math.sin(Date.now() * 0.0009) + 1) / 2;
-  const dotPt = QuadraticBezier(tDot, p0, p1, p2) as Point;
+  const dotPt = quadraticBezier(tDot, p0, p1, p2) as Point;
 
   ctx.fillStyle = "#f97316";
   ctx.beginPath();

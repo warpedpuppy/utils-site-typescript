@@ -1,5 +1,5 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { FindPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
+import { findPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
 import { SphereLighting } from "../pages/createJSON/formulas/animation/OrbitalMotion";
 
 // SphereLighting calculates the highlight position on a sphere given the orbiter and light source positions
@@ -60,8 +60,8 @@ function drawOrbitalMotion(
   ctx.arc(cx, cy, sunRadius * 1.6, 0, Math.PI * 2);
   ctx.fill();
 
-  // orbiter position — reuses the existing FindPointAroundCircle formula
-  const { x: ox, y: oy } = FindPointAroundCircle(
+  // orbiter position — reuses the existing findPointAroundCircle formula
+  const { x: ox, y: oy } = findPointAroundCircle(
     { x: cx, y: cy },
     orbitRadius,
     pct

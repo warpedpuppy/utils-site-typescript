@@ -1,6 +1,6 @@
 import { Ball } from './types';
 
-export function BallToBallBounce(ball1: Ball, ball2: Ball, spring: number = 0.05) {
+export function ballToBallBounce(ball1: Ball, ball2: Ball, spring: number = 0.05) {
   if (ball1 === ball2) return;
   let dx = ball2.x - ball1.x;
   let dy = ball2.y - ball1.y;

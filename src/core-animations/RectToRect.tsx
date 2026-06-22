@@ -1,14 +1,14 @@
 import AnimationBaseClass from "./AnimationBaseClass";
 import { RectangleObject } from "../pages/createJSON/formulas/animation/Rectangle";
-import { PolygonPolygon } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { polygonPolygon } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 import { Point } from "../types/shapes";
 class RectToRect extends AnimationBaseClass {
   static t = "rectangle to rectangle collision";
   static l = "rectangle-to-rectangle-collision";
-  static f = PolygonPolygon;
+  static f = polygonPolygon;
   title = "rectangle to rectangle collision";
-  animationObject = PolygonPolygon;
+  animationObject = polygonPolygon;
   rect1 = RectangleObject.keyFunction(50, 50, 0);
   rect2 = RectangleObject.keyFunction(50, 50, 0);
   init() {
@@ -17,8 +17,8 @@ class RectToRect extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {
@@ -34,7 +34,7 @@ class RectToRect extends AnimationBaseClass {
       rotateSpeed: 1000,
     });
 
-    const hit = PolygonPolygon.keyFunction(this.rect1, this.rect2);
+    const hit = polygonPolygon.keyFunction(this.rect1, this.rect2);
 
     this.ctx.fillStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
     this.ctx.beginPath();

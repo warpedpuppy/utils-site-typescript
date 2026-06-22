@@ -1,23 +1,23 @@
 import { CollisionDetectionObject } from "../../../../types/types";
 import { Point } from "../../../../types/shapes";
-import { TriangleDataFromLine as TriangleDataFromLineFn } from "@utilspalooza/core/GetTriangleData";
-import { LineLength } from "@utilspalooza/core/LineLength";
+import { triangleDataFromLine as TriangleDataFromLineFn } from "@utilspalooza/core/GetTriangleData";
+import { lineLength } from "@utilspalooza/core/LineLength";
 
-export const TriangleDataFromLine: CollisionDetectionObject = {
+export const triangleDataFromLine: CollisionDetectionObject = {
   keyFunction: TriangleDataFromLineFn,
   dependencies: [],
   interfaces: ["Point"],
   functionString: `
-  function TriangleDataFromLine(startPoint: Point, endPoint: Point) {
-    let hypotenuse = LineLength({ startPoint, endPoint });
-    let adjacent = LineLength({
+  function triangleDataFromLine(startPoint: Point, endPoint: Point) {
+    let hypotenuse = lineLength({ startPoint, endPoint });
+    let adjacent = lineLength({
       startPoint,
       endPoint: {
         x: endPoint.x,
         y: startPoint.y,
       },
     });
-    let opposite = LineLength({
+    let opposite = lineLength({
       startPoint: {
         x: endPoint.x,
         y: startPoint.y,

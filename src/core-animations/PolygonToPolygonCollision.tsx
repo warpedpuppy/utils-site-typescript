@@ -1,12 +1,12 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { PolygonPolygon } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
+import { polygonPolygon } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
 import { StarObject } from "../pages/createJSON/formulas/animation/Star";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 import { Polygon, Point } from "../types/shapes";
 class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
   static l = "polygon-to-polygon-collision";
-  static f = PolygonPolygon;
+  static f = polygonPolygon;
   title = "polygon to polygon collision";
   star1: Polygon = StarObject.keyFunction(5, 50, 25, 0, {
     rotate: true,
@@ -16,13 +16,13 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     rotate: true,
     rotateSpeed: 2000,
   });
-  animationObject = PolygonPolygon;
+  animationObject = polygonPolygon;
   init() {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {
@@ -53,7 +53,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
       vertices2.push({ x: x + star.x, y: y + star.y });
     });
 
-    const hit = PolygonPolygon.keyFunction({ vertices: vertices1 }, { vertices: vertices2 });
+    const hit = polygonPolygon.keyFunction({ vertices: vertices1 }, { vertices: vertices2 });
 
     // large center star
     this.ctx.fillStyle = hit ? "#22d3ee" : "#facc15";

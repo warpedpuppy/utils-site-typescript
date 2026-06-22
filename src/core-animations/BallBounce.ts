@@ -1,7 +1,7 @@
 import { Ball } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { BallBounce as ballBouncePhysics } from "@utilspalooza/core/BallBounce";
-import { BallBounce as ballBounceFormula } from "../pages/createJSON/formulas/animation/BallBounce";
+import { ballBounce as ballBouncePhysics } from "@utilspalooza/core/BallBounce";
+import { ballBounce as ballBounceFormula } from "../pages/createJSON/formulas/animation/BallBounce";
 
 function drawBallBounce(ctx: any, ball: any, stage: any): void {
   ctx.clearRect(0, 0, stage.width, stage.height);

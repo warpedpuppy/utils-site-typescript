@@ -1,4 +1,4 @@
-export function DrawStar(
+export function starVertices(
   spikes: number,
   innerRadius: number,
   outerRadius: number,

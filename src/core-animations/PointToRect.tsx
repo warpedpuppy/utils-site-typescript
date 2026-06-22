@@ -1,15 +1,15 @@
 import { Circle } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
-import { PolygonPoint } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { polygonPoint } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
 import { RectangleObject } from "../pages/createJSON/formulas/animation/Rectangle";
 import { Point } from "../types/shapes";
 class PointToRectangle extends AnimationBaseClass {
   static t = "point to polygon collision";
   static l = "point-to-rectangle-collision";
-  static f = PolygonPoint;
+  static f = polygonPoint;
   title = "point to rectangle (or any polygon) collision";
-  animationObject = PolygonPoint;
+  animationObject = polygonPoint;
   rect = RectangleObject.keyFunction(200, 300, 0);
   circle1: Circle = {
     x: this.canvasWidth * 0.33,
@@ -22,8 +22,8 @@ class PointToRectangle extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
     return { x, y };
   }
   draw = () => {
@@ -35,7 +35,7 @@ class PointToRectangle extends AnimationBaseClass {
     this.circle1.x = x;
     this.circle1.y = y;
 
-    const hit = PolygonPoint.keyFunction(this.rect, { x: this.circle1.x, y: this.circle1.y });
+    const hit = polygonPoint.keyFunction(this.rect, { x: this.circle1.x, y: this.circle1.y });
     this.ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
 
     this.rect = RectangleObject.keyFunction(100, 100, 0, {

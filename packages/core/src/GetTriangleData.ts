@@ -1,4 +1,4 @@
-import { LineLength } from "./LineLength";
+import { lineLength } from "./LineLength";
 import { Point } from './types';
 
 export function getTriangleData(p1: Point, p2: Point) {
@@ -6,16 +6,16 @@ export function getTriangleData(p1: Point, p2: Point) {
   return { dx, dy, distance: Math.sqrt(dx * dx + dy * dy) };
 }
 
-export function TriangleDataFromLine(startPoint: Point, endPoint: Point) {
-  let hypotenuse = LineLength({ startPoint, endPoint });
-  let adjacent = LineLength({
+export function triangleDataFromLine(startPoint: Point, endPoint: Point) {
+  let hypotenuse = lineLength({ startPoint, endPoint });
+  let adjacent = lineLength({
     startPoint,
     endPoint: {
       x: endPoint.x,
       y: startPoint.y,
     },
   });
-  let opposite = LineLength({
+  let opposite = lineLength({
     startPoint: {
       x: endPoint.x,
       y: startPoint.y,

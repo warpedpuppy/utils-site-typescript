@@ -1,7 +1,7 @@
 import { Polygon } from "../types/shapes";
 import { GenericObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { DrawStar } from "@utilspalooza/core/Star";
+import { starVertices } from "@utilspalooza/core/Star";
 import { StarObject as starFormula } from "../pages/createJSON/formulas/animation/Star";
 
 function drawStar(ctx: any, star: any, halfWidth: any, halfHeight: any): void {
@@ -51,7 +51,7 @@ export default class StarAnimation extends AnimationBaseClass {
       };
     }
 
-    this.star = DrawStar(5, 70, 200, 0, {
+    this.star = starVertices(5, 70, 200, 0, {
       rotate: true,
       rotateSpeed: 2000,
       clockwise: true,

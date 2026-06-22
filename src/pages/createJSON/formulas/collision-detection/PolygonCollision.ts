@@ -1,6 +1,6 @@
-import { PolygonPolygon } from "./functions/PolygonPolygon";
-import { PolygonCircle } from "./functions/PolygonCircle";
-import { PolygonLine } from "./functions/PolygonLine";
-import { PolygonPoint } from "./functions/PolygonPoint";
+import { polygonPolygon } from "./functions/PolygonPolygon";
+import { polygonCircle } from "./functions/PolygonCircle";
+import { polygonLine } from "./functions/PolygonLine";
+import { polygonPoint } from "./functions/PolygonPoint";
 
-export { PolygonCircle, PolygonPolygon, PolygonLine, PolygonPoint };
+export { polygonCircle, polygonPolygon, polygonLine, polygonPoint };

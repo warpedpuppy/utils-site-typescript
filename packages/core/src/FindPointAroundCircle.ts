@@ -1,6 +1,6 @@
 import { Point } from './types';
 
-export function FindPointAroundCircle(
+export function findPointAroundCircle(
   circleCenter: Point,
   radius: number,
   percentageAroundCircle: number

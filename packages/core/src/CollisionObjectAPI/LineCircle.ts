@@ -1,15 +1,15 @@
-import { PointCircle } from "./PointCircle";
-import { LinePoint } from "./LinePoint";
-import { LineLength } from "../LineLength";
+import { pointCircle } from "./PointCircle";
+import { linePoint } from "./LinePoint";
+import { lineLength } from "../LineLength";
 import { Line, Circle } from '../types';
 
-export function LineCircle(line: Line, circle: Circle) {
-  let inside1 = PointCircle(line.startPoint, circle);
-  let inside2 = PointCircle(line.endPoint, circle);
+export function lineCircle(line: Line, circle: Circle) {
+  let inside1 = pointCircle(line.startPoint, circle);
+  let inside2 = pointCircle(line.endPoint, circle);
   if (inside1 || inside2) return true;
 
   // get length of the line
-  let len = LineLength(line);
+  let len = lineLength(line);
 
   // get dot product of the line and circle
   let dot =
@@ -24,14 +24,14 @@ export function LineCircle(line: Line, circle: Circle) {
   let closestY =
     line.startPoint.y + dot * (line.endPoint.y - line.startPoint.y);
 
-  let onSegment = LinePoint(line, { x: closestX, y: closestY });
+  let onSegment = linePoint(line, { x: closestX, y: closestY });
   if (!onSegment) return false;
 
   let tempLine = {
     startPoint: { x: closestX, y: closestY },
     endPoint: { x: circle.x, y: circle.y },
   };
-  let distance = LineLength(tempLine);
+  let distance = lineLength(tempLine);
 
   if (distance <= circle.radius) {
     return true;

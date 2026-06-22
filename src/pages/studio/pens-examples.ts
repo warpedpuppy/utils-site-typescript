@@ -1,19 +1,19 @@
 import { CodePenPayload } from "./codepen";
-import { BallBounce } from "../../pages/createJSON/formulas/animation/BallBounce";
-import { BallToBallBounce } from "../../pages/createJSON/formulas/animation/BallToBallBounce";
-import { Lerp } from "../../pages/createJSON/formulas/animation/Lerp";
+import { ballBounce } from "../../pages/createJSON/formulas/animation/BallBounce";
+import { ballToBallBounce } from "../../pages/createJSON/formulas/animation/BallToBallBounce";
+import { lerp } from "../../pages/createJSON/formulas/animation/Lerp";
 import {
   linear,
   easeIn,
   easeOut,
   easeInOut,
 } from "@utilspalooza/core/Easing";
-import { QuadraticBezier } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
+import { quadraticBezier } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
 import { DistributeAroundCircle } from "../../pages/createJSON/formulas/animation/DistributeAroundCircle";
-import { GetRotation } from "../../pages/createJSON/formulas/animation/GetRotation";
+import { getRotation } from "../../pages/createJSON/formulas/animation/GetRotation";
 import { gravitationalStep } from "@utilspalooza/core/OrbitalMotion";
 import { moveToward } from "@utilspalooza/core/MoveToward";
-import { SineCurve } from "@utilspalooza/core/SineCurve";
+import { sineCurve } from "@utilspalooza/core/SineCurve";
 import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
 import { pointToCircle } from "@utilspalooza/core/PointToCircle";
 import { pointToRect } from "@utilspalooza/core/PointToRect";
@@ -27,10 +27,10 @@ import { rectToRect } from "@utilspalooza/core/RectToRect";
 import { polygonToPolygon } from "@utilspalooza/core/PolygonToPolygon";
 import { getPointOnLine } from "@utilspalooza/core/GetPointOnLine";
 import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
-import { DrawStar } from "@utilspalooza/core/Star";
-import { CreateRect } from "@utilspalooza/core/Rectangle";
+import { starVertices } from "@utilspalooza/core/Star";
+import { createRect } from "@utilspalooza/core/Rectangle";
 import { drawEquilateralTriangle } from "@utilspalooza/core/DrawEquilateralTriangle";
-import { CircleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
+import { circleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
 import { distributeAroundCircle } from "@utilspalooza/core/DistributeAroundCircleFlat";
 import { distance } from "@utilspalooza/core/Distance";
 import { bezierPoint } from "@utilspalooza/core/BezierCurve";
@@ -39,8 +39,8 @@ import { step } from "@utilspalooza/core/GameOfLife";
 import { waveAmplitude } from "@utilspalooza/core/WaveAmplitude";
 import { lensDeflection } from "@utilspalooza/core/LensDeflection";
 import { grStep } from "@utilspalooza/core/GRStep";
-import { LineLength } from "@utilspalooza/core/LineLength";
-import { MoveAlongLine } from "@utilspalooza/core/MoveAlongLine";
+import { lineLength } from "@utilspalooza/core/LineLength";
+import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
 import { drawBallBounce } from "../../core-animations/BallBounce";
 import { drawBallBall } from "../../core-animations/BallBall";
 import { drawLerp } from "../../core-animations/Lerp";
@@ -87,7 +87,7 @@ canvas { display: block; width: 100vw; height: 100vh; }
 
 // ── Ball Bounce ──────────────────────────────────────────────────────────────
 const BALL_BOUNCE_HTML = `<canvas id="canvas"></canvas>`;
-const BALL_BOUNCE_JS = `${BallBounce.keyFunction.toString()}
+const BALL_BOUNCE_JS = `${ballBounce.keyFunction.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -110,7 +110,7 @@ function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  BallBounce(ball, { width: canvas.width, height: canvas.height });
+  ballBounce(ball, { width: canvas.width, height: canvas.height });
 
   // ── Shadow on the floor ────────────────────────────────────────────────
   const maxDist = canvas.height - ball.radius;
@@ -158,7 +158,7 @@ draw();`;
 
 // ── Balls Bouncing Against Each Other ────────────────────────────────────────
 const BALLS_BOUNCING_HTML = `<canvas id="canvas"></canvas>`;
-const BALLS_BOUNCING_JS = `${BallToBallBounce.keyFunction.toString()}
+const BALLS_BOUNCING_JS = `${ballToBallBounce.keyFunction.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -214,7 +214,7 @@ function draw() {
     ctx.fill();
 
     balls.forEach((ball2) => {
-      BallToBallBounce(ball1, ball2);
+      ballToBallBounce(ball1, ball2);
     });
 
     // Keep on screen
@@ -331,12 +331,12 @@ function draw() {
 init();
 draw();`;
 
-// ── Lerp ─────────────────────────────────────────────────────────────────────
+// ── lerp ─────────────────────────────────────────────────────────────────────
 const LERP_HTML = `<canvas id="canvas"></canvas>
 <div id="controls">
   <label>speed <input type="range" id="speed" min="0.01" max="0.1" step="0.01" value="0.05"></label>
 </div>`;
-const LERP_JS = `${Lerp.keyFunction.toString()}
+const LERP_JS = `${lerp.keyFunction.toString()}
 
 ${drawLerp.toString()}
 
@@ -363,8 +363,8 @@ function draw() {
   target.x = canvas.width / 2 + Math.sin(Date.now() * 0.0005) * 150;
   target.y = canvas.height / 2 + Math.cos(Date.now() * 0.0003) * 100;
 
-  follower.x = Lerp(follower.x, target.x, lerpFactor);
-  follower.y = Lerp(follower.y, target.y, lerpFactor);
+  follower.x = lerp(follower.x, target.x, lerpFactor);
+  follower.y = lerp(follower.y, target.y, lerpFactor);
 
   drawLerp(ctx, target, follower, lerpFactor, canvas.width, canvas.height);
 
@@ -458,7 +458,7 @@ draw();`;
 
 // ── Quadratic Bézier ────────────────────────────────────────────────────────
 const QUADRATIC_BEZIER_HTML = `<canvas id="canvas"></canvas>`;
-const QUADRATIC_BEZIER_JS = `${QuadraticBezier.keyFunction.toString()}
+const QUADRATIC_BEZIER_JS = `${quadraticBezier.keyFunction.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -501,7 +501,7 @@ function draw() {
   ctx.beginPath();
   for (let i = 0; i <= 100; i++) {
     const t = i / 100;
-    const pt = QuadraticBezier(t, p0, p1, p2);
+    const pt = quadraticBezier(t, p0, p1, p2);
     if (i === 0) ctx.moveTo(pt.x, pt.y);
     else ctx.lineTo(pt.x, pt.y);
   }
@@ -509,7 +509,7 @@ function draw() {
 
   // Oscillating dot
   const dotT = (Math.sin(Date.now() * 0.003) + 1) / 2;
-  const dotPt = QuadraticBezier(dotT, p0, p1, p2);
+  const dotPt = quadraticBezier(dotT, p0, p1, p2);
   ctx.fillStyle = '#f97316';
   ctx.beginPath();
   ctx.arc(dotPt.x, dotPt.y, 7, 0, Math.PI * 2);
@@ -688,7 +688,7 @@ draw();`;
 
 // ── Point Object Towards Another ────────────────────────────────────────────
 const POINT_TOWARDS_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_TOWARDS_JS = `${GetRotation.keyFunction.toString()}
+const POINT_TOWARDS_JS = `${getRotation.keyFunction.toString()}
 
 // ─── drawArrow helper ───────────────────────────────────────────────────────
 function drawArrow(ctx, x, y, angle, size, color) {
@@ -756,7 +756,7 @@ function draw() {
   ctx.stroke();
 
   // Get rotation toward target
-  const angle = GetRotation(pointer, target);
+  const angle = getRotation(pointer, target);
 
   // Draw arrow pointing toward target
   drawArrow(ctx, pointer.x, pointer.y, angle, 12, '#f97316');
@@ -772,7 +772,7 @@ const SINE_CURVE_HTML = `<canvas id="canvas"></canvas><div id="controls">
   <label>differential: <input type="range" id="differential" min="0" max="200" value="200"></label>
   <label>speed: <input type="range" id="speed" min="0.0005" max="0.05" step="0.005" value="0.005"></label>
 </div>`;
-const SINE_CURVE_JS = `${SineCurve.toString()}
+const SINE_CURVE_JS = `${sineCurve.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -810,7 +810,7 @@ function draw() {
   ctx.stroke();
 
   // Small green circle oscillating on y-axis
-  let value = SineCurve(startValue, differential, speed);
+  let value = sineCurve(startValue, differential, speed);
   let oscY = cy + value - 100;
   ctx.fillStyle = '#34d399';
   ctx.beginPath();
@@ -834,7 +834,7 @@ draw();`;
 
 // ── Demystify Sine & Cosine ────────────────────────────────────────────────
 const DEMYSTIFY_SINE_COSINE_HTML = `<canvas id="canvas"></canvas>`;
-const DEMYSTIFY_SINE_COSINE_JS = `${SineCurve.toString()}
+const DEMYSTIFY_SINE_COSINE_JS = `${sineCurve.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1637,11 +1637,11 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   {
     group: "Animations",
     key: "lerp",
-    label: "Lerp (Smooth Follow)",
+    label: "lerp (Smooth Follow)",
     blurb:
       "Linear interpolation: smoothly follow a target by always moving a fraction of the way there.",
     payload: {
-      title: "Lerp — Linear Interpolation",
+      title: "lerp — Linear Interpolation",
       description:
         "Smoothly follow a target using linear interpolation (a + (b-a)*t).",
       html: LERP_HTML,
@@ -2059,7 +2059,7 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>points: <input type="range" id="points" min="3" max="12" step="1" value="5"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${DrawStar.toString()}
+${starVertices.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2082,7 +2082,7 @@ function draw() {
   ctx.translate(cx, cy);
   ctx.rotate(t);
 
-  let star = DrawStar(numPoints, 40, 100, 0);
+  let star = starVertices(numPoints, 40, 100, 0);
   ctx.beginPath();
   ctx.moveTo(star.vertices[0].x, star.vertices[0].y);
   for (let i = 1; i < star.vertices.length; i++) {
@@ -2119,7 +2119,7 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>rotation: <input type="range" id="rotation" min="0" max="360" step="1" value="0"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${CreateRect.toString()}
+${createRect.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2138,7 +2138,7 @@ function draw() {
   let cx = canvas.width / 2, cy = canvas.height / 2;
   let angle = rotation * Math.PI / 180;
 
-  let rect = CreateRect(200, 100, angle);
+  let rect = createRect(200, 100, angle);
   ctx.save();
   ctx.translate(cx, cy);
   ctx.beginPath();
@@ -2221,7 +2221,7 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${CircleFromThreePoints.toString()}
+${circleFromThreePoints.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2304,7 +2304,7 @@ function pointerDownHandler(e) {
   });
 
   if (points.length === 3 && !drawingCircle) {
-    result = CircleFromThreePoints(points[0], points[1], points[2]);
+    result = circleFromThreePoints(points[0], points[1], points[2]);
     drawingCircle = true;
     circleQ = 0;
     drawCircle();

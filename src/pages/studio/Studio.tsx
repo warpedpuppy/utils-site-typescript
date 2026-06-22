@@ -44,9 +44,9 @@ const projects = [
     key: "ParticleConstellation",
     title: ParticleConstellation.t,
     label: ParticleConstellation.l,
-    math: "Phyllotaxis + Lerp + Perlin",
+    math: "Phyllotaxis + lerp + Perlin",
     blurb:
-      "Particles glide from chaos into a golden-angle lattice via eased Lerp, then breathe through a Perlin drift field.",
+      "Particles glide from chaos into a golden-angle lattice via eased lerp, then breathe through a Perlin drift field.",
     ProjectClass: ParticleConstellation,
   },
   {

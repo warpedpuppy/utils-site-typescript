@@ -1,12 +1,12 @@
 import { CollisionDetectionObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { Rad2Deg } from "../pages/createJSON/formulas/simpleEquations/RadToDeg";
+import { radToDeg } from "../pages/createJSON/formulas/simpleEquations/RadToDeg";
 class Rad2DegAnimation extends AnimationBaseClass {
   static t = "radians to degrees";
   static l = "radians-to-degrees";
-  static f = Rad2Deg;
+  static f = radToDeg;
   title = "radians to degrees";
-  animationObject: CollisionDetectionObject = Rad2Deg;
+  animationObject: CollisionDetectionObject = radToDeg;
   init() {
     this.draw();
   }

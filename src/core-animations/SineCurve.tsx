@@ -1,6 +1,6 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { SineCurve } from "@utilspalooza/core/SineCurve";
-import { SineCurve as sineCurveFormula } from "../pages/createJSON/formulas/animation/SineCurve";
+import { sineCurve } from "@utilspalooza/core/SineCurve";
+import { sineCurve as sineCurveFormula } from "../pages/createJSON/formulas/animation/SineCurve";
 
 function drawSineCurve(
   ctx: any,
@@ -28,7 +28,7 @@ function drawSineCurve(
   ctx.arc(canvasWidth / 2, canvasHeight / 2, 200, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let val = SineCurve(startValue, differential, speed);
+  let val = sineCurve(startValue, differential, speed);
   ctx.beginPath();
   ctx.arc(canvasWidth / 2, canvasHeight / 2 + val, 20, 0, 2 * Math.PI);
   ctx.stroke();

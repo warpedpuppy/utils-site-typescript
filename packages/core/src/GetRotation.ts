@@ -1,6 +1,6 @@
 import { Point } from './types';
 
-export function GetRotation(
+export function getRotation(
   currentPoint: Point,
   destinationPoint: Point
 ) {

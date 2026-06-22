@@ -1,6 +1,6 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { FindPointAroundCircle as FindPointAroundCircleFunc } from "@utilspalooza/core/FindPointAroundCircle";
-import { FindPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
+import { findPointAroundCircle as FindPointAroundCircleFunc } from "@utilspalooza/core/FindPointAroundCircle";
+import { findPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
 
 function drawMoveItemAroundCircle(
   ctx: any,
