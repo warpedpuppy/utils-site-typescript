@@ -37,6 +37,15 @@ function About() {
           functions you want to keep, tick the checkbox next to the name —
           they'll be bundled into your exportable utils file automatically.
         </p>
+
+        <h2>Who made this</h2>
+        <p>
+          <strong>Ted Walther</strong> — developer and educator. Utilspalooza is a product of{" "}
+          <a href="https://warpedpuppy.com" target="_blank" rel="noopener noreferrer">
+            Warped Puppy LLC
+          </a>
+          .
+        </p>
       </div>
     </div>
   );
