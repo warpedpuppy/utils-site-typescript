@@ -1,6 +1,6 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { distribute } from "../core-functions/DistributeAroundCircle";
+import { distribute } from "@utilspalooza/core/DistributeAroundCircle";
 import { DistributeAroundCircle as distributeFormula } from "../pages/createJSON/formulas/animation/DistributeAroundCircle";
 
 function cosWave(startValue: number, differential: number, speed: number): number {

@@ -1,5 +1,5 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { easeInOut as easeInOutFn } from "../../../../core-functions/Easing";
+import { easeInOut as easeInOutFn } from "@utilspalooza/core/Easing";
 
 // The keyFunction is easeInOut — the most widely used easing.
 // The functionString shows the full family so users can copy what they need.

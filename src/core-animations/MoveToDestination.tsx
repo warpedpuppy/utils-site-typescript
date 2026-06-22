@@ -1,8 +1,8 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { MoveAlongLine } from "../core-functions/MoveAlongLine";
+import { MoveAlongLine } from "@utilspalooza/core/MoveAlongLine";
 import { MoveAlongLine as moveAlongLineFormula } from "../pages/createJSON/formulas/animation/MoveAlongLine";
-import { GetRotation } from "../core-functions/GetRotation";
+import { GetRotation } from "@utilspalooza/core/GetRotation";
 
 function drawMoveToDestination(
   ctx: any,

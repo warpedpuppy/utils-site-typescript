@@ -1,6 +1,6 @@
 import { Ball } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { BallToBallBounce as ballToBallBouncePhysics } from "../core-functions/BallToBallBounce";
+import { BallToBallBounce as ballToBallBouncePhysics } from "@utilspalooza/core/BallToBallBounce";
 import { BallToBallBounce as ballToBallBounceFormula } from "../pages/createJSON/formulas/animation/BallToBallBounce";
 
 interface GradientBall extends Ball {

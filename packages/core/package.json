@@ -1,0 +1,22 @@
+{
+  "name": "@utilspalooza/core",
+  "version": "0.0.0",
+  "description": "Framework-agnostic, typed math & geometry functions for canvas/creative coding.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

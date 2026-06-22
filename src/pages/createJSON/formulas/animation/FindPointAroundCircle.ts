@@ -1,6 +1,6 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { FindPointAroundCircle as FindPointAroundCircleFn } from "../../../../core-functions/FindPointAroundCircle";
-import FindPointAroundCircleSource from "../../../../core-functions/FindPointAroundCircle.ts?raw";
+import { FindPointAroundCircle as FindPointAroundCircleFn } from "@utilspalooza/core/FindPointAroundCircle";
+import FindPointAroundCircleSource from "@utilspalooza/core/FindPointAroundCircle.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
 export const FindPointAroundCircle: CollisionDetectionObject = {

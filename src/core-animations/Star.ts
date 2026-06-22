@@ -1,7 +1,7 @@
 import { Polygon } from "../types/shapes";
 import { GenericObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { DrawStar } from "../core-functions/Star";
+import { DrawStar } from "@utilspalooza/core/Star";
 import { StarObject as starFormula } from "../pages/createJSON/formulas/animation/Star";
 
 function drawStar(ctx: any, star: any, halfWidth: any, halfHeight: any): void {

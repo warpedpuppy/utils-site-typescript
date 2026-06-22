@@ -1,8 +1,8 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { FindPointAroundCircle } from "../core-functions/FindPointAroundCircle";
+import { FindPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
 import { FindPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
-import { SineCurve } from "../core-functions/SineCurve";
+import { SineCurve } from "@utilspalooza/core/SineCurve";
 
 function distanceBetweenPoints(startPoint: Point, endPoint: Point): number {
   let a = startPoint.x - endPoint.x;

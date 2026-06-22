@@ -6,8 +6,8 @@
 // right place to start.
 
 import { CollisionDetectionObject } from "../../../../types/types";
-import { MoveAlongLine as MoveAlongLineFn } from "../../../../core-functions/MoveAlongLine";
-import MoveAlongLineSource from "../../../../core-functions/MoveAlongLine.ts?raw";
+import { MoveAlongLine as MoveAlongLineFn } from "@utilspalooza/core/MoveAlongLine";
+import MoveAlongLineSource from "@utilspalooza/core/MoveAlongLine.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
 export const MoveAlongLine: CollisionDetectionObject = {

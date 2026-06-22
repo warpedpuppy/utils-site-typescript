@@ -1,12 +1,16 @@
-export interface Point {
-  x: number;
-  y: number;
-}
-export interface Circle {
-  x: number;
-  y: number;
-  radius: number;
-}
+// Geometry primitives now live in @utilspalooza/core; re-export them so existing
+// site imports (`import { Point } from ".../types/shapes"`) keep working.
+import type {
+  Point,
+  Vector,
+  Circle,
+  Line,
+  Container,
+  Ball,
+  ShapeInMotion,
+} from "@utilspalooza/core";
+export type { Point, Vector, Circle, Line, Container, Ball, ShapeInMotion };
+
 export interface Rectangle extends ShapeInMotion {
   x: number;
   y: number;
@@ -18,35 +22,10 @@ export interface Polygon {
   draw: Function;
   drag: boolean;
 }
-export interface Container {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-export interface Vector {
-  x: number;
-  y: number;
-}
-export interface Line {
-  startPoint: Point;
-  endPoint: Point;
-}
 export interface Triangle {
   point1: Point;
   point2: Point;
   point3: Point;
-}
-export interface Ball extends ShapeInMotion {
-  x: number;
-  y: number;
-  color: string;
-  radius: number;
-}
-export interface ShapeInMotion {
-  vx: number;
-  vy: number;
-  id: string;
 }
 
 export const InterfaceMap: Record<string, string> = {

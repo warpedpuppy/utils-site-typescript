@@ -3,7 +3,7 @@
 
 import { CollisionDetectionObject } from "../../../../types/types";
 import { Point } from "../../../../types/shapes";
-import { getPointOnLine } from "../../../../core-functions/GetPointOnLine";
+import { getPointOnLine } from "@utilspalooza/core/GetPointOnLine";
 
 export const GetPointOnLine: CollisionDetectionObject = {
   keyFunction: getPointOnLine,

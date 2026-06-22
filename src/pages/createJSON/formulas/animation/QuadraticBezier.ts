@@ -1,6 +1,6 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { QuadraticBezier as QuadraticBezierFn } from "../../../../core-functions/QuadraticBezier";
-import QuadraticBezierSource from "../../../../core-functions/QuadraticBezier.ts?raw";
+import { QuadraticBezier as QuadraticBezierFn } from "@utilspalooza/core/QuadraticBezier";
+import QuadraticBezierSource from "@utilspalooza/core/QuadraticBezier.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
 export const QuadraticBezier: CollisionDetectionObject = {

@@ -1,5 +1,5 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { FindPointAroundCircle } from "../core-functions/FindPointAroundCircle";
+import { FindPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
 import { SphereLighting } from "../pages/createJSON/formulas/animation/OrbitalMotion";
 
 // SphereLighting calculates the highlight position on a sphere given the orbiter and light source positions

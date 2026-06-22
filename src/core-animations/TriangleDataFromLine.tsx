@@ -1,6 +1,6 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { LineLength as LineLengthFunc } from "../core-functions/LineLength";
+import { LineLength as LineLengthFunc } from "@utilspalooza/core/LineLength";
 import { TriangleDataFromLine as triangleDataFromLineFormula } from "../pages/createJSON/formulas/animation/TriangleDataFromLine";
 
 function calculateTriangleData(startPoint: Point, endPoint: Point) {

@@ -1,5 +1,5 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { QuadraticBezier } from "../core-functions/QuadraticBezier";
+import { QuadraticBezier } from "@utilspalooza/core/QuadraticBezier";
 import { QuadraticBezier as quadraticBezierFormula } from "../pages/createJSON/formulas/animation/QuadraticBezier";
 import { Point } from "../types/shapes";
 

@@ -1,6 +1,6 @@
 import { Ball } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { BallBounce as ballBouncePhysics } from "../core-functions/BallBounce";
+import { BallBounce as ballBouncePhysics } from "@utilspalooza/core/BallBounce";
 import { BallBounce as ballBounceFormula } from "../pages/createJSON/formulas/animation/BallBounce";
 
 function drawBallBounce(ctx: any, ball: any, stage: any): void {

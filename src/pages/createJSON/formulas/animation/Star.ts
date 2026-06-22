@@ -1,6 +1,6 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { DrawStar as DrawStarFn } from "../../../../core-functions/Star";
-import StarSource from "../../../../core-functions/Star.ts?raw";
+import { DrawStar as DrawStarFn } from "@utilspalooza/core/Star";
+import StarSource from "@utilspalooza/core/Star.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
 export const StarObject: CollisionDetectionObject = {

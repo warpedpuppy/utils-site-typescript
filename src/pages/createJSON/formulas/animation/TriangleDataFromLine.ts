@@ -1,7 +1,7 @@
 import { CollisionDetectionObject } from "../../../../types/types";
 import { Point } from "../../../../types/shapes";
-import { TriangleDataFromLine as TriangleDataFromLineFn } from "../../../../core-functions/GetTriangleData";
-import { LineLength } from "../../../../core-functions/LineLength";
+import { TriangleDataFromLine as TriangleDataFromLineFn } from "@utilspalooza/core/GetTriangleData";
+import { LineLength } from "@utilspalooza/core/LineLength";
 
 export const TriangleDataFromLine: CollisionDetectionObject = {
   keyFunction: TriangleDataFromLineFn,

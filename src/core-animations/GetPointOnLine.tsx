@@ -1,6 +1,6 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { getPointOnLine as GetPointOnLineFunc } from "../core-functions/GetPointOnLine";
+import { getPointOnLine as GetPointOnLineFunc } from "@utilspalooza/core/GetPointOnLine";
 import { GetPointOnLine as getPointOnLineFormula } from "../pages/createJSON/formulas/animation/GetPointOnLine";
 
 function drawGetPointOnLine(
