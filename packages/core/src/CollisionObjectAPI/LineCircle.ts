@@ -3,6 +3,18 @@ import { linePoint } from "./LinePoint";
 import { lineLength } from "../LineLength";
 import { Line, Circle } from '../types';
 
+/**
+ * Test whether a line segment intersects a circle (object-argument form of `lineToCircle`).
+ *
+ * Returns early if either endpoint is inside the circle; otherwise projects the
+ * circle's center onto the segment and checks the closest point's distance.
+ *
+ * @param line - The line segment (`startPoint`, `endPoint`).
+ * @param circle - The circle (`x`, `y`, `radius`).
+ * @returns `true` if the segment touches or crosses the circle.
+ * @example
+ * lineCircle({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0, radius: 2 }); // => true
+ */
 export function lineCircle(line: Line, circle: Circle) {
   let inside1 = pointCircle(line.startPoint, circle);
   let inside2 = pointCircle(line.endPoint, circle);

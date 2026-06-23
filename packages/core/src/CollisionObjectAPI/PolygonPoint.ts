@@ -1,5 +1,17 @@
 import { Polygon, Point } from '../types';
 
+/**
+ * Test whether a point is inside a polygon (ray-casting / even-odd rule).
+ *
+ * Casts a ray and counts edge crossings — an odd count means the point is inside.
+ * Works for convex and concave polygons alike.
+ *
+ * @param polygon - The polygon (`vertices`).
+ * @param point - The point to test.
+ * @returns `true` if the point is inside the polygon.
+ * @example
+ * polygonPoint({ vertices: square }, { x: 5, y: 5 }); // => true
+ */
 export function polygonPoint(polygon: Polygon, point: Point) {
   let collision = false;
 

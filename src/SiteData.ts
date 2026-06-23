@@ -46,6 +46,11 @@ import GravitationalLensing from "./core-animations/GravitationalLensing";
 import OrbitalPrecession from "./core-animations/OrbitalPrecession";
 import Phyllotaxis from "./core-animations/Phyllotaxis";
 
+// Vector demos (new Vec2 / angle-helper functions)
+import VectorReflectAnimation from "./core-animations/VectorReflect";
+import VectorRotateAnimation from "./core-animations/VectorRotate";
+import AngleLerpAnimation from "./core-animations/AngleLerp";
+
 // Studio projects are loaded directly in Studio.tsx to avoid import issues
 
 const SiteData: PrimaryObject = {
@@ -112,6 +117,11 @@ const SiteData: PrimaryObject = {
   },
   botany: {
     Phyllotaxis,
+  },
+  vectors: {
+    VectorReflectAnimation,
+    VectorRotateAnimation,
+    AngleLerpAnimation,
   },
 };
 

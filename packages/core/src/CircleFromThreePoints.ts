@@ -1,5 +1,16 @@
 import { Point } from './types';
 
+/**
+ * Find the unique circle (the circumcircle) passing through three points.
+ *
+ * @param point1 - First point on the circle.
+ * @param point2 - Second point on the circle.
+ * @param point3 - Third point on the circle.
+ * @returns The circle's `radius` and `center` `{ x, y }`. (Degenerate for collinear points.)
+ * @example
+ * circleFromThreePoints({ x: 5, y: 0 }, { x: 0, y: 5 }, { x: -5, y: 0 });
+ * // => { radius: 5, center: { x: 0, y: 0 } }
+ */
 export function circleFromThreePoints(
   point1: Point,
   point2: Point,

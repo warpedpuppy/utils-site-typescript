@@ -1,5 +1,18 @@
 import { Ball, Container } from './types';
 
+/**
+ * Advance a ball one frame under gravity, bouncing it off the container walls.
+ *
+ * A simple Euler-integration physics step: applies gravity to vertical velocity,
+ * moves the ball, then reflects and damps its velocity (restitution + friction)
+ * whenever it hits a wall. **Mutates `ball`** in place.
+ *
+ * @param ball - The ball to advance (its `x`, `y`, `vx`, `vy` are mutated).
+ * @param stage - The bounding container (`width`/`height`) the ball bounces inside.
+ * @returns Nothing — `ball` is updated in place.
+ * @example
+ * ballBounce(ball, { x: 0, y: 0, width: 800, height: 600 }); // call once per frame
+ */
 export function ballBounce(ball: Ball, stage: Container) {
   const gravity = 0.4;
   const restitution = 0.72;

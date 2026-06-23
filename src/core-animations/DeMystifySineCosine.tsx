@@ -66,7 +66,7 @@ function drawDeMystifySineCosine(
   ctx.arc(canvasWidth * 0.66, halfHeight, 100, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let perc1 = sineCurve(62.5, 12.5, 0.001);
+  let perc1 = sineCurve(62.5, 12.5, 0.001, performance.now());
   let point1 = findPointAroundCircle(
     {
       x: canvasWidth * 0.33,
@@ -90,7 +90,7 @@ function drawDeMystifySineCosine(
   ctx.lineTo(point1.x, halfHeight);
   ctx.stroke();
 
-  let perc2 = sineCurve(-12.5, 12.5, 0.001);
+  let perc2 = sineCurve(-12.5, 12.5, 0.001, performance.now());
   let point2 = findPointAroundCircle(
     {
       x: canvasWidth * 0.66,

@@ -2,6 +2,18 @@ import { polygonPoint } from "./PolygonPoint";
 import { polygonLine } from "./PolygonLine";
 import { Polygon, Line } from '../types';
 
+/**
+ * Test whether two polygons overlap (object-argument form).
+ *
+ * Walks each edge of the first polygon and tests it against the second, then also
+ * checks whether one polygon is fully contained in the other.
+ *
+ * @param polygon1 - First polygon (`vertices`).
+ * @param polygon2 - Second polygon (`vertices`).
+ * @returns `true` if the polygons intersect or one contains the other.
+ * @example
+ * polygonPolygon({ vertices: squareA }, { vertices: squareB }); // => true when overlapping
+ */
 export function polygonPolygon(polygon1: Polygon, polygon2: Polygon) {
   let next = 0;
   const { vertices } = polygon1;

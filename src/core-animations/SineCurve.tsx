@@ -28,7 +28,7 @@ function drawSineCurve(
   ctx.arc(canvasWidth / 2, canvasHeight / 2, 200, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let val = sineCurve(startValue, differential, speed);
+  let val = sineCurve(startValue, differential, speed, performance.now());
   ctx.beginPath();
   ctx.arc(canvasWidth / 2, canvasHeight / 2 + val, 20, 0, 2 * Math.PI);
   ctx.stroke();

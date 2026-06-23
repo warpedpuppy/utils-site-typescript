@@ -1,5 +1,19 @@
 import { Ball } from './types';
 
+/**
+ * Push two overlapping balls apart with a spring-like force (soft collision response).
+ *
+ * When the balls overlap, applies an equal-and-opposite force proportional to the
+ * overlap, easing them apart rather than resolving the collision instantly.
+ * **Mutates both balls'** velocities in place.
+ *
+ * @param ball1 - First ball (its `vx`/`vy` are mutated).
+ * @param ball2 - Second ball (its `vx`/`vy` are mutated).
+ * @param spring - Stiffness of the separating force, 0–1. Defaults to `0.05`.
+ * @returns Nothing — both balls' velocities are updated in place.
+ * @example
+ * ballToBallBounce(a, b); // call for each pair, once per frame
+ */
 export function ballToBallBounce(ball1: Ball, ball2: Ball, spring: number = 0.05) {
   if (ball1 === ball2) return;
   let dx = ball2.x - ball1.x;

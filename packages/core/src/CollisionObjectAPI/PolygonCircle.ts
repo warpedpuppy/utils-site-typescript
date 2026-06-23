@@ -2,6 +2,18 @@ import { lineCircle } from "./LineCircle";
 import { polygonPoint } from "./PolygonPoint";
 import { Polygon, Circle } from '../types';
 
+/**
+ * Test whether a circle overlaps a polygon.
+ *
+ * Checks the circle against each polygon edge, then also tests whether the circle's
+ * center is inside the polygon (catching the fully-contained case).
+ *
+ * @param polygon - The polygon (`vertices`).
+ * @param circle - The circle (`x`, `y`, `radius`).
+ * @returns `true` if the circle touches an edge or sits inside the polygon.
+ * @example
+ * polygonCircle({ vertices: square }, { x: 5, y: 5, radius: 2 }); // => true
+ */
 export function polygonCircle(polygon: Polygon, circle: Circle) {
   // go through each of the vertices, plus
   // the next vertex in the list
