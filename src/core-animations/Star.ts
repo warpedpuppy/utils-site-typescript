@@ -55,6 +55,7 @@ export default class StarAnimation extends AnimationBaseClass {
       rotate: true,
       rotateSpeed: 2000,
       clockwise: true,
+      time: performance.now(),
     }) as any;
 
     drawStar(this.ctx, this.star, this.halfWidth, this.halfHeight);

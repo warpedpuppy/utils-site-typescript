@@ -23,8 +23,8 @@ class LineToCircleCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001, performance.now());
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001, performance.now());
     return { x, y };
   }
   draw = () => {

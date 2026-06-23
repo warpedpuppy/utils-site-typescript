@@ -11,6 +11,18 @@ function pointInPolygon(x: number, y: number, poly: Point[]): boolean {
   return inside;
 }
 
+/**
+ * Test whether two polygons overlap, by checking if either has a vertex inside the other.
+ *
+ * Uses ray-casting (the point-in-polygon test) on each polygon's vertices. This
+ * catches most overlaps but can miss edge-only crossings where no vertex is contained.
+ *
+ * @param poly1 - First polygon as an array of points.
+ * @param poly2 - Second polygon as an array of points.
+ * @returns `true` if a vertex of either polygon lies inside the other.
+ * @example
+ * polygonToPolygon(squareA, squareB); // => true when they overlap
+ */
 export function polygonToPolygon(poly1: Point[], poly2: Point[]): boolean {
   for (let p of poly1) if (pointInPolygon(p.x, p.y, poly2)) return true;
   for (let p of poly2) if (pointInPolygon(p.x, p.y, poly1)) return true;

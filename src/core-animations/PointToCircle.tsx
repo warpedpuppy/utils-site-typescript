@@ -15,8 +15,8 @@ export function drawPointToCircle(
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   const circle = { x: halfWidth, y: halfHeight, radius: 100 };
-  const x = sineCurve.keyFunction(halfWidth, 200, 0.001);
-  const y = sineCurve.keyFunction(halfHeight, 200, 0.001);
+  const x = sineCurve.keyFunction(halfWidth, 200, 0.001, performance.now());
+  const y = sineCurve.keyFunction(halfHeight, 200, 0.001, performance.now());
 
   const hit = pointCircle.keyFunction({ x, y }, circle);
   ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
@@ -45,11 +45,8 @@ export function drawPointToCircle(
 
 // Export the function strings for CodePen pens
 export const drawPointToCircleFunctionString = `// ─── sineCurve function ─────────────────────────────────────────────────────
-function sineCurve(startingValue, differential, speed) {
-  const currentDate = new Date();
-  return (
-    startingValue + Math.sin(currentDate.getTime() * speed) * differential
-  );
+function sineCurve(startingValue, differential, speed, time) {
+  return startingValue + Math.sin(time * speed) * differential;
 }
 
 // ─── pointCircle collision detection ────────────────────────────────────────
@@ -68,8 +65,8 @@ function drawPointToCircle(ctx, canvasWidth, canvasHeight, time) {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   const circle = { x: halfWidth, y: halfHeight, radius: 100 };
-  const x = sineCurve(halfWidth, 200, 0.001);
-  const y = sineCurve(halfHeight, 200, 0.001);
+  const x = sineCurve(halfWidth, 200, 0.001, time);
+  const y = sineCurve(halfHeight, 200, 0.001, time);
 
   const hit = pointCircle({ x, y }, circle);
   ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
@@ -159,8 +156,8 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.raf(this.draw);
   };
   makePointMove() {
-    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001, performance.now());
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001, performance.now());
     return { x, y };
   }
   pointerDownHandler(e: PointerEvent) {}

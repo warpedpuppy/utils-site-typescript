@@ -11,6 +11,20 @@ function countNeighbors(grid: ArrayLike<number>, x: number, y: number, cols: num
   return count;
 }
 
+/**
+ * Compute the next generation of Conway's Game of Life.
+ *
+ * Applies the classic rules to every cell — a live cell survives with 2 or 3 live
+ * neighbours, a dead cell is born with exactly 3 — using a toroidal (wrap-around)
+ * grid so the edges connect. Returns a new grid rather than mutating the input.
+ *
+ * @param grid - The current generation as a flat row-major array of `0`/`1` (length `cols * rows`).
+ * @param cols - Number of columns.
+ * @param rows - Number of rows.
+ * @returns A new `Uint8Array` holding the next generation.
+ * @example
+ * grid = gameOfLifeStep(grid, cols, rows); // advance one tick
+ */
 export function gameOfLifeStep(grid: ArrayLike<number>, cols: number, rows: number): Uint8Array {
   let next = new Uint8Array(cols * rows);
   for (let y = 0; y < rows; y++) {

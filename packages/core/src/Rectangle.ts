@@ -2,6 +2,19 @@ import { Point } from './types';
 import { lineLength } from "./LineLength";
 import { getRotation } from "./GetRotation";
 
+/**
+ * Compute the four corner vertices of a rectangle, centered on the origin.
+ *
+ * @param width - Rectangle width.
+ * @param height - Rectangle height.
+ * @param angle - Rotation in radians about the center. Defaults to `0`.
+ * @param options - Optional spin animation: `{ rotate, rotateSpeed, clockwise, time }`. When
+ *   `rotate` is true the angle advances with `options.time` (ms, e.g. `performance.now()`),
+ *   keeping the function pure — pass the time in rather than reading the clock here.
+ * @returns `{ vertices }` — the four corners as points.
+ * @example
+ * createRect(10, 10).vertices.length; // => 4
+ */
 export function createRect(
   width: number,
   height: number,
@@ -10,6 +23,7 @@ export function createRect(
     rotate?: boolean;
     rotateSpeed?: number;
     clockwise?: boolean;
+    time?: number;
   } = {
     rotate: false,
     rotateSpeed: 1000,
@@ -32,13 +46,13 @@ export function createRect(
     y,
   });
 
-  const currentDate = new Date();
   const rotate = options.rotate ?? false;
   const rotateSpeed = options.rotateSpeed ?? 1000;
   const clockwise = options.clockwise ?? true;
+  const time = options.time ?? 0;
 
   let rotateQ = rotate
-    ? currentDate.getTime() / rotateSpeed
+    ? time / rotateSpeed
     : 0;
   let spinDirection = clockwise
     ? [-rotateQ, rotateQ]

@@ -1,6 +1,18 @@
 import { lineLength } from "../LineLength";
 import { Line, Point } from '../types';
 
+/**
+ * Test whether a point lies on a line segment (object-argument form).
+ *
+ * Checks whether the distances from the point to each endpoint add up to the
+ * segment's length (within a small buffer to absorb floating-point error).
+ *
+ * @param line - The line segment (`startPoint`, `endPoint`).
+ * @param point - The point to test.
+ * @returns `true` if the point sits on the segment within the buffer tolerance.
+ * @example
+ * linePoint({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0 }); // => true
+ */
 export function linePoint(line: Line, point: Point) {
   // get distance from the point to the two ends of the line
   let tempLine: Line = { startPoint: line.startPoint, endPoint: point };

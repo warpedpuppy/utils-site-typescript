@@ -809,7 +809,7 @@ function draw() {
   ctx.stroke();
 
   // Small green circle oscillating on y-axis
-  let value = sineCurve(startValue, differential, speed);
+  let value = sineCurve(startValue, differential, speed, performance.now());
   let oscY = cy + value - 100;
   ctx.fillStyle = '#34d399';
   ctx.beginPath();

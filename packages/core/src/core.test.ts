@@ -1,0 +1,651 @@
+import { describe, it, expect } from "vitest";
+import {
+  degToRad,
+  radToDeg,
+  lerp,
+  distance,
+  lineLength,
+  getPointOnLine,
+  centerOnParent,
+  unitCirclePoint,
+  numberWithCommas,
+  randomIntegerBetween,
+  randomNumberBetween,
+  linear,
+  easeIn,
+  easeOut,
+  easeInOut,
+  pointToCircle,
+  pointToRect,
+  rectToRect,
+  circleToRect,
+  circleToCircle,
+  lineToPoint,
+  // remaining raw collision
+  lineToCircle,
+  lineToLine,
+  lineToRect,
+  polygonToPolygon,
+  // object-API collision
+  circleCircle,
+  pointCircle,
+  linePoint,
+  lineLine,
+  lineCircle,
+  polygonPoint,
+  polygonLine,
+  polygonCircle,
+  polygonPolygon,
+  // geometry
+  findPointAroundCircle,
+  distributeAroundCircle,
+  moveAlongLine,
+  moveToward,
+  getRotation,
+  getTriangleData,
+  triangleDataFromLine,
+  circleFromThreePoints,
+  createRect,
+  equilateralTriangle,
+  starVertices,
+  // Vec2
+  vecAdd,
+  vecSubtract,
+  vecScale,
+  vecDot,
+  vecCross,
+  vecMagnitude,
+  vecMagnitudeSquared,
+  vecNormalize,
+  vecAngle,
+  vecAngleBetween,
+  vecRotate,
+  vecPerpendicular,
+  vecReflect,
+  vecLerp,
+  vecLimit,
+  // Tier A scalar helpers
+  clamp,
+  mapRange,
+  inverseLerp,
+  smoothstep,
+  smootherstep,
+  wrap,
+  pingPong,
+  wrapAngle,
+  shortestAngleBetween,
+  lerpAngle,
+  // now pure & time-driven (post purity fix)
+  sineCurve,
+} from "@utilspalooza/core";
+
+// These tests exercise the public barrel (@utilspalooza/core), i.e. exactly what
+// an npm consumer imports — not the source files directly. Pure math only.
+
+const PI = Math.PI;
+
+describe("angle conversion", () => {
+  it("degToRad converts the cardinal angles", () => {
+    expect(degToRad(0)).toBe(0);
+    expect(degToRad(180)).toBeCloseTo(PI);
+    expect(degToRad(360)).toBeCloseTo(2 * PI);
+  });
+
+  it("radToDeg is the inverse of degToRad", () => {
+    for (const deg of [0, 30, 90, 137, 360]) {
+      expect(radToDeg(degToRad(deg))).toBeCloseTo(deg);
+    }
+  });
+});
+
+describe("lerp", () => {
+  it("returns the endpoints at t=0 and t=1", () => {
+    expect(lerp(10, 20, 0)).toBe(10);
+    expect(lerp(10, 20, 1)).toBe(20);
+  });
+
+  it("returns the midpoint at t=0.5", () => {
+    expect(lerp(10, 20, 0.5)).toBe(15);
+  });
+
+  it("extrapolates past the range", () => {
+    expect(lerp(0, 10, 2)).toBe(20);
+    expect(lerp(0, 10, -1)).toBe(-10);
+  });
+});
+
+describe("distance / lineLength", () => {
+  it("distance computes the 3-4-5 triangle hypotenuse", () => {
+    expect(distance({ x: 0, y: 0 }, { x: 3, y: 4 })).toBe(5);
+  });
+
+  it("distance is zero for identical points", () => {
+    expect(distance({ x: 7, y: 7 }, { x: 7, y: 7 })).toBe(0);
+  });
+
+  it("lineLength matches distance for the same two points", () => {
+    const a = { x: 1, y: 2 };
+    const b = { x: 4, y: 6 };
+    expect(lineLength({ startPoint: a, endPoint: b })).toBeCloseTo(distance(a, b));
+  });
+});
+
+describe("getPointOnLine", () => {
+  it("returns endpoints at t=0 and t=1", () => {
+    const a = { x: 0, y: 0 };
+    const b = { x: 10, y: 20 };
+    expect(getPointOnLine(a, b, 0)).toEqual(a);
+    expect(getPointOnLine(a, b, 1)).toEqual(b);
+  });
+
+  it("returns the halfway point at t=0.5", () => {
+    expect(getPointOnLine({ x: 0, y: 0 }, { x: 10, y: 20 }, 0.5)).toEqual({ x: 5, y: 10 });
+  });
+});
+
+describe("centerOnParent", () => {
+  it("centers a child inside a larger parent", () => {
+    const child = { x: 0, y: 0, width: 20, height: 10 };
+    const parent = { x: 0, y: 0, width: 100, height: 50 };
+    expect(centerOnParent(child, parent)).toEqual({ x: 40, y: 20 });
+  });
+});
+
+describe("unitCirclePoint", () => {
+  it("places a point on the circle and returns its trig components", () => {
+    const p = unitCirclePoint(100, 100, 50, 0);
+    expect(p.x).toBeCloseTo(150);
+    expect(p.y).toBeCloseTo(100);
+    expect(p.cos).toBeCloseTo(1);
+    expect(p.sin).toBeCloseTo(0);
+  });
+
+  it("the returned point always lies on the circle radius", () => {
+    for (const t of [0.3, 1.1, 2.7, 5.0]) {
+      const p = unitCirclePoint(0, 0, 10, t);
+      expect(distance({ x: 0, y: 0 }, p)).toBeCloseTo(10);
+    }
+  });
+});
+
+describe("numberWithCommas", () => {
+  it("inserts thousands separators", () => {
+    expect(numberWithCommas(1000)).toBe("1,000");
+    expect(numberWithCommas(1234567)).toBe("1,234,567");
+  });
+
+  it("leaves sub-thousand numbers untouched", () => {
+    expect(numberWithCommas(42)).toBe("42");
+  });
+});
+
+describe("easing functions", () => {
+  const eases = { linear, easeIn, easeOut, easeInOut };
+
+  it("all pin the 0->0 and 1->1 endpoints", () => {
+    for (const fn of Object.values(eases)) {
+      expect(fn(0)).toBeCloseTo(0);
+      expect(fn(1)).toBeCloseTo(1);
+    }
+  });
+
+  it("all stay monotonically non-decreasing across [0,1]", () => {
+    for (const fn of Object.values(eases)) {
+      let prev = -Infinity;
+      for (let t = 0; t <= 1.0001; t += 0.05) {
+        const v = fn(t);
+        expect(v).toBeGreaterThanOrEqual(prev - 1e-9);
+        prev = v;
+      }
+    }
+  });
+
+  it("linear is the identity", () => {
+    expect(linear(0.37)).toBe(0.37);
+  });
+});
+
+describe("randomness (bounds + inclusivity over samples)", () => {
+  it("randomNumberBetween stays within [min, max)", () => {
+    for (let i = 0; i < 1000; i++) {
+      const v = randomNumberBetween(5, 10);
+      expect(v).toBeGreaterThanOrEqual(5);
+      expect(v).toBeLessThan(10);
+    }
+  });
+
+  it("randomIntegerBetween returns integers within the inclusive range", () => {
+    const seen = new Set<number>();
+    for (let i = 0; i < 2000; i++) {
+      const v = randomIntegerBetween(1, 6);
+      expect(Number.isInteger(v)).toBe(true);
+      expect(v).toBeGreaterThanOrEqual(1);
+      expect(v).toBeLessThanOrEqual(6);
+      seen.add(v);
+    }
+    // Both endpoints should be reachable (inclusive range).
+    expect(seen.has(1)).toBe(true);
+    expect(seen.has(6)).toBe(true);
+  });
+});
+
+describe("collision detection", () => {
+  it("pointToCircle: inside, on edge, outside", () => {
+    expect(pointToCircle(0, 0, 0, 0, 5)).toBe(true); // center
+    expect(pointToCircle(5, 0, 0, 0, 5)).toBe(true); // on edge (<=)
+    expect(pointToCircle(6, 0, 0, 0, 5)).toBe(false); // outside
+  });
+
+  it("pointToRect: inside vs outside", () => {
+    expect(pointToRect(5, 5, 0, 0, 10, 10)).toBe(true);
+    expect(pointToRect(11, 5, 0, 0, 10, 10)).toBe(false);
+    expect(pointToRect(0, 0, 0, 0, 10, 10)).toBe(true); // corner is inclusive
+  });
+
+  it("rectToRect: overlapping vs separated", () => {
+    expect(rectToRect(0, 0, 10, 10, 5, 5, 10, 10)).toBe(true);
+    expect(rectToRect(0, 0, 10, 10, 20, 20, 5, 5)).toBe(false);
+  });
+
+  it("circleToRect: circle overlapping a rect vs clear of it", () => {
+    expect(circleToRect(0, 0, 5, 3, 0, 10, 10)).toBe(true); // overlaps left edge
+    expect(circleToRect(-100, -100, 5, 0, 0, 10, 10)).toBe(false);
+  });
+
+  it("circleToCircle: touching, overlapping, apart", () => {
+    expect(circleToCircle(0, 0, 5, 10, 0, 5)).toBe(true); // exactly touching (<=)
+    expect(circleToCircle(0, 0, 5, 6, 0, 5)).toBe(true); // overlapping
+    expect(circleToCircle(0, 0, 5, 100, 0, 5)).toBe(false); // far apart
+  });
+
+  it("lineToPoint: point on the segment vs off it", () => {
+    expect(lineToPoint(0, 0, 10, 0, 5, 0, 0.5)).toBe(true); // on the line
+    expect(lineToPoint(0, 0, 10, 0, 5, 5, 0.5)).toBe(false); // well above it
+  });
+});
+
+describe("collision detection — remaining raw functions", () => {
+  it("lineToCircle: line through a circle vs clear of it", () => {
+    expect(lineToCircle(0, 0, 10, 0, 5, 0, 2)).toBe(true); // passes through center
+    expect(lineToCircle(0, 0, 10, 0, 5, 100, 2)).toBe(false); // far away
+  });
+
+  it("lineToLine: crossing segments vs parallel segments", () => {
+    expect(lineToLine(0, 0, 10, 10, 0, 10, 10, 0)).toBe(true); // an X
+    expect(lineToLine(0, 0, 10, 0, 0, 5, 10, 5)).toBe(false); // parallel
+  });
+
+  it("lineToRect: line crossing a rect vs missing it", () => {
+    expect(lineToRect(-5, 5, 15, 5, 0, 0, 10, 10)).toBe(true); // straight through
+    expect(lineToRect(-5, -5, -1, -5, 0, 0, 10, 10)).toBe(false); // off to the side
+  });
+
+  it("polygonToPolygon (Point[]): overlapping vs separated squares", () => {
+    const a = [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 10 },
+      { x: 0, y: 10 },
+    ];
+    const overlapping = a.map((p) => ({ x: p.x + 5, y: p.y + 5 }));
+    const apart = a.map((p) => ({ x: p.x + 100, y: p.y + 100 }));
+    expect(polygonToPolygon(a, overlapping)).toBe(true);
+    expect(polygonToPolygon(a, apart)).toBe(false);
+  });
+});
+
+describe("collision detection — object API (CollisionObjectAPI)", () => {
+  const square = {
+    vertices: [
+      { x: 0, y: 0 },
+      { x: 10, y: 0 },
+      { x: 10, y: 10 },
+      { x: 0, y: 10 },
+    ],
+  };
+
+  it("circleCircle: overlapping vs apart", () => {
+    expect(circleCircle({ x: 0, y: 0, radius: 5 }, { x: 6, y: 0, radius: 5 })).toBe(true);
+    expect(circleCircle({ x: 0, y: 0, radius: 5 }, { x: 100, y: 0, radius: 5 })).toBe(false);
+  });
+
+  it("pointCircle: inside vs outside", () => {
+    expect(pointCircle({ x: 1, y: 1 }, { x: 0, y: 0, radius: 5 })).toBe(true);
+    expect(pointCircle({ x: 9, y: 9 }, { x: 0, y: 0, radius: 5 })).toBe(false);
+  });
+
+  it("linePoint: point on the line vs off it", () => {
+    const line = { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } };
+    expect(linePoint(line, { x: 5, y: 0 })).toBe(true);
+    expect(linePoint(line, { x: 5, y: 5 })).toBe(false);
+  });
+
+  it("lineLine: returns the intersection point when segments cross", () => {
+    const result = lineLine(
+      { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 10 } },
+      { startPoint: { x: 0, y: 10 }, endPoint: { x: 10, y: 0 } },
+    );
+    expect(result.hit).toBe(true);
+    if (result.hit) {
+      expect(result.intersectionX).toBeCloseTo(5);
+      expect(result.intersectionY).toBeCloseTo(5);
+    }
+    const miss = lineLine(
+      { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } },
+      { startPoint: { x: 0, y: 5 }, endPoint: { x: 10, y: 5 } },
+    );
+    expect(miss.hit).toBe(false);
+  });
+
+  it("lineCircle: line through a circle vs clear of it", () => {
+    const through = { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } };
+    expect(lineCircle(through, { x: 5, y: 0, radius: 2 })).toBe(true);
+    expect(lineCircle(through, { x: 5, y: 100, radius: 2 })).toBe(false);
+  });
+
+  it("polygonPoint: point inside the square vs outside", () => {
+    expect(polygonPoint(square, { x: 5, y: 5 })).toBe(true);
+    expect(polygonPoint(square, { x: 50, y: 50 })).toBe(false);
+  });
+
+  it("polygonLine: line crossing the square vs missing it", () => {
+    expect(polygonLine(square, { startPoint: { x: -5, y: 5 }, endPoint: { x: 15, y: 5 } })).toBe(true);
+    expect(polygonLine(square, { startPoint: { x: 50, y: 50 }, endPoint: { x: 60, y: 60 } })).toBe(false);
+  });
+
+  it("polygonCircle: circle touching the square vs clear of it", () => {
+    expect(polygonCircle(square, { x: 5, y: 5, radius: 2 })).toBe(true); // inside
+    expect(polygonCircle(square, { x: 100, y: 100, radius: 2 })).toBe(false);
+  });
+
+  it("polygonPolygon: overlapping vs separated squares", () => {
+    const overlapping = { vertices: square.vertices.map((p) => ({ x: p.x + 5, y: p.y + 5 })) };
+    const apart = { vertices: square.vertices.map((p) => ({ x: p.x + 100, y: p.y + 100 })) };
+    expect(polygonPolygon(square, overlapping)).toBe(true);
+    expect(polygonPolygon(square, apart)).toBe(false);
+  });
+});
+
+describe("points around a circle", () => {
+  const center = { x: 0, y: 0 };
+
+  it("findPointAroundCircle: 0% / 25% / 50% land on the expected spots", () => {
+    let p = findPointAroundCircle(center, 10, 0);
+    expect(p.x).toBeCloseTo(10);
+    expect(p.y).toBeCloseTo(0);
+    p = findPointAroundCircle(center, 10, 25);
+    expect(p.x).toBeCloseTo(0);
+    expect(p.y).toBeCloseTo(10);
+    p = findPointAroundCircle(center, 10, 50);
+    expect(p.x).toBeCloseTo(-10);
+    expect(p.y).toBeCloseTo(0);
+  });
+
+  it("distributeAroundCircle: returns N points, all on the radius, first at angle 0", () => {
+    const pts = distributeAroundCircle(center, 10, 8);
+    expect(pts).toHaveLength(8);
+    for (const p of pts) {
+      expect(distance(center, p)).toBeCloseTo(10);
+    }
+    expect(pts[0].x).toBeCloseTo(10);
+    expect(pts[0].y).toBeCloseTo(0);
+  });
+});
+
+describe("movement helpers", () => {
+  it("moveAlongLine: endpoints at ratio 0/1 and midpoint at 0.5", () => {
+    const a = { x: 0, y: 0 };
+    const b = { x: 10, y: 20 };
+    expect(moveAlongLine(a, b, 0)).toEqual(a);
+    expect(moveAlongLine(a, b, 1)).toEqual(b);
+    expect(moveAlongLine(a, b, 0.5)).toEqual({ x: 5, y: 10 });
+  });
+
+  it("moveToward: steps by `speed` and returns the heading angle", () => {
+    const obj = { x: 0, y: 0 };
+    const angle = moveToward(obj, { x: 10, y: 0 }, 2);
+    expect(obj).toEqual({ x: 2, y: 0 });
+    expect(angle).toBeCloseTo(0);
+  });
+
+  it("moveToward: snaps to the destination when within one step", () => {
+    const obj = { x: 0, y: 0 };
+    moveToward(obj, { x: 1, y: 0 }, 5);
+    expect(obj).toEqual({ x: 1, y: 0 });
+  });
+
+  it("getRotation: angle from one point toward another", () => {
+    expect(getRotation({ x: 0, y: 0 }, { x: 1, y: 0 })).toBeCloseTo(0);
+    expect(getRotation({ x: 0, y: 0 }, { x: 0, y: 1 })).toBeCloseTo(Math.PI / 2);
+    expect(getRotation({ x: 0, y: 0 }, { x: -1, y: 0 })).toBeCloseTo(Math.PI);
+  });
+});
+
+describe("triangle / circle geometry", () => {
+  it("getTriangleData: dx, dy and distance for a 3-4-5 triangle", () => {
+    const d = getTriangleData({ x: 0, y: 0 }, { x: 3, y: 4 });
+    expect(d.dx).toBe(3);
+    expect(d.dy).toBe(4);
+    expect(d.distance).toBe(5);
+  });
+
+  it("triangleDataFromLine: solves the 3-4-5 right triangle", () => {
+    const d = triangleDataFromLine({ x: 0, y: 0 }, { x: 4, y: 3 });
+    expect(d.hypotenuse).toBeCloseTo(5);
+    expect(d.adjacent).toBeCloseTo(4);
+    expect(d.opposite).toBeCloseTo(3);
+    expect(d.angleInDegrees).toBe(36); // floor(asin(3/5)) = floor(36.87)
+    expect(d.remainingAngle).toBe(54);
+  });
+
+  it("circleFromThreePoints: recovers the circumcircle of three points on a known circle", () => {
+    const c = circleFromThreePoints({ x: 5, y: 0 }, { x: 0, y: 5 }, { x: -5, y: 0 });
+    expect(c.radius).toBeCloseTo(5);
+    expect(c.center.x).toBeCloseTo(0);
+    expect(c.center.y).toBeCloseTo(0);
+  });
+});
+
+describe("shape vertex generators", () => {
+  it("createRect: produces four vertices", () => {
+    expect(createRect(10, 10).vertices).toHaveLength(4);
+  });
+
+  it("equilateralTriangle: three vertices, all on the radius, 120° apart", () => {
+    const center = { x: 0, y: 0 };
+    const { point1, point2, point3 } = equilateralTriangle(5, center, 0);
+    for (const p of [point1, point2, point3]) {
+      expect(distance(center, p)).toBeCloseTo(5);
+    }
+    // point1 sits at angle 0
+    expect(point1.x).toBeCloseTo(5);
+    expect(point1.y).toBeCloseTo(0);
+    // adjacent vertices are 1/3 of the way around (120°) apart
+    const a12 = Math.atan2(point2.y, point2.x) - Math.atan2(point1.y, point1.x);
+    expect(Math.abs(a12)).toBeCloseTo((2 * Math.PI) / 3);
+  });
+
+  it("starVertices: 2 vertices per spike, alternating outer/inner radius", () => {
+    const { vertices } = starVertices(5, 5, 10, 0);
+    expect(vertices).toHaveLength(10);
+    // even indices sit on the outer radius, odd on the inner
+    expect(Math.hypot(vertices[0].x, vertices[0].y)).toBeCloseTo(10);
+    expect(Math.hypot(vertices[1].x, vertices[1].y)).toBeCloseTo(5);
+  });
+});
+
+describe("Vec2 — 2D vector operations", () => {
+  it("vecAdd / vecSubtract: component-wise", () => {
+    expect(vecAdd({ x: 1, y: 2 }, { x: 3, y: 4 })).toEqual({ x: 4, y: 6 });
+    expect(vecSubtract({ x: 5, y: 5 }, { x: 1, y: 2 })).toEqual({ x: 4, y: 3 });
+  });
+
+  it("vecScale: multiplies both components", () => {
+    expect(vecScale({ x: 3, y: 4 }, 2)).toEqual({ x: 6, y: 8 });
+    expect(vecScale({ x: 3, y: 4 }, 0)).toEqual({ x: 0, y: 0 });
+  });
+
+  it("vecDot: 0 for perpendicular, positive for aligned, negative for opposed", () => {
+    expect(vecDot({ x: 1, y: 0 }, { x: 0, y: 1 })).toBe(0);
+    expect(vecDot({ x: 2, y: 0 }, { x: 3, y: 0 })).toBe(6);
+    expect(vecDot({ x: 1, y: 0 }, { x: -1, y: 0 })).toBe(-1);
+  });
+
+  it("vecCross: sign indicates turn direction", () => {
+    expect(vecCross({ x: 1, y: 0 }, { x: 0, y: 1 })).toBe(1); // CCW
+    expect(vecCross({ x: 1, y: 0 }, { x: 0, y: -1 })).toBe(-1); // CW
+    expect(vecCross({ x: 2, y: 0 }, { x: 4, y: 0 })).toBe(0); // parallel
+  });
+
+  it("vecMagnitude / vecMagnitudeSquared: 3-4-5", () => {
+    expect(vecMagnitude({ x: 3, y: 4 })).toBe(5);
+    expect(vecMagnitudeSquared({ x: 3, y: 4 })).toBe(25);
+  });
+
+  it("vecNormalize: returns a unit vector, and {0,0} for the zero vector", () => {
+    expect(vecNormalize({ x: 0, y: 5 })).toEqual({ x: 0, y: 1 });
+    const n = vecNormalize({ x: 3, y: 4 });
+    expect(vecMagnitude(n)).toBeCloseTo(1);
+    expect(vecNormalize({ x: 0, y: 0 })).toEqual({ x: 0, y: 0 }); // no NaN
+  });
+
+  it("vecAngle: angle from the +x axis", () => {
+    expect(vecAngle({ x: 1, y: 0 })).toBeCloseTo(0);
+    expect(vecAngle({ x: 0, y: 1 })).toBeCloseTo(Math.PI / 2);
+  });
+
+  it("vecAngleBetween: unsigned angle in 0..π, 0 for a zero vector", () => {
+    expect(vecAngleBetween({ x: 1, y: 0 }, { x: 0, y: 1 })).toBeCloseTo(Math.PI / 2);
+    expect(vecAngleBetween({ x: 1, y: 0 }, { x: -1, y: 0 })).toBeCloseTo(Math.PI);
+    expect(vecAngleBetween({ x: 0, y: 0 }, { x: 1, y: 0 })).toBe(0);
+  });
+
+  it("vecRotate: 90° turns (1,0) into (0,1) without changing length", () => {
+    const r = vecRotate({ x: 1, y: 0 }, Math.PI / 2);
+    expect(r.x).toBeCloseTo(0);
+    expect(r.y).toBeCloseTo(1);
+    expect(vecMagnitude(r)).toBeCloseTo(1);
+  });
+
+  it("vecPerpendicular: rotates 90° CCW", () => {
+    const p = vecPerpendicular({ x: 1, y: 0 });
+    expect(p.x).toBeCloseTo(0); // tolerant of -0
+    expect(p.y).toBeCloseTo(1);
+  });
+
+  it("vecReflect: bounces a vector off a surface (unit normal)", () => {
+    // falling down-right, hitting the floor (normal pointing up) → goes up-right
+    const r = vecReflect({ x: 1, y: -1 }, { x: 0, y: 1 });
+    expect(r.x).toBeCloseTo(1);
+    expect(r.y).toBeCloseTo(1);
+  });
+
+  it("vecLerp: endpoints and midpoint", () => {
+    expect(vecLerp({ x: 0, y: 0 }, { x: 10, y: 20 }, 0)).toEqual({ x: 0, y: 0 });
+    expect(vecLerp({ x: 0, y: 0 }, { x: 10, y: 20 }, 1)).toEqual({ x: 10, y: 20 });
+    expect(vecLerp({ x: 0, y: 0 }, { x: 10, y: 20 }, 0.5)).toEqual({ x: 5, y: 10 });
+  });
+
+  it("vecLimit: caps magnitude but leaves shorter vectors untouched", () => {
+    const capped = vecLimit({ x: 30, y: 40 }, 10); // was length 50
+    expect(vecMagnitude(capped)).toBeCloseTo(10);
+    expect(capped).toEqual({ x: 6, y: 8 });
+    expect(vecLimit({ x: 3, y: 4 }, 10)).toEqual({ x: 3, y: 4 }); // already short
+  });
+
+  it("does not mutate its inputs", () => {
+    const a = { x: 1, y: 2 };
+    const b = { x: 3, y: 4 };
+    vecAdd(a, b);
+    vecScale(a, 5);
+    vecNormalize(a);
+    expect(a).toEqual({ x: 1, y: 2 });
+    expect(b).toEqual({ x: 3, y: 4 });
+  });
+});
+
+describe("Tier A scalar helpers", () => {
+  it("clamp: within, below, above", () => {
+    expect(clamp(5, 0, 10)).toBe(5);
+    expect(clamp(-3, 0, 10)).toBe(0);
+    expect(clamp(15, 0, 10)).toBe(10);
+  });
+
+  it("mapRange: rescales linearly and extrapolates outside the range", () => {
+    expect(mapRange(5, 0, 10, 0, 100)).toBe(50);
+    expect(mapRange(0.5, 0, 1, -180, 180)).toBe(0);
+    expect(mapRange(15, 0, 10, 0, 100)).toBe(150); // unclamped
+  });
+
+  it("inverseLerp: fraction within a range, 0 when degenerate", () => {
+    expect(inverseLerp(0, 100, 25)).toBe(0.25);
+    expect(inverseLerp(20, 40, 30)).toBe(0.5);
+    expect(inverseLerp(5, 5, 5)).toBe(0); // a === b, no divide-by-zero
+  });
+
+  it("inverseLerp is the inverse of lerp", () => {
+    expect(inverseLerp(10, 20, lerp(10, 20, 0.3))).toBeCloseTo(0.3);
+  });
+
+  it("smoothstep / smootherstep: clamp at the edges, 0.5 at the midpoint", () => {
+    expect(smoothstep(0, 10, -2)).toBe(0);
+    expect(smoothstep(0, 10, 12)).toBe(1);
+    expect(smoothstep(0, 10, 5)).toBeCloseTo(0.5);
+    expect(smootherstep(0, 10, 5)).toBeCloseTo(0.5);
+    expect(smoothstep(5, 5, 4)).toBe(0); // degenerate edges
+    expect(smoothstep(5, 5, 6)).toBe(1);
+  });
+
+  it("wrap: loops a value into [min, max)", () => {
+    expect(wrap(5, 0, 10)).toBe(5);
+    expect(wrap(11, 0, 10)).toBe(1);
+    expect(wrap(-1, 0, 10)).toBe(9);
+    expect(wrap(20, 0, 10)).toBe(0);
+  });
+
+  it("pingPong: triangle wave between 0 and length", () => {
+    expect(pingPong(0, 10)).toBe(0);
+    expect(pingPong(10, 10)).toBe(10);
+    expect(pingPong(15, 10)).toBe(5);
+    expect(pingPong(20, 10)).toBe(0);
+  });
+
+  it("wrapAngle: normalizes into (-π, π]", () => {
+    expect(wrapAngle(3 * Math.PI)).toBeCloseTo(Math.PI); // +half-turn lands on +π
+    expect(wrapAngle(-3 * Math.PI)).toBeCloseTo(-Math.PI); // -half-turn lands on -π (same direction)
+    expect(wrapAngle(0)).toBeCloseTo(0);
+    expect(wrapAngle(2 * Math.PI + 1)).toBeCloseTo(1); // a full turn + 1 rad => 1 rad
+  });
+
+  it("shortestAngleBetween: takes the short way across the seam", () => {
+    expect(shortestAngleBetween(0, Math.PI / 2)).toBeCloseTo(Math.PI / 2);
+    // from ~350° to ~10° should be a small positive turn, not a huge negative one
+    const a = (350 * Math.PI) / 180;
+    const b = (10 * Math.PI) / 180;
+    expect(shortestAngleBetween(a, b)).toBeCloseTo((20 * Math.PI) / 180);
+  });
+
+  it("lerpAngle: interpolates along the shortest arc", () => {
+    expect(lerpAngle(0, Math.PI / 2, 0)).toBeCloseTo(0);
+    expect(lerpAngle(0, Math.PI / 2, 1)).toBeCloseTo(Math.PI / 2);
+    expect(lerpAngle(0, Math.PI / 2, 0.5)).toBeCloseTo(Math.PI / 4);
+  });
+});
+
+describe("sineCurve (pure / time-driven)", () => {
+  it("returns the baseline when the sine term is zero", () => {
+    expect(sineCurve(10, 5, 1, 0)).toBeCloseTo(10); // sin(0) = 0
+    expect(sineCurve(10, 5, 0, 12345)).toBeCloseTo(10); // speed 0 => sin(0) = 0
+  });
+
+  it("adds amplitude × sin(time × speed) to the baseline", () => {
+    // time × speed = π/2 => sin = 1 => baseline + full amplitude
+    expect(sineCurve(100, 50, Math.PI / 2, 1)).toBeCloseTo(150);
+    // time × speed = 3π/2 => sin = -1 => baseline − full amplitude
+    expect(sineCurve(100, 50, (3 * Math.PI) / 2, 1)).toBeCloseTo(50);
+  });
+
+  it("is deterministic — same args, same result (no hidden clock)", () => {
+    expect(sineCurve(0, 1, 0.002, 5000)).toBe(sineCurve(0, 1, 0.002, 5000));
+  });
+});
