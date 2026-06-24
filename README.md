@@ -232,9 +232,3 @@ Follow the five-step checklist. One hard constraint: **one canonical source per 
 ## 📄 License
 
 MIT. See `LICENSE`.
-
-## 🤖 A Note on AI & Engineering Integrity
-
-The core mathematics, formulas, and rendering logic were handcrafted from first principles. AI tools have played a growing role over time, and I believe in being transparent about that.
-
-**Any code that originated with AI is explicitly identified** — both in source file comments and in the "AI Made" section of the examples page. The older animations (collision detection, trig utilities) are entirely hand-written. The newer sections (Fourier epicycles, Game of Life, Perlin flow fields, Bézier curves) were AI-generated and are labeled accordingly.

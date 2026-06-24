@@ -77,7 +77,32 @@ import {
   lerpAngle,
   // now pure & time-driven (post purity fix)
   sineCurve,
+  // math-heavy bucket
+  dft,
+  gameOfLifeStep,
+  grStep,
+  lensDeflection,
+  gravitationalStep,
+  sphereLighting,
+  sineWave,
+  waveAmplitude,
+  bezierPoint,
+  quadraticBezier,
+  ballBounce,
+  ballToBallBounce,
 } from "@utilspalooza/core";
+
+// Small factory so each ball test gets a fresh, fully-typed Ball.
+const makeBall = (over: Partial<import("@utilspalooza/core").Ball> = {}) => ({
+  id: "b",
+  x: 0,
+  y: 0,
+  vx: 0,
+  vy: 0,
+  radius: 10,
+  color: "#fff",
+  ...over,
+});
 
 // These tests exercise the public barrel (@utilspalooza/core), i.e. exactly what
 // an npm consumer imports — not the source files directly. Pure math only.
@@ -647,5 +672,230 @@ describe("sineCurve (pure / time-driven)", () => {
 
   it("is deterministic — same args, same result (no hidden clock)", () => {
     expect(sineCurve(0, 1, 0.002, 5000)).toBe(sineCurve(0, 1, 0.002, 5000));
+  });
+});
+
+// ─── math-heavy bucket ──────────────────────────────────────────────────────
+
+describe("sineWave", () => {
+  it("returns centerY where the sine term is zero (x=0, phase=0)", () => {
+    expect(sineWave(0, 200, 50, 120, 0)).toBeCloseTo(200);
+  });
+
+  it("hits the crest a quarter-wavelength along", () => {
+    expect(sineWave(30, 200, 50, 120, 0)).toBeCloseTo(250); // x/λ = 0.25 => sin(π/2)=1
+  });
+
+  it("is periodic in wavelength", () => {
+    expect(sineWave(17, 0, 50, 120, 0)).toBeCloseTo(sineWave(17 + 120, 0, 50, 120, 0));
+  });
+});
+
+describe("waveAmplitude", () => {
+  it("is +1 at a single source at t=0 (cos 0)", () => {
+    const s = { x: 50, y: 50 };
+    expect(waveAmplitude(s.x, s.y, [s], 0, 0.05, 0.1)).toBeCloseTo(1);
+  });
+
+  it("averages across sources (two coincident sources still = 1)", () => {
+    const s = { x: 0, y: 0 };
+    expect(waveAmplitude(0, 0, [s, { ...s }], 0, 0.05, 0.1)).toBeCloseTo(1);
+  });
+
+  it("stays within [-1, 1]", () => {
+    const sources = [{ x: 0, y: 0 }, { x: 100, y: 40 }];
+    for (let x = 0; x < 100; x += 13) {
+      const a = waveAmplitude(x, 20, sources, 5, 0.05, 0.1);
+      expect(a).toBeGreaterThanOrEqual(-1);
+      expect(a).toBeLessThanOrEqual(1);
+    }
+  });
+});
+
+describe("bezierPoint (cubic, de Casteljau)", () => {
+  const p0 = { x: 0, y: 0 }, p1 = { x: 0, y: 1 }, p2 = { x: 1, y: 1 }, p3 = { x: 1, y: 0 };
+
+  it("returns the anchors at the endpoints", () => {
+    expect(bezierPoint(p0, p1, p2, p3, 0)).toEqual(p0);
+    expect(bezierPoint(p0, p1, p2, p3, 1)).toEqual(p3);
+  });
+
+  it("computes the midpoint of a symmetric curve", () => {
+    const m = bezierPoint(p0, p1, p2, p3, 0.5);
+    expect(m.x).toBeCloseTo(0.5);
+    expect(m.y).toBeCloseTo(0.75);
+  });
+});
+
+describe("quadraticBezier", () => {
+  const p0 = { x: 0, y: 0 }, p1 = { x: 50, y: 100 }, p2 = { x: 100, y: 0 };
+
+  it("returns the anchors at the endpoints", () => {
+    expect(quadraticBezier(0, p0, p1, p2)).toEqual(p0);
+    expect(quadraticBezier(1, p0, p1, p2)).toEqual(p2);
+  });
+
+  it("matches the closed-form midpoint", () => {
+    const m = quadraticBezier(0.5, p0, p1, p2);
+    expect(m.x).toBeCloseTo(50);
+    expect(m.y).toBeCloseTo(50);
+  });
+});
+
+describe("dft", () => {
+  it("transforms a single point exactly (amp = magnitude, phase = atan2)", () => {
+    const out = dft([{ x: 3, y: 4 }]);
+    expect(out).toHaveLength(1);
+    expect(out[0].freq).toBe(0);
+    expect(out[0].amp).toBeCloseTo(5);
+    expect(out[0].phase).toBeCloseTo(Math.atan2(4, 3));
+  });
+
+  it("preserves length and returns entries sorted by descending amplitude", () => {
+    const out = dft([
+      { x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 },
+    ]);
+    expect(out).toHaveLength(4);
+    for (let i = 1; i < out.length; i++) {
+      expect(out[i - 1].amp).toBeGreaterThanOrEqual(out[i].amp);
+    }
+  });
+});
+
+describe("gameOfLifeStep", () => {
+  // index = y * cols + x
+  const cols = 5, rows = 5;
+  const live = (idxs: number[]) => {
+    const g = new Uint8Array(cols * rows);
+    for (const i of idxs) g[i] = 1;
+    return g;
+  };
+  const liveIndices = (g: ArrayLike<number>) => {
+    const out: number[] = [];
+    for (let i = 0; i < g.length; i++) if (g[i]) out.push(i);
+    return out;
+  };
+
+  it("oscillates a blinker (horizontal → vertical)", () => {
+    // horizontal: (x=1,2,3 at y=2) => indices 11,12,13
+    const next = gameOfLifeStep(live([11, 12, 13]), cols, rows);
+    // vertical: (x=2 at y=1,2,3) => indices 7,12,17
+    expect(liveIndices(next).sort((a, b) => a - b)).toEqual([7, 12, 17]);
+  });
+
+  it("keeps a 2×2 block stable (still life)", () => {
+    const block = [6, 7, 11, 12]; // (1,1)(2,1)(1,2)(2,2)
+    const next = gameOfLifeStep(live(block), cols, rows);
+    expect(liveIndices(next).sort((a, b) => a - b)).toEqual(block);
+  });
+
+  it("lets a lone cell die of loneliness", () => {
+    expect(liveIndices(gameOfLifeStep(live([12]), cols, rows))).toEqual([]);
+  });
+});
+
+describe("gravitationalStep (Newtonian)", () => {
+  it("pulls the orbiter toward the body", () => {
+    const orbiter = { x: 0, y: 0, vx: 0, vy: 0 };
+    gravitationalStep(orbiter, { x: 10, y: 0, mass: 100 });
+    expect(orbiter.vx).toBeGreaterThan(0); // accelerated toward the body (to the right)
+    expect(orbiter.vy).toBeCloseTo(0); // no vertical pull when dy = 0
+    expect(orbiter.x).toBeGreaterThan(0); // and it moved
+  });
+});
+
+describe("grStep (general-relativity correction)", () => {
+  it("reduces to Newtonian when grStrength = 0", () => {
+    const a = { x: 0, y: 30, vx: 1, vy: 0 };
+    const b = { x: 0, y: 30, vx: 1, vy: 0 };
+    const sun = { x: 100, y: 30, mass: 200 };
+    grStep(a, { ...sun }, 0);
+    gravitationalStep(b, { ...sun });
+    expect(a.x).toBeCloseTo(b.x);
+    expect(a.y).toBeCloseTo(b.y);
+    expect(a.vx).toBeCloseTo(b.vx);
+    expect(a.vy).toBeCloseTo(b.vy);
+  });
+
+  it("pulls harder than Newtonian when grStrength > 0", () => {
+    const gr = { x: 0, y: 30, vx: 0, vy: 0 };
+    const newton = { x: 0, y: 30, vx: 0, vy: 0 };
+    const sun = { x: 50, y: 30, mass: 200 };
+    grStep(gr, { ...sun }, 5000);
+    gravitationalStep(newton, { ...sun });
+    expect(gr.vx).toBeGreaterThan(newton.vx); // stronger inward acceleration
+  });
+});
+
+describe("lensDeflection", () => {
+  it("is zero far from the lens and when the ray runs through its center", () => {
+    expect(lensDeflection(0, 0, 500, 0, 2000)).toBe(0); // x outside lx ± 100
+    expect(lensDeflection(100, 0, 100, 0, 2000)).toBe(0); // b = 0 (y0 === ly)
+  });
+
+  it("bends a near ray, and more massive lenses bend more", () => {
+    const d1 = lensDeflection(100, 20, 100, 0, 1600);
+    expect(d1).toBeCloseTo(2); // r = b = 20 => 1600/(20*20)*0.5 = 2
+    const d2 = lensDeflection(100, 20, 100, 0, 3200);
+    expect(d2).toBeCloseTo(2 * d1); // linear in mass
+  });
+});
+
+describe("sphereLighting", () => {
+  const sphere = { x: 100, y: 100, radius: 40 };
+
+  it("places the highlight toward the light, default reach 0.4", () => {
+    const hi = sphereLighting(sphere, { x: 300, y: 100 }); // light to the right
+    expect(hi.x).toBeCloseTo(116); // 100 + 40 * 0.4
+    expect(hi.y).toBeCloseTo(100);
+  });
+
+  it("respects the highlightReach parameter and light direction", () => {
+    const hi = sphereLighting(sphere, { x: 100, y: 0 }, 0.5); // light straight up (smaller y)
+    expect(hi.x).toBeCloseTo(100);
+    expect(hi.y).toBeCloseTo(80); // 100 - 40 * 0.5
+  });
+});
+
+describe("ballBounce", () => {
+  const stage = { x: 0, y: 0, width: 800, height: 600 };
+
+  it("applies gravity to vertical velocity", () => {
+    const ball = makeBall({ x: 400, y: 300, vy: 0 });
+    ballBounce(ball, stage);
+    expect(ball.vy).toBeCloseTo(0.4); // gravity
+    expect(ball.y).toBeCloseTo(300.4);
+  });
+
+  it("clamps to the floor and reverses velocity on impact", () => {
+    const ball = makeBall({ x: 400, y: 595, vy: 10, radius: 10 });
+    ballBounce(ball, stage);
+    expect(ball.y).toBe(stage.height - ball.radius); // clamped to 590
+    expect(ball.vy).toBeLessThan(0); // bounced upward
+  });
+});
+
+describe("ballToBallBounce", () => {
+  it("pushes overlapping balls apart", () => {
+    const a = makeBall({ id: "a", x: 0, y: 0, radius: 10 });
+    const b = makeBall({ id: "b", x: 5, y: 0, radius: 10 });
+    ballToBallBounce(a, b);
+    expect(a.vx).toBeLessThan(0); // shoved left
+    expect(b.vx).toBeGreaterThan(0); // shoved right (equal & opposite)
+    expect(a.vx).toBeCloseTo(-b.vx);
+  });
+
+  it("leaves non-overlapping balls untouched", () => {
+    const a = makeBall({ id: "a", x: 0, y: 0, radius: 10 });
+    const b = makeBall({ id: "b", x: 100, y: 0, radius: 10 });
+    ballToBallBounce(a, b);
+    expect(a.vx).toBe(0);
+    expect(b.vx).toBe(0);
+  });
+
+  it("is a no-op when handed the same ball twice", () => {
+    const a = makeBall({ id: "a", x: 0, y: 0, vx: 3, radius: 10 });
+    ballToBallBounce(a, a);
+    expect(a.vx).toBe(3);
   });
 });

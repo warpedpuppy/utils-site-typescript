@@ -51,6 +51,16 @@ import VectorReflectAnimation from "./core-animations/VectorReflect";
 import VectorRotateAnimation from "./core-animations/VectorRotate";
 import AngleLerpAnimation from "./core-animations/AngleLerp";
 
+// Ported "pretty little things" from the warpedpuppies portfolio.
+// SCAFFOLDS — drawX() is blank; the original source is commented at the bottom
+// of each file as the reference to port from. Ted converts each to Canvas 2D.
+import Murmuration from "./core-animations/Murmuration";
+import Sierpinski from "./core-animations/Sierpinski";
+import Glitter from "./core-animations/Glitter";
+import PrettyRing from "./core-animations/PrettyRing";
+import Sparklies from "./core-animations/Sparklies";
+import Klimt from "./core-animations/Klimt";
+
 // Studio projects are loaded directly in Studio.tsx to avoid import issues
 
 const SiteData: PrimaryObject = {
@@ -122,6 +132,18 @@ const SiteData: PrimaryObject = {
     VectorReflectAnimation,
     VectorRotateAnimation,
     AngleLerpAnimation,
+  },
+  flocking: {
+    Murmuration,
+  },
+  fractals: {
+    Sierpinski,
+  },
+  "pretty things": {
+    Glitter,
+    PrettyRing,
+    Sparklies,
+    Klimt,
   },
 };
 
