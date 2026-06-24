@@ -14,7 +14,7 @@ import { Point } from './types';
  * @example
  * quadraticBezier(0.5, {x:0,y:0}, {x:50,y:100}, {x:100,y:0}); // => { x: 50, y: 50 }
  */
-export function quadraticBezier(t: number, p0: Point, p1: Point, p2: Point) {
+export function quadraticBezier(t: number, p0: Point, p1: Point, p2: Point): Point {
   const mt = 1 - t;
   return {
     x: mt * mt * p0.x + 2 * mt * t * p1.x + t * t * p2.x,

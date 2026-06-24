@@ -13,7 +13,7 @@ import { Ball, Container } from './types';
  * @example
  * ballBounce(ball, { x: 0, y: 0, width: 800, height: 600 }); // call once per frame
  */
-export function ballBounce(ball: Ball, stage: Container) {
+export function ballBounce(ball: Ball, stage: Container): void {
   const gravity = 0.4;
   const restitution = 0.72;
   const friction = 0.985;

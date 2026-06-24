@@ -14,7 +14,7 @@ import { randomIntegerBetween } from "./RandomIntegerBetween";
  * const { H, S, L } = getRandomColors("blue");
  * const css = `hsl(${H}, ${S}%, ${L}%)`;
  */
-export function getRandomColors(str: string = "all") {
+export function getRandomColors(str: string = "all"): { H: number; S: number; L: number } {
   let range = [0, 360];
   if (str.includes("blue")) {
     range = [200, 250];

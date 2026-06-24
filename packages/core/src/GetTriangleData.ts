@@ -10,7 +10,7 @@ import { Point } from './types';
  * @example
  * getTriangleData({ x: 0, y: 0 }, { x: 3, y: 4 }); // => { dx: 3, dy: 4, distance: 5 }
  */
-export function getTriangleData(p1: Point, p2: Point) {
+export function getTriangleData(p1: Point, p2: Point): { dx: number; dy: number; distance: number } {
   let dx = p2.x - p1.x, dy = p2.y - p1.y;
   return { dx, dy, distance: Math.sqrt(dx * dx + dy * dy) };
 }
@@ -28,7 +28,7 @@ export function getTriangleData(p1: Point, p2: Point) {
  * triangleDataFromLine({ x: 0, y: 0 }, { x: 4, y: 3 });
  * // => { angleInDegrees: 36, remainingAngle: 54, hypotenuse: 5, adjacent: 4, opposite: 3 }
  */
-export function triangleDataFromLine(startPoint: Point, endPoint: Point) {
+export function triangleDataFromLine(startPoint: Point, endPoint: Point): { angleInDegrees: number; remainingAngle: number; hypotenuse: number; adjacent: number; opposite: number } {
   let hypotenuse = lineLength({ startPoint, endPoint });
   let adjacent = lineLength({
     startPoint,

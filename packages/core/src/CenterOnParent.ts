@@ -1,4 +1,4 @@
-import { Container } from './types';
+import { Container, Point } from './types';
 
 /**
  * Compute the top-left position that centers one box inside another.
@@ -9,7 +9,7 @@ import { Container } from './types';
  * @example
  * centerOnParent({ width: 20, height: 10 }, { width: 100, height: 50 }); // => { x: 40, y: 20 }
  */
-export function centerOnParent(item: Container, parent: Container) {
+export function centerOnParent(item: Container, parent: Container): Point {
   let x = (parent.width - item.width) / 2;
   let y = (parent.height - item.height) / 2;
   return { x, y };

@@ -8,7 +8,7 @@ import { Line } from './types';
  * @example
  * lineLength({ startPoint: { x: 0, y: 0 }, endPoint: { x: 3, y: 4 } }); // => 5
  */
-export function lineLength(line: Line) {
+export function lineLength(line: Line): number {
   const { startPoint, endPoint } = line;
   let a = startPoint.x - endPoint.x;
   let b = startPoint.y - endPoint.y;

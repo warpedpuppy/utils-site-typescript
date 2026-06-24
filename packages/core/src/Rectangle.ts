@@ -29,7 +29,7 @@ export function createRect(
     rotateSpeed: 1000,
     clockwise: true,
   }
-) {
+): { vertices: Point[] } {
   let vertices: Point[] = [];
 
   let x = width / 2;
