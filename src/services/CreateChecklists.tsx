@@ -23,18 +23,7 @@ function CreateChecklists() {
       if (isExampleChecklist) {
         delete loopingObj["simple useful equations"];
       }
-      const aiMadeStart = isExampleChecklist ? 3 : -1;
       Object.entries(loopingObj).forEach((innerArray, index) => {
-        if (isExampleChecklist && index === 0) {
-          returnArray.push(
-            <div key="section-human" className="checklist-section-header">Human Made</div>
-          );
-        }
-        if (isExampleChecklist && index === aiMadeStart) {
-          returnArray.push(
-            <div key="section-ai" className="checklist-section-header ai-made">AI Made</div>
-          );
-        }
         const firstEntry = Object.entries(innerArray[1]).find(
           ([, v]: any) => v.include !== false
         );
