@@ -24,7 +24,7 @@ export function starVertices(
     clockwise?: boolean;
     time?: number;
   } = { rotate: false, rotateSpeed: 1000, clockwise: true }
-) {
+): { vertices: Point[] } {
   let vertices: Point[] = [];
   let rot = 0;
   let step = Math.PI / spikes;

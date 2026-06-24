@@ -14,7 +14,7 @@ export function equilateralTriangle(
   radius: number,
   centerPoint: Point,
   angle: number
-) {
+): { point1: Point; point2: Point; point3: Point } {
   let allRadiansInACircle = 2 * Math.PI;
   let point1 = {
     x: radius * Math.cos(angle) + centerPoint.x,

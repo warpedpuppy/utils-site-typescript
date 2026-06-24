@@ -10,7 +10,7 @@ import { Point } from './types';
  * @example
  * getPointOnLine({ x: 0, y: 0 }, { x: 10, y: 20 }, 0.5); // => { x: 5, y: 10 }
  */
-export function getPointOnLine(p1: Point, p2: Point, t: number) {
+export function getPointOnLine(p1: Point, p2: Point, t: number): Point {
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
   return {x: lerp(p1.x, p2.x, t), y: lerp(p1.y, p2.y, t)};
 }
