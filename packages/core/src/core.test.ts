@@ -15,6 +15,9 @@ import {
   easeIn,
   easeOut,
   easeInOut,
+  easeInCubic,
+  easeOutBounce,
+  easeOutElastic,
   pointToCircle,
   pointToRect,
   rectToRect,
@@ -48,6 +51,9 @@ import {
   createRect,
   equilateralTriangle,
   starVertices,
+  // boids / flocking
+  boidsStep,
+  Flock,
   // Vec2
   vecAdd,
   vecSubtract,
@@ -90,7 +96,32 @@ import {
   quadraticBezier,
   ballBounce,
   ballToBallBounce,
+  tweenValue,
+  tweenObject,
+  tweenFrame,
+  springValue,
+  loop,
+  yoyo,
+  delay,
+  stagger,
 } from "@utilspalooza/core";
+import {
+  distanceAndAngle,
+  intersectRect,
+  randomHex,
+  randomColor,
+  legacyCosWave,
+  shuffle,
+  hexToRgb,
+  rgbToHex,
+  triangleCircleCollision,
+  createParamObject,
+  circleToCircleCollisionDetection,
+  lineIntersectCircle,
+  centerOnStage,
+  easeInQuadTime,
+  easeInSineTime,
+} from "@utilspalooza/core/legacy";
 
 // Small factory so each ball test gets a fresh, fully-typed Ball.
 const makeBall = (over: Partial<import("@utilspalooza/core").Ball> = {}) => ({
@@ -897,5 +928,186 @@ describe("ballToBallBounce", () => {
     const a = makeBall({ id: "a", x: 0, y: 0, vx: 3, radius: 10 });
     ballToBallBounce(a, a);
     expect(a.vx).toBe(3);
+  });
+});
+
+describe("boidsStep (Reynolds flocking)", () => {
+  it("cohesion pulls two boids toward each other", () => {
+    const flock = [
+      { position: { x: 0, y: 0 }, velocity: { x: 0, y: 0 } },
+      { position: { x: 10, y: 0 }, velocity: { x: 0, y: 0 } },
+    ];
+    boidsStep(flock, {
+      perceptionRadius: 100,
+      separationRadius: 0,
+      separationWeight: 0,
+      alignmentWeight: 0,
+      cohesionWeight: 1,
+      targetWeight: 0,
+    });
+    expect(flock[0].velocity.x).toBeGreaterThan(0); // toward the one on its right
+    expect(flock[1].velocity.x).toBeLessThan(0); // toward the one on its left
+  });
+
+  it("separation pushes crowded boids apart", () => {
+    const flock = [
+      { position: { x: 0, y: 0 }, velocity: { x: 0, y: 0 } },
+      { position: { x: 5, y: 0 }, velocity: { x: 0, y: 0 } },
+    ];
+    boidsStep(flock, {
+      perceptionRadius: 0, // disable alignment/cohesion
+      separationRadius: 20,
+      separationWeight: 1,
+      alignmentWeight: 0,
+      cohesionWeight: 0,
+      targetWeight: 0,
+    });
+    expect(flock[0].velocity.x).toBeLessThan(0); // shoved away from neighbor
+    expect(flock[1].velocity.x).toBeGreaterThan(0);
+  });
+
+  it("never lets a boid exceed maxSpeed", () => {
+    const flock = Array.from({ length: 30 }, () => ({
+      position: { x: Math.random() * 200, y: Math.random() * 200 },
+      velocity: { x: 0, y: 0 },
+    }));
+    for (let i = 0; i < 20; i++) boidsStep(flock, { maxSpeed: 3 });
+    for (const b of flock) {
+      expect(Math.hypot(b.velocity.x, b.velocity.y)).toBeLessThanOrEqual(3 + 1e-9);
+    }
+  });
+
+  it("is deterministic for identical inputs", () => {
+    const make = () => [
+      { position: { x: 0, y: 0 }, velocity: { x: 1, y: 0 } },
+      { position: { x: 8, y: 3 }, velocity: { x: 0, y: 1 } },
+      { position: { x: -4, y: 6 }, velocity: { x: -1, y: -1 } },
+    ];
+    const a = make();
+    const b = make();
+    boidsStep(a);
+    boidsStep(b);
+    expect(a).toEqual(b);
+  });
+
+  it("leaves a lone boid with no target coasting unchanged", () => {
+    const solo = [{ position: { x: 5, y: 5 }, velocity: { x: 1, y: 0 } }];
+    boidsStep(solo);
+    expect(solo[0].velocity).toEqual({ x: 1, y: 0 });
+    expect(solo[0].position).toEqual({ x: 6, y: 5 });
+  });
+
+  it("wraps boids inside toroidal bounds", () => {
+    const flock = [{ position: { x: 99, y: 99 }, velocity: { x: 5, y: 5 } }];
+    boidsStep(flock, {}, { width: 100, height: 100 });
+    expect(flock[0].position.x).toBeGreaterThanOrEqual(0);
+    expect(flock[0].position.x).toBeLessThan(100);
+    expect(flock[0].position.y).toBeGreaterThanOrEqual(0);
+    expect(flock[0].position.y).toBeLessThan(100);
+  });
+});
+
+describe("tiny animation helpers", () => {
+  it("tweenValue samples scalar motion with easing and clamped progress", () => {
+    expect(tweenValue(0, 100, 500, 1000)).toBe(50);
+    expect(tweenValue(0, 100, 1500, 1000)).toBe(100);
+    expect(tweenValue(0, 100, 500, 1000, (t) => t * t)).toBe(25);
+  });
+
+  it("tweenObject and tweenFrame sample object-shaped animation state", () => {
+    const spec = { x: { from: 0, to: 10 }, y: { from: 10, to: 0 }, alpha: { from: 0, to: 1 } };
+    expect(tweenObject(spec, 500, 1000)).toEqual({ x: 5, y: 5, alpha: 0.5 });
+    expect(tweenFrame(spec, 1000, 1000)).toEqual({ x: 10, y: 0, alpha: 1 });
+  });
+
+  it("springValue advances toward the target without mutating the input state", () => {
+    const state = { value: 0, velocity: 0 };
+    const next = springValue(state, 10);
+    expect(next.value).toBeGreaterThan(0);
+    expect(next.velocity).toBeGreaterThan(0);
+    expect(state).toEqual({ value: 0, velocity: 0 });
+  });
+
+  it("loop, yoyo, delay, and stagger return reusable progress values", () => {
+    expect(loop(1250, 1000)).toBeCloseTo(0.25);
+    expect(yoyo(1500, 1000)).toBeCloseTo(0.5);
+    expect(delay(250, 500, 1000)).toBe(0);
+    expect(delay(750, 500, 1000)).toBeCloseTo(0.25);
+    expect(stagger(2, 700, 1000, 250)).toBeCloseTo(0.2);
+  });
+});
+
+describe("Flock", () => {
+  it("spawns the requested number of boids inside its bounds", () => {
+    const flock = new Flock(25, { width: 100, height: 80 });
+    expect(flock.boids.length).toBe(25);
+    for (const b of flock.boids) {
+      expect(b.position.x).toBeGreaterThanOrEqual(0);
+      expect(b.position.x).toBeLessThan(100);
+      expect(b.position.y).toBeGreaterThanOrEqual(0);
+      expect(b.position.y).toBeLessThan(80);
+    }
+  });
+
+  it("keeps boids within bounds after stepping", () => {
+    const flock = new Flock(40, { width: 120, height: 120 });
+    for (let i = 0; i < 30; i++) flock.step({ x: 60, y: 60 });
+    for (const b of flock.boids) {
+      expect(b.position.x).toBeGreaterThanOrEqual(0);
+      expect(b.position.x).toBeLessThan(120);
+      expect(b.position.y).toBeGreaterThanOrEqual(0);
+      expect(b.position.y).toBeLessThan(120);
+    }
+  });
+});
+
+describe("legacy lib migration", () => {
+  it("exports the migrated easing functions through the public barrel", () => {
+    expect(easeInCubic(0.5)).toBeCloseTo(0.125);
+    expect(easeOutBounce(0)).toBeCloseTo(0);
+    expect(easeOutBounce(1)).toBeCloseTo(1);
+    expect(easeOutElastic(1)).toBeCloseTo(1);
+  });
+
+  it("keeps the old tween math pure by requiring explicit time", () => {
+    expect(easeInQuadTime(500, 10, 20, 1000)).toBeCloseTo(15);
+    expect(easeInSineTime(0, 10, 20, 1000)).toBeCloseTo(10);
+  });
+
+  it("ports the old utility geometry and color helpers", () => {
+    expect(distanceAndAngle({ x: 0, y: 0 }, { x: 3, y: 4 })).toEqual([5, Math.atan2(4, 3)]);
+    expect(
+      intersectRect(
+        { left: 0, top: 0, right: 10, bottom: 10 },
+        { left: 5, top: 5, right: 15, bottom: 15 }
+      )
+    ).toBe(true);
+    expect(hexToRgb("#00ffaa")).toEqual({ r: 0, g: 255, b: 170 });
+    expect(rgbToHex(0, 255, 170)).toBe("#00ffaa");
+    expect(centerOnStage(20, 10, 100, 50)).toEqual({ x: 40, y: 20 });
+  });
+
+  it("ports random and query helpers without browser globals", () => {
+    expect(randomHex()).toMatch(/^#[0-9a-f]{6}$/);
+    expect(randomColor()).toMatch(/^0x[0-9a-f]{6}$/);
+    expect(shuffle([1, 2, 3]).sort()).toEqual([1, 2, 3]);
+    expect(createParamObject("?a=1&b=two")).toEqual({ a: "1", b: "two" });
+    expect(legacyCosWave(10, 5, 1, 0)).toBe(15);
+  });
+
+  it("ports the old collision helpers", () => {
+    expect(
+      triangleCircleCollision(
+        { x: 5, y: 0, radius: 2 },
+        { x: 0, y: 0 },
+        { x: 10, y: 0 },
+        { x: 0, y: 10 }
+      )
+    ).toBe(true);
+    expect(circleToCircleCollisionDetection({ x: 0, y: 0, radius: 10 }, { x: 15, y: 0, radius: 10 })).toEqual([
+      true,
+      5,
+    ]);
+    expect(lineIntersectCircle({ x: -10, y: 0 }, { x: 10, y: 0 }, { x: 0, y: 0 }, 5)).toBe(true);
   });
 });

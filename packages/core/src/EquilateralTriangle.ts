@@ -1,4 +1,4 @@
-import { Point } from './types';
+import { Point } from "./types";
 
 /**
  * Compute the three vertices of an equilateral triangle inscribed in a circle.
@@ -13,7 +13,7 @@ import { Point } from './types';
 export function equilateralTriangle(
   radius: number,
   centerPoint: Point,
-  angle: number
+  angle: number,
 ): { point1: Point; point2: Point; point3: Point } {
   let allRadiansInACircle = 2 * Math.PI;
   let point1 = {
@@ -21,20 +21,12 @@ export function equilateralTriangle(
     y: radius * Math.sin(angle) + centerPoint.y,
   };
   let point2 = {
-    x:
-      radius * Math.cos(angle + (1 / 3) * allRadiansInACircle) +
-      centerPoint.x,
-    y:
-      radius * Math.sin(angle + (1 / 3) * allRadiansInACircle) +
-      centerPoint.y,
+    x: radius * Math.cos(angle + (1 / 3) * allRadiansInACircle) + centerPoint.x,
+    y: radius * Math.sin(angle + (1 / 3) * allRadiansInACircle) + centerPoint.y,
   };
   let point3 = {
-    x:
-      radius * Math.cos(angle + (2 / 3) * allRadiansInACircle) +
-      centerPoint.x,
-    y:
-      radius * Math.sin(angle + (2 / 3) * allRadiansInACircle) +
-      centerPoint.y,
+    x: radius * Math.cos(angle + (2 / 3) * allRadiansInACircle) + centerPoint.x,
+    y: radius * Math.sin(angle + (2 / 3) * allRadiansInACircle) + centerPoint.y,
   };
   return { point1, point2, point3 };
 }

@@ -6,9 +6,9 @@
 //
 // Rules (must match the historical hand-written order):
 //   1. `./types` is exported first (shared interfaces like Point).
-//   2. Then every top-level *.ts file, alphabetically.
-//   3. Then every nested *.ts file (e.g. CollisionObjectAPI/*), alphabetically by path.
-// Excludes index.ts itself, test files, and .d.ts declaration files.
+//   2. Then every top-level public *.ts file, alphabetically.
+//   3. Then every nested public *.ts file (e.g. CollisionObjectAPI/*), alphabetically by path.
+// Excludes index.ts itself, test files, .d.ts declaration files, and explicit legacy modules.
 
 import { readdirSync, statSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, relative, dirname, sep } from 'node:path';
@@ -27,7 +27,9 @@ function walk(dir) {
       name.endsWith('.ts') &&
       !name.endsWith('.d.ts') &&
       !name.endsWith('.test.ts') &&
-      name !== 'index.ts'
+      name !== 'index.ts' &&
+      name !== 'legacy.ts' &&
+      !name.startsWith('Legacy')
     ) {
       out.push(full);
     }

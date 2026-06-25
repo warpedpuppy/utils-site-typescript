@@ -1,42 +1,84 @@
 import Template from "./animationTemplate";
+import type { Point } from "../types/types";
 import { CollisionDetectionObject } from "../types/types";
 
 /*
- * Sierpinski Triangle — ported from the warpedpuppies portfolio "pretty little things".
+ * Sierpinski Triangle — an infinitely-zooming Sierpinski gasket.
  *
- * STATUS: SCAFFOLD. drawSierpinski() below is intentionally BLANK — Ted ports it.
- * Original tech: Pixi.js Graphics (pure vector — cleanest port)
+ * Ported from the pure-Canvas-2D version in utils-site-javascript
+ * (effects/sierpinski-purejs.js), itself the improved rewrite of the old
+ * Pixi.Graphics original from the warpedpuppies portfolio.
  *
- * NOTES: Ted wants this one IMPROVED, not just ported. It's all PIXI.Graphics lines/triangles, so it maps directly to Canvas 2D moveTo/lineTo/stroke. A sierpinski vertex generator could be lifted to @utilspalooza/core later.
- *
- * The complete original source is at the BOTTOM of this file, commented out,
- * as the reference to port from. When drawSierpinski() is implemented, delete the
- * placeholder() call in init() so the real animation runs.
+ * THE IMPROVEMENT (carried over from the purejs version): the figure zooms
+ * forever without a hard reset. The trick is locking two growth rates together —
+ * see expandIncrease below. The original (expandIncrease 1.006) made each new
+ * center triangle slightly smaller than the last, so the center shrank to a point
+ * and needed a periodic reset; this one is a stable infinite zoom.
  */
 
-const ELI5 = `TODO (Ted): write the ELI5 explainer for Sierpinski Triangle.`;
+const ELI5 = `△ Sierpinski Triangle — a shape made of smaller copies of itself.
+
+Take a triangle. Mark the midpoint of each side and connect those three
+midpoints — that carves out a smaller upside-down triangle in the middle and
+leaves three corner triangles. Now do the same thing to each of those. Forever.
+
+That's a FRACTAL: the same rule applied at every scale, so any piece, zoomed in,
+looks like the whole. Here we lean into that self-similarity by zooming in
+continuously. Each frame the whole figure grows a little, and whenever a triangle
+gets big enough it spawns its medial (midpoint) triangle — half the size, rotated
+60°. Because the growth rate and the spawn rate are locked together, a freshly
+spawned triangle reappears at exactly the size the previous innermost one had, so
+the zoom never bottoms out and never resets. You're falling into the gasket.`;
 
 /**
- * drawSierpinski — self-contained Canvas 2D draw routine.
- * (The CodePen pens embed this via .toString(), so keep it dependency-free:
- *  no module-level imports referenced inside the body.)
- *
- * TODO (Ted): port the commented original source at the bottom of this file
- * into here. Blank for now.
+ * sierpinskiMidpoints — the heart of the fractal: given an equilateral triangle
+ * of circumradius `radius` at orientation `phase` (radians), return the midpoints
+ * of its three edges. Connecting these midpoints is the Sierpinski subdivision
+ * step, and each midpoint triangle is the next, half-size generation.
+ * Self-contained (no imports referenced) so a CodePen can embed it via .toString().
  */
-export function drawSierpinski(
-  _ctx: CanvasRenderingContext2D,
-  _width: number,
-  _height: number
-): void {
-  // TODO: port me. See the commented original source at the bottom of this file.
+export function sierpinskiMidpoints(radius: number, phase: number): Point[] {
+  const TAU = 2 * Math.PI;
+  const vertex = (k: number): Point => ({
+    x: radius * Math.cos(phase + (k * TAU) / 3),
+    y: radius * Math.sin(phase + (k * TAU) / 3),
+  });
+  const v1 = vertex(0);
+  const v2 = vertex(1);
+  const v3 = vertex(2);
+  return [
+    { x: (v1.x + v2.x) / 2, y: (v1.y + v2.y) / 2 },
+    { x: (v2.x + v3.x) / 2, y: (v2.y + v3.y) / 2 },
+    { x: (v1.x + v3.x) / 2, y: (v1.y + v3.y) / 2 },
+  ];
 }
 
 const SierpinskiFormula: CollisionDetectionObject = {
-  keyFunction: drawSierpinski,
+  keyFunction: sierpinskiMidpoints,
   dependencies: [],
-  functionString: `// TODO (Ted): port drawSierpinski() — see Sierpinski.ts`,
+  functionString: `// The subdivision step: midpoints of an equilateral triangle's
+// three edges. Connect them and you've drawn the next generation.
+function sierpinskiMidpoints(radius, phase) {
+  const TAU = 2 * Math.PI;
+  const vertex = (k) => ({
+    x: radius * Math.cos(phase + (k * TAU) / 3),
+    y: radius * Math.sin(phase + (k * TAU) / 3),
+  });
+  const v1 = vertex(0), v2 = vertex(1), v3 = vertex(2);
+  return [
+    { x: (v1.x + v2.x) / 2, y: (v1.y + v2.y) / 2 },
+    { x: (v2.x + v3.x) / 2, y: (v2.y + v3.y) / 2 },
+    { x: (v1.x + v3.x) / 2, y: (v1.y + v3.y) / 2 },
+  ];
+}`,
 };
+
+interface Tri {
+  radius: number;
+  phase: number;
+  ratio: number; // 0→1 "draw-in" progress of this triangle's edges
+  hasSpawned: boolean;
+}
 
 class Sierpinski extends Template {
   static t = "Sierpinski Triangle";
@@ -47,30 +89,85 @@ class Sierpinski extends Template {
   animationObject = SierpinskiFormula;
   animId = 0;
 
+  ratioIncrease = 0.01;
+  // INVARIANT: in the time one triangle "draws in" (1 / ratioIncrease frames) the
+  // whole figure must grow by exactly 2×, so a child — spawned at half its parent's
+  // radius — reappears at the SAME size the previous innermost had. Locking the two
+  // rates together gives a stable infinite zoom with no hard reset.
+  expandIncrease = Math.pow(2, this.ratioIncrease); // 2 ** 0.01 ≈ 1.00696
+  rotation = 0;
+  triangles: Tri[] = [];
+
   init() {
     if (this.textDiv) this.textDiv.innerHTML = ELI5;
-    // TODO (Ted): once drawSierpinski() is implemented, start the rAF loop here
-    // (e.g. this.animate()) and remove the placeholder() call below.
-    this.placeholder();
+    if (!this.ctx) return;
+    this.rotation = 0;
+    this.triangles = [
+      { radius: this.canvasHeight / 4, phase: 0, ratio: 0, hasSpawned: false },
+    ];
+    this.animate();
   }
 
-  /** Temporary stand-in until drawSierpinski() is ported. Safe to delete then. */
-  placeholder() {
+  animate = () => {
     if (!this.ctx) return;
     const ctx = this.ctx;
-    ctx.fillStyle = "#0a0a0f";
+    this.rotation += 0.01;
+    ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    ctx.fillStyle = "#888";
-    ctx.font = "16px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText("Sierpinski Triangle — port in progress", this.halfWidth, this.halfHeight);
-    ctx.font = "12px monospace";
-    ctx.fillStyle = "#555";
-    ctx.fillText(
-      "scaffold: original source is commented in Sierpinski.ts",
-      this.halfWidth,
-      this.halfHeight + 24
-    );
+    ctx.save();
+    ctx.translate(this.halfWidth, this.halfHeight);
+    ctx.rotate(this.rotation);
+    this.update(ctx);
+    ctx.restore();
+    this.animId = requestAnimationFrame(this.animate);
+  };
+
+  update(ctx: CanvasRenderingContext2D) {
+    const threshold = Math.max(this.canvasWidth, this.canvasHeight) * 2;
+
+    for (const t of this.triangles) {
+      t.radius *= this.expandIncrease;
+      this.drawTriangle(ctx, t);
+      if (t.ratio < 1) {
+        t.ratio = Math.min(1, t.ratio + this.ratioIncrease);
+      } else if (!t.hasSpawned && t.radius / 2 >= 1) {
+        // The child's vertices land exactly on this triangle's edge midpoints:
+        // the medial triangle is rotated π/3 and has half the circumradius.
+        t.hasSpawned = true;
+        this.triangles.push({
+          radius: t.radius / 2,
+          phase: t.phase + Math.PI / 3,
+          ratio: 0,
+          hasSpawned: false,
+        });
+      }
+    }
+
+    this.triangles = this.triangles.filter((t) => t.radius <= threshold);
+  }
+
+  drawTriangle(ctx: CanvasRenderingContext2D, t: Tri) {
+    const [m1, m2, m3] = sierpinskiMidpoints(t.radius, t.phase);
+
+    ctx.fillStyle = "#ffffff";
+    for (const pt of [m1, m2, m3]) {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    this.drawLine(ctx, m1, m2, t.ratio);
+    this.drawLine(ctx, m2, m3, t.ratio);
+    this.drawLine(ctx, m3, m1, t.ratio);
+  }
+
+  drawLine(ctx: CanvasRenderingContext2D, a: Point, b: Point, ratio: number) {
+    ctx.beginPath();
+    ctx.strokeStyle = "#ffd900";
+    ctx.lineWidth = 1;
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(a.x + ratio * (b.x - a.x), a.y + ratio * (b.y - a.y));
+    ctx.stroke();
   }
 
   stop() {
@@ -80,155 +177,3 @@ class Sierpinski extends Template {
 }
 
 export default Sierpinski;
-
-/* ===========================================================================
- * ORIGINAL PORTFOLIO SOURCE — reference for the Canvas 2D port. NOT executed.
- * Tech: Pixi.js Graphics (pure vector — cleanest port)
- * From: ~/Sites/warpedpuppies/portfolio/src/components/pretty-little-things/
- * ===========================================================================
-// ── sierpinski/code/sierpinski-animation.js ───────────────────────────────
-// import * as PIXI from "pixi.js";
-// 
-// class Triangle extends PIXI.Graphics {
-//   constructor(index = 0) {
-//     super();
-//     this.index = index;
-//     this.ratio = 0;
-//     this.hasNewPoints = false;
-//     this.makeLinesArrayProperty();
-//   }
-//   makeLinesArrayProperty() {
-//     let line1 = new PIXI.Graphics();
-//     let line2 = new PIXI.Graphics();
-//     let line3 = new PIXI.Graphics();
-//     this.addChild(line1);
-//     this.addChild(line2);
-//     this.addChild(line3);
-//     this.lines = [line1, line2, line3]
-//   }
-// }
-// 
-// export default class SierpinkskiAnimation {
-//   expandQ = 1.1;
-//   expandIncrease = 1.006;
-//   ratioIncrease = 0.01;
-//   maxRadius = 2000000;
-//   constructor(canvas) {
-//     this.canvas = canvas;
-//     this.startPIXI();
-//   }
-//   async startPIXI() {
-//     const app = new PIXI.Application({
-//       background: '#000000',
-//       resizeTo: this.canvas,
-//     });
-//     this.app = app;
-//     this.canvas.appendChild(app.view);
-//     this.canvasWidth = window.innerWidth;
-//     this.canvasHeight = window.innerHeight;
-//     let halfWidth = window.innerWidth / 2;
-//     let halfHeight = window.innerHeight / 2;
-//     let cont = new PIXI.Container();
-//     cont.x = halfWidth;
-//     cont.y = halfHeight
-//     this.cont = cont;
-//     app.stage.addChild(cont)
-//     window.addEventListener("resize", this.resizeHandler);
-//     app.ticker.add(this.ticker);
-//     this.init();
-//   }
-//   ticker = () => {
-//     this.cont.rotation += 0.01;
-//     this.drawTriangle()
-//   }
-//   stop() {
-//     this.app.destroy(true);
-//     window.removeEventListener('resize', this.resize)
-//   }
-//   init() {
-//     this.cont.removeChildren();
-//     this.startRadius = window.innerHeight / 4;
-//     this.newPointsArray = [];
-//     let { point1, point2, point3 } = this.trianglePoints(this.startRadius, { x: 0, y: 0 });
-//     this.newGraphic(point1, point2, point3);
-//   }
-//   resizeHandler = () => {
-//     this.canvas.width = this.canvasWidth = window.innerWidth;
-//     this.canvas.height = this.canvasHeight = window.innerHeight;
-//     let halfWidth = window.innerWidth / 2;
-//     let halfHeight = window.innerHeight / 2;
-//     this.cont.x = halfWidth;
-//     this.cont.y = halfHeight
-//   }
-//   drawTriangle() {
-//     this.startRadius *= this.expandIncrease;
-// 
-//     if (this.startRadius > this.maxRadius) {
-//       this.init();
-//     }
-//     let points;
-//     this.newPointsArray.forEach((item, index) => {
-//       if (index === 0) {
-// 
-//         const { point1, point2, point3 } = this.trianglePoints(this.startRadius, { x: 0, y: 0 })
-//         points = [point1, point2, point3]
-//       }
-//       let temp = this.newPoints(...points, item.graphic)
-//       points = temp;
-//     })
-//   }
-//   drawLine(x1, y1, x2, y2, ratio, lines, index) {
-//     lines.clear();
-//     lines.lineStyle({ width: 1, color: 0xffd900 });
-//     lines.moveTo(x1, y1);
-//     x2 = x1 + ratio * (x2 - x1);
-//     y2 = y1 + ratio * (y2 - y1);
-//     lines.lineTo(x2, y2);
-// 
-//   }
-//   draw = (point1, point2, point3, graphic) => {
-//     this.drawLine(point1.x, point1.y, point2.x, point2.y, graphic.ratio, graphic.lines[0], graphic.index)
-//     this.drawLine(point2.x, point2.y, point3.x, point3.y, graphic.ratio, graphic.lines[1], graphic.index)
-//     this.drawLine(point3.x, point3.y, point1.x, point1.y, graphic.ratio, graphic.lines[2], graphic.index)
-//     if (graphic.ratio < 1) {
-//       graphic.ratio += this.ratioIncrease;
-//     } else if (!graphic.hasNewPoints) {
-//       graphic.hasNewPoints = true;
-//       this.newGraphic(point1, point2, point3);
-//     }
-//   }
-//   newGraphic(point1, point2, point3) {
-//     let temp = new Triangle(this.newPointsArray.length);
-//     this.newPointsArray.push({ graphic: temp, origPoints: [point1, point2, point3] });
-//     this.cont.addChild(temp);
-//   }
-//   newPoints(point1, point2, point3, graphic) {
-//     let newPoint1 = {
-//       x: (point1.x + point2.x) / 2,
-//       y: (point1.y + point2.y) / 2
-//     }
-//     let newPoint2 = {
-//       x: (point2.x + point3.x) / 2,
-//       y: (point2.y + point3.y) / 2
-//     }
-//     let newPoint3 = {
-//       x: (point1.x + point3.x) / 2,
-//       y: (point1.y + point3.y) / 2
-//     }
-//     graphic.clear();
-//     graphic.beginFill(0xFFFFFF)
-//     graphic.drawCircle(newPoint1.x, newPoint1.y, 2);
-//     graphic.drawCircle(newPoint2.x, newPoint2.y, 2);
-//     graphic.drawCircle(newPoint3.x, newPoint3.y, 2);
-//     graphic.endFill();
-//     this.draw(newPoint1, newPoint2, newPoint3, graphic)
-//     return [newPoint1, newPoint2, newPoint3]
-//   }
-//   trianglePoints(radius, centerPoint) {
-//     let point1 = { x: radius * Math.cos(0) + centerPoint.x, y: radius * Math.sin(0) + centerPoint.y }
-//     let point2 = { x: radius * Math.cos((1 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((1 / 3) * (2 * Math.PI)) + centerPoint.y }
-//     let point3 = { x: radius * Math.cos((2 / 3) * (2 * Math.PI)) + centerPoint.x, y: radius * Math.sin((2 / 3) * (2 * Math.PI)) + centerPoint.y }
-//     return { point1, point2, point3 }
-//   }
-// }
- * ========================================================================= */

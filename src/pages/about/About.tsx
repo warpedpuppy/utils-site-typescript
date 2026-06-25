@@ -22,12 +22,12 @@ function About() {
           does before you commit it to your codebase.
         </p>
 
-        <h2>Build your own utils file</h2>
+        <h2>Copy code recipes</h2>
         <p>
-          Head to <strong>Create Utils File</strong> and check off the
-          functions you need. The site assembles a clean, typed TypeScript
-          module on the fly — ready to copy or download directly into your
-          project. No build step, no dependencies, no boilerplate.
+          Head to <strong>Copy Code</strong> and check off the functions you
+          need. The site assembles clean, typed snippets on the fly — ready to
+          copy into a project, use with npm imports, or download as a standalone
+          TypeScript or JavaScript file when that is still the easiest path.
         </p>
 
         <h2>How to use it</h2>
@@ -35,12 +35,12 @@ function About() {
           Browse the example library on the left. Click any animation to see
           the live canvas demo and inspect the underlying code. When you find
           functions you want to keep, tick the checkbox next to the name —
-          they'll be bundled into your exportable utils file automatically.
+          they'll be bundled into your copyable recipe automatically.
         </p>
 
         <h2>Who made this</h2>
         <p>
-          <strong>Ted Walther</strong> — developer and educator. Utilspalooza is a product of{" "}
+          <strong>Ted</strong> — developer and educator. Utilspalooza is a product of{" "}
           <a href="https://warpedpuppy.com" target="_blank" rel="noopener noreferrer">
             Warped Puppy LLC
           </a>

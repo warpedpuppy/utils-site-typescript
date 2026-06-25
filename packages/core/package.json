@@ -1,7 +1,7 @@
 {
   "name": "@utilspalooza/core",
   "version": "0.0.0",
-  "description": "Framework-agnostic, typed math & geometry functions for canvas/creative coding.",
+  "description": "Readable TypeScript math helpers for creative coding, canvas animation, and visual experiments.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -14,6 +14,16 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./legacy": {
+      "types": "./dist/legacy.d.ts",
+      "import": "./dist/legacy.js",
+      "require": "./dist/legacy.cjs"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js",
+      "require": "./dist/*.cjs"
     }
   },
   "files": ["dist"],

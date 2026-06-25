@@ -27,21 +27,6 @@ function CreateChecklists() {
         const firstEntry = Object.entries(innerArray[1]).find(
           ([, v]: any) => v.include !== false
         );
-        returnArray.push(
-          <CheckListDT
-            innerText={innerArray[0]}
-            key={`createjson-dt-${innerArray[0]}`}
-            open={open}
-            index={index}
-            test={(i: number) => {
-              if (setOpen) setOpen(i);
-              if (clickHandler && i !== 10 && firstEntry) {
-                const [itemKey, itemVal] = firstEntry as [string, any];
-                clickHandler(`/examples/${itemVal.l}`, innerArray[0], itemKey);
-              }
-            }}
-          />
-        );
         let tempArray: ReactNode[] = [];
         Object.entries(innerArray[1]).forEach((innerInnerArray) => {
           const { t, l } = innerInnerArray[1];
@@ -81,6 +66,22 @@ function CreateChecklists() {
               </div>
             );
         });
+        returnArray.push(
+          <CheckListDT
+            innerText={innerArray[0]}
+            count={tempArray.length}
+            key={`createjson-dt-${innerArray[0]}`}
+            open={open}
+            index={index}
+            test={(i: number) => {
+              if (setOpen) setOpen(i);
+              if (clickHandler && i !== 10 && firstEntry) {
+                const [itemKey, itemVal] = firstEntry as [string, any];
+                clickHandler(`/examples/${itemVal.l}`, innerArray[0], itemKey);
+              }
+            }}
+          />
+        );
         returnArray.push(
           <div
             className="inner-checklist"

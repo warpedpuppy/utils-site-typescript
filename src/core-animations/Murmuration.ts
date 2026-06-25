@@ -1,343 +1,165 @@
 import Template from "./animationTemplate";
-import { CollisionDetectionObject } from "../types/types";
+import { Flock } from "@utilspalooza/core/Boids";
+import type { Vector } from "@utilspalooza/core/types";
+import { BoidsObject } from "../pages/createJSON/formulas/animation/Boids";
 
 /*
- * Murmuration (flocking starlings) — ported from the warpedpuppies portfolio "pretty little things".
+ * Murmuration (flocking starlings) — a real boids flock.
  *
- * STATUS: SCAFFOLD. drawMurmuration() below is intentionally BLANK — Ted ports it.
- * Original tech: Canvas 2D (already 2D in the portfolio — lightest port)
+ * Ported from the warpedpuppies portfolio "pretty little things". The original
+ * (Murmuration.js / Starlings.js) was not actually boids: every bird chased one
+ * shared point plus random jitter and never looked at its neighbors. This version
+ * uses Craig Reynolds' genuine boids model (separation / alignment / cohesion) —
+ * the simulation lives in the pure, publishable `@utilspalooza/core` `Flock` class;
+ * this file only owns the canvas, the rAF loop, and the drawing.
  *
- * NOTES: Already Canvas 2D. Flatten the 3 classes below into drawMurmuration(); replace the setInterval that moves the destination points with frame-based timing (no hidden clock). Extractable pure math worth lifting to @utilspalooza/core later: a flockStep / boids steering function over Point/Vec2.
- *
- * The complete original source is at the BOTTOM of this file, commented out,
- * as the reference to port from. When drawMurmuration() is implemented, delete the
- * placeholder() call in init() so the real animation runs.
+ * CREDIT: flocking algorithm is Craig W. Reynolds' "boids" (1986; "Flocks, Herds,
+ * and Schools", SIGGRAPH '87). See packages/core/src/Boids.ts.
  */
 
-const ELI5 = `TODO (Ted): write the ELI5 explainer for Murmuration (flocking starlings).`;
+const ELI5 = `🐦 Murmuration — how do thousands of starlings swirl as one, with no leader?
+
+They don't follow a leader, and nothing choreographs the flock. Each bird obeys
+just THREE simple rules, looking only at the handful of neighbors near it:
+
+  1. SEPARATION — don't crowd: steer away from neighbors that get too close.
+  2. ALIGNMENT  — go with the flow: steer toward the average heading of neighbors.
+  3. COHESION   — stay together: steer toward the average position of neighbors.
+
+Every bird does only that, every frame. The hypnotic, wheeling murmuration you see
+is EMERGENT — it appears from hundreds of birds each following local rules, not from
+any global plan. That's the whole lesson: complex group behavior from simple local
+behavior.
+
+This is Craig Reynolds' "boids" model (1986) — the same idea behind flocks, schools,
+and crowds in films and games. The math (separation·alignment·cohesion steering) is
+the pure boidsStep / Flock in @utilspalooza/core; this page just draws it.`;
 
 /**
- * drawMurmuration — self-contained Canvas 2D draw routine.
- * (The CodePen pens embed this via .toString(), so keep it dependency-free:
- *  no module-level imports referenced inside the body.)
- *
- * TODO (Ted): port the commented original source at the bottom of this file
- * into here. Blank for now.
+ * drawBird — self-contained: draw one bird as a small triangle pointing along its
+ * heading. Kept dependency-free so it can be embedded in a CodePen via .toString().
  */
-export function drawMurmuration(
-  _ctx: CanvasRenderingContext2D,
-  _width: number,
-  _height: number
+export function drawBird(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  angle: number,
+  size: number
 ): void {
-  // TODO: port me. See the commented original source at the bottom of this file.
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(size, 0);
+  ctx.lineTo(-size * 0.6, size * 0.5);
+  ctx.lineTo(-size * 0.6, -size * 0.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
 }
-
-const MurmurationFormula: CollisionDetectionObject = {
-  keyFunction: drawMurmuration,
-  dependencies: [],
-  functionString: `// TODO (Ted): port drawMurmuration() — see Murmuration.ts`,
-};
 
 class Murmuration extends Template {
   static t = "Murmuration (flocking starlings)";
   static l = "murmuration";
-  static f = MurmurationFormula;
+  static f = BoidsObject;
   title = "Murmuration (flocking starlings)";
 
-  animationObject = MurmurationFormula;
+  animationObject = BoidsObject;
   animId = 0;
+
+  flock: Flock | null = null;
+  count = 260;
+  frame = 0;
+
+  // A slowly wandering "roost" the flock gently drifts toward — gives the whole
+  // group somewhere to wheel around. Frame-based, no clock (purity rule).
+  target: Vector = { x: 0, y: 0 };
+  goal: Vector = { x: 0, y: 0 };
+  repickEvery = 160; // frames between new wander goals
 
   init() {
     if (this.textDiv) this.textDiv.innerHTML = ELI5;
-    // TODO (Ted): once drawMurmuration() is implemented, start the rAF loop here
-    // (e.g. this.animate()) and remove the placeholder() call below.
-    this.placeholder();
+    if (!this.ctx) return;
+
+    this.target = { x: this.halfWidth, y: this.halfHeight };
+    this.goal = this.pickGoal();
+
+    this.flock = new Flock(
+      this.count,
+      { width: this.canvasWidth, height: this.canvasHeight },
+      {
+        perceptionRadius: 60,
+        separationRadius: 28,
+        maxSpeed: 3.6,
+        maxForce: 0.08,
+        separationWeight: 1.7,
+        alignmentWeight: 1.0,
+        cohesionWeight: 0.9,
+        targetWeight: 0.35,
+      }
+    );
+
+    // Paint the backdrop once; the loop fades it instead of hard-clearing, leaving
+    // motion trails that read as the smear of a real murmuration.
+    this.ctx.fillStyle = "#0a0a12";
+    this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    this.animate();
   }
 
-  /** Temporary stand-in until drawMurmuration() is ported. Safe to delete then. */
-  placeholder() {
-    if (!this.ctx) return;
-    const ctx = this.ctx;
-    ctx.fillStyle = "#0a0a0f";
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    ctx.fillStyle = "#888";
-    ctx.font = "16px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText("Murmuration (flocking starlings) — port in progress", this.halfWidth, this.halfHeight);
-    ctx.font = "12px monospace";
-    ctx.fillStyle = "#555";
-    ctx.fillText(
-      "scaffold: original source is commented in Murmuration.ts",
-      this.halfWidth,
-      this.halfHeight + 24
-    );
+  pickGoal(): Vector {
+    // Keep the goal off the edges so the flock wheels in open space.
+    const margin = 0.2;
+    return {
+      x: this.canvasWidth * (margin + Math.random() * (1 - 2 * margin)),
+      y: this.canvasHeight * (margin + Math.random() * (1 - 2 * margin)),
+    };
   }
+
+  animate = () => {
+    if (!this.ctx || !this.flock) return;
+    const ctx = this.ctx;
+    this.frame++;
+
+    // Wander the roost: ease the live target toward the goal, repick periodically.
+    if (this.frame % this.repickEvery === 0) this.goal = this.pickGoal();
+    this.target.x += (this.goal.x - this.target.x) * 0.02;
+    this.target.y += (this.goal.y - this.target.y) * 0.02;
+
+    this.flock.step(this.target);
+
+    // Trailing fade instead of clearRect.
+    ctx.fillStyle = "rgba(10, 10, 18, 0.22)";
+    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    ctx.fillStyle = "rgba(220, 228, 245, 0.9)";
+    for (const b of this.flock.boids) {
+      const angle = Math.atan2(b.velocity.y, b.velocity.x);
+      drawBird(ctx, b.position.x, b.position.y, angle, 4);
+    }
+
+    this.animId = requestAnimationFrame(this.animate);
+  };
+
+  resizeHandler = () => {
+    if (!this.canvas || !this.ctx || !this.cont) return;
+    this.canvas.width = this.canvasWidth = this.cont.clientWidth;
+    this.canvas.height = this.canvasHeight = this.cont.clientHeight;
+    this.halfHeight = this.cont.clientHeight / 2;
+    this.halfWidth = this.cont.clientWidth / 2;
+    const { top, left } = this.canvas.getBoundingClientRect();
+    this.top = top;
+    this.left = left;
+    if (this.flock) this.flock.bounds = { width: this.canvasWidth, height: this.canvasHeight };
+    this.ctx.fillStyle = "#0a0a12";
+    this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+  };
 
   stop() {
     cancelAnimationFrame(this.animId);
+    this.flock = null;
     super.stop();
   }
 }
 
 export default Murmuration;
-
-/* ===========================================================================
- * ORIGINAL PORTFOLIO SOURCE — reference for the Canvas 2D port. NOT executed.
- * Tech: Canvas 2D (already 2D in the portfolio — lightest port)
- * From: ~/Sites/warpedpuppies/portfolio/src/components/pretty-little-things/
- * ===========================================================================
-// ── murmuration/code/index.js ─────────────────────────────────────────────
-// import Murmuration from "./Murmuration.js";
-// 
-// export default class SetUpMurmuration {
-// 
-// 	constructor (canvas) {
-// 		this.canvas = canvas;
-// 		this.engine = canvas.getContext("2d");
-// 		this.canvasWidth = window.innerWidth;
-// 		this.canvasHeight = window.innerHeight;
-// 		this.halt = false;
-// 		this.canvas.setAttribute("width", this.canvasWidth);
-// 		this.canvas.setAttribute("height", this.canvasHeight);
-// 	
-// 		const birdQuantity = 500;
-// 		this.murmuration = new Murmuration(this.engine, this.canvasWidth, this.canvasHeight, birdQuantity);
-// 		this.tick = this.tick.bind(this);
-// 		this.tick();
-// 
-// 		window.addEventListener("resize", this.resizeHandler);
-// 	}
-// 
-// 	start() {
-// 
-// 	}
-// 	stop() {
-// 		this.halt = true;
-// 		window.removeEventListener("resize", this.resizeHandler);
-// 	}
-// 
-// 	tick () {
-// 		if (this.halt) return ;
-// 		this.engine.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-// 		this.murmuration.renderBirds();
-// 		window.requestAnimationFrame(this.tick);
-// 	};
-// 
-// 	resizeHandler = (e) => {
-// 		this.canvasWidth = window.innerWidth;
-// 		this.canvasHeight = window.innerHeight;
-// 		this.murmuration.resize(this.canvasWidth, this.canvasHeight)
-// 		this.canvas.setAttribute("width", this.canvasWidth);
-// 		this.canvas.setAttribute("height", this.canvasHeight);
-// 	}
-// 	
-// 
-// 	
-// 
-// }
-//
-// ── murmuration/code/Murmuration.js ───────────────────────────────────────
-// import Starling from "./Starlings.js";
-// 
-// export default class Murmuration {
-//   birdQ;
-//   birds = [];
-//   frame = 0;
-//   speed = 1.4;
-//   destinationPoints = { x: 0.5, y: 0.5, z: 0.5 };
-//   birdLineCount = 5;
-//   birdLineIndex = -1;
-//   z = { current: 1, target: 1 };
-// 
-//   constructor(engine, canvasWidth, canvasHeight, birdQuantity) {
-// 	this.birdQ = birdQuantity;
-//     this.engine = engine;
-//     this.canvasWidth = canvasWidth;
-//     this.canvasHeight = canvasHeight;
-//     this.registerDestinationPoints();
-//     this.createBirds(this.birdLineCount);
-//   }
-// 
-//   resize(canvasWidth, canvasHeight) {
-//     this.canvasWidth = canvasWidth;
-//     this.canvasHeight = canvasHeight;
-//   }
-// 
-//   registerDestinationPoints() {
-//     setInterval(() => {
-//       this.destinationPoints.x = Math.random();
-//       this.destinationPoints.y = Math.random();
-//       this.z.target = 0.5 + Math.random();
-//     }, 1000);
-//   }
-// 
-//   createBirds(birdLineCount) {
-//     for (let i = 0; i < this.birdQ; i++) {
-//       let b = new Starling(this.engine, this.canvasWidth, this.canvasHeight);
-//       this.birds.push(b);
-//     }
-//   }
-// 
-//   renderBirds() {
-//     this.frame++;
-//     this.alterZ();
-// 
-//     //change math
-//     this.birds.forEach((bird) => {
-//       bird.solveBirdMove(this.frame, this.speed, this.destinationPoints);
-//     });
-// 
-//     //draw new birds
-//     this.birds.forEach((bird) => {
-//       bird.drawBird(this.engine, this.canvasWidth, this.canvasHeight, this.z);
-//     });
-//   }
-// 
-//   alterZ() {
-//     this.z.current += (this.z.target - this.z.current) / 100;
-//   }
-// 
-//   animate() {
-//     this.frame++;
-//     this.z.current += (this.z.target - this.z.current) / 100;
-//     this.renderBirds();
-//   }
-// }
-//
-// ── murmuration/code/Starlings.js ─────────────────────────────────────────
-// export default class Starling {
-//   wing = Math.random();
-//   wingAdd = Math.random();
-//   speed = (0.2 + Math.random() * 0.8) / 2000;
-//   pos = {
-//     x: 0.25 + Math.random() * 0.5,
-//     y: 0.25 + Math.random() * 0.5,
-//     z: Math.random(),
-//   };
-//   move = {
-//     x: (0.5 - Math.random()) / 100,
-//     y: (0.5 - Math.random()) / 100,
-//     z: 0,
-//   };
-//   ownMove = {
-//     t: (20 + Math.random() * 100) | 0,
-//     x: 0,
-//     y: 0,
-//   };
-//   bodyHeight = 2;
-//   bodyWidth = 40;
-//   wingHeight = 20;
-//   wingFlapSpeed = (Math.random() * 0.025) + 0.0275;
-//   speedLimit = 0.003;
-//   
-// 
-//   constructor(engine, canvasWidth, canvasHeight) {
-// 	this.engine = engine;
-// 	this.canvasWidth = canvasWidth;
-// 	this.canvasHeight = canvasHeight;
-//   }
-// 
-//   enforceSpeedLimit () {
-// 	  if (Math.abs(this.move.x) > this.speedLimit) {
-// 		this.move.x *= 0.99;
-// 	  }
-// 	  if (Math.abs(this.move.y) > this.speedLimit) {
-// 		this.move.y *= 0.99;
-// 	  }
-// 	  if (Math.abs(this.move.z) > this.speedLimit) {
-// 		this.move.z *= 0.99;
-// 	  }
-//   }
-// 
-//   preventClumping (frame) {
-// 	if (frame % this.ownMove.t === 0) {
-// 		this.ownMove.x = (0.5 - Math.random()) / 3;
-// 		this.ownMove.y = (0.5 - Math.random()) / 3;
-// 	  }
-//   }
-// 
-//   solveBirdMove(frame, speed, destinationPoints) {
-//    
-// 	this.enforceSpeedLimit();
-// 	this.preventClumping(frame);
-// 
-//     this.move.x += speed * (destinationPoints.x - this.pos.x + this.ownMove.x) * this.speed;
-//     this.move.y += speed * (destinationPoints.y - this.pos.y + this.ownMove.y) * this.speed;
-//     this.move.z += speed * (destinationPoints.z - this.pos.z) * this.speed;
-// 
-// 	this.pos.x += this.move.x;
-// 	this.pos.y += this.move.y;
-// 	this.pos.z += this.move.z;
-//   }
-// 
-//   drawBird() {
-// 	const { canvasWidth, canvasHeight, move } = this;
-// 	let atan = Math.atan2(move.y * canvasHeight, move.x * canvasWidth);
-// 	let pos = {
-// 		x: this.pos.x * canvasWidth,
-// 		y: this.pos.y * canvasHeight,
-// 		z: this.pos.z * 1.5,
-// 	  };
-//     this.drawBody(pos, atan);
-//   }
-//   drawBody(pos, atan) {
-// 	const { engine } = this;
-// 	let wingHeight = this.cosWave(55, 55, this.wingFlapSpeed);//this.cosWave(startingWingTop, this.wingHeight, this.wingFlapSpeed)
-// 	let wingHeight2 = this.cosWave(10, this.wingHeight, this.wingFlapSpeed);//this.cosWave(startingWingTop, this.wingHeight, this.wingFlapSpeed)
-// 	//rotate   
-// 	engine.save();
-// 	engine.translate(pos.x, pos.y);
-// 	engine.rotate(atan);
-// 	engine.translate(-pos.x, -pos.y);
-// 	engine.fillStyle = '#CCCCCC';
-// 	let scale = 0.25;
-// 	function scaleIt(num) {
-// 		return num * scale;
-// 	}
-// 	//body
-// 	engine.beginPath();
-// 	engine.moveTo(pos.x, pos.y);
-// 	engine.lineTo(pos.x + scaleIt(50), pos.y + scaleIt(10));
-// 	engine.lineTo(pos.x + scaleIt(130), pos.y + scaleIt(10));
-// 	engine.lineTo(pos.x + scaleIt(160), pos.y + scaleIt(20));
-// 	engine.lineTo(pos.x + scaleIt(100), pos.y + scaleIt(40));
-// 	engine.lineTo(pos.x + scaleIt(40), pos.y + scaleIt(20));
-// 	engine.lineTo(pos.x + scaleIt(10), pos.y + scaleIt(30));
-// 	engine.lineTo(pos.x, pos.y);
-// 
-// 	engine.fill();
-// 	engine.closePath();
-// 
-// 	//wing
-// 	// engine.stroke();
-// 	engine.beginPath();
-// 
-// 	engine.moveTo(pos.x + scaleIt(50), pos.y + scaleIt(20));
-// 	engine.lineTo(pos.x + scaleIt(70), pos.y);
-// 	engine.lineTo(pos.x + scaleIt(20), pos.y - scaleIt(wingHeight));
-// 	engine.lineTo(pos.x + scaleIt(120), pos.y - scaleIt(wingHeight2));
-// 	engine.lineTo(pos.x + scaleIt(130), pos.y + scaleIt(20));
-// 	engine.lineTo(pos.x + scaleIt(50), pos.y + scaleIt(20));
-// 
-// 	engine.fill();
-// 	engine.closePath();
-// 
-// 	engine.restore();
-//   }
-// 
-//   cosWave (startPoint, differential, speed) {
-//     const currentDate = new Date();
-//     return startPoint + (Math.cos(currentDate.getTime() * speed) * differential)
-//   }
-// 
-// 
-//   
-//   applyPath(pathStack, engine) {
-//     engine.moveTo(pathStack[0].x, pathStack[0].y);
-// 
-//     for (let i = 1; i < pathStack.length; i++) {
-//       engine.lineTo(pathStack[i].x, pathStack[i].y);
-//     }
-//   }
-// }
- * ========================================================================= */

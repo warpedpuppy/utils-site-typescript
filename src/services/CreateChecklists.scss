@@ -19,7 +19,18 @@
 
     &:hover {
       color: var(--text);
-      background: rgba(129, 140, 248, 0.1);
+      background: var(--brand-orange-dim);
+    }
+
+    .category-count {
+      margin-left: auto;
+      margin-right: 0.45rem;
+      padding: 0.05rem 0.38rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      font-family: "Space Mono", monospace;
     }
 
     + .inner-checklist {
@@ -31,10 +42,15 @@
     }
 
     &.open {
-      color: var(--accent);
-      background: var(--accent-dim);
-      border-left: 2px solid var(--accent);
+      color: var(--brand-orange-soft);
+      background: var(--brand-orange-dim);
+      border-left: 2px solid var(--brand-orange);
       padding-left: calc(1rem - 2px);
+
+      .category-count {
+        color: var(--brand-orange-soft);
+        border-color: rgba(255, 122, 0, 0.3);
+      }
 
       + .inner-checklist {
         max-height: 600px;
@@ -65,7 +81,7 @@
             position: relative;
 
             &.active .link-name {
-              color: var(--accent);
+              color: var(--brand-orange-soft);
             }
 
             .link-name {

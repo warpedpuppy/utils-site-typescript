@@ -2,9 +2,11 @@
 // Regenerate with: npm run barrel
 export * from './types';
 export * from './AngleInterpolation';
+export * from './Animate';
 export * from './BallBounce';
 export * from './BallToBallBounce';
 export * from './BezierCurve';
+export * from './Boids';
 export * from './CenterOnParent';
 export * from './CircleFromThreePoints';
 export * from './CircleToCircle';

@@ -5,6 +5,7 @@ import About from "./pages/about/About";
 import Examples from "./pages/examples/Examples";
 import CreateJSON from "./pages/createJSON/CreateJSON";
 import Studio from "./pages/studio/Studio";
+import ApiDocs from "./pages/api/ApiDocs";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <About />,
+      },
+      {
+        path: "api",
+        element: <ApiDocs />,
       },
     ],
   },
