@@ -1,0 +1,24 @@
+.utilspalooza-logo {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.utilspalooza-logo__core {
+  fill: var(--brand-orange);
+  filter: drop-shadow(0 0 8px rgba(255, 122, 0, 0.65));
+}
+
+.utilspalooza-logo__orbit {
+  fill: none;
+  stroke: var(--brand-orange-soft);
+  stroke-width: 2.2;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(-28deg);
+}
+
+.utilspalooza-logo__dot {
+  fill: var(--brand-yellow);
+  filter: drop-shadow(0 0 7px rgba(255, 176, 0, 0.6));
+}

@@ -1,0 +1,178 @@
+import { clamp } from './Clamp';
+import { linear } from './Easing';
+import { lerp } from './Lerp';
+
+export type EasingFunction = (t: number) => number;
+
+export interface TickerFrame {
+  time: number;
+  delta: number;
+  elapsed: number;
+  frame: number;
+}
+
+export interface TickerHandle {
+  cancel: () => void;
+}
+
+export interface TweenValueOptions {
+  easing?: EasingFunction;
+  clamp?: boolean;
+}
+
+export type TweenObjectSpec<T extends Record<string, number>> = {
+  [K in keyof T]: {
+    from: number;
+    to: number;
+  };
+};
+
+export interface SpringOptions {
+  stiffness?: number;
+  damping?: number;
+  mass?: number;
+  deltaSeconds?: number;
+}
+
+export interface SpringState {
+  value: number;
+  velocity: number;
+}
+
+const raf =
+  typeof globalThis.requestAnimationFrame === 'function'
+    ? globalThis.requestAnimationFrame.bind(globalThis)
+    : (callback: FrameRequestCallback) => globalThis.setTimeout(() => callback(Date.now()), 16);
+
+const caf =
+  typeof globalThis.cancelAnimationFrame === 'function'
+    ? globalThis.cancelAnimationFrame.bind(globalThis)
+    : (id: number) => globalThis.clearTimeout(id);
+
+/**
+ * Run a callback every animation frame and return a small cancellation handle.
+ */
+export function ticker(callback: (frame: TickerFrame) => void): TickerHandle {
+  let active = true;
+  let rafId = 0;
+  let previous = 0;
+  let start = 0;
+  let frame = 0;
+
+  const tick = (time: number) => {
+    if (!active) return;
+    if (frame === 0) {
+      start = time;
+      previous = time;
+    }
+
+    const delta = time - previous;
+    previous = time;
+    callback({ time, delta, elapsed: time - start, frame });
+    frame += 1;
+    rafId = raf(tick);
+  };
+
+  rafId = raf(tick);
+
+  return {
+    cancel() {
+      active = false;
+      caf(rafId);
+    },
+  };
+}
+
+/**
+ * Return the value of a scalar tween at a specific elapsed time.
+ */
+export function tweenValue(
+  from: number,
+  to: number,
+  elapsedMs: number,
+  durationMs: number,
+  easingOrOptions: EasingFunction | TweenValueOptions = linear,
+): number {
+  const options = typeof easingOrOptions === 'function' ? { easing: easingOrOptions } : easingOrOptions;
+  const easing = options.easing ?? linear;
+  const shouldClamp = options.clamp ?? true;
+  const t = durationMs <= 0 ? 1 : elapsedMs / durationMs;
+  const progress = shouldClamp ? clamp(t, 0, 1) : t;
+  return lerp(from, to, easing(progress));
+}
+
+/**
+ * Return every numeric property of an object tween at a specific elapsed time.
+ */
+export function tweenObject<T extends Record<string, number>>(
+  spec: TweenObjectSpec<T>,
+  elapsedMs: number,
+  durationMs: number,
+  easingOrOptions: EasingFunction | TweenValueOptions = linear,
+): T {
+  const out = {} as T;
+  for (const key of Object.keys(spec) as Array<keyof T>) {
+    const range = spec[key];
+    out[key] = tweenValue(range.from, range.to, elapsedMs, durationMs, easingOrOptions) as T[keyof T];
+  }
+  return out;
+}
+
+/**
+ * Alias for tweenObject when you want to sample animation state one frame at a time.
+ */
+export const tweenFrame = tweenObject;
+
+/**
+ * Advance a damped spring one fixed simulation step.
+ */
+export function springValue(
+  state: SpringState,
+  target: number,
+  {
+    stiffness = 170,
+    damping = 26,
+    mass = 1,
+    deltaSeconds = 1 / 60,
+  }: SpringOptions = {},
+): SpringState {
+  const force = -stiffness * (state.value - target);
+  const damper = -damping * state.velocity;
+  const acceleration = (force + damper) / mass;
+  const velocity = state.velocity + acceleration * deltaSeconds;
+  const value = state.value + velocity * deltaSeconds;
+  return { value, velocity };
+}
+
+/**
+ * Map elapsed time into a repeating 0..1 progress value.
+ */
+export function loop(elapsedMs: number, durationMs: number): number {
+  if (durationMs <= 0) return 1;
+  return ((elapsedMs % durationMs) + durationMs) % durationMs / durationMs;
+}
+
+/**
+ * Map elapsed time into a reversing 0..1..0 progress value.
+ */
+export function yoyo(elapsedMs: number, durationMs: number): number {
+  if (durationMs <= 0) return 1;
+  const cycle = loop(elapsedMs, durationMs * 2);
+  return cycle <= 0.5 ? cycle * 2 : (1 - cycle) * 2;
+}
+
+/**
+ * Delay a progress value by `delayMs`, returning 0 until the delay has elapsed.
+ */
+export function delay(elapsedMs: number, delayMs: number, durationMs: number): number {
+  if (elapsedMs <= delayMs) return 0;
+  if (durationMs <= 0) return 1;
+  return clamp((elapsedMs - delayMs) / durationMs, 0, 1);
+}
+
+/**
+ * Return the delayed progress for an item in a staggered list.
+ */
+export function stagger(index: number, elapsedMs: number, durationMs: number, staggerMs: number): number {
+  return delay(elapsedMs, Math.max(0, index) * staggerMs, durationMs);
+}

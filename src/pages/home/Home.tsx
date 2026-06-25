@@ -23,8 +23,12 @@ function Home() {
       <div id="home-page--text-container">
         <div id="home-page--text-container_inner">
           <h2>utilspalooza</h2>
-          <p>A living reference of animation formulas — collision detection, trig, easing, and more — with live canvas demos and one-click code export.</p>
-          <a href="/examples">Browse examples →</a>
+          <p>Readable animation math for canvas, creative coding, and visual experiments.</p>
+          <div className="home-install-strip">npm i @utilspalooza/core</div>
+          <div className="home-actions">
+            <a href="/examples">Browse examples</a>
+            <a className="home-secondary-link" href="/api">View API</a>
+          </div>
         </div>
       </div>
       <div id="home-page--canvas-container"></div>

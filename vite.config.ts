@@ -9,6 +9,9 @@ export default defineConfig({
       '@utilspalooza/core': fileURLToPath(
         new URL('./packages/core/src', import.meta.url)
       ),
+      '@utilspalooza/effects': fileURLToPath(
+        new URL('./packages/effects/src', import.meta.url)
+      ),
     },
   },
 })

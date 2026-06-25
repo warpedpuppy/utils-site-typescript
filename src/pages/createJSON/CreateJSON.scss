@@ -2,7 +2,12 @@
   width: 100%;
   position: relative;
   top: 50px;
-  padding-top: 50px;
+  padding: 34px 0 64px;
+
+  &::before {
+    content: none;
+  }
+
   #download-bar {
     display: flex;
     align-items: center;
@@ -19,7 +24,35 @@
     width: 100%;
   }
   #create-json-container {
-    margin: 0 20px;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 20px;
+
+    .copy-code-header {
+      margin-bottom: 18px;
+
+      p {
+        margin-bottom: 6px;
+        color: var(--brand-orange-soft);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      span {
+        display: block;
+        max-width: 680px;
+        color: var(--text-muted);
+      }
+    }
     .tab-content {
       display: none;
       border: 1px solid var(--border);

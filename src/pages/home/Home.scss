@@ -30,11 +30,11 @@
       max-width: 600px;
 
       h2 {
-        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-size: clamp(2.2rem, 6vw, 4.8rem);
         font-weight: 800;
-        letter-spacing: -0.04em;
+        letter-spacing: 0;
         margin-bottom: 1rem;
-        background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+        background: linear-gradient(135deg, var(--text) 0%, var(--brand-orange-soft) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -42,31 +42,59 @@
       }
 
       p {
-        font-size: 1.05rem;
+        font-size: 1.12rem;
         color: var(--text-muted);
         line-height: 1.65;
         margin: 0.5rem 0;
       }
 
+      .home-install-strip {
+        display: inline-block;
+        margin-top: 1.25rem;
+        padding: 0.55rem 0.85rem;
+        border: 1px solid var(--border-bright);
+        border-radius: 8px;
+        background: rgba(9, 11, 19, 0.78);
+        color: var(--text-code);
+        font-family: "Space Mono", monospace;
+        font-size: 0.86rem;
+      }
+
+      .home-actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 1.6rem;
+      }
+
       a {
         display: inline-block;
-        margin-top: 1.75rem;
         padding: 0.7rem 1.75rem;
-        background: var(--accent);
+        background: var(--brand-orange);
         color: #fff;
-        border-radius: 10px;
+        border: 1px solid var(--brand-orange);
+        border-radius: 8px;
         font-weight: 700;
         font-size: 0.95rem;
-        letter-spacing: 0.01em;
+        letter-spacing: 0;
         transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 4px 20px var(--accent-glow);
+        box-shadow: 0 4px 20px var(--brand-orange-glow);
         -webkit-text-fill-color: #fff;
 
         &:hover {
           opacity: 0.9;
           transform: translateY(-2px);
-          box-shadow: 0 8px 28px var(--accent-glow);
+          box-shadow: 0 8px 28px var(--brand-orange-glow);
         }
+      }
+
+      .home-secondary-link {
+        background: rgba(22, 25, 41, 0.86);
+        border-color: var(--border-bright);
+        color: var(--text);
+        -webkit-text-fill-color: var(--text);
+        box-shadow: none;
       }
     }
   }
