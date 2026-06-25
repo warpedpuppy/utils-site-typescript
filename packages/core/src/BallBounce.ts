@@ -9,13 +9,16 @@ import { Ball, Container } from './types';
  *
  * @param ball - The ball to advance (its `x`, `y`, `vx`, `vy` are mutated).
  * @param stage - The bounding container (`width`/`height`) the ball bounces inside.
+ * @param restitution - Bounciness: fraction of speed kept on each bounce (0–1).
+ *   `1` is a perfectly elastic, never-tiring bounce; lower values lose energy faster.
+ *   Defaults to `0.72`.
  * @returns Nothing — `ball` is updated in place.
  * @example
- * ballBounce(ball, { x: 0, y: 0, width: 800, height: 600 }); // call once per frame
+ * ballBounce(ball, { x: 0, y: 0, width: 800, height: 600 });      // default bounce
+ * ballBounce(ball, stage, 0.95);                                   // extra bouncy
  */
-export function ballBounce(ball: Ball, stage: Container): void {
+export function ballBounce(ball: Ball, stage: Container, restitution: number = 0.72): void {
   const gravity = 0.4;
-  const restitution = 0.72;
   const friction = 0.985;
   ball.vy += gravity;
   ball.x += ball.vx;

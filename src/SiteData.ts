@@ -27,7 +27,8 @@ import LineToRectangleCollision from "./core-animations/LineToRect";
 import PolygonToPolygonCollision from "./core-animations/PolygonToPolygonCollision";
 import Star from "./core-animations/Star";
 import Polygon from "./core-animations/Polygon";
-import GetRandomColorAnimation from "./core-animations/GetRandomColorsAnimations";
+import ColorLerpAnimation from "./core-animations/ColorLerp";
+import ColorFamiliesAnimation from "./core-animations/ColorFamilies";
 import CenterOnParentAnimation from "./core-animations/CenterOnParentAnimation";
 import Deg2RadAnimation from "./core-animations/DegToRadAnimation";
 import NumberWithCommasAnimation from "./core-animations/NumberWithCommasAnimation";
@@ -88,7 +89,8 @@ const SiteData: PrimaryObject = {
     PolygonToPolygonCollision,
   },
   "useful little things": {
-    GetRandomColorAnimation,
+    ColorLerpAnimation,
+    ColorFamiliesAnimation,
     GetHalfwayPointOfLine,
     triangleDataFromLine,
     Star,

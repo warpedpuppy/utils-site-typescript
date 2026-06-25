@@ -40,7 +40,7 @@ import { lensDeflection } from "@utilspalooza/core/LensDeflection";
 import { grStep } from "@utilspalooza/core/GRStep";
 import { lineLength } from "@utilspalooza/core/LineLength";
 import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
-import { drawBallBounce } from "../../core-animations/BallBounce";
+import { drawRainbowBall } from "../../core-animations/BallBounce";
 import { drawBallBall } from "../../core-animations/BallBall";
 import { drawLerp } from "../../core-animations/Lerp";
 import { drawEasing } from "../../core-animations/Easing";
@@ -88,6 +88,8 @@ canvas { display: block; width: 100vw; height: 100vh; }
 const BALL_BOUNCE_HTML = `<canvas id="canvas"></canvas>`;
 const BALL_BOUNCE_JS = `${ballBounce.keyFunction.toString()}
 
+${drawRainbowBall.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -95,64 +97,73 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-// ─── state ───────────────────────────────────────────────────────────────────
-let ball = { x: 0, y: 0, radius: 18, vx: 5, vy: -10 };
+// ─── state: staggered rainbow stream from a fixed object pool ─────────────────
+const RESTITUTION = 0.88;  // bounciness (0–1): higher = springier
+const SPAWN_INTERVAL = 16; // frames between staggered entries
+const MAX_BALLS = 40;      // object-pool cap: never instantiate beyond this
+let balls = [], spawnCounter = 0, spawnIndex = 0;
 
-function init() {
-  ball.x = canvas.width * 0.25;
-  ball.y = canvas.height * 0.25;
-  ball.vx = 5;
-  ball.vy = -10;
+function resetBall(ball) {
+  const hue = (spawnIndex * 47) % 360;
+  const radius = 14 + Math.random() * 8;
+  ball.x = canvas.width * (0.08 + Math.random() * 0.84);
+  ball.y = radius + Math.random() * 20;
+  ball.vx = (Math.random() - 0.5) * 6;
+  ball.vy = 1 + Math.random() * 2;
+  ball.radius = radius;
+  ball.hue = hue;
+  ball.settled = false;
+  ball.restFrames = 0;
+  spawnIndex++;
 }
 
+function spawnOrRecycle() {
+  if (balls.length < MAX_BALLS) {
+    const ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 0, hue: 0, settled: false, restFrames: 0 };
+    resetBall(ball);
+    balls.push(ball);
+    return;
+  }
+  // At the cap: take one from the floor — the one that's rested longest.
+  let target = null;
+  for (const b of balls) {
+    if (b.settled && (target === null || b.restFrames > target.restFrames)) target = b;
+  }
+  if (target) resetBall(target);
+}
+
+ctx.fillStyle = 'rgb(10, 8, 20)';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+for (let i = 0; i < 4; i++) spawnOrRecycle();
+
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
+  // Trails: fade the previous frame instead of clearing it.
+  ctx.fillStyle = 'rgba(10, 8, 20, 0.22)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ballBounce(ball, { width: canvas.width, height: canvas.height });
+  if (++spawnCounter >= SPAWN_INTERVAL) { spawnCounter = 0; spawnOrRecycle(); }
 
-  // ── Shadow on the floor ────────────────────────────────────────────────
-  const maxDist = canvas.height - ball.radius;
-  const distFrac = Math.max(0, 1 - (canvas.height - ball.radius - ball.y) / maxDist);
-  const shadowAlpha = distFrac * 0.45;
-  const shadowRx = ball.radius * (0.7 + distFrac * 0.8);
-  const shadowRy = ball.radius * 0.22;
-
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,' + shadowAlpha + ')';
-  ctx.beginPath();
-  ctx.ellipse(
-    ball.x,
-    canvas.height - 3,
-    Math.max(shadowRx, 4),
-    Math.max(shadowRy, 2),
-    0, 0, Math.PI * 2
-  );
-  ctx.fill();
-  ctx.restore();
-
-  // ── Ball with radial gradient ──────────────────────────────────────────
-  const gr = ctx.createRadialGradient(
-    ball.x - ball.radius * 0.32,
-    ball.y - ball.radius * 0.32,
-    0,
-    ball.x,
-    ball.y,
-    ball.radius
-  );
-  gr.addColorStop(0, '#c7d2fe');
-  gr.addColorStop(0.55, '#818cf8');
-  gr.addColorStop(1, '#3730a3');
-
-  ctx.fillStyle = gr;
-  ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-  ctx.fill();
+  const stage = { width: canvas.width, height: canvas.height };
+  for (const ball of balls) {
+    if (!ball.settled) {
+      ballBounce(ball, stage, RESTITUTION);
+      const onFloor = ball.y >= stage.height - ball.radius - 0.5;
+      if (onFloor) ball.vx *= 0.9;
+      if (onFloor && Math.abs(ball.vy) < 1.4 && Math.abs(ball.vx) < 0.5) {
+        ball.settled = true;
+        ball.y = stage.height - ball.radius;
+        ball.vy = 0;
+        ball.vx = 0;
+      }
+    } else {
+      ball.restFrames++;
+    }
+    drawRainbowBall(ctx, ball);
+  }
 
   requestAnimationFrame(draw);
 }
 
-init();
 draw();`;
 
 // ── Balls Bouncing Against Each Other ────────────────────────────────────────
@@ -1590,11 +1601,11 @@ export const EXAMPLE_PENS: ExamplePen[] = [
     key: "ball-bounce",
     label: "Ball Bounce",
     blurb:
-      "A ball falls with gravity, bounces off walls and floor, losing energy on each impact.",
+      "Rainbow waves of balls fall with gravity, bounce and lose energy, then settle — with motion trails.",
     payload: {
       title: "Ball Bounce",
       description:
-        "A ball falls with gravity and bounces off walls with realistic energy loss.",
+        "A rainbow wave of balls falls with gravity and bounces with realistic energy loss; once they settle, a fresh wave drops in. Trails come from fading each frame.",
       html: BALL_BOUNCE_HTML,
       css: FULLSCREEN_CSS,
       js: BALL_BOUNCE_JS,

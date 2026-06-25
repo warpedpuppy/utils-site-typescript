@@ -12,6 +12,7 @@ export * from './CircleFromThreePoints';
 export * from './CircleToCircle';
 export * from './CircleToRect';
 export * from './Clamp';
+export * from './Color';
 export * from './DegToRad';
 export * from './DFT';
 export * from './Distance';

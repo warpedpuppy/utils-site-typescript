@@ -81,6 +81,14 @@ import {
   wrapAngle,
   shortestAngleBetween,
   lerpAngle,
+  // color (Tier C)
+  rgbToHsl,
+  hslToRgb,
+  lerpColor,
+  lerpColorHsl,
+  rgbToCss,
+  colorFamily,
+  HUE_FAMILIES,
   // now pure & time-driven (post purity fix)
   sineCurve,
   // math-heavy bucket
@@ -167,6 +175,79 @@ describe("lerp", () => {
   it("extrapolates past the range", () => {
     expect(lerp(0, 10, 2)).toBe(20);
     expect(lerp(0, 10, -1)).toBe(-10);
+  });
+});
+
+describe("color (rgb/hsl conversion + interpolation)", () => {
+  const BLUE = { r: 0, g: 0, b: 255 };
+  const YELLOW = { r: 255, g: 255, b: 0 };
+
+  it("rgbToHsl reads the primary colors", () => {
+    expect(rgbToHsl({ r: 255, g: 0, b: 0 })).toMatchObject({ h: 0, s: 100, l: 50 });
+    expect(rgbToHsl({ r: 0, g: 255, b: 0 })).toMatchObject({ h: 120, s: 100, l: 50 });
+    expect(rgbToHsl({ r: 0, g: 0, b: 255 })).toMatchObject({ h: 240, s: 100, l: 50 });
+  });
+
+  it("rgbToHsl reports gray as zero saturation", () => {
+    expect(rgbToHsl({ r: 128, g: 128, b: 128 }).s).toBe(0);
+  });
+
+  it("hslToRgb is the inverse of rgbToHsl (round-trip)", () => {
+    for (const c of [BLUE, YELLOW, { r: 12, g: 200, b: 99 }, { r: 200, g: 30, b: 180 }]) {
+      const back = hslToRgb(rgbToHsl(c));
+      expect(back.r).toBeCloseTo(c.r, 0);
+      expect(back.g).toBeCloseTo(c.g, 0);
+      expect(back.b).toBeCloseTo(c.b, 0);
+    }
+  });
+
+  it("hslToRgb wraps out-of-range hue", () => {
+    expect(hslToRgb({ h: 360, s: 100, l: 50 })).toEqual(hslToRgb({ h: 0, s: 100, l: 50 }));
+    expect(hslToRgb({ h: -120, s: 100, l: 50 })).toEqual(hslToRgb({ h: 240, s: 100, l: 50 }));
+  });
+
+  it("lerpColor returns the endpoints and a muddy-gray midpoint for complements", () => {
+    expect(lerpColor(BLUE, YELLOW, 0)).toEqual(BLUE);
+    expect(lerpColor(BLUE, YELLOW, 1)).toEqual(YELLOW);
+    const mid = lerpColor(BLUE, YELLOW, 0.5);
+    // Equal channels == on the gray axis (the whole point of the demo).
+    expect(mid.r).toBeCloseTo(mid.g);
+    expect(mid.g).toBeCloseTo(mid.b);
+  });
+
+  it("lerpColorHsl returns the endpoints and a SATURATED midpoint (not gray)", () => {
+    expect(lerpColorHsl(BLUE, YELLOW, 0)).toMatchObject(BLUE);
+    expect(lerpColorHsl(BLUE, YELLOW, 1)).toMatchObject(YELLOW);
+    const mid = lerpColorHsl(BLUE, YELLOW, 0.5);
+    expect(rgbToHsl(mid).s).toBeGreaterThan(50); // stays vivid, unlike lerpColor
+  });
+
+  it("rgbToCss rounds channels into an rgb() string", () => {
+    expect(rgbToCss({ r: 255, g: 127.5, b: 0 })).toBe("rgb(255, 128, 0)");
+  });
+
+  it("colorFamily returns the requested count and is deterministic", () => {
+    const a = colorFamily("blue", 5);
+    const b = colorFamily("blue", 5);
+    expect(a).toHaveLength(5);
+    expect(a).toEqual(b);
+  });
+
+  it("colorFamily keeps every swatch inside the named hue band", () => {
+    const [min, max] = HUE_FAMILIES.green;
+    for (const c of colorFamily("green", 8)) {
+      const h = rgbToHsl(c).h;
+      expect(h).toBeGreaterThanOrEqual(min - 1);
+      expect(h).toBeLessThanOrEqual(max + 1);
+    }
+  });
+
+  it("colorFamily handles the wrap-around red band without producing off-hue colors", () => {
+    // red straddles 0°; hues should be near 0 (i.e. <30 or >348), never mid-wheel.
+    for (const c of colorFamily("red", 6)) {
+      const h = rgbToHsl(c).h;
+      expect(h < 30 || h > 348).toBe(true);
+    }
   });
 });
 
@@ -903,6 +984,15 @@ describe("ballBounce", () => {
     ballBounce(ball, stage);
     expect(ball.y).toBe(stage.height - ball.radius); // clamped to 590
     expect(ball.vy).toBeLessThan(0); // bounced upward
+  });
+
+  it("rebounds harder with a higher restitution (bounciness param)", () => {
+    const bouncy = makeBall({ x: 400, y: 595, vy: 10, radius: 10 });
+    const dull = makeBall({ x: 400, y: 595, vy: 10, radius: 10 });
+    ballBounce(bouncy, stage, 0.95);
+    ballBounce(dull, stage, 0.5);
+    // both bounce up; the bouncier one keeps more speed
+    expect(Math.abs(bouncy.vy)).toBeGreaterThan(Math.abs(dull.vy));
   });
 });
 
