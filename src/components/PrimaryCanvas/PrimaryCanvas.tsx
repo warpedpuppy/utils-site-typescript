@@ -1,26 +1,45 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 
 import ExamplesUtils from "../../pages/examples/ExamplesUtils";
 import "./PrimaryCanvas.scss";
 
 import CanvasContainer from "./CanvasContainer";
+import { AnimationManifestEntry } from "../../animationManifest";
 
-function PrimaryCanvas(props: any) {
-  const { siteData }: { siteData: object } = props;
-
-  const activeObject: string[] = props.activeObject;
-
+function PrimaryCanvas({
+  activeObject,
+}: {
+  activeObject: AnimationManifestEntry | null;
+}) {
   const { createClassReference } = ExamplesUtils();
+  const [instanceOfClass, setInstanceOfClass] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const instanceOfClass = useMemo(() => {
-    if (!activeObject || !activeObject[0]) return;
-    let str1 = activeObject[0] as keyof object;
-    let str2 = activeObject[1] as keyof object;
-    let classRef = createClassReference(siteData[str1][str2]);
-    return classRef;
-  }, [activeObject, createClassReference, siteData]);
+  useEffect(() => {
+    let isCurrent = true;
+    setInstanceOfClass(undefined);
+    if (!activeObject) {
+      setIsLoading(false);
+      return;
+    }
 
-  return <CanvasContainer instance={instanceOfClass} />;
+    setIsLoading(true);
+    activeObject
+      .load()
+      .then((module) => {
+        if (!isCurrent) return;
+        setInstanceOfClass(createClassReference(module.default));
+      })
+      .finally(() => {
+        if (isCurrent) setIsLoading(false);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [activeObject, createClassReference]);
+
+  return <CanvasContainer instance={instanceOfClass} isLoading={isLoading} />;
 }
 
 export default PrimaryCanvas;
