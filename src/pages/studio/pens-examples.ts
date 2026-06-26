@@ -11,8 +11,7 @@ import {
 import { quadraticBezier } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
 import { DistributeAroundCircle } from "../../pages/createJSON/formulas/animation/DistributeAroundCircle";
 import { getRotation } from "../../pages/createJSON/formulas/animation/GetRotation";
-import { gravitationalStep } from "@utilspalooza/core/OrbitalMotion";
-import { moveToward } from "@utilspalooza/core/MoveToward";
+import { findPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
 import { sineCurve } from "@utilspalooza/core/SineCurve";
 import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
 import { pointToCircle } from "@utilspalooza/core/PointToCircle";
@@ -31,7 +30,6 @@ import { starVertices } from "@utilspalooza/core/Star";
 import { createRect } from "@utilspalooza/core/Rectangle";
 import { drawEquilateralTriangle } from "./pen-snippets";
 import { circleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
-import { distance } from "@utilspalooza/core/Distance";
 import { bezierPoint } from "@utilspalooza/core/BezierCurve";
 import { dft } from "@utilspalooza/core/DFT";
 import { gameOfLifeStep } from "@utilspalooza/core/GameOfLife";
@@ -40,6 +38,7 @@ import { lensDeflection } from "@utilspalooza/core/LensDeflection";
 import { grStep } from "@utilspalooza/core/GRStep";
 import { lineLength } from "@utilspalooza/core/LineLength";
 import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
+import { SphereLighting } from "../../pages/createJSON/formulas/animation/OrbitalMotion";
 import { centerOnParent as centerOnParentFn } from "@utilspalooza/core/CenterOnParent";
 import { degToRad as degToRadFn } from "@utilspalooza/core/DegToRad";
 import { numberWithCommas as numberWithCommasFn } from "@utilspalooza/core/NumberWithCommas";
@@ -83,6 +82,10 @@ import { drawVectorReflect } from "../../core-animations/VectorReflect";
 import { drawVectorRotate } from "../../core-animations/VectorRotate";
 import { drawAngleLerp } from "../../core-animations/AngleLerp";
 import { drawBird } from "../../core-animations/Murmuration";
+import { drawOrbitalMotion } from "../../core-animations/OrbitalMotion";
+import { drawMoveItemAroundCircle } from "../../core-animations/MoveItemAroundCircle";
+import { drawGetPointOnLine } from "../../core-animations/GetPointOnLine";
+import { drawLineLength } from "../../core-animations/LineLength";
 
 export interface ExamplePen {
   group: string;
@@ -201,6 +204,9 @@ draw();`;
 // ── Balls Bouncing Against Each Other ────────────────────────────────────────
 const BALLS_BOUNCING_HTML = `<canvas id="canvas"></canvas>`;
 const BALLS_BOUNCING_JS = `${ballToBallBounce.keyFunction.toString()}
+const ballToBallBouncePhysics = ballToBallBounce;
+
+${drawBallBall.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -228,60 +234,9 @@ function spawnBalls() {
 }
 
 let balls = spawnBalls();
-const SPEED_LIMIT = 5;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  balls.forEach((ball1) => {
-    ball1.x += ball1.vx;
-    ball1.y += ball1.vy;
-
-    const gr = ctx.createRadialGradient(
-      ball1.x - ball1.radius * 0.32,
-      ball1.y - ball1.radius * 0.32,
-      0,
-      ball1.x,
-      ball1.y,
-      ball1.radius
-    );
-    gr.addColorStop(0, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + Math.min(95, ball1.l + 25) + '%)');
-    gr.addColorStop(0.55, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + ball1.l + '%)');
-    gr.addColorStop(1, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + Math.max(5, ball1.l - 25) + '%)');
-
-    ctx.fillStyle = gr;
-    ctx.beginPath();
-    ctx.arc(ball1.x, ball1.y, ball1.radius, 0, 2 * Math.PI);
-    ctx.fill();
-
-    balls.forEach((ball2) => {
-      ballToBallBounce(ball1, ball2);
-    });
-
-    // Keep on screen
-    if (ball1.y > canvas.height - ball1.radius) {
-      ball1.y = canvas.height - ball1.radius;
-      ball1.vy *= -1;
-    }
-    if (ball1.y < ball1.radius) {
-      ball1.y = ball1.radius;
-      ball1.vy *= -1;
-    }
-    if (ball1.x > canvas.width - ball1.radius) {
-      ball1.x = canvas.width - ball1.radius;
-      ball1.vx *= -1;
-    }
-    if (ball1.x < ball1.radius) {
-      ball1.x = ball1.radius;
-      ball1.vx *= -1;
-    }
-
-    // Impose speed limit
-    if (ball1.vx > SPEED_LIMIT) ball1.vx = SPEED_LIMIT;
-    if (ball1.vy > SPEED_LIMIT) ball1.vy = SPEED_LIMIT;
-  });
-
+  drawBallBall(ctx, balls, canvas.width, canvas.height);
   requestAnimationFrame(draw);
 }
 
@@ -290,7 +245,13 @@ draw();`;
 // ── Orbital Motion ───────────────────────────────────────────────────────────
 const ORBITAL_MOTION_HTML = `<canvas id="canvas"></canvas>`;
 const ORBITAL_MOTION_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${gravitationalStep.toString()}
+${findPointAroundCircle.toString()}
+
+const SphereLighting = {
+  keyFunction: ${SphereLighting.keyFunction.toString()}
+};
+
+${drawOrbitalMotion.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -300,77 +261,17 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let orbiter = { x: 0, y: 0, vx: 0, vy: 0 };
-let sun = { x: 0, y: 0, mass: 100, radius: 60 };
-
-function init() {
-  sun.x = canvas.width / 2;
-  sun.y = canvas.height / 2;
-  orbiter.x = sun.x + 150;
-  orbiter.y = sun.y;
-  orbiter.vx = 0;
-  orbiter.vy = 5;
-}
+let pct = 0;
+let sunRadius = 60;
+let orbiterRadius = 22;
+let orbitRadius = 180;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  gravitationalStep(orbiter, sun);
-
-  // Faint orbit circle
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, 150, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Sun with radial gradient
-  const sunGr = ctx.createRadialGradient(sun.x, sun.y, 0, sun.x, sun.y, sun.radius);
-  sunGr.addColorStop(0, '#fff7a1');
-  sunGr.addColorStop(0.5, '#fde047');
-  sunGr.addColorStop(0.8, '#f97316');
-  sunGr.addColorStop(1, '#7c2d12');
-
-  ctx.fillStyle = sunGr;
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, sun.radius, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Sun corona glow ring
-  ctx.strokeStyle = 'rgba(253, 224, 71, 0.3)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, sun.radius + 12, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Orbiter with motion-aware lighting
-  const dx = orbiter.x - sun.x;
-  const dy = orbiter.y - sun.y;
-  const highlightX = orbiter.x - dx * 0.15;
-  const highlightY = orbiter.y - dy * 0.15;
-
-  const orbiterGr = ctx.createRadialGradient(
-    highlightX,
-    highlightY,
-    0,
-    orbiter.x,
-    orbiter.y,
-    22
-  );
-  orbiterGr.addColorStop(0, '#bfdbfe');
-  orbiterGr.addColorStop(0.5, '#3b82f6');
-  orbiterGr.addColorStop(1, '#1e1b4b');
-
-  ctx.fillStyle = orbiterGr;
-  ctx.beginPath();
-  ctx.arc(orbiter.x, orbiter.y, 22, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawOrbitalMotion(ctx, canvas.width, canvas.height, pct, sunRadius, orbiterRadius, orbitRadius);
+  pct = (pct + 0.15) % 100;
   requestAnimationFrame(draw);
 }
 
-init();
 draw();`;
 
 // ── lerp ─────────────────────────────────────────────────────────────────────
@@ -423,32 +324,35 @@ draw();`;
 // ── Easing Functions ────────────────────────────────────────────────────────
 const EASING_HTML = `<canvas id="canvas"></canvas>`;
 const EASING_JS = `// ─── easing functions ──────────────────────────────────────────────────────
-const linear = (t) => t;
-const easeInQuad = (t) => t * t;
-const easeOutQuad = (t) => 1 - (1 - t) * (1 - t);
-const easeInOutQuad = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-const easeOutElastic = (t) => {
-  const c5 = (2 * Math.PI) / 4.5;
-  return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c5) + 1;
-};
-const easeOutBounce = (t) => {
+function linear(t) { return t; }
+function easeInQuad(t) { return t * t; }
+function easeOutQuad(t) { return t * (2 - t); }
+function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+function easeOutElastic(t) {
+  if (t === 0 || t === 1) return t;
+  const c4 = (2 * Math.PI) / 3;
+  return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+}
+function easeOutBounce(t) {
   const n1 = 7.5625, d1 = 2.75;
   if (t < 1 / d1) return n1 * t * t;
   else if (t < 2 / d1) return n1 * (t -= 1.5 / d1) * t + 0.75;
   else if (t < 2.5 / d1) return n1 * (t -= 2.25 / d1) * t + 0.9375;
   else return n1 * (t -= 2.625 / d1) * t + 0.984375;
-};
+}
 
 const PERIOD_MS = 2800;
 const PAUSE_MS = 500;
 const TRACKS = [
-  { name: 'linear', color: '#94a3b8', fn: linear },
-  { name: 'ease-in-quad', color: '#60a5fa', fn: easeInQuad },
-  { name: 'ease-out-quad', color: '#34d399', fn: easeOutQuad },
-  { name: 'ease-in-out-quad', color: '#a78bfa', fn: easeInOutQuad },
-  { name: 'ease-out-elastic', color: '#f472b6', fn: easeOutElastic },
-  { name: 'ease-out-bounce', color: '#fb923c', fn: easeOutBounce }
+  { name: 'linear', ease: linear, color: '#94a3b8' },
+  { name: 'ease-in-quad', ease: easeInQuad, color: '#60a5fa' },
+  { name: 'ease-out-quad', ease: easeOutQuad, color: '#34d399' },
+  { name: 'ease-in-out-quad', ease: easeInOutQuad, color: '#a78bfa' },
+  { name: 'ease-out-elastic', ease: easeOutElastic, color: '#f472b6' },
+  { name: 'ease-out-bounce', ease: easeOutBounce, color: '#fb923c' }
 ];
+
+${drawEasing.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -458,41 +362,7 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let elapsed = Date.now() % (PERIOD_MS + PAUSE_MS);
-  let t = elapsed < PERIOD_MS ? elapsed / PERIOD_MS : 1;
-
-  TRACKS.forEach((track, idx) => {
-    const trackY = (idx + 1) * (canvas.height / (TRACKS.length + 1));
-    const ballR = Math.max(4, canvas.height / (TRACKS.length + 1) * 0.3);
-    const eased = track.fn(t);
-    const x = canvas.width * 0.1 + eased * (canvas.width * 0.8);
-
-    // Draw glow ring
-    ctx.strokeStyle = track.color;
-    ctx.globalAlpha = 0.3;
-    ctx.lineWidth = ballR;
-    ctx.beginPath();
-    ctx.arc(x, trackY, ballR * 1.5, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // Draw ball
-    ctx.fillStyle = track.color;
-    ctx.beginPath();
-    ctx.arc(x, trackY, ballR, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Draw track name right-aligned
-    ctx.font = '11px monospace';
-    ctx.fillStyle = track.color;
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(track.name, canvas.width * 0.95, trackY);
-  });
-
+  drawEasing(ctx, canvas.width, canvas.height);
   requestAnimationFrame(draw);
 }
 
@@ -501,6 +371,8 @@ draw();`;
 // ── Quadratic Bézier ────────────────────────────────────────────────────────
 const QUADRATIC_BEZIER_HTML = `<canvas id="canvas"></canvas>`;
 const QUADRATIC_BEZIER_JS = `${quadraticBezier.keyFunction.toString()}
+
+${drawQuadraticBezier.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -515,7 +387,7 @@ const HIT_SLOP = 6;
 let p0 = { x: canvas.width * 0.2, y: canvas.height * 0.7 };
 let p1 = { x: canvas.width * 0.5, y: canvas.height * 0.2 };
 let p2 = { x: canvas.width * 0.8, y: canvas.height * 0.7 };
-let draggingPoint = null;
+let dragTarget = null;
 
 function pointDistance(p1, p2) {
   const dx = p2.x - p1.x, dy = p2.y - p1.y;
@@ -523,60 +395,7 @@ function pointDistance(p1, p2) {
 }
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Dashed control polygon
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([5, 5]);
-  ctx.beginPath();
-  ctx.moveTo(p0.x, p0.y);
-  ctx.lineTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Draw Bézier curve (100 steps)
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  for (let i = 0; i <= 100; i++) {
-    const t = i / 100;
-    const pt = quadraticBezier(t, p0, p1, p2);
-    if (i === 0) ctx.moveTo(pt.x, pt.y);
-    else ctx.lineTo(pt.x, pt.y);
-  }
-  ctx.stroke();
-
-  // Oscillating dot
-  const dotT = (Math.sin(Date.now() * 0.003) + 1) / 2;
-  const dotPt = quadraticBezier(dotT, p0, p1, p2);
-  ctx.fillStyle = '#f97316';
-  ctx.beginPath();
-  ctx.arc(dotPt.x, dotPt.y, 7, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw control points
-  const points = [
-    { pt: p0, color: '#34d399', label: 'P0' },
-    { pt: p1, color: '#f472b6', label: 'P1' },
-    { pt: p2, color: '#34d399', label: 'P2' }
-  ];
-
-  points.forEach(({ pt, color, label }) => {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(pt.x, pt.y, HANDLE_RADIUS, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#0a0a0f';
-    ctx.font = 'bold 10px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, pt.x, pt.y);
-  });
-
+  drawQuadraticBezier(ctx, p0, p1, p2, dragTarget);
   requestAnimationFrame(draw);
 }
 
@@ -586,23 +405,24 @@ canvas.addEventListener('pointerdown', (e) => {
   const my = e.clientY - rect.top;
 
   if (pointDistance({ x: mx, y: my }, p0) < HANDLE_RADIUS + HIT_SLOP) {
-    draggingPoint = p0;
+    dragTarget = 'p0';
   } else if (pointDistance({ x: mx, y: my }, p1) < HANDLE_RADIUS + HIT_SLOP) {
-    draggingPoint = p1;
+    dragTarget = 'p1';
   } else if (pointDistance({ x: mx, y: my }, p2) < HANDLE_RADIUS + HIT_SLOP) {
-    draggingPoint = p2;
+    dragTarget = 'p2';
   }
 });
 
 canvas.addEventListener('pointermove', (e) => {
-  if (!draggingPoint) return;
+  if (!dragTarget) return;
   const rect = canvas.getBoundingClientRect();
-  draggingPoint.x = e.clientX - rect.left;
-  draggingPoint.y = e.clientY - rect.top;
+  const point = dragTarget === 'p0' ? p0 : dragTarget === 'p1' ? p1 : p2;
+  point.x = e.clientX - rect.left;
+  point.y = e.clientY - rect.top;
 });
 
 canvas.addEventListener('pointerup', () => {
-  draggingPoint = null;
+  dragTarget = null;
 });
 
 draw();`;
@@ -610,14 +430,11 @@ draw();`;
 // ── Find Points on a Circle ─────────────────────────────────────────────────
 const FIND_POINTS_CIRCLE_HTML = `<canvas id="canvas"></canvas>
 <div id="controls">
-  <label>points: <input type="range" id="points" min="5" max="100" step="5" value="20"></label>
+  <label>progress: <input type="range" id="progress" min="0" max="100" step="1" value="0"></label>
 </div>`;
-const FIND_POINTS_CIRCLE_JS = `${DistributeAroundCircle.keyFunction.toString()}
+const FIND_POINTS_CIRCLE_JS = `${findPointAroundCircle.toString()}
 
-// ─── cosWave helper ─────────────────────────────────────────────────────────
-function cosWave(s, d, sp) {
-  return s + Math.cos(Date.now() * sp) * d;
-}
+${drawMoveItemAroundCircle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -627,72 +444,26 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let numPoints = 20;
+let i = 0;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-
-  // Oscillating circle radius
-  let radius = cosWave(100, 100, 0.001);
-
-  // Draw circle
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Get points around circle
-  let points = DistributeAroundCircle({ x: cx, y: cy }, radius, numPoints);
-
-  // Draw lines from center to each point
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-  ctx.lineWidth = 1;
-  points.forEach((pt) => {
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(pt.x, pt.y);
-    ctx.stroke();
-  });
-
+  drawMoveItemAroundCircle(ctx, canvas.width / 2, canvas.height / 2, canvas.width, canvas.height, i);
+  i += 0.5;
+  if (i > 100) i = 0;
   requestAnimationFrame(draw);
 }
 
-document.getElementById('points').addEventListener('input', e => {
-  numPoints = parseInt(e.target.value);
+document.getElementById('progress').addEventListener('input', e => {
+  i = parseInt(e.target.value);
 });
 
 draw();`;
 
 // ── Move Object to Changing Point ───────────────────────────────────────────
 const MOVE_TO_DESTINATION_HTML = `<canvas id="canvas"></canvas>`;
-const MOVE_TO_DESTINATION_JS = `// ─── moveToward function ───────────────────────────────────────────────────
-function moveToward(obj, dest, speed) {
-  let dx = dest.x - obj.x, dy = dest.y - obj.y;
-  let dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist > speed) { obj.x += (dx / dist) * speed; obj.y += (dy / dist) * speed; }
-  else { obj.x = dest.x; obj.y = dest.y; }
-  return Math.atan2(dy, dx);
-}
-
-// ─── drawArrow helper ───────────────────────────────────────────────────────
-function drawArrow(ctx, x, y, angle, size, color) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(size, 0);
-  ctx.lineTo(-size, size * 0.6);
-  ctx.lineTo(-size * 0.3, 0);
-  ctx.lineTo(-size, -size * 0.6);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-}
+const MOVE_TO_DESTINATION_JS = `${moveAlongLine.toString()}
+${getRotation.keyFunction.toString()}
+${drawMoveToDestination.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -702,51 +473,42 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let obj = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
-let dest = { x: 0, y: 0 };
+let dot = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
+let dotNew = { x: canvas.width * 0.7, y: canvas.height * 0.5 };
+let arrowPoint = { x: canvas.width * 0.5 - 50, y: canvas.height * 0.5 - 25 };
+let ratio = 0;
+const img = new Image();
+
+function chooseDestination() {
+  ratio = 0;
+  dotNew = {
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height
+  };
+}
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  dest.x = canvas.width / 2 + Math.sin(Date.now() * 0.0005) * 150;
-  dest.y = canvas.height / 2 + Math.cos(Date.now() * 0.0003) * 100;
-
-  const angle = moveToward(obj, dest, 2);
-
-  // Draw moving target (green)
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(dest.x, dest.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw arrow pointing toward target
-  drawArrow(ctx, obj.x, obj.y, angle, 12, '#f97316');
-
+  drawMoveToDestination(ctx, canvas, dot, dotNew, arrowPoint, ratio, img);
+  ratio += 0.0001;
   requestAnimationFrame(draw);
 }
 
-draw();`;
+img.addEventListener('load', () => {
+  chooseDestination();
+  setInterval(chooseDestination, 2000);
+  draw();
+});
+img.src = '/bmps/arrow.png';`;
 
 // ── Point Object Towards Another ────────────────────────────────────────────
 const POINT_TOWARDS_HTML = `<canvas id="canvas"></canvas>`;
 const POINT_TOWARDS_JS = `${getRotation.keyFunction.toString()}
-
-// ─── drawArrow helper ───────────────────────────────────────────────────────
-function drawArrow(ctx, x, y, angle, size, color) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(size, 0);
-  ctx.lineTo(-size, size * 0.6);
-  ctx.lineTo(-size * 0.3, 0);
-  ctx.lineTo(-size, -size * 0.6);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+function pointsAroundCircle(circleCenter, i, radius, numElements) {
+  const x = circleCenter.x + radius * Math.cos((2 * Math.PI * i) / numElements);
+  const y = circleCenter.y + radius * Math.sin((2 * Math.PI * i) / numElements);
+  return { x, y };
 }
+${drawPointTowards.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -756,57 +518,18 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let pointer = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
-let target = { x: 0, y: 0 };
+let i = 0;
+const img = new Image();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Orbiting target
-  let t = Date.now() * 0.001;
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  for (let i = 0; i < 360; i += 6) {
-    const angle = i * Math.PI / 180;
-    target.x = cx + Math.cos(angle) * 200;
-    target.y = cy + Math.sin(angle) * 200;
-  }
-  target.x = cx + Math.cos(t) * 200;
-  target.y = cy + Math.sin(t) * 200;
-
-  // Draw circle
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 200, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Draw target point
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(target.x, target.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw crosshair at center
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(cx - 20, cy);
-  ctx.lineTo(cx + 20, cy);
-  ctx.moveTo(cx, cy - 20);
-  ctx.lineTo(cx, cy + 20);
-  ctx.stroke();
-
-  // Get rotation toward target
-  const angle = getRotation(pointer, target);
-
-  // Draw arrow pointing toward target
-  drawArrow(ctx, pointer.x, pointer.y, angle, 12, '#f97316');
-
+  drawPointTowards(ctx, canvas.width, canvas.height, i, img);
+  i += 0.5;
+  if (i > 360) i = 0;
   requestAnimationFrame(draw);
 }
 
-draw();`;
+img.addEventListener('load', draw);
+img.src = '/bmps/arrow.png';`;
 
 // ── Sine Curve ──────────────────────────────────────────────────────────────
 const SINE_CURVE_HTML = `<canvas id="canvas"></canvas><div id="controls">
@@ -815,6 +538,8 @@ const SINE_CURVE_HTML = `<canvas id="canvas"></canvas><div id="controls">
   <label>speed: <input type="range" id="speed" min="0.0005" max="0.05" step="0.005" value="0.005"></label>
 </div>`;
 const SINE_CURVE_JS = `${sineCurve.toString()}
+
+${drawSineCurve.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -829,36 +554,7 @@ let differential = 200;
 let speed = 0.005;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-
-  // Green axes
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, cy);
-  ctx.lineTo(canvas.width, cy);
-  ctx.moveTo(cx, 0);
-  ctx.lineTo(cx, canvas.height);
-  ctx.stroke();
-
-  // Green circle
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 200, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Small green circle oscillating on y-axis
-  let value = sineCurve(startValue, differential, speed, performance.now());
-  let oscY = cy + value - 100;
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(cx, oscY, 20, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawSineCurve(ctx, canvas.width, canvas.height, startValue, differential, speed);
   requestAnimationFrame(draw);
 }
 
@@ -2741,10 +2437,13 @@ export const EXAMPLE_PENS: ExamplePen[] = [
       title: "Get Point on Line",
       description:
         "Linearly interpolate between two points: p = p1 + t*(p2-p1).",
-      html: `<canvas id="canvas"></canvas><div id="controls"><label>t: <input type="range" id="t" min="0" max="100" step="1" value="50"></label></div>`,
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>t: <input type="range" id="t" min="-40" max="140" step="1" value="50"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${getPointOnLine.toString()}
+const GetPointOnLineFunc = getPointOnLine;
+
+${drawGetPointOnLine.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2755,40 +2454,11 @@ resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
 let t = 0.5;
+let startPoint = {x: canvas.width * 0.2, y: canvas.height * 0.7};
+let endPoint = {x: canvas.width * 0.8, y: canvas.height * 0.3};
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let p1 = {x: canvas.width * 0.2, y: canvas.height * 0.5};
-  let p2 = {x: canvas.width * 0.8, y: canvas.height * 0.5};
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  let pt = getPointOnLine(p1, p2, t);
-
-  ctx.fillStyle = '#c7d2fe';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.font = '12px monospace';
-  ctx.fillStyle = '#d8e2ff';
-  ctx.textAlign = 'left';
-  ctx.fillText('t: ' + t.toFixed(2), 20, 30);
-
+  drawGetPointOnLine(ctx, startPoint, endPoint, t);
   requestAnimationFrame(draw);
 }
 
@@ -3151,15 +2821,14 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>points: <input type="range" id="points" min="3" max="100" step="5" value="20"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-// Return n points evenly distributed on a circle
-function distributeAroundCircle(center, radius, numPoints) {
-  let points = [];
-  for (let i = 0; i < numPoints; i++) {
-    let angle = (i / numPoints) * Math.PI * 2;
-    points.push({x: center.x + radius * Math.cos(angle), y: center.y + radius * Math.sin(angle)});
-  }
-  return points;
+${DistributeAroundCircle.keyFunction.toString()}
+
+function cosWave(startValue, differential, speed) {
+  const currentDate = new Date();
+  return startValue + Math.cos(currentDate.getTime() * speed) * differential;
 }
+
+${drawDistributeAroundCircle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -3171,52 +2840,8 @@ resize();
 // ─── state ───────────────────────────────────────────────────────────────────
 let totalItems = 20;
 
-// Cosine wave for animating radius
-function cosWave(startValue, differential, speed) {
-  const currentDate = new Date();
-  return startValue + Math.cos(currentDate.getTime() * speed) * differential;
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let halfWidth = canvas.width / 2;
-  let halfHeight = canvas.height / 2;
-
-  // Animate the radius using cosine wave
-  let radius = cosWave(100, 100, 0.001);
-
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(halfWidth, 0);
-  ctx.lineTo(halfWidth, canvas.height);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(halfWidth, halfHeight, radius, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  let points = distributeAroundCircle(
-    { x: halfWidth, y: halfHeight },
-    radius,
-    totalItems
-  );
-
-  points.forEach((point) => {
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(halfWidth, halfHeight);
-    ctx.lineTo(point.x, point.y);
-    ctx.stroke();
-  });
-
+  drawDistributeAroundCircle(ctx, canvas.width, canvas.height, totalItems);
   requestAnimationFrame(draw);
 }
 
@@ -3240,7 +2865,17 @@ draw();`,
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${distance.toString()}
+${lineLength.toString()}
+const LineLengthFunc = lineLength;
+
+function getHypAngle(originPoint, destinationPoint) {
+  return Math.atan2(
+    destinationPoint.y - originPoint.y,
+    destinationPoint.x - originPoint.x
+  );
+}
+
+${drawLineLength.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -3250,34 +2885,11 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   let t = Date.now() * 0.001;
-  let p1 = {x: canvas.width * 0.3, y: canvas.height / 2};
-  let p2 = {x: canvas.width * 0.7 + Math.sin(t) * 100, y: canvas.height / 2 + Math.cos(t) * 80};
+  let startPoint = {x: canvas.width * 0.3, y: canvas.height / 2};
+  let endPoint = {x: canvas.width * 0.7 + Math.sin(t) * 100, y: canvas.height / 2 + Math.cos(t) * 80};
 
-  let dist = distance(p1, p2);
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 10, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 10, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.font = 'bold 16px monospace';
-  ctx.fillStyle = '#d8e2ff';
-  ctx.textAlign = 'center';
-  ctx.fillText('distance: ' + dist.toFixed(0), canvas.width / 2, 40);
-
+  drawLineLength(ctx, startPoint, endPoint, canvas.width, canvas.height);
   requestAnimationFrame(draw);
 }
 
