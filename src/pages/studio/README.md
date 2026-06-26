@@ -27,6 +27,7 @@ As of 2026-06-26, these example-derived pens are canonicalized and enforced:
 - `color-lerp`
 - `distribute-around-circle`
 - `easing-functions`
+- `draw-rectangle`
 - `draw-star`
 - `find-points-on-a-circle`
 - `get-a-point-on-a-line`
@@ -50,7 +51,6 @@ Good next candidates already have exported standalone draw helpers in
 `src/core-animations`, but are not yet in `CANONICAL_DRAW_PEN_KEYS`:
 
 - `circle-from-three-points`
-- `draw-rectangle`
 - `equilateral-trianlge-points` (slug has the existing typo)
 - `get-triangle-data-from-line`
 - `point-to-circle-collision`

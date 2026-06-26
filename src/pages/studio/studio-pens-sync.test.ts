@@ -42,6 +42,7 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "color-lerp",
   "distribute-around-circle",
   "easing-functions",
+  "draw-rectangle",
   "draw-star",
   "find-points-on-a-circle",
   "get-a-point-on-a-line",

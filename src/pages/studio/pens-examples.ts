@@ -86,6 +86,7 @@ import { drawOrbitalMotion } from "../../core-animations/OrbitalMotion";
 import { drawMoveItemAroundCircle } from "../../core-animations/MoveItemAroundCircle";
 import { drawGetPointOnLine } from "../../core-animations/GetPointOnLine";
 import { drawLineLength } from "../../core-animations/LineLength";
+import { drawPolygon } from "../../core-animations/Polygon";
 import { drawStar } from "../../core-animations/Star";
 
 export interface ExamplePen {
@@ -2607,6 +2608,9 @@ draw();`,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${createRect.toString()}
 
+// ─── the drawing helper from the /examples animation ────────────────────────
+${drawPolygon.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -2625,20 +2629,7 @@ function draw() {
   let angle = rotation * Math.PI / 180;
 
   let rect = createRect(200, 100, angle);
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.beginPath();
-  ctx.moveTo(rect.vertices[0].x, rect.vertices[0].y);
-  for (let i = 1; i < rect.vertices.length; i++) {
-    ctx.lineTo(rect.vertices[i].x, rect.vertices[i].y);
-  }
-  ctx.closePath();
-  ctx.fillStyle = '#818cf8';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.restore();
+  drawPolygon(ctx, rect, cx, cy);
 
   requestAnimationFrame(draw);
 }
