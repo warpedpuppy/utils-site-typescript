@@ -37,21 +37,27 @@ class CirceToRectAnimation extends AnimationBaseClass {
     let { x, y } = this.makePointMove();
     this.rect = RectangleObject.keyFunction(100, 100, 0, {
       rotate: true,
-      rotateSpeed: 1000,
+      rotateSpeed: 2000,
+      time: performance.now(),
+    });
+    // Translate the rectangle to its on-screen position BEFORE testing the
+    // collision — otherwise the hit-test runs on the origin-centered rect while
+    // the circle sits at canvas center, so they never register as touching.
+    this.rect.vertices.forEach((v: Point) => {
+      v.x += x;
+      v.y += y;
     });
 
     const hit = polygonCircle.keyFunction(this.rect, this.circle);
 
-    this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
     this.ctx.beginPath();
     this.ctx.arc(this.circle.x, this.circle.y, this.circle.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
-    this.ctx.fillStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
     this.ctx.beginPath();
     this.rect.vertices.forEach((rect: Point, i: number) => {
-      rect.x += x;
-      rect.y += y;
       if (i === 0) {
         this.ctx?.moveTo(rect.x, rect.y);
       } else {
@@ -62,15 +68,14 @@ class CirceToRectAnimation extends AnimationBaseClass {
     this.ctx.fill();
 
     if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
+      this.ctx.save();
+      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
+      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+      this.ctx.shadowBlur = 14;
+      this.ctx.fillStyle = "#cdd3ff";
+      this.ctx.fillText("collision detected", this.halfWidth, 40);
+      this.ctx.restore();
     }
 
     this.raf(this.draw);

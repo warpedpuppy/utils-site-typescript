@@ -31,11 +31,13 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
 
     this.star1 = StarObject.keyFunction(5, 50, 25, 0, {
       rotate: true,
-      rotateSpeed: 500,
+      rotateSpeed: 2000,
+      time: performance.now(),
     });
     this.star2 = StarObject.keyFunction(9, 150, 25, 0, {
       rotate: true,
-      rotateSpeed: 2000,
+      rotateSpeed: 2800,
+      time: performance.now(),
     });
 
     this.ctx.fillStyle = "#1e1b4b";
@@ -56,7 +58,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     const hit = polygonPolygon.keyFunction({ vertices: vertices1 }, { vertices: vertices2 });
 
     // large center star
-    this.ctx.fillStyle = hit ? "#22d3ee" : "#facc15";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
     this.ctx.beginPath();
     vertices1.forEach((pt, i) => {
       if (i === 0) this.ctx?.moveTo(pt.x, pt.y);
@@ -66,7 +68,7 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     this.ctx.fill();
 
     // small moving star
-    this.ctx.fillStyle = hit ? "#ef4444" : "#fb923c";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
     this.ctx.beginPath();
     vertices2.forEach((pt, i) => {
       if (i === 0) this.ctx?.moveTo(pt.x, pt.y);
@@ -76,15 +78,14 @@ class PolygonToPolygonCollision extends AnimationBaseClass {
     this.ctx.fill();
 
     if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
+      this.ctx.save();
+      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
+      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+      this.ctx.shadowBlur = 14;
+      this.ctx.fillStyle = "#cdd3ff";
+      this.ctx.fillText("collision detected", this.halfWidth, 40);
+      this.ctx.restore();
     }
 
     this.raf(this.draw);

@@ -31,12 +31,15 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
     this.ctx.lineWidth = 3;
-    this.ctx.strokeStyle = "rgba(255,255,255,0.85)";
 
     const hit = LinePolygon.keyFunction(this.rect, this.line);
-    this.ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
 
-    this.rect = RectangleObject.keyFunction(100, 100, 0, false);
+    this.rect = RectangleObject.keyFunction(100, 100, 0, {
+      rotate: true,
+      rotateSpeed: 2000,
+      time: performance.now(),
+    });
     this.ctx.beginPath();
     this.rect.vertices.forEach((rect: Point, i: number) => {
       rect.x += this.halfWidth;
@@ -63,21 +66,21 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.line.startPoint = { x: x1, y: y1 };
     this.line.endPoint = { x: x2, y: y2 };
 
+    this.ctx.strokeStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
     this.ctx.beginPath();
     this.ctx.moveTo(this.line.startPoint.x, this.line.startPoint.y);
     this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
     this.ctx.stroke();
 
     if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
+      this.ctx.save();
+      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
+      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+      this.ctx.shadowBlur = 14;
+      this.ctx.fillStyle = "#cdd3ff";
+      this.ctx.fillText("collision detected", this.halfWidth, 40);
+      this.ctx.restore();
     }
 
     this.raf(this.draw);

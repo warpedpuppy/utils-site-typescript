@@ -19,27 +19,26 @@ export function drawPointToCircle(
   const y = sineCurve.keyFunction(halfHeight, 200, 0.001, performance.now());
 
   const hit = pointCircle.keyFunction({ x, y }, circle);
-  ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
+  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
 
   ctx.beginPath();
   ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
   ctx.fill();
 
   ctx.beginPath();
-  ctx.fillStyle = "#f97316";
+  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
   ctx.arc(x, y, 5, 0, 2 * Math.PI);
   ctx.fill();
 
   if (hit) {
-    ctx.font = "bold 26px 'Courier New', monospace";
+    ctx.save();
+    ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
     ctx.textAlign = "center";
-    ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-    ctx.fillText("[ COLLISION DETECTED ]", halfWidth + 3, 43);
-    ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-    ctx.fillText("[ COLLISION DETECTED ]", halfWidth - 3, 37);
-    ctx.fillStyle = "#e0f7ff";
-    ctx.fillText("[ COLLISION DETECTED ]", halfWidth, 40);
-    ctx.textAlign = "left";
+    ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = "#cdd3ff";
+    ctx.fillText("collision detected", halfWidth, 40);
+    ctx.restore();
   }
 }
 
@@ -69,27 +68,26 @@ function drawPointToCircle(ctx, canvasWidth, canvasHeight, time) {
   const y = sineCurve(halfHeight, 200, 0.001, time);
 
   const hit = pointCircle({ x, y }, circle);
-  ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
+  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
 
   ctx.beginPath();
   ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
   ctx.fill();
 
   ctx.beginPath();
-  ctx.fillStyle = "#f97316";
+  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
   ctx.arc(x, y, 5, 0, 2 * Math.PI);
   ctx.fill();
 
   if (hit) {
-    ctx.font = "bold 26px 'Courier New', monospace";
+    ctx.save();
+    ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
     ctx.textAlign = "center";
-    ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-    ctx.fillText("[ COLLISION DETECTED ]", halfWidth + 3, 43);
-    ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-    ctx.fillText("[ COLLISION DETECTED ]", halfWidth - 3, 37);
-    ctx.fillStyle = "#e0f7ff";
-    ctx.fillText("[ COLLISION DETECTED ]", halfWidth, 40);
-    ctx.textAlign = "left";
+    ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = "#cdd3ff";
+    ctx.fillText("collision detected", halfWidth, 40);
+    ctx.restore();
   }
 }`;
 
@@ -124,7 +122,7 @@ class PointToCircleCollision extends AnimationBaseClass {
     let { x, y } = this.makePointMove();
 
     const hit = pointCircle.keyFunction({ x, y }, this.circle2);
-    this.ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
 
     this.ctx.beginPath();
     this.ctx.arc(
@@ -137,20 +135,19 @@ class PointToCircleCollision extends AnimationBaseClass {
     this.ctx.fill();
 
     this.ctx.beginPath();
-    this.ctx.fillStyle = "#f97316"; /* bright dot so user can see the moving point */
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8"; /* indigo dot at rest, pink pulse on collision */
     this.ctx.arc(x, y, this.circle1.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
     if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
+      this.ctx.save();
+      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
+      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+      this.ctx.shadowBlur = 14;
+      this.ctx.fillStyle = "#cdd3ff";
+      this.ctx.fillText("collision detected", this.halfWidth, 40);
+      this.ctx.restore();
     }
 
     this.raf(this.draw);

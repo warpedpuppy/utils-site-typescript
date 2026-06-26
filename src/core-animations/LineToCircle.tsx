@@ -44,12 +44,12 @@ class LineToCircleCollision extends AnimationBaseClass {
 
     const hit = lineCircle.keyFunction(this.line, this.circle);
 
-    this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
     this.ctx.beginPath();
     this.ctx.arc(this.circle.x, this.circle.y, this.circle.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
-    this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
+    this.ctx.strokeStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
     this.ctx.lineWidth = 3;
     this.ctx.beginPath();
     this.ctx.moveTo(x1, y1);
@@ -62,15 +62,14 @@ class LineToCircleCollision extends AnimationBaseClass {
       this.rotate = 0;
     }
     if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
+      this.ctx.save();
+      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
+      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+      this.ctx.shadowBlur = 14;
+      this.ctx.fillStyle = "#cdd3ff";
+      this.ctx.fillText("collision detected", this.halfWidth, 40);
+      this.ctx.restore();
     }
 
     this.raf(this.draw);
