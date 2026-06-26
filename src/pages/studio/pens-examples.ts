@@ -86,6 +86,7 @@ import { drawOrbitalMotion } from "../../core-animations/OrbitalMotion";
 import { drawMoveItemAroundCircle } from "../../core-animations/MoveItemAroundCircle";
 import { drawGetPointOnLine } from "../../core-animations/GetPointOnLine";
 import { drawLineLength } from "../../core-animations/LineLength";
+import { drawStar } from "../../core-animations/Star";
 
 export interface ExamplePen {
   group: string;
@@ -2554,6 +2555,8 @@ draw();`,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${starVertices.toString()}
 
+${drawStar.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -2576,17 +2579,7 @@ function draw() {
   ctx.rotate(t);
 
   let star = starVertices(numPoints, 40, 100, 0);
-  ctx.beginPath();
-  ctx.moveTo(star.vertices[0].x, star.vertices[0].y);
-  for (let i = 1; i < star.vertices.length; i++) {
-    ctx.lineTo(star.vertices[i].x, star.vertices[i].y);
-  }
-  ctx.closePath();
-  ctx.fillStyle = '#818cf8';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  drawStar(ctx, star, 0, 0);
 
   ctx.restore();
 
