@@ -57,6 +57,16 @@
     "example": "wrapAngle(3 * Math.PI); // => ~3.14159 (π)"
   },
   {
+    "name": "criticalDamping",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(stiffness: number, mass?: number) => number",
+    "description": "The damping coefficient that makes {@link springValue} *critically* damped — the\nfastest approach to the target with no overshoot — for a given `stiffness` and `mass`.\n\nCritical damping is `c = 2·√(k·m)`. Pass less to {@link springValue}'s `damping` for\nbounce (underdamped), more for a sluggish crawl (overdamped). With the default\nstiffness of 170 this is `≈ 26`, which is why 26 is the default damping.",
+    "params": [],
+    "returns": "",
+    "example": "criticalDamping(170); // => ~26.08"
+  },
+  {
     "name": "delay",
     "kind": "function",
     "module": "Animate",

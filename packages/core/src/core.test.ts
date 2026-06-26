@@ -81,6 +81,8 @@ import {
   wrapAngle,
   shortestAngleBetween,
   lerpAngle,
+  // physics (Tier G — damped harmonic spring)
+  criticalDamping,
   // color (Tier C)
   rgbToHsl,
   hslToRgb,
@@ -766,6 +768,37 @@ describe("Tier A scalar helpers", () => {
     expect(lerpAngle(0, Math.PI / 2, 0)).toBeCloseTo(0);
     expect(lerpAngle(0, Math.PI / 2, 1)).toBeCloseTo(Math.PI / 2);
     expect(lerpAngle(0, Math.PI / 2, 0.5)).toBeCloseTo(Math.PI / 4);
+  });
+});
+
+describe("criticalDamping (Tier G — pairs with springValue)", () => {
+  // run springValue to rest and report whether it overshot the target on the way
+  const settle = (damping: number, steps = 600) => {
+    let s = { value: 0, velocity: 0 };
+    let overshot = false;
+    for (let i = 0; i < steps; i++) {
+      s = springValue(s, 100, { stiffness: 170, damping });
+      if (s.value > 100.001) overshot = true;
+    }
+    return { final: s, overshot };
+  };
+
+  it("criticalDamping = 2·√(k·m)", () => {
+    expect(criticalDamping(170)).toBeCloseTo(2 * Math.sqrt(170));
+    expect(criticalDamping(100, 4)).toBeCloseTo(2 * Math.sqrt(400));
+  });
+
+  it("damping below critical overshoots; at/above critical does not", () => {
+    const crit = criticalDamping(170); // ~26
+    expect(settle(crit * 0.25).overshot).toBe(true);
+    expect(settle(crit).overshot).toBe(false);
+    expect(settle(crit * 3).overshot).toBe(false);
+  });
+
+  it("a critically-damped spring still converges to the target", () => {
+    const { final } = settle(criticalDamping(170));
+    expect(final.value).toBeCloseTo(100, 1);
+    expect(final.velocity).toBeCloseTo(0, 2);
   });
 });
 

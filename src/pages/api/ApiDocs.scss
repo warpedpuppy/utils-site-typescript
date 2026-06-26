@@ -149,6 +149,9 @@
   display: flex;
   align-items: center;
   border: 0;
+  // Square off the inherited global `button { border-radius: 8px }` so the
+  // active-tab underline is a straight line, not curled up at both ends.
+  border-radius: 0;
   background: transparent;
   color: var(--text-muted);
   padding: 0 4px;
