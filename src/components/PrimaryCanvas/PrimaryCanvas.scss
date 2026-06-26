@@ -88,16 +88,21 @@
         height: 100%;
         display: block;
       }
+    }
 
-      .primary-canvas-loading {
-        display: grid;
-        place-items: center;
-        width: 100%;
-        height: 100%;
-        color: var(--text-muted);
-        font-family: "Space Mono", monospace;
-        font-size: 0.85rem;
-      }
+    /* Loading overlay lives here (a sibling of the canvas container), not
+       inside it — the canvas container is owned imperatively by the animation
+       class, so React must not render children into it. */
+    .primary-canvas-loading {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+      font-family: "Space Mono", monospace;
+      font-size: 0.85rem;
+      pointer-events: none;
     }
   }
 }

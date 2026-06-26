@@ -1,7 +1,42 @@
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import coreApi from "./core-api.json";
+import MiniDemo, { MiniDemoProps } from "../../components/MiniDemo/MiniDemo";
+import { pingPong } from "@utilspalooza/core/PingPong";
+import { SCALAR_TRANSFORM_DEMOS } from "../../components/MiniDemo/scalarTransforms";
 import "./ApiDocs.scss";
+
+// ── Mini-demos ───────────────────────────────────────────────────────────────
+// Docs-altitude visuals for the scalar primitives: a core function name → the
+// live two-pane demo that shows what it actually does. The SAME drawing + (for
+// transforms) the SAME input sweep back the /examples animation, so the two
+// pages cannot drift (CLAUDE.md, "Docs are friendly, visual, and ELI5").
+//
+// pingPong is a generator (one number, `fn` path); the rest are transforms keyed
+// by their core export name, driven by the shared SCALAR_TRANSFORM_DEMOS registry
+// (input → output via the `sample` path).
+const TRANSFORM_FN_NAMES: Record<string, string> = {
+  lerp: "lerp",
+  "inverse-lerp": "inverseLerp",
+  "map-range": "mapRange",
+  clamp: "clamp",
+  wrap: "wrap",
+  smoothstep: "smoothstep",
+};
+
+const MINI_DEMOS: Record<string, MiniDemoProps> = {
+  pingPong: { fn: pingPong, length: 100, label: "pingPong(t, 100)" },
+};
+
+for (const demo of SCALAR_TRANSFORM_DEMOS) {
+  MINI_DEMOS[TRANSFORM_FN_NAMES[demo.slug]] = {
+    sample: demo.sample,
+    length: demo.length,
+    label: demo.label,
+    inputMin: demo.inputMin,
+    inputMax: demo.inputMax,
+  };
+}
 
 interface ApiEntry {
   name: string;
@@ -32,36 +67,131 @@ function groupByModule(entries: ApiEntry[]): [string, ApiEntry[]][] {
   return [...groups.entries()];
 }
 
-const coreGroups = [
+// ── Teaching map ────────────────────────────────────────────────────────────
+// The ONLY hand-maintained part of the Overview: which source modules belong to
+// which "concept" a learner would recognise, and one sentence on what the
+// concept teaches. Everything else below is derived from core-api.json, so
+// adding a function to the library makes it appear here automatically — a new
+// module nobody has slotted yet falls into the "More core math" catch-all rather
+// than vanishing. Order is pedagogical: foundations first, systems last.
+const CONCEPTS: { title: string; blurb: string; modules: string[] }[] = [
   {
-    title: "Core Math",
-    imports: `import { lerp, clamp, mapRange, pingPong } from "@utilspalooza/core";`,
-    body:
-      "Small scalar helpers for turning time, input, scroll, or distance into useful animation values.",
-    items: ["lerp", "inverseLerp", "mapRange", "clamp", "wrap", "pingPong", "smoothstep", "smootherstep"],
+    title: "Numbers in motion",
+    blurb:
+      "The scalar building blocks: turn time, input, or distance into a usable value. Almost every animation downstream is just these, repeated.",
+    modules: ["Lerp", "InverseLerp", "MapRange", "Clamp", "Wrap", "PingPong", "Smoothstep"],
   },
   {
-    title: "Motion",
-    imports: `import { ticker, tweenObject, springValue, yoyo } from "@utilspalooza/core";`,
-    body:
-      "Tiny time-driven helpers. They sample motion; they do not own your rendering layer.",
-    items: ["ticker", "tweenValue", "tweenObject", "tweenFrame", "springValue", "loop", "yoyo", "delay", "stagger"],
+    title: "Easing & tweening",
+    blurb:
+      "Why motion feels alive instead of robotic. The curves that shape acceleration, plus tiny time-driven helpers that sample them — they move values, never your render layer.",
+    modules: ["Easing", "Animate"],
   },
   {
-    title: "Geometry And Collision",
-    imports: `import { distance, circleToRect, vecReflect } from "@utilspalooza/core";`,
-    body:
-      "Pure functions for points, lines, rectangles, circles, polygons, and 2D vectors.",
-    items: ["distance", "lineLength", "getPointOnLine", "circleToCircle", "circleToRect", "lineToLine", "polygonToPolygon", "vecReflect"],
+    title: "Angles & trigonometry",
+    blurb:
+      "Where sine and cosine stop being homework and become rotation, orbits, and waves. Degrees, radians, and the unit circle, made visible.",
+    modules: [
+      "AngleInterpolation", "DegToRad", "RadToDeg", "UnitCirclePoint",
+      "GetRotation", "SineCurve", "SineWave", "WaveAmplitude", "DFT",
+    ],
   },
   {
-    title: "Legacy",
-    imports: `import { centerOnStage, legacyCosWave } from "@utilspalooza/core/legacy";`,
-    body:
-      "Older migration helpers are deliberately isolated so the root API stays curated.",
-    items: ["centerOnStage", "distanceAndAngle", "legacyCosWave", "randomHex", "shuffle", "lineIntersectCircle"],
+    title: "Vectors",
+    blurb:
+      "How anything that moves knows where it is going. Add, scale, rotate, reflect, normalize — the grammar of position and velocity in 2D.",
+    modules: ["Vec2"],
+  },
+  {
+    title: "Points, lines & curves",
+    blurb:
+      "The geometry under shapes and paths: distances, points along a line, triangle math, Bézier curves, and placing things evenly around a circle.",
+    modules: [
+      "Distance", "LineLength", "GetPointOnLine", "MoveAlongLine", "MoveToward",
+      "GetTriangleData", "CircleFromThreePoints", "FindPointAroundCircle",
+      "DistributeAroundCircle", "EquilateralTriangle", "Rectangle", "Star",
+      "QuadraticBezier", "BezierCurve",
+    ],
+  },
+  {
+    title: "Collision detection",
+    blurb:
+      "The question every game asks: are these two things touching? Circles, rectangles, lines, points, and polygons, in every combination.",
+    modules: [
+      "CircleToCircle", "CircleToRect", "LineToCircle", "LineToLine",
+      "LineToPoint", "LineToRect", "PointToCircle", "PointToRect",
+      "PolygonToPolygon", "RectToRect",
+      "CollisionObjectAPI/CircleCircle", "CollisionObjectAPI/LineCircle",
+      "CollisionObjectAPI/LineLine", "CollisionObjectAPI/LinePoint",
+      "CollisionObjectAPI/PointCircle", "CollisionObjectAPI/PolygonCircle",
+      "CollisionObjectAPI/PolygonLine", "CollisionObjectAPI/PolygonPoint",
+      "CollisionObjectAPI/PolygonPolygon",
+    ],
+  },
+  {
+    title: "Color",
+    blurb:
+      "Color as math you can interpolate. Convert between RGB and HSL, blend two colors, and build palettes that actually go together.",
+    modules: ["Color", "GetRandomColors"],
+  },
+  {
+    title: "Physics & systems",
+    blurb:
+      "Where simple rules produce complex, lifelike behavior: bouncing, orbits, flocking, gravity, lensing, and cellular automata.",
+    modules: [
+      "Boids", "BallBounce", "BallToBallBounce", "OrbitalMotion",
+      "GameOfLife", "GRStep", "LensDeflection", "SphereLighting",
+    ],
+  },
+  {
+    title: "Helpers",
+    blurb:
+      "The small conveniences every demo needs and nobody wants to rewrite: random numbers, number formatting, centering on a parent.",
+    modules: ["RandomIntegerBetween", "RandomNumberBetween", "NumberWithCommas", "CenterOnParent"],
+  },
+  {
+    title: "Core types",
+    blurb:
+      "The shared shapes — Point, Circle, Line, Polygon, Vector — that the whole library speaks in.",
+    modules: ["types"],
   },
 ];
+
+const CATCH_ALL = {
+  title: "More core math",
+  blurb: "Recently added to the package and not yet slotted into a concept above.",
+};
+
+// Build concept groups straight from the generated docs data. Each concept lists
+// every export whose source module it claims; anything unclaimed is collected
+// into the catch-all so nothing the package exports is ever hidden here.
+function buildConceptGroups(): { title: string; blurb: string; items: ApiEntry[] }[] {
+  const moduleToConcept = new Map<string, number>();
+  CONCEPTS.forEach((concept, i) => {
+    for (const mod of concept.modules) moduleToConcept.set(mod, i);
+  });
+
+  const buckets: ApiEntry[][] = CONCEPTS.map(() => []);
+  const leftovers: ApiEntry[] = [];
+  for (const entry of apiEntries) {
+    const i = moduleToConcept.get(entry.module);
+    if (i === undefined) leftovers.push(entry);
+    else buckets[i].push(entry);
+  }
+
+  const groups = CONCEPTS.map((concept, i) => ({
+    title: concept.title,
+    blurb: concept.blurb,
+    items: buckets[i],
+  })).filter((g) => g.items.length > 0);
+
+  if (leftovers.length > 0) {
+    groups.push({ ...CATCH_ALL, items: leftovers });
+  }
+  return groups;
+}
+
+const conceptGroups = buildConceptGroups();
 
 const effects = [
   {
@@ -86,22 +216,36 @@ const effects = [
   },
 ];
 
-function Overview() {
+function Overview({ onPick }: { onPick: (name: string) => void }) {
+  const total = apiEntries.length;
   return (
     <>
       <section className="api-docs__section">
         <div className="api-docs__section-head">
-          <h2>Core Package</h2>
-          <p>Root imports are the stable public contract.</p>
+          <h2>The math beneath the animation</h2>
+          <p>
+            {total} functions, grouped by the idea they teach — not by file. Every
+            one is a pure, typed, tested piece of the math that makes a thing move.
+            Pick a concept, then click any name to read its full signature, params,
+            and a runnable example.
+          </p>
         </div>
         <div className="api-docs__grid">
-          {coreGroups.map((group) => (
+          {conceptGroups.map((group) => (
             <article className="api-docs__card" key={group.title}>
               <h3>{group.title}</h3>
-              <p>{group.body}</p>
-              <pre><code>{group.imports}</code></pre>
+              <p>{group.blurb}</p>
               <div className="api-docs__chips">
-                {group.items.map((item) => <span key={item}>{item}</span>)}
+                {group.items.map((item) => (
+                  <button
+                    type="button"
+                    key={`${item.module}.${item.name}`}
+                    onClick={() => onPick(item.name)}
+                    title={`Open ${item.name} in the reference`}
+                  >
+                    {item.name}
+                  </button>
+                ))}
               </div>
             </article>
           ))}
@@ -110,8 +254,12 @@ function Overview() {
 
       <section className="api-docs__section">
         <div className="api-docs__section-head">
-          <h2>Effects Package</h2>
-          <p>These create canvases, run animation loops, and return lifecycle handles.</p>
+          <h2>From primitives to finished effects</h2>
+          <p>
+            The same math, composed into drop-in canvas pieces. Each one creates a
+            canvas, runs its own loop, and hands back a lifecycle handle — proof of
+            what the building blocks above add up to.
+          </p>
         </div>
         <pre className="api-docs__wide-code"><code>{`import { mountGlitter } from "@utilspalooza/effects";
 
@@ -139,9 +287,13 @@ effect.destroy();`}</code></pre>
   );
 }
 
-function Documentation() {
-  const [query, setQuery] = useState("");
-
+function Documentation({
+  query,
+  setQuery,
+}: {
+  query: string;
+  setQuery: (value: string) => void;
+}) {
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = q
@@ -203,6 +355,12 @@ function Documentation() {
                 }`}</code>
               </pre>
               {entry.description && <p>{cleanDoc(entry.description)}</p>}
+              {MINI_DEMOS[entry.name] && (
+                <>
+                  <p className="api-docs__demo-caption">See it move:</p>
+                  <MiniDemo {...MINI_DEMOS[entry.name]} />
+                </>
+              )}
               {entry.params.length > 0 && (
                 <dl className="api-docs__params">
                   {entry.params.map((param) => (
@@ -242,6 +400,17 @@ type TabId = (typeof TABS)[number]["id"];
 
 function ApiDocs() {
   const [tab, setTab] = useState<TabId>("overview");
+  const [query, setQuery] = useState("");
+
+  // A concept chip on the Overview jumps to the reference, pre-filtered to that
+  // export, and scrolls it into view once the Documentation tab has rendered.
+  const pickFunction = (name: string) => {
+    setQuery(name);
+    setTab("documentation");
+    requestAnimationFrame(() => {
+      document.getElementById(name)?.scrollIntoView({ block: "start" });
+    });
+  };
 
   return (
     <main className="api-docs">
@@ -255,12 +424,14 @@ function ApiDocs() {
       </Helmet>
 
       <section className="api-docs__intro">
-        <p className="api-docs__eyebrow">npm API</p>
-        <h1>Use the math directly. Mount the pretty effects deliberately.</h1>
+        <p className="api-docs__eyebrow">the library behind the lessons</p>
+        <h1>See the math that makes things move.</h1>
         <p>
-          The final npm shape should keep pure math in <code>@utilspalooza/core</code>,
-          old migration utilities in <code>@utilspalooza/core/legacy</code>, and
-          canvas site effects in <code>@utilspalooza/effects</code>.
+          Every animation on this site comes apart into small, nameable pieces of
+          math — a lerp, an easing curve, a vector reflection. This is that toolbox:
+          pure functions in <code>@utilspalooza/core</code>, the same primitives
+          composed into finished canvas effects in <code>@utilspalooza/effects</code>.
+          Read it to understand the idea, then take the code.
         </p>
       </section>
 
@@ -279,7 +450,11 @@ function ApiDocs() {
         ))}
       </nav>
 
-      {tab === "overview" ? <Overview /> : <Documentation />}
+      {tab === "overview" ? (
+        <Overview onPick={pickFunction} />
+      ) : (
+        <Documentation query={query} setQuery={setQuery} />
+      )}
     </main>
   );
 }

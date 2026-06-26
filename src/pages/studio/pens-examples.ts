@@ -29,6 +29,8 @@ import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
 import { starVertices } from "@utilspalooza/core/Star";
 import { createRect } from "@utilspalooza/core/Rectangle";
 import { drawEquilateralTriangle } from "./pen-snippets";
+import { drawEquilateralTriangle as drawEquilateralTriangleAnimation } from "../../core-animations/EquilateralTriangle";
+import { equilateralTriangle } from "@utilspalooza/core/EquilateralTriangle";
 import { circleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
 import { bezierPoint } from "@utilspalooza/core/BezierCurve";
 import { dft } from "@utilspalooza/core/DFT";
@@ -88,6 +90,10 @@ import { drawGetPointOnLine } from "../../core-animations/GetPointOnLine";
 import { drawLineLength } from "../../core-animations/LineLength";
 import { drawPolygon } from "../../core-animations/Polygon";
 import { drawStar } from "../../core-animations/Star";
+import { drawCircleFromThreePoints } from "../../core-animations/CircleFromThreePoints";
+import { drawTriangleDataFromLine } from "../../core-animations/TriangleDataFromLine";
+import { pointCircle as pointCircleFn } from "@utilspalooza/core/CollisionObjectAPI/PointCircle";
+import { drawPointToCircle } from "../../core-animations/PointToCircle";
 
 export interface ExamplePen {
   group: string;
@@ -685,8 +691,11 @@ draw();`;
 // ─────────────────────────────────────────────────────────────────────────────
 
 const POINT_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_CIRCLE_JS = `// ─── canonical draw function from core-animations ──────────────────────────
-${drawPointToCircleFunctionString}
+const POINT_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+const sineCurve = { keyFunction: ${sineCurve.toString()} };
+const pointCircle = { keyFunction: ${pointCircleFn.toString()} };
+
+${drawPointToCircle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -696,9 +705,7 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawPointToCircle(ctx, canvas.width, canvas.height, Date.now());
+  drawPointToCircle(ctx, canvas.width, canvas.height, performance.now());
   requestAnimationFrame(draw);
 }
 
@@ -2482,61 +2489,67 @@ draw();`,
       title: "Triangle Data from Line",
       description:
         "Given a line, construct a right triangle showing rise/run components.",
-      html: `<canvas id="canvas"></canvas>`,
+      html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${getTriangleData.toString()}
+${lineLength.toString()}
+
+// alias used inside calculateTriangleData
+const LineLengthFunc = lineLength;
+
+function calculateTriangleData(startPoint, endPoint) {
+  let hypotenuse = LineLengthFunc({ startPoint, endPoint });
+  let adjacent = LineLengthFunc({ startPoint, endPoint: { x: endPoint.x, y: startPoint.y } });
+  let opposite = LineLengthFunc({ startPoint: { x: endPoint.x, y: startPoint.y }, endPoint });
+  let oh = opposite / hypotenuse;
+  let angle1 = Math.asin(oh);
+  let angleInDegrees = Math.floor(angle1 * (180 / Math.PI));
+  let remainingAngle = 180 - angleInDegrees - 90;
+  return { angleInDegrees, remainingAngle, hypotenuse, adjacent, opposite };
+}
+
+function distanceBetweenPoints(startPoint, endPoint) {
+  let a = startPoint.x - endPoint.x;
+  let b = startPoint.y - endPoint.y;
+  return Math.sqrt(a * a + b * b);
+}
+
+${drawTriangleDataFromLine.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const infoDiv = document.getElementById('info');
+ctx.font = '14px monospace';
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
 
+// ─── state ───────────────────────────────────────────────────────────────────
+let startPoint = { x: canvas.width * 0.2, y: canvas.height * 0.7 };
+let endPoint = { x: canvas.width * 0.8, y: canvas.height * 0.3 };
+let dragging = false;
+
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let p1 = {x: canvas.width * 0.2, y: canvas.height * 0.7};
-  let p2 = {x: canvas.width * 0.8, y: canvas.height * 0.3};
-  let tri = getTriangleData(p1, p2);
-
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#a78bfa';
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p1.y);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#c4b5fd';
-  ctx.beginPath();
-  ctx.moveTo(p2.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.font = '12px monospace';
-  ctx.fillStyle = '#d8e2ff';
-  ctx.textAlign = 'left';
-  ctx.fillText('dx: ' + tri.dx.toFixed(0), 20, 30);
-  ctx.fillText('dy: ' + tri.dy.toFixed(0), 20, 50);
-  ctx.fillText('distance: ' + tri.distance.toFixed(0), 20, 70);
-
-  requestAnimationFrame(draw);
+  ctx.font = '14px monospace';
+  drawTriangleDataFromLine(ctx, startPoint, endPoint, infoDiv);
 }
+
+canvas.addEventListener('pointerdown', (e) => {
+  let { top, left } = canvas.getBoundingClientRect();
+  startPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  dragging = true;
+  draw();
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  let { top, left } = canvas.getBoundingClientRect();
+  endPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  draw();
+});
+
+canvas.addEventListener('pointerup', () => { dragging = false; });
 
 draw();`,
       editors: "001",
@@ -2651,10 +2664,15 @@ draw();`,
     payload: {
       title: "Equilateral Triangle",
       description: "Three vertices at 120° intervals from the top.",
-      html: `<canvas id="canvas"></canvas>`,
+      html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"><h3>Click and drag to draw triangle</h3></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${drawEquilateralTriangle.toString()}
+${equilateralTriangle.toString()}
+
+// alias used inside drawEquilateralTriangle
+const EquilateralTriangleFunc = equilateralTriangle;
+
+${drawEquilateralTriangleAnimation.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2663,23 +2681,47 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+// ─── state ───────────────────────────────────────────────────────────────────
+let backgroundTris = [];
+let angle = 0;
+let startPoint = { x: canvas.width / 2, y: canvas.height / 2 + 50 };
+let endPoint = { x: canvas.width / 2, y: canvas.height / 2 - 50 };
+let dragging = false;
 
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  let t = Date.now() * 0.001;
-  let r = 80 + Math.sin(t) * 20;
-
-  drawEquilateralTriangle(cx, cy, r);
-  ctx.fillStyle = '#818cf8';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  requestAnimationFrame(draw);
+for (let i = 0; i < 10; i++) {
+  backgroundTris.push({
+    radius: Math.random() * 100 + 50,
+    centerPoint: { x: Math.random() * canvas.width, y: Math.random() * canvas.height },
+    angle: Math.random()
+  });
 }
+
+function getAngle(from, to) {
+  return Math.atan2(to.y - from.y, to.x - from.x);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  angle = getAngle(startPoint, endPoint);
+  drawEquilateralTriangle(ctx, backgroundTris, angle, startPoint, endPoint, canvas.width, canvas.height);
+}
+
+canvas.addEventListener('pointerdown', (e) => {
+  let { top, left } = canvas.getBoundingClientRect();
+  startPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  endPoint = { x: 0, y: 0 };
+  dragging = true;
+  draw();
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  let { top, left } = canvas.getBoundingClientRect();
+  endPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  draw();
+});
+
+canvas.addEventListener('pointerup', () => { dragging = false; });
 
 draw();`,
       editors: "001",
@@ -2700,6 +2742,11 @@ draw();`,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${circleFromThreePoints.toString()}
 
+// alias used inside drawCircleFromThreePoints
+const CircleFromThreePointsFunc = circleFromThreePoints;
+
+${drawCircleFromThreePoints.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -2711,85 +2758,43 @@ resize();
 // ─── state ───────────────────────────────────────────────────────────────────
 let points = [];
 let circleQ = 0;
-let result = null;
-let drawingCircle = false;
+let text = ['<h3>Click screen three times to make three points.</h3>'];
 let interval = null;
 
-function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Show instruction
-  if (points.length === 0) {
-    infoDiv.innerHTML = '<h3>Click screen three times to make three points.</h3>';
-  } else {
-    infoDiv.innerHTML = '<p>Points clicked: ' + points.length + ' / 3</p>';
+function render() {
+  if (points.length === 3) {
+    let r = circleFromThreePoints(points[0], points[1], points[2]);
+    text[3] = '<p>radius: ' + Math.floor(r.radius) + ', center: { x: ' + Math.floor(r.center.x) + ', y: ' + Math.floor(r.center.y) + ' }</p>';
   }
-
-  // Draw the input points
-  points.forEach((point) => {
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#818cf8';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  });
-
-  // Draw the progressively-rendered circle if we have 3 points
-  if (result && points.length === 3) {
-    ctx.strokeStyle = 'green';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(result.center.x, result.center.y, result.radius, 0, circleQ);
-    ctx.stroke();
-
-    // Draw center point
-    ctx.fillStyle = '#a78bfa';
-    ctx.beginPath();
-    ctx.arc(result.center.x, result.center.y, 4, 0, 2 * Math.PI);
-    ctx.fill();
-
-    // Display radius and center data
-    infoDiv.innerHTML += '<p>radius: ' + Math.floor(result.radius) + ', center: { x: ' + Math.floor(result.center.x) + ', y: ' + Math.floor(result.center.y) + ' }</p>';
-  }
-
-  requestAnimationFrame(draw);
+  drawCircleFromThreePoints(ctx, points, text, circleQ, infoDiv);
 }
 
-function drawCircle() {
-  let degree = 1 * (Math.PI / 180);
-  circleQ += degree;
+function animateCircle() {
+  let degree = 5 * (Math.PI / 180);
+  circleQ = Math.min(circleQ + degree, Math.PI * 2);
+  render();
   if (circleQ < Math.PI * 2) {
-    interval = setTimeout(drawCircle, 10);
+    interval = setTimeout(animateCircle, 10);
   }
 }
 
-function pointerDownHandler(e) {
+canvas.addEventListener('pointerdown', (e) => {
   let { top, left } = canvas.getBoundingClientRect();
-
   if (points.length === 3) {
     points = [];
     circleQ = 0;
-    result = null;
-    drawingCircle = false;
+    text = ['<h3>Click screen three times to make three points.</h3>'];
     if (interval) clearTimeout(interval);
   }
-
-  points.push({
-    x: Math.floor(e.pageX - left),
-    y: Math.floor(e.pageY - top)
-  });
-
-  if (points.length === 3 && !drawingCircle) {
-    result = circleFromThreePoints(points[0], points[1], points[2]);
-    drawingCircle = true;
-    circleQ = 0;
-    drawCircle();
+  points.push({ x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) });
+  text[2] = '<p>' + points.map((p, i) => 'point ' + (i + 1) + ': { x:' + p.x + ', y:' + p.y + ' }').join(', ') + '</p>';
+  render();
+  if (points.length === 3) {
+    interval = setTimeout(animateCircle, 10);
   }
-}
+});
 
-canvas.addEventListener('pointerdown', pointerDownHandler);
-draw();`,
+render();`,
       editors: "001",
     },
   },
