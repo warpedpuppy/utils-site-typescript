@@ -23,19 +23,23 @@ As of 2026-06-26, these example-derived pens are canonicalized and enforced:
 - `ball-bounce`
 - `ball-orbiting-a-sun`
 - `balls-bouncing-against-each-other`
+- `circle-from-three-points`
 - `color-families`
 - `color-lerp`
 - `distribute-around-circle`
 - `easing-functions`
 - `draw-rectangle`
 - `draw-star`
+- `equilateral-trianlge-points`
 - `find-points-on-a-circle`
 - `get-a-point-on-a-line`
+- `get-triangle-data-from-line`
 - `line-length`
 - `lerp-smooth-follow`
 - `move-to-changing-point`
 - `murmuration`
 - `point-object-towards-another`
+- `point-to-circle-collision`
 - `quadratic-bezier-curve`
 - `sine-curve`
 - `spring-damped-harmonic`
@@ -47,13 +51,7 @@ When another pen is changed to embed its core `draw*` helper, add its slug to
 
 ## Remaining Work
 
-Good next candidates already have exported standalone draw helpers in
-`src/core-animations`, but are not yet in `CANONICAL_DRAW_PEN_KEYS`:
-
-- `circle-from-three-points`
-- `equilateral-trianlge-points` (slug has the existing typo)
-- `get-triangle-data-from-line`
-- `point-to-circle-collision`
+All Bucket 1 candidates (exported standalone draw helpers) are now canonicalized.
 
 `demystify-sine-cosine` is hidden Studio-only for this sync rule, even though
 the core animation slug is `demystify-sine-and-cosine`.

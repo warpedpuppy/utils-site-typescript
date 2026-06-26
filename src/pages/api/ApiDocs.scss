@@ -108,7 +108,8 @@
   gap: 7px;
   margin-top: 12px;
 
-  span {
+  span,
+  button {
     padding: 3px 7px;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -116,6 +117,18 @@
     background: rgba(255, 255, 255, 0.03);
     font-family: "Space Mono", monospace;
     font-size: 0.76rem;
+  }
+
+  button {
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--text);
+      border-color: var(--accent, #6366f1);
+      background: rgba(99, 102, 241, 0.12);
+    }
   }
 }
 
@@ -326,4 +339,12 @@
   .api-docs__section-head {
     display: block;
   }
+}
+
+.api-docs__demo-caption {
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.55;
 }

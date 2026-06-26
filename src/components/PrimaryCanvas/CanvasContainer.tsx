@@ -39,9 +39,11 @@ function CanvasContainer({
       />
       <div id="primary-canvas--content">
         <div id="primary-canvas--content--text"></div>
-        <div id="primary-canvas--content--canvas-container">
-          {isLoading && <div className="primary-canvas-loading">Loading...</div>}
-        </div>
+        {/* React must render this empty: the animation class owns its children
+            (innerHTML = "" + appendChild). Any React child here collides with
+            that imperative DOM and crashes on transition. */}
+        <div id="primary-canvas--content--canvas-container"></div>
+        {isLoading && <div className="primary-canvas-loading">Loading...</div>}
       </div>
       {showModal && (
         <Modal

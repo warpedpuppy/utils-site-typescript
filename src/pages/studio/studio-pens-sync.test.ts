@@ -33,6 +33,27 @@ for (const category of Object.values(SiteData)) {
 
 const STUDIO_ONLY_KEYS = new Set(["audio-visualizer", "demystify-sine-cosine"]);
 
+// Docs-first scalar primitives (the "numbers in motion" group). These appear on
+// /examples via the shared scalar mini-demo but intentionally have NO CodePen
+// pen — the mini-demo is never a pen source (CLAUDE.md, "Docs are friendly,
+// visual, and ELI5"). They are therefore excluded from the pen-per-animation
+// quantity and missing-pen checks below.
+const MINI_DEMO_KEYS = new Set([
+  "ping-pong",
+  "lerp",
+  "inverse-lerp",
+  "map-range",
+  "clamp",
+  "wrap",
+  "smoothstep",
+]);
+
+// Animations expected to have a matching pen: everything on /examples except the
+// docs-first scalar mini-demos.
+const pennedAnimations = exampleAnimations.filter(
+  (a) => !MINI_DEMO_KEYS.has(a.slug)
+);
+
 const CANONICAL_DRAW_PEN_KEYS = new Set([
   "angle-lerp-shortest-turn",
   "ball-bounce",
@@ -56,6 +77,10 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "spring-damped-harmonic",
   "vector-reflection",
   "vector-rotation",
+  "circle-from-three-points",
+  "equilateral-trianlge-points",
+  "get-triangle-data-from-line",
+  "point-to-circle-collision",
 ]);
 
 // ─── The Studio dropdown: example-derived pens only ─────────────────────────
@@ -71,11 +96,11 @@ const animationModules = import.meta.glob(
 
 describe("Studio pens stay in sync with the Examples page", () => {
   it("has exactly one Studio pen per Examples animation (same quantity)", () => {
-    expect(examplePenKeys.length).toBe(exampleAnimations.length);
+    expect(examplePenKeys.length).toBe(pennedAnimations.length);
   });
 
   it("every Examples animation has a pen with a matching slug, and there are no orphan pens", () => {
-    const slugs = new Set(exampleAnimations.map((a) => a.slug));
+    const slugs = new Set(pennedAnimations.map((a) => a.slug));
     const keys = new Set(examplePenKeys);
 
     const missingPens = [...slugs].filter((s) => !keys.has(s)).sort();

@@ -13,6 +13,12 @@ import { getRotation as getRotationFormula } from "./pages/createJSON/formulas/a
 import { lerp as lerpFormula } from "./pages/createJSON/formulas/animation/Lerp";
 import { lineLength as lineLengthFormula } from "./pages/createJSON/formulas/animation/LineLength";
 import { moveAlongLine as moveAlongLineFormula } from "./pages/createJSON/formulas/animation/MoveAlongLine";
+import { pingPong as pingPongFormula } from "./pages/createJSON/formulas/animation/PingPong";
+import { inverseLerp as inverseLerpFormula } from "./pages/createJSON/formulas/animation/InverseLerp";
+import { mapRange as mapRangeFormula } from "./pages/createJSON/formulas/animation/MapRange";
+import { clamp as clampFormula } from "./pages/createJSON/formulas/animation/Clamp";
+import { wrap as wrapFormula } from "./pages/createJSON/formulas/animation/Wrap";
+import { smoothstep as smoothstepFormula } from "./pages/createJSON/formulas/animation/Smoothstep";
 import { SphereLighting } from "./pages/createJSON/formulas/animation/OrbitalMotion";
 import { quadraticBezier as quadraticBezierFormula } from "./pages/createJSON/formulas/animation/QuadraticBezier";
 import { RectangleObject as rectangleFormula } from "./pages/createJSON/formulas/animation/Rectangle";
@@ -308,6 +314,54 @@ const animationManifest: AnimationManifest = {
       l: "random-number-between",
       f: randomNumberBetween,
       load: () => import("./core-animations/RandomNumberAnimation"),
+    },
+  },
+  "numbers in motion": {
+    // Scalar primitives. These are docs-first: each shows the shared scalar
+    // mini-demo (same drawing as the /api docs) and intentionally has NO CodePen
+    // pen — see CLAUDE.md, "Docs are friendly, visual, and ELI5", and the
+    // MINI_DEMO_KEYS carve-out in studio-pens-sync.test.ts.
+    LerpScalarAnimation: {
+      t: "lerp",
+      l: "lerp",
+      f: lerpFormula,
+      load: () => import("./core-animations/ScalarLerp"),
+    },
+    InverseLerpAnimation: {
+      t: "inverse lerp",
+      l: "inverse-lerp",
+      f: inverseLerpFormula,
+      load: () => import("./core-animations/InverseLerp"),
+    },
+    MapRangeAnimation: {
+      t: "map range",
+      l: "map-range",
+      f: mapRangeFormula,
+      load: () => import("./core-animations/MapRange"),
+    },
+    ClampAnimation: {
+      t: "clamp",
+      l: "clamp",
+      f: clampFormula,
+      load: () => import("./core-animations/Clamp"),
+    },
+    WrapAnimation: {
+      t: "wrap",
+      l: "wrap",
+      f: wrapFormula,
+      load: () => import("./core-animations/Wrap"),
+    },
+    PingPongAnimation: {
+      t: "ping pong",
+      l: "ping-pong",
+      f: pingPongFormula,
+      load: () => import("./core-animations/PingPong"),
+    },
+    SmoothstepAnimation: {
+      t: "smoothstep",
+      l: "smoothstep",
+      f: smoothstepFormula,
+      load: () => import("./core-animations/Smoothstep"),
     },
   },
   fourier: {
