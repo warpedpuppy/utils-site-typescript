@@ -88,11 +88,11 @@ export default class CircleFromThreePointsAnimation extends AnimationBaseClass {
   };
 
   drawCircle = () => {
-    let degree = 1 * (Math.PI / 180);
-    this.circleQ += degree;
+    let degree = 5 * (Math.PI / 180);
+    this.circleQ = Math.min(this.circleQ + degree, Math.PI * 2);
+    this.draw();
     if (this.circleQ < Math.PI * 2) {
       this.interval = setTimeout(this.drawCircle, 10);
-      this.draw();
     }
   };
 

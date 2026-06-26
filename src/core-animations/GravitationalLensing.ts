@@ -58,7 +58,8 @@ It is accurate when the lens is much closer than the source distance — which
 is true for most real lensing scenarios.
 
 CONTROLS
-  • Drag the glowing dot to reposition the lens
+  • The lens drifts on its own — watch the rays bend and the focus sweep
+  • Drag the glowing dot to reposition it (drift resumes around the new spot)
   • mass — increase to see stronger bending; watch the rays converge
   • rays  — more or fewer light paths shown`;
 
@@ -101,6 +102,9 @@ class GravitationalLensing extends Template {
 
   lensX = 0;
   lensY = 0;
+  homeX = 0;
+  homeY = 0;
+  autoMove = true;
   mass = 120;
   numRays = 50;
   time = 0;
@@ -112,8 +116,8 @@ class GravitationalLensing extends Template {
   infoPanel: HTMLDivElement | null = null;
 
   initScene() {
-    this.lensX = this.halfWidth * 0.9;
-    this.lensY = this.halfHeight;
+    this.lensX = this.homeX = this.halfWidth * 0.9;
+    this.lensY = this.homeY = this.halfHeight;
     this.stars = Array.from({ length: 80 }, () => ({
       x: Math.random() * this.canvasWidth,
       y: Math.random() * this.canvasHeight,
@@ -128,6 +132,15 @@ class GravitationalLensing extends Template {
     const W = this.canvasWidth;
     const H = this.canvasHeight;
     const t = this.time;
+
+    // Drift the lens on its own so the distortion is always in motion —
+    // a slow bob through the ray bundle (manual drag overrides this).
+    if (this.autoMove && !this.dragging) {
+      const yb = this.homeY + this.halfHeight * 0.5 * Math.sin(t * 0.6);
+      const xb = this.homeX + this.halfWidth * 0.1 * Math.sin(t * 0.3);
+      this.lensY = Math.min(Math.max(yb, 12), H - 12);
+      this.lensX = Math.min(Math.max(xb, 12), W - 12);
+    }
 
     // Space background
     ctx.fillStyle = "#02020c";
@@ -336,6 +349,7 @@ class GravitationalLensing extends Template {
     const y = e.pageY - this.top;
     if (Math.hypot(x - this.lensX, y - this.lensY) < 28) {
       this.dragging = true;
+      this.autoMove = false;
       if (this.canvas) this.canvas.style.cursor = "grabbing";
     }
   }
@@ -353,6 +367,12 @@ class GravitationalLensing extends Template {
   }
 
   pointerUpHandler(_e: PointerEvent) {
+    if (this.dragging) {
+      // re-anchor the drift around wherever the user dropped it, then resume
+      this.homeX = this.lensX;
+      this.homeY = this.lensY;
+      this.autoMove = true;
+    }
     this.dragging = false;
     if (this.canvas) this.canvas.style.cursor = "default";
   }
