@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import animationManifest from "../animationManifest";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,6 +28,11 @@ describe("Consolidation rule: all animations in core-animations", () => {
     const violations = paths.filter((p) => p.includes("pages/examples/animations"));
     expect(violations).toEqual([]);
   });
+
+  it("SiteData.ts does not eagerly import core animation classes", () => {
+    const violations = paths.filter((p) => p.includes("core-animations"));
+    expect(violations).toEqual([]);
+  });
 });
 
 describe("pens-examples.ts consolidation", () => {
@@ -42,7 +48,7 @@ describe("pens-examples.ts consolidation", () => {
 // ─── Test 2: Collision animations are in core-animations ────────────────────
 
 describe("Collision detection animations — location verification", () => {
-  const siteData = readSrc("SiteData.ts");
+  const manifest = readSrc("animationManifest.ts");
 
   const collisionAnimations = [
     "PointToCircle",
@@ -58,10 +64,39 @@ describe("Collision detection animations — location verification", () => {
   ];
 
   for (const anim of collisionAnimations) {
-    it(`${anim}: SiteData imports from core-animations`, () => {
-      expect(siteData).toContain(`"./core-animations/${anim}"`);
+    it(`${anim}: animationManifest lazy-loads from core-animations`, () => {
+      expect(manifest).toContain(`import("./core-animations/${anim}")`);
     });
   }
+});
+
+describe("Animation manifest metadata", () => {
+  it("matches title/slug/include metadata on the loaded animation classes", async () => {
+    const failures: string[] = [];
+
+    for (const [categoryName, category] of Object.entries(animationManifest)) {
+      for (const [animationKey, entry] of Object.entries(category)) {
+        const { default: AnimationClass } = await entry.load();
+        if (AnimationClass.t !== entry.t) {
+          failures.push(
+            `${categoryName}.${animationKey}: title ${entry.t} does not match ${AnimationClass.t}`
+          );
+        }
+        if (AnimationClass.l !== entry.l) {
+          failures.push(
+            `${categoryName}.${animationKey}: slug ${entry.l} does not match ${AnimationClass.l}`
+          );
+        }
+        if (AnimationClass.include !== entry.include) {
+          failures.push(
+            `${categoryName}.${animationKey}: include ${entry.include} does not match ${AnimationClass.include}`
+          );
+        }
+      }
+    }
+
+    expect(failures).toEqual([]);
+  });
 });
 
 // ─── Test 3: Point-to-Circle animation uses canonical draw function ─────────

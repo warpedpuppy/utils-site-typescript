@@ -7,7 +7,7 @@ import JSONContent from "./createJSONComponents/JSONContent";
 
 import CreateChecklists from "../../services/CreateChecklists";
 import { InterfaceMap } from "../../types/shapes";
-import SiteData from "../../SiteData";
+import animationManifest from "../../animationManifest";
 import { downloadTsExport, downloadJsExport, INTERFACE_ORDER } from "./createJSONUtils/createJSONUtils";
 
 function getSelectionCount(): number {
@@ -18,7 +18,7 @@ function getSelectionCount(): number {
 function getSelectedInterfaceNames(): string[] {
   const selected = (localStorage.getItem("functions") ?? "").split(",").filter(Boolean);
   const names = new Set<string>();
-  Object.values(SiteData).forEach((objects) => {
+  Object.values(animationManifest).forEach((objects) => {
     Object.entries(objects).forEach(([key, value]) => {
       if (selected.includes(key)) {
         (value.f.interfaces ?? []).forEach((iface: string) => {

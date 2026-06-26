@@ -1,5 +1,5 @@
 import { ReactNode, useCallback } from "react";
-import SiteData from "../SiteData";
+import animationManifest from "../animationManifest";
 import { Nullable } from "../types/types";
 import { useLocation } from "react-router-dom";
 import CheckListCheckbox from "./CheckListCheckbox";
@@ -18,7 +18,7 @@ function CreateChecklists() {
     ) => {
       let returnArray: ReactNode[] = [];
 
-      let loopingObj = { ...SiteData };
+      let loopingObj = { ...animationManifest };
       const isExampleChecklist = containerClass.includes("example");
       if (isExampleChecklist) {
         delete loopingObj["simple useful equations"];

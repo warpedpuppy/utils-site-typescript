@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import PrimaryCanvasHeader from "./PrimaryCanvasHeader";
 import Modal from "../modal/Modal";
-function CanvasContainer({ instance }: { instance: any }) {
+function CanvasContainer({
+  instance,
+  isLoading = false,
+}: {
+  instance: any;
+  isLoading?: boolean;
+}) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [animationObject, setAnimationObject] = useState({
     keyFunction: () => {},
@@ -10,6 +16,10 @@ function CanvasContainer({ instance }: { instance: any }) {
   });
   const [instanceOfClass, setInstanceOfClass] = useState<any>();
   useEffect(() => {
+    if (!instance) {
+      setInstanceOfClass(undefined);
+      return;
+    }
     let i = instance?.initiate("primary-canvas--content--canvas-container");
     i?.init();
     setInstanceOfClass(i);
@@ -29,7 +39,9 @@ function CanvasContainer({ instance }: { instance: any }) {
       />
       <div id="primary-canvas--content">
         <div id="primary-canvas--content--text"></div>
-        <div id="primary-canvas--content--canvas-container"></div>
+        <div id="primary-canvas--content--canvas-container">
+          {isLoading && <div className="primary-canvas-loading">Loading...</div>}
+        </div>
       </div>
       {showModal && (
         <Modal

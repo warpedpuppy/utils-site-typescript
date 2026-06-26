@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import LocalStorageManager from "../../../services/LocalStorageManager";
-import SiteData from "../../../SiteData";
+import animationManifest from "../../../animationManifest";
 import { InterfaceMap } from "../../../types/shapes";
 
 export function CreateJson() {
@@ -10,7 +10,7 @@ export function CreateJson() {
     let set = new Set();
     let str = ``;
 
-    Object.values(SiteData).forEach((objects) => {
+    Object.values(animationManifest).forEach((objects) => {
       Object.entries(objects).forEach((keyValues) => {
         if (arrayOfFormulas.includes(keyValues[0])) {
           set.add(keyValues[1].f.functionString);
@@ -66,7 +66,7 @@ export function downloadTsExport() {
   const dependencySet = new Set<string>();
   const interfaceNames = new Set<string>();
 
-  Object.values(SiteData).forEach((objects) => {
+  Object.values(animationManifest).forEach((objects) => {
     Object.entries(objects).forEach(([key, value]) => {
       if (selected.includes(key)) {
         functionStrings.push(value.f.functionString.trim());
@@ -116,7 +116,7 @@ export function downloadJsExport() {
   const functionStrings: string[] = [];
   const dependencySet = new Set<string>();
 
-  Object.values(SiteData).forEach((objects) => {
+  Object.values(animationManifest).forEach((objects) => {
     Object.entries(objects).forEach(([key, value]) => {
       if (selected.includes(key)) {
         functionStrings.push(value.f.functionString.trim());
