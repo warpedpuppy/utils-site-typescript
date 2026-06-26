@@ -1,4 +1,5 @@
 .api-docs {
+  --api-tab-h: 44px; // explicit tab-bar height so the sticky filter can sit flush below it
   width: min(1120px, calc(100vw - 32px));
   margin: calc(var(--menu-height) + 34px) auto 64px;
   color: var(--text);
@@ -126,6 +127,191 @@
   display: block;
   margin-bottom: 10px;
   font-size: 0.82rem;
+}
+
+.api-docs__tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  height: var(--api-tab-h);
+  margin-top: 18px;
+  border-bottom: 1px solid var(--border);
+  // Park just below the fixed NavBar so the long doc list scrolls cleanly
+  // underneath instead of bleeding through the translucent nav.
+  position: sticky;
+  top: var(--menu-height);
+  z-index: 5; // below the NavBar's z-index: 999
+  background: var(--bg);
+}
+
+.api-docs__tab {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0 4px;
+  margin-bottom: -1px;
+  margin-right: 18px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+
+  &:hover {
+    color: var(--text);
+  }
+
+  &.is-active {
+    color: var(--text);
+    border-bottom-color: var(--brand-orange-soft);
+  }
+}
+
+.api-docs__filter {
+  // Pin the filter directly beneath the (also sticky) tab bar.
+  position: sticky;
+  top: calc(var(--menu-height) + var(--api-tab-h));
+  z-index: 4; // under the tab bar (5), over the scrolling list
+  background: var(--bg);
+  padding: 14px 0 8px;
+}
+
+.api-docs__search {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 122, 0, 0.4);
+  }
+}
+
+.api-docs__count {
+  margin: 8px 2px 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.api-docs__module {
+  margin-top: 26px;
+}
+
+.api-docs__module-title {
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  font-family: "Space Mono", monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand-orange-soft);
+}
+
+.api-docs__fn {
+  border: 1px solid var(--border);
+  background: rgba(22, 25, 41, 0.72);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+
+  p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin: 8px 0 0;
+  }
+}
+
+.api-docs__fn-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.api-docs__fn-name {
+  font-family: "Space Mono", monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.api-docs__kind {
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.api-docs__kind--function {
+  border-color: rgba(255, 122, 0, 0.35);
+  color: var(--brand-orange-soft);
+}
+
+.api-docs__fn-sig,
+.api-docs__fn-example {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  max-width: 100%;
+  overflow: auto;
+  // Wrap long signatures/examples instead of forcing a scrollbar.
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  font-size: 0.82rem;
+}
+
+.api-docs__fn-example {
+  margin-top: 10px;
+}
+
+.api-docs__params {
+  margin: 10px 0 0;
+
+  > div {
+    display: flex;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 0.88rem;
+  }
+
+  dt {
+    flex: 0 0 auto;
+    font-family: "Space Mono", monospace;
+    color: var(--text-code);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--text-muted);
+  }
+}
+
+.api-docs__returns {
+  span {
+    font-family: "Space Mono", monospace;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--brand-orange-soft);
+    margin-right: 6px;
+  }
+}
+
+.api-docs__empty {
+  margin-top: 24px;
+  color: var(--text-muted);
 }
 
 @media screen and (max-width: 860px) {

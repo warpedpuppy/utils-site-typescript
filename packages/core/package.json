@@ -30,7 +30,8 @@
   "sideEffects": false,
   "scripts": {
     "barrel": "node scripts/generate-barrel.mjs",
-    "build": "npm run barrel && tsup",
+    "docs": "node scripts/generate-api-docs.mjs",
+    "build": "npm run barrel && npm run docs && tsup",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run barrel && tsup"
   },
