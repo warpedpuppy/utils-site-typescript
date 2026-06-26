@@ -52,6 +52,9 @@ import VectorReflectAnimation from "./core-animations/VectorReflect";
 import VectorRotateAnimation from "./core-animations/VectorRotate";
 import AngleLerpAnimation from "./core-animations/AngleLerp";
 
+// Physics demos (spring / damped harmonic motion)
+import SpringAnimation from "./core-animations/Spring";
+
 // Ported "pretty little things" from the warpedpuppies portfolio.
 import Murmuration from "./core-animations/Murmuration";
 import Sierpinski from "./core-animations/Sierpinski";
@@ -132,6 +135,9 @@ const SiteData: PrimaryObject = {
     VectorReflectAnimation,
     VectorRotateAnimation,
     AngleLerpAnimation,
+  },
+  physics: {
+    SpringAnimation,
   },
   flocking: {
     Murmuration,

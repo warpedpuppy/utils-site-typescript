@@ -162,6 +162,21 @@ export function springValue(
 }
 
 /**
+ * The damping coefficient that makes {@link springValue} *critically* damped — the
+ * fastest approach to the target with no overshoot — for a given `stiffness` and `mass`.
+ *
+ * Critical damping is `c = 2·√(k·m)`. Pass less to {@link springValue}'s `damping` for
+ * bounce (underdamped), more for a sluggish crawl (overdamped). With the default
+ * stiffness of 170 this is `≈ 26`, which is why 26 is the default damping.
+ *
+ * @example
+ * criticalDamping(170); // => ~26.08
+ */
+export function criticalDamping(stiffness: number, mass = 1): number {
+  return 2 * Math.sqrt(stiffness * mass);
+}
+
+/**
  * Map elapsed time into a repeating 0..1 progress value.
  *
  * @example

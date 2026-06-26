@@ -51,6 +51,8 @@ import { drawPointTowards } from "../../core-animations/PointTowards";
 import { drawSineCurve } from "../../core-animations/SineCurve";
 import { drawDeMystifySineCosine } from "../../core-animations/DeMystifySineCosine";
 import { drawPointToCircleFunctionString } from "../../core-animations/PointToCircle";
+import { springValue, criticalDamping } from "@utilspalooza/core/Animate";
+import { drawSpring } from "../../core-animations/Spring";
 
 export interface ExamplePen {
   group: string;
@@ -1613,7 +1615,80 @@ function draw() {
 
 draw();`;
 
+// ── spring (damped harmonic motion) ──────────────────────────────────────────
+const SPRING_HTML = `<canvas id="canvas"></canvas>
+<div id="controls">
+  <label>stiffness <input type="range" id="stiffness" min="40" max="400" step="10" value="170"></label>
+</div>`;
+const SPRING_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+${springValue.toString()}
+
+${criticalDamping.toString()}
+
+// ─── the drawing ────────────────────────────────────────────────────────────
+${drawSpring.toString()}
+
+// ─── canvas setup ────────────────────────────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+// ─── state: three springs, same stiffness, different damping ─────────────────
+let stiffness = 170;
+let time = 0;
+let target = 0;
+let under = { value: canvas.width * 0.15, velocity: 0 };
+let critical = { value: canvas.width * 0.15, velocity: 0 };
+let over = { value: canvas.width * 0.15, velocity: 0 };
+
+function draw() {
+  const deltaSeconds = 1 / 60;
+  time += deltaSeconds;
+
+  const left = canvas.width * 0.3;
+  const right = canvas.width * 0.75;
+  target = Math.floor(time / 2.2) % 2 === 0 ? right : left;
+
+  const critDamp = criticalDamping(stiffness);
+  under = springValue(under, target, { stiffness, damping: critDamp * 0.25, deltaSeconds });
+  critical = springValue(critical, target, { stiffness, damping: critDamp, deltaSeconds });
+  over = springValue(over, target, { stiffness, damping: critDamp * 2.5, deltaSeconds });
+
+  const h = canvas.height;
+  drawSpring(ctx, canvas.width, h, target, [
+    { y: h * 0.3, pos: under.value, color: '#ef4444', label: 'underdamped — bounces' },
+    { y: h * 0.55, pos: critical.value, color: '#34d399', label: 'critically damped — no overshoot' },
+    { y: h * 0.8, pos: over.value, color: '#6366f1', label: 'overdamped — sluggish' },
+  ]);
+
+  requestAnimationFrame(draw);
+}
+
+document.getElementById('stiffness').addEventListener('input', e => {
+  stiffness = parseFloat(e.target.value);
+});
+
+draw();`;
+
 export const EXAMPLE_PENS: ExamplePen[] = [
+  {
+    group: "Math & Physics",
+    key: "spring-damped-harmonic",
+    label: "Spring (Damped Harmonic Motion)",
+    blurb:
+      "Three balls chase a target with the same stiffness but different damping — underdamped bounces, critically damped snaps, overdamped crawls.",
+    payload: {
+      title: "Spring — Damped Harmonic Motion",
+      description:
+        "A mass-on-a-spring (Hooke's law + damping). Same stiffness, three damping ratios: underdamped overshoots and bounces, critically damped is the fastest approach with no overshoot, overdamped is sluggish.",
+      html: SPRING_HTML,
+      css: FULLSCREEN_CSS,
+      js: SPRING_JS,
+      editors: "001",
+    },
+  },
   {
     group: "Animations",
     key: "ball-bounce",
