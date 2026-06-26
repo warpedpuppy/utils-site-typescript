@@ -40,6 +40,30 @@ import { lensDeflection } from "@utilspalooza/core/LensDeflection";
 import { grStep } from "@utilspalooza/core/GRStep";
 import { lineLength } from "@utilspalooza/core/LineLength";
 import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
+import { centerOnParent as centerOnParentFn } from "@utilspalooza/core/CenterOnParent";
+import { degToRad as degToRadFn } from "@utilspalooza/core/DegToRad";
+import { numberWithCommas as numberWithCommasFn } from "@utilspalooza/core/NumberWithCommas";
+import { radToDeg as radToDegFn } from "@utilspalooza/core/RadToDeg";
+import { randomIntegerBetween as randomIntegerBetweenFn } from "@utilspalooza/core/RandomIntegerBetween";
+import { randomNumberBetween as randomNumberBetweenFn } from "@utilspalooza/core/RandomNumberBetween";
+import {
+  hslToRgb,
+  lerpColor as lerpColorFn,
+  lerpColorHsl,
+  rgbToCss,
+  rgbToHsl,
+} from "@utilspalooza/core/Color";
+import {
+  vecNormalize,
+  vecPerpendicular,
+  vecReflect,
+  vecRotate,
+} from "@utilspalooza/core/Vec2";
+import {
+  lerpAngle,
+  shortestAngleBetween,
+  wrapAngle,
+} from "@utilspalooza/core/AngleInterpolation";
 import { drawRainbowBall } from "../../core-animations/BallBounce";
 import { drawBallBall } from "../../core-animations/BallBall";
 import { drawLerp } from "../../core-animations/Lerp";
@@ -53,6 +77,12 @@ import { drawDeMystifySineCosine } from "../../core-animations/DeMystifySineCosi
 import { drawPointToCircleFunctionString } from "../../core-animations/PointToCircle";
 import { springValue, criticalDamping } from "@utilspalooza/core/Animate";
 import { drawSpring } from "../../core-animations/Spring";
+import { drawColorLerp } from "../../core-animations/ColorLerp";
+import { drawColorFamily } from "../../core-animations/ColorFamilies";
+import { drawVectorReflect } from "../../core-animations/VectorReflect";
+import { drawVectorRotate } from "../../core-animations/VectorRotate";
+import { drawAngleLerp } from "../../core-animations/AngleLerp";
+import { drawBird } from "../../core-animations/Murmuration";
 
 export interface ExamplePen {
   group: string;
@@ -1672,7 +1702,697 @@ document.getElementById('stiffness').addEventListener('input', e => {
 
 draw();`;
 
+const SIMPLE_EQUATION_PENS: ExamplePen[] = [
+  {
+    group: "Simple Useful Equations",
+    key: "center-on-parent",
+    label: "Center on Parent",
+    blurb: "Compute the x/y offset that centers a child rectangle inside a parent.",
+    payload: {
+      title: "Center on Parent",
+      description: "Center a child box by subtracting its size from the parent size and halving the remainder.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${centerOnParentFn.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+function draw() {
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const parent = { x: canvas.width * 0.14, y: canvas.height * 0.16, width: canvas.width * 0.72, height: canvas.height * 0.68 };
+  const t = performance.now() * 0.001;
+  const child = { width: 110 + Math.sin(t) * 45, height: 80 + Math.cos(t * 0.8) * 32 };
+  const pos = centerOnParent(child, parent);
+  ctx.strokeStyle = 'rgba(129, 140, 248, 0.55)';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(parent.x, parent.y, parent.width, parent.height);
+  ctx.fillStyle = '#818cf8';
+  ctx.fillRect(parent.x + pos.x, parent.y + pos.y, child.width, child.height);
+  ctx.fillStyle = '#d8e2ff';
+  ctx.font = '14px monospace';
+  ctx.fillText('centerOnParent(child, parent) => { x: ' + pos.x.toFixed(1) + ', y: ' + pos.y.toFixed(1) + ' }', 18, 30);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "degrees-to-radians",
+    label: "Degrees to Radians",
+    blurb: "Convert familiar degree angles into the radians JavaScript trig functions expect.",
+    payload: {
+      title: "Degrees to Radians",
+      description: "JavaScript trig uses radians, so 180 degrees becomes PI radians.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>degrees <input id="deg" type="range" min="0" max="360" value="45"></label></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${degToRadFn.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('deg');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+function draw() {
+  const degrees = Number(slider.value);
+  const radians = degToRad(degrees);
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  const r = Math.min(canvas.width, canvas.height) * 0.28;
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.strokeStyle = '#818cf8';
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.cos(radians) * r, cy + Math.sin(radians) * r);
+  ctx.stroke();
+  ctx.fillStyle = '#d8e2ff';
+  ctx.font = '16px monospace';
+  ctx.fillText(degrees + ' degrees = ' + radians.toFixed(3) + ' radians', 18, 32);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "radians-to-degrees",
+    label: "Radians to Degrees",
+    blurb: "Convert radian values back into readable degrees.",
+    payload: {
+      title: "Radians to Degrees",
+      description: "Radians are the natural unit for trig; degrees are often easier to read.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>radians <input id="rad" type="range" min="0" max="6.283" step="0.001" value="0.785"></label></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${radToDegFn.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('rad');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+function draw() {
+  const radians = Number(slider.value);
+  const degrees = radToDeg(radians);
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  const r = Math.min(canvas.width, canvas.height) * 0.28;
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.strokeStyle = '#a78bfa';
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.cos(radians) * r, cy + Math.sin(radians) * r);
+  ctx.stroke();
+  ctx.fillStyle = '#d8e2ff';
+  ctx.font = '16px monospace';
+  ctx.fillText(radians.toFixed(3) + ' radians = ' + degrees.toFixed(1) + ' degrees', 18, 32);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "format-number-with-commas",
+    label: "Format Number with Commas",
+    blurb: "Format large numbers into readable thousands groups.",
+    payload: {
+      title: "Format Number with Commas",
+      description: "A tiny formatting helper for making large values scan quickly.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${numberWithCommasFn.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+function draw() {
+  const raw = Math.floor(1000 + performance.now() * 87);
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.textAlign = 'center';
+  ctx.font = '22px monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.fillText(String(raw), canvas.width / 2, canvas.height / 2 - 28);
+  ctx.font = 'bold 44px monospace';
+  ctx.fillStyle = '#818cf8';
+  ctx.fillText(numberWithCommas(raw), canvas.width / 2, canvas.height / 2 + 36);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "random-integer-between",
+    label: "Random Integer Between",
+    blurb: "Roll inclusive integer values inside a min/max range.",
+    payload: {
+      title: "Random Integer Between",
+      description: "Generate whole numbers with inclusive lower and upper bounds.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><button id="roll">roll</button></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${randomIntegerBetweenFn.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let values = [];
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function roll() { values = Array.from({ length: 28 }, () => randomIntegerBetween(1, 6)); draw(); }
+document.getElementById('roll').addEventListener('click', roll);
+function draw() {
+  ctx.fillStyle = '#0a0a0f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const size = Math.min(58, canvas.width / 10);
+  const startX = (canvas.width - size * 7) / 2;
+  values.forEach((v, i) => {
+    const x = startX + (i % 7) * size;
+    const y = canvas.height / 2 - size * 2 + Math.floor(i / 7) * size;
+    ctx.fillStyle = '#818cf8';
+    ctx.fillRect(x + 5, y + 5, size - 10, size - 10);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(String(v), x + size / 2, y + size / 2 + 7);
+  });
+}
+roll();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "random-number-between",
+    label: "Random Number Between",
+    blurb: "Generate floating-point random values inside a min/max range.",
+    payload: {
+      title: "Random Number Between",
+      description: "Generate decimal values greater than or equal to min and less than max.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${randomNumberBetweenFn.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let samples = [];
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+function draw() {
+  if (samples.length > 160) samples.shift();
+  samples.push(randomNumberBetween(20, canvas.width - 20));
+  ctx.fillStyle = 'rgba(10,10,15,0.22)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  samples.forEach((x, i) => {
+    const y = canvas.height - 24 - i * 3;
+    ctx.fillStyle = 'hsla(' + (210 + i) + ', 85%, 65%, 0.75)';
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.fillStyle = '#d8e2ff';
+  ctx.font = '14px monospace';
+  ctx.fillText('randomNumberBetween(20, width - 20)', 18, 30);
+  requestAnimationFrame(draw);
+}
+ctx.fillStyle = '#0a0a0f';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+draw();`,
+      editors: "001",
+    },
+  },
+];
+
+const COLOR_AND_VECTOR_PENS: ExamplePen[] = [
+  {
+    group: "Useful Little Things",
+    key: "color-lerp",
+    label: "Color Lerp (RGB vs HSL)",
+    blurb: "Compare straight RGB blending with hue-aware HSL blending.",
+    payload: {
+      title: "Color Lerp — RGB vs HSL",
+      description: "RGB interpolation can pass through gray; HSL interpolation travels around the color wheel.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `function lerp(a, b, t) { return a + (b - a) * t; }
+${rgbToHsl.toString()}
+${hslToRgb.toString()}
+${lerpColorFn.toString()}
+${lerpColorHsl.toString()}
+${rgbToCss.toString()}
+${drawColorLerp.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const a = { r: 37, g: 99, b: 235 };
+const b = { r: 250, g: 204, b: 21 };
+const rgbStops = [], hslStops = [];
+for (let i = 0; i < 64; i++) {
+  const t = i / 63;
+  rgbStops.push(rgbToCss(lerpColor(a, b, t)));
+  hslStops.push(rgbToCss(lerpColorHsl(a, b, t)));
+}
+function draw() {
+  const t = (Math.sin(performance.now() * 0.001) + 1) / 2;
+  drawColorLerp(ctx, rgbStops, hslStops, t, canvas.width, canvas.height);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Useful Little Things",
+    key: "color-families",
+    label: "Color Families",
+    blurb: "Generate ordered palettes from named slices of the hue wheel.",
+    payload: {
+      title: "Color Families",
+      description: "Pick a named hue family and generate a coherent palette from that slice of the color wheel.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>family <select id="family"><option>all</option><option>red</option><option>orange</option><option>yellow</option><option>green</option><option>cyan</option><option>blue</option><option>purple</option><option>pink</option></select></label></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${hslToRgb.toString()}
+${rgbToCss.toString()}
+${drawColorFamily.toString()}
+
+const HUE_FAMILIES = { all: [0, 360], red: [-12, 18], orange: [18, 45], yellow: [45, 70], green: [80, 160], cyan: [160, 200], blue: [200, 250], purple: [255, 290], pink: [300, 345] };
+function colorFamily(family, count) {
+  const range = HUE_FAMILIES[family] || HUE_FAMILIES.all;
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const f = count <= 1 ? 0.5 : i / (count - 1);
+    const h = range[0] + f * (range[1] - range[0]);
+    out.push(hslToRgb({ h, s: 72, l: 50 + Math.sin(f * Math.PI) * 16 }));
+  }
+  return out;
+}
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const select = document.getElementById('family');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; draw(); }
+window.addEventListener('resize', resize);
+resize();
+select.addEventListener('change', draw);
+function draw() {
+  const family = select.value;
+  const colors = colorFamily(family, 36).map(rgbToCss);
+  drawColorFamily(ctx, colors, family, canvas.width, canvas.height, 90);
+}`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "vector-reflection",
+    label: "Vector Reflection",
+    blurb: "Reflect an incoming vector across a wall normal.",
+    payload: {
+      title: "Vector Reflection",
+      description: "A bounce is the incoming vector reflected across the surface normal.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${vecNormalize.toString()}
+${vecPerpendicular.toString()}
+${vecReflect.toString()}
+function drawArrow(ctx, fromX, fromY, toX, toY, color, label) {
+  const ang = Math.atan2(toY - fromY, toX - fromX);
+  const head = 11;
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(toX - head * Math.cos(ang - Math.PI / 6), toY - head * Math.sin(ang - Math.PI / 6));
+  ctx.lineTo(toX - head * Math.cos(ang + Math.PI / 6), toY - head * Math.sin(ang + Math.PI / 6));
+  ctx.closePath(); ctx.fill();
+  if (label) { ctx.font = 'bold 12px monospace'; ctx.fillText(label, toX + 8, toY - 8); }
+}
+${drawVectorReflect.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const incoming = vecNormalize({ x: 1, y: 0.55 });
+function draw() {
+  const wallAngle = performance.now() * 0.001;
+  const wallDir = { x: Math.cos(wallAngle), y: Math.sin(wallAngle) };
+  const normal = vecNormalize(vecPerpendicular(wallDir));
+  const reflected = vecReflect(incoming, normal);
+  drawVectorReflect(ctx, canvas.width / 2, canvas.height / 2, incoming, normal, reflected, wallDir, canvas.width, canvas.height);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "vector-rotation",
+    label: "Vector Rotation",
+    blurb: "Rotate a shape by passing every point through vecRotate.",
+    payload: {
+      title: "Vector Rotation",
+      description: "Rotation remixes each point's x and y with sine and cosine.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${vecRotate.toString()}
+${drawVectorRotate.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const basePoints = Array.from({ length: 9 }, (_, i) => {
+  const a = (Math.PI * 2 * i) / 9;
+  const r = i % 2 ? 82 : 150;
+  return { x: Math.cos(a) * r, y: Math.sin(a) * r };
+});
+function draw() {
+  drawVectorRotate(ctx, canvas.width / 2, canvas.height / 2, basePoints, performance.now() * 0.001, canvas.width, canvas.height);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "angle-lerp-shortest-turn",
+    label: "Angle Lerp",
+    blurb: "Show why angles need shortest-path interpolation instead of raw lerp.",
+    payload: {
+      title: "Angle Lerp — Shortest Turn",
+      description: "350 degrees to 10 degrees is a short hop, not an almost-full spin.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${wrapAngle.toString()}
+${shortestAngleBetween.toString()}
+${lerpAngle.toString()}
+function drawDial(ctx, cx, cy, r, angle, color, label) {
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = color; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r); ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = color; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center'; ctx.fillText(label, cx, cy + r + 28); ctx.textAlign = 'left';
+}
+${drawAngleLerp.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const startAngle = 350 * Math.PI / 180;
+const targetAngle = 10 * Math.PI / 180;
+function draw() {
+  const t = (Math.sin(performance.now() * 0.001) + 1) / 2;
+  const naive = startAngle + (targetAngle - startAngle) * t;
+  const smart = lerpAngle(startAngle, targetAngle, t);
+  drawAngleLerp(ctx, canvas.width, canvas.height, naive, smart, startAngle, targetAngle, t);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "murmuration",
+    label: "Murmuration",
+    blurb: "A lightweight flocking sketch using the same bird renderer as the Examples animation.",
+    payload: {
+      title: "Murmuration",
+      description: "Many small triangles steer toward a wandering target, creating a flock-like smear.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawBird.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const birds = Array.from({ length: 180 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: Math.random() * 2 - 1, vy: Math.random() * 2 - 1 }));
+function draw() {
+  const t = performance.now() * 0.00035;
+  const target = { x: canvas.width / 2 + Math.cos(t * 3.1) * canvas.width * 0.25, y: canvas.height / 2 + Math.sin(t * 2.7) * canvas.height * 0.25 };
+  ctx.fillStyle = 'rgba(10,10,18,0.18)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#d8e2ff';
+  for (const b of birds) {
+    b.vx += (target.x - b.x) * 0.00008 + (Math.random() - 0.5) * 0.05;
+    b.vy += (target.y - b.y) * 0.00008 + (Math.random() - 0.5) * 0.05;
+    const m = Math.hypot(b.vx, b.vy) || 1;
+    if (m > 3.4) { b.vx = b.vx / m * 3.4; b.vy = b.vy / m * 3.4; }
+    b.x = (b.x + b.vx + canvas.width) % canvas.width;
+    b.y = (b.y + b.vy + canvas.height) % canvas.height;
+    drawBird(ctx, b.x, b.y, Math.atan2(b.vy, b.vx), 4);
+  }
+  requestAnimationFrame(draw);
+}
+ctx.fillStyle = '#0a0a12';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+draw();`,
+      editors: "001",
+    },
+  },
+];
+
+const PRETTY_AND_FRACTAL_PENS: ExamplePen[] = [
+  {
+    group: "Math & Physics",
+    key: "sierpinski",
+    label: "Sierpinski Triangle",
+    blurb: "Recursively remove middle triangles to reveal a classic fractal.",
+    payload: {
+      title: "Sierpinski Triangle",
+      description: "Each triangle splits into three smaller triangles; repeat and the fractal appears.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function tri(a, b, c, depth) {
+  if (depth === 0) {
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(c.x, c.y); ctx.closePath(); ctx.fill();
+    return;
+  }
+  const ab = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  const bc = { x: (b.x + c.x) / 2, y: (b.y + c.y) / 2 };
+  const ca = { x: (c.x + a.x) / 2, y: (c.y + a.y) / 2 };
+  tri(a, ab, ca, depth - 1); tri(ab, b, bc, depth - 1); tri(ca, bc, c, depth - 1);
+}
+function draw() {
+  ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const s = Math.min(canvas.width, canvas.height) * 0.78;
+  const a = { x: canvas.width / 2, y: canvas.height / 2 - s * 0.48 };
+  const b = { x: canvas.width / 2 - s * 0.5, y: canvas.height / 2 + s * 0.38 };
+  const c = { x: canvas.width / 2 + s * 0.5, y: canvas.height / 2 + s * 0.38 };
+  ctx.fillStyle = '#818cf8';
+  tri(a, b, c, 6);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "glitter",
+    label: "Glitter",
+    blurb: "A standalone glitter field inspired by the Examples effect.",
+    payload: {
+      title: "Glitter",
+      description: "A dense field of gold particles and rotating beams.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const dots = Array.from({ length: 650 }, () => ({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, s: Math.random() * 2.2 + 0.3, a: Math.random() * 0.35 + 0.08 }));
+function draw() {
+  const t = performance.now() * 0.001;
+  ctx.fillStyle = '#170425'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.save(); ctx.translate(canvas.width / 2, canvas.height / 2); ctx.globalCompositeOperation = 'lighter';
+  for (const d of dots) {
+    const x = d.x * canvas.width * 0.43 + Math.cos(t + d.y * 8) * 40;
+    const y = d.y * canvas.height * 0.43 + Math.sin(t * 0.8 + d.x * 8) * 40;
+    ctx.globalAlpha = d.a; ctx.fillStyle = '#ffee5c'; ctx.beginPath(); ctx.arc(x, y, d.s, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 0.045; ctx.strokeStyle = '#ffee5c'; ctx.lineWidth = 2;
+  for (let i = 0; i < 90; i++) { ctx.rotate(0.17); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(canvas.width * 0.45 * (0.4 + Math.sin(t + i) * 0.3), 0); ctx.stroke(); }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "pretty-ring",
+    label: "Pretty Ring",
+    blurb: "A layered glowing ring of orbiting particles.",
+    payload: {
+      title: "Pretty Ring",
+      description: "Layered particles orbit around the center with small wobbling offsets.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const colors = ['#446996', '#2d4264', '#0b482a', '#888136', '#633321'];
+function draw() {
+  const t = performance.now() * 0.0005;
+  ctx.fillStyle = '#02050b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.save(); ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(t); ctx.globalCompositeOperation = 'lighter';
+  const base = Math.min(canvas.width, canvas.height) * 0.26;
+  for (let i = 0; i < 720; i++) {
+    const a = i / 720 * Math.PI * 2;
+    const layer = i % 3 - 1;
+    const r = base + layer * 28 + Math.sin(t * 8 + i) * 12;
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.globalAlpha = 0.55;
+    ctx.beginPath(); ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 2.4, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "sparklies",
+    label: "Sparklies",
+    blurb: "Small firework bursts with fading jewel-toned particles.",
+    payload: {
+      title: "Sparklies",
+      description: "A field of looping firework bursts.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const bursts = Array.from({ length: 24 }, () => makeBurst());
+function makeBurst() { return { x: Math.random() * canvas.width, y: Math.random() * canvas.height, age: Math.random() * 120, life: 90 + Math.random() * 90, hue: Math.random() * 360 }; }
+function draw() {
+  ctx.fillStyle = 'rgba(2,3,9,0.28)'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < bursts.length; i++) {
+    const b = bursts[i]; b.age++;
+    const p = b.age / b.life;
+    if (p >= 1) { bursts[i] = makeBurst(); continue; }
+    for (let j = 0; j < 18; j++) {
+      const a = j / 18 * Math.PI * 2;
+      const d = p * 95;
+      ctx.globalAlpha = 1 - p;
+      ctx.fillStyle = 'hsl(' + (b.hue + j * 18) + ', 90%, 65%)';
+      ctx.beginPath(); ctx.arc(b.x + Math.cos(a) * d, b.y + Math.sin(a) * d, 2.2, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "klimt",
+    label: "Klimt-Inspired Swirls",
+    blurb: "Gold-toned ornamental ribbons and mosaic-like marks.",
+    payload: {
+      title: "Klimt-Inspired Swirls",
+      description: "Curving gold ribbons with jewel accents, loosely inspired by Klimt ornament.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const palette = ['#f6d365', '#d4af37', '#fff3b0', '#5f8f3f', '#1f5f5b', '#b7352d'];
+function draw() {
+  const t = performance.now() * 0.00022;
+  ctx.fillStyle = 'rgba(3,3,2,0.14)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.save(); ctx.translate(canvas.width / 2, canvas.height / 2); ctx.globalCompositeOperation = 'lighter';
+  for (let r = 0; r < 7; r++) {
+    ctx.strokeStyle = palette[r % palette.length]; ctx.lineWidth = 5 + r;
+    ctx.beginPath();
+    for (let i = 0; i < 260; i++) {
+      const a = i * 0.12 + t * (r + 1);
+      const rad = 10 + i * 0.75 + Math.sin(i * 0.08 + r) * 18;
+      const x = Math.cos(a + r) * rad;
+      const y = Math.sin(a - r * 0.4) * rad;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  for (let i = 0; i < 140; i++) {
+    const a = i * 2.399 + t;
+    const r = Math.sqrt(i) * 19;
+    ctx.fillStyle = palette[i % palette.length];
+    ctx.globalAlpha = 0.55;
+    ctx.fillRect(Math.cos(a) * r, Math.sin(a) * r, 5, 5);
+  }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+];
+
 export const EXAMPLE_PENS: ExamplePen[] = [
+  ...SIMPLE_EQUATION_PENS,
+  ...COLOR_AND_VECTOR_PENS,
+  ...PRETTY_AND_FRACTAL_PENS,
   {
     group: "Math & Physics",
     key: "spring-damped-harmonic",
@@ -1707,7 +2427,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "balls-bouncing",
+    key: "balls-bouncing-against-each-other",
     label: "Balls Bouncing Against Each Other",
     blurb:
       "Multiple balls collide with each other and the walls, using spring forces.",
@@ -1723,7 +2443,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "orbital-motion",
+    key: "ball-orbiting-a-sun",
     label: "Ball Orbiting a Sun",
     blurb:
       "A ball orbits a sun using gravitational attraction, drawn as a spiral.",
@@ -1739,7 +2459,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "lerp",
+    key: "lerp-smooth-follow",
     label: "lerp (Smooth Follow)",
     blurb:
       "Linear interpolation: smoothly follow a target by always moving a fraction of the way there.",
@@ -1755,7 +2475,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "easing",
+    key: "easing-functions",
     label: "Easing Functions",
     blurb:
       "Compare different easing curves to smooth out motion in an animation.",
@@ -1771,7 +2491,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "quadratic-bezier",
+    key: "quadratic-bezier-curve",
     label: "Quadratic Bézier Curve",
     blurb:
       "A curve controlled by three points: two endpoints and one control point in between.",
@@ -1787,7 +2507,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "find-points-on-circle",
+    key: "find-points-on-a-circle",
     label: "Find Points on a Circle",
     blurb: "Distribute points evenly around a circle using trigonometry.",
     payload: {
@@ -1802,7 +2522,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "move-to-destination",
+    key: "move-to-changing-point",
     label: "Move Object to Changing Point",
     blurb:
       "Smoothly move toward a target that changes position, following at a fixed speed.",
@@ -1818,7 +2538,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "point-towards",
+    key: "point-object-towards-another",
     label: "Point Object Towards Another",
     blurb: "Rotate an arrow to always face a moving target using atan2.",
     payload: {
@@ -1863,7 +2583,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "point-to-circle",
+    key: "point-to-circle-collision",
     label: "Point to Circle",
     blurb: "Detect when a moving point enters a circle.",
     payload: {
@@ -1878,7 +2598,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "point-to-rect",
+    key: "point-to-rectangle-collision",
     label: "Point to Rectangle",
     blurb: "Detect when a moving point enters an axis-aligned rectangle.",
     payload: {
@@ -1893,7 +2613,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "circle-to-circle",
+    key: "circle-to-circle-collision",
     label: "Circle to Circle",
     blurb: "Detect when two circles collide using distance between centers.",
     payload: {
@@ -1907,7 +2627,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "circle-to-rect",
+    key: "circle-to-rectangle-collision",
     label: "Circle to Rectangle",
     blurb: "Detect when a circle collides with an axis-aligned rectangle.",
     payload: {
@@ -1922,7 +2642,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-circle",
+    key: "line-to-circle-collision",
     label: "Line to Circle",
     blurb: "Detect when a line segment comes close enough to a circle.",
     payload: {
@@ -1937,7 +2657,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-line",
+    key: "line-to-line-collision",
     label: "Line to Line",
     blurb:
       "Detect when two line segments intersect using parametric intersection.",
@@ -1953,7 +2673,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-point",
+    key: "line-to-point-collision",
     label: "Line to Point",
     blurb:
       "Detect when a point comes within a threshold distance of a line segment.",
@@ -1968,7 +2688,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-rect",
+    key: "line-to-rectangle-collision",
     label: "Line to Rectangle",
     blurb:
       "Detect when a line segment intersects any edge of an axis-aligned rectangle.",
@@ -1983,7 +2703,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "rect-to-rect",
+    key: "rectangle-to-rectangle-collision",
     label: "Rectangle to Rectangle",
     blurb:
       "Detect when two axis-aligned rectangles overlap using AABB (axis-aligned bounding box).",
@@ -1998,7 +2718,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "polygon-to-polygon",
+    key: "polygon-to-polygon-collision",
     label: "Polygon to Polygon",
     blurb:
       "Detect when two arbitrary polygons collide using point-in-polygon and ray casting.",
@@ -2014,7 +2734,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Useful Little Things",
-    key: "get-point-on-line",
+    key: "get-a-point-on-a-line",
     label: "Get a Point on a Line",
     blurb: "Find a point at a given percentage along a line segment.",
     payload: {
@@ -2082,7 +2802,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "triangle-data",
+    key: "get-triangle-data-from-line",
     label: "Triangle Data from Line",
     blurb:
       "Create a right triangle from a line segment by finding the perpendicular point.",
@@ -2270,7 +2990,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "equilateral-triangle",
+    key: "equilateral-trianlge-points",
     label: "Equilateral Triangle",
     blurb:
       "Draw an equilateral triangle by placing vertices at 120° intervals.",
@@ -2313,7 +3033,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "circle-from-three",
+    key: "circle-from-three-points",
     label: "Circle from Three Points",
     blurb:
       "Find the circumcircle that passes through three points using perpendicular bisectors.",
@@ -2421,7 +3141,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "distribute-around",
+    key: "distribute-around-circle",
     label: "Distribute Points Around Circle",
     blurb:
       "Evenly distribute points around a circle using uniform angle intervals.",
@@ -2510,7 +3230,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "distance-between",
+    key: "line-length",
     label: "Distance Between Two Points",
     blurb:
       "Calculate the straight-line distance between two points using the Pythagorean theorem.",
