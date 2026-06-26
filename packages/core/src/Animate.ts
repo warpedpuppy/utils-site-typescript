@@ -51,6 +51,10 @@ const caf =
 
 /**
  * Run a callback every animation frame and return a small cancellation handle.
+ *
+ * @example
+ * const handle = ticker(({ elapsed }) => draw(elapsed));
+ * // later: handle.cancel();
  */
 export function ticker(callback: (frame: TickerFrame) => void): TickerHandle {
   let active = true;
@@ -85,6 +89,9 @@ export function ticker(callback: (frame: TickerFrame) => void): TickerHandle {
 
 /**
  * Return the value of a scalar tween at a specific elapsed time.
+ *
+ * @example
+ * tweenValue(0, 100, 250, 500); // => 50 (halfway through, linear)
  */
 export function tweenValue(
   from: number,
@@ -103,6 +110,9 @@ export function tweenValue(
 
 /**
  * Return every numeric property of an object tween at a specific elapsed time.
+ *
+ * @example
+ * tweenObject({ x: { from: 0, to: 10 } }, 250, 500); // => { x: 5 }
  */
 export function tweenObject<T extends Record<string, number>>(
   spec: TweenObjectSpec<T>,
@@ -120,11 +130,18 @@ export function tweenObject<T extends Record<string, number>>(
 
 /**
  * Alias for tweenObject when you want to sample animation state one frame at a time.
+ *
+ * @example
+ * tweenFrame({ x: { from: 0, to: 10 } }, 500, 500); // => { x: 10 }
  */
 export const tweenFrame = tweenObject;
 
 /**
  * Advance a damped spring one fixed simulation step.
+ *
+ * @example
+ * let s = { value: 0, velocity: 0 };
+ * s = springValue(s, 100); // => state nudged toward 100; call each frame
  */
 export function springValue(
   state: SpringState,
@@ -146,6 +163,9 @@ export function springValue(
 
 /**
  * Map elapsed time into a repeating 0..1 progress value.
+ *
+ * @example
+ * loop(750, 500); // => 0.5 (250ms into the second cycle)
  */
 export function loop(elapsedMs: number, durationMs: number): number {
   if (durationMs <= 0) return 1;
@@ -154,6 +174,9 @@ export function loop(elapsedMs: number, durationMs: number): number {
 
 /**
  * Map elapsed time into a reversing 0..1..0 progress value.
+ *
+ * @example
+ * yoyo(500, 500); // => 1 (at the turnaround peak)
  */
 export function yoyo(elapsedMs: number, durationMs: number): number {
   if (durationMs <= 0) return 1;
@@ -163,6 +186,9 @@ export function yoyo(elapsedMs: number, durationMs: number): number {
 
 /**
  * Delay a progress value by `delayMs`, returning 0 until the delay has elapsed.
+ *
+ * @example
+ * delay(300, 200, 500); // => 0.2 (100ms into a 500ms tween)
  */
 export function delay(elapsedMs: number, delayMs: number, durationMs: number): number {
   if (elapsedMs <= delayMs) return 0;
@@ -172,6 +198,9 @@ export function delay(elapsedMs: number, delayMs: number, durationMs: number): n
 
 /**
  * Return the delayed progress for an item in a staggered list.
+ *
+ * @example
+ * stagger(2, 600, 500, 200); // => 0.4 (item 2 starts 400ms in)
  */
 export function stagger(index: number, elapsedMs: number, durationMs: number, staggerMs: number): number {
   return delay(elapsedMs, Math.max(0, index) * staggerMs, durationMs);

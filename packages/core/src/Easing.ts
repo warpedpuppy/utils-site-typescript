@@ -3,6 +3,8 @@
  *
  * @param t - Normalized time, 0–1.
  * @returns The eased value, equal to `t`.
+ * @example
+ * linear(0.5); // => 0.5
  */
 export function linear(t: number): number {
   return t;
@@ -13,6 +15,8 @@ export function linear(t: number): number {
  *
  * @param t - Normalized time, 0–1.
  * @returns The eased value (`t²`), 0 at `t=0` and 1 at `t=1`.
+ * @example
+ * easeIn(0.5); // => 0.25
  */
 export function easeIn(t: number): number {
   return t * t;
@@ -23,6 +27,8 @@ export function easeIn(t: number): number {
  *
  * @param t - Normalized time, 0–1.
  * @returns The eased value, 0 at `t=0` and 1 at `t=1`.
+ * @example
+ * easeOut(0.5); // => 0.75
  */
 export function easeOut(t: number): number {
   return t * (2 - t);
@@ -33,6 +39,8 @@ export function easeOut(t: number): number {
  *
  * @param t - Normalized time, 0–1.
  * @returns The eased value, 0 at `t=0` and 1 at `t=1`.
+ * @example
+ * easeInOut(0.5); // => 0.5
  */
 export function easeInOut(t: number): number {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
@@ -43,6 +51,8 @@ export function easeInOut(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInQuad(0.5); // => 0.25
  */
 export function easeInQuad(t: number): number {
   return t * t;
@@ -53,6 +63,8 @@ export function easeInQuad(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeOutQuad(0.5); // => 0.75
  */
 export function easeOutQuad(t: number): number {
   return t * (2 - t);
@@ -63,6 +75,8 @@ export function easeOutQuad(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInOutQuad(0.5); // => 0.5
  */
 export function easeInOutQuad(t: number): number {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
@@ -73,6 +87,8 @@ export function easeInOutQuad(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInCubic(0.5); // => 0.125
  */
 export function easeInCubic(t: number): number {
   return t * t * t;
@@ -83,6 +99,8 @@ export function easeInCubic(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeOutCubic(0.5); // => 0.875
  */
 export function easeOutCubic(t: number): number {
   const u = t - 1;
@@ -94,6 +112,8 @@ export function easeOutCubic(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInOutCubic(0.5); // => 0.5
  */
 export function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
@@ -104,6 +124,8 @@ export function easeInOutCubic(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInQuart(0.5); // => 0.0625
  */
 export function easeInQuart(t: number): number {
   return t * t * t * t;
@@ -114,6 +136,8 @@ export function easeInQuart(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeOutQuart(0.5); // => 0.9375
  */
 export function easeOutQuart(t: number): number {
   const u = t - 1;
@@ -125,6 +149,8 @@ export function easeOutQuart(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInOutQuart(0.5); // => 0.5
  */
 export function easeInOutQuart(t: number): number {
   if (t < 0.5) return 8 * t * t * t * t;
@@ -137,6 +163,8 @@ export function easeInOutQuart(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInQuint(0.5); // => 0.03125
  */
 export function easeInQuint(t: number): number {
   return t * t * t * t * t;
@@ -147,6 +175,8 @@ export function easeInQuint(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeOutQuint(0.5); // => 0.96875
  */
 export function easeOutQuint(t: number): number {
   const u = t - 1;
@@ -158,6 +188,8 @@ export function easeOutQuint(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeInOutQuint(0.5); // => 0.5
  */
 export function easeInOutQuint(t: number): number {
   if (t < 0.5) return 16 * t * t * t * t * t;
@@ -170,6 +202,8 @@ export function easeInOutQuint(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeOutElastic(1); // => 1 (settles on the target after overshooting)
  */
 export function easeOutElastic(t: number): number {
   const p = 0.3;
@@ -181,6 +215,8 @@ export function easeOutElastic(t: number): number {
  *
  * @param t - Normalized time, 0-1.
  * @returns The eased value.
+ * @example
+ * easeOutBounce(1); // => 1 (lands exactly on the target)
  */
 export function easeOutBounce(t: number): number {
   if (t < 1 / 2.75) {
