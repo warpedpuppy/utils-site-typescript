@@ -1005,12 +1005,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function draw() {
@@ -1026,7 +1028,7 @@ function draw() {
 
   let hit = polyContainsPoint(rect, px, py);
 
-  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
   ctx.beginPath();
   ctx.moveTo(rect[0].x, rect[0].y);
   for (let i = 1; i < rect.length; i++) {
@@ -1035,7 +1037,7 @@ function draw() {
   ctx.closePath();
   ctx.fill();
 
-  ctx.fillStyle = '#f97316';
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
   ctx.beginPath();
   ctx.arc(px, py, 5, 0, Math.PI * 2);
   ctx.fill();
@@ -1059,12 +1061,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function draw() {
@@ -1079,12 +1083,12 @@ function draw() {
 
   let hit = circleToCircle(c1x, c1y, c1r, c2x, c2y, c2r);
 
-  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
   ctx.beginPath();
   ctx.arc(c1x, c1y, c1r, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
   ctx.beginPath();
   ctx.arc(c2x, c2y, c2r, 0, Math.PI * 2);
   ctx.fill();
@@ -1141,12 +1145,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function draw() {
@@ -1161,12 +1167,12 @@ function draw() {
 
   let hit = circleOverlapsPoly(cx, cy, cr, rect);
 
-  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
   ctx.beginPath();
   ctx.arc(cx, cy, cr, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
   ctx.beginPath();
   ctx.moveTo(rect[0].x, rect[0].y);
   for (let i = 1; i < rect.length; i++) {
@@ -1194,12 +1200,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function draw() {
@@ -1224,13 +1232,13 @@ function draw() {
   let hit = lineToCircle(x1, y1, x2, y2, cx, cy, cr);
 
   // Draw static circle
-  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
   ctx.beginPath();
   ctx.arc(cx, cy, cr, 0, Math.PI * 2);
   ctx.fill();
 
   // Draw moving line
-  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
@@ -1256,12 +1264,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function draw() {
@@ -1287,7 +1297,7 @@ function draw() {
   let hit = lineToLine(x1, y1, x2, y2, x3a, y3a, x3b, y3b);
 
   // Draw static line (cyan when hit)
-  ctx.strokeStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
+  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
@@ -1295,7 +1305,7 @@ function draw() {
   ctx.stroke();
 
   // Draw moving line (red when hit)
-  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x3a, y3a);
@@ -1321,12 +1331,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function draw() {
@@ -1342,15 +1354,15 @@ function draw() {
   let hit = lineToPoint(x1, y1, x2, y2, px, py, 20);
 
   // Line changes color on hit
-  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
+  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
 
-  // Dot is always orange, never changes color
-  ctx.fillStyle = '#f97316';
+  // Dot is indigo at rest, pulses pink on collision
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
   ctx.beginPath();
   ctx.arc(px, py, 5, 0, Math.PI * 2);
   ctx.fill();
@@ -1374,12 +1386,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function draw() {
@@ -1404,12 +1418,12 @@ function draw() {
 
   let hit = lineToRect(x2, y2, x3, y3, rx, ry, rw, rh);
 
-  // Rect doesn't change color
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  // Rect: orange at rest, pulses pink on collision
+  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
   ctx.fillRect(rx, ry, rw, rh);
 
-  // Line doesn't change color either
-  ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+  // Line: indigo at rest, pulses pink on collision
+  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(x2, y2);
@@ -1460,12 +1474,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function drawPoly(pts, color) {
@@ -1497,8 +1513,8 @@ function draw() {
 
   let hit = polyPolyOverlap(rect1, rect2);
 
-  drawPoly(rect1, hit ? '#ef4444' : 'rgba(255,255,255,0.85)');
-  drawPoly(rect2, hit ? '#22d3ee' : 'rgba(255,255,255,0.85)');
+  drawPoly(rect1, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c');
+  drawPoly(rect2, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8');
 
   if (hit) drawCollisionText(cx);
 
@@ -1549,12 +1565,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
   ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", x, 40);
+  ctx.restore();
 }
 
 function drawPoly(points, color) {
@@ -1585,8 +1603,8 @@ function draw() {
 
   let hit = polyPolyOverlap(star1, star2);
 
-  drawPoly(star1, hit ? '#22d3ee' : '#facc15');
-  drawPoly(star2, hit ? '#ef4444' : '#fb923c');
+  drawPoly(star1, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8');
+  drawPoly(star2, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c');
 
   if (hit) drawCollisionText(cx);
 

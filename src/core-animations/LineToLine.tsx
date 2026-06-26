@@ -49,28 +49,27 @@ class LineToLineCollision extends AnimationBaseClass {
 
     const hit = lineLine.keyFunction(this.line1, this.line2).hit;
 
-    this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
+    this.ctx.strokeStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
     this.ctx.beginPath();
     this.ctx.moveTo(this.line1.startPoint.x, this.line1.startPoint.y);
     this.ctx.lineTo(this.line1.endPoint.x, this.line1.endPoint.y);
     this.ctx.stroke();
 
-    this.ctx.strokeStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
+    this.ctx.strokeStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
     this.ctx.beginPath();
     this.ctx.moveTo(this.line2.startPoint.x, this.line2.startPoint.y);
     this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);
     this.ctx.stroke();
 
     if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
+      this.ctx.save();
+      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
+      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+      this.ctx.shadowBlur = 14;
+      this.ctx.fillStyle = "#cdd3ff";
+      this.ctx.fillText("collision detected", this.halfWidth, 40);
+      this.ctx.restore();
     }
 
     this.raf(this.draw);

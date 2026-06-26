@@ -27,20 +27,32 @@ class RectToRect extends AnimationBaseClass {
     let { x, y } = this.makePointMove();
     this.rect1 = RectangleObject.keyFunction(100, 100, 0, {
       rotate: true,
-      rotateSpeed: 1000,
+      rotateSpeed: 2000,
+      time: performance.now(),
     });
     this.rect2 = RectangleObject.keyFunction(100, 100, 0, {
       rotate: true,
-      rotateSpeed: 1000,
+      rotateSpeed: 2000,
+      time: performance.now(),
+    });
+
+    // Move both rectangles to their on-screen positions BEFORE testing the
+    // collision — otherwise both are still origin-centered (on top of each
+    // other) at test time, so the hit reads true every frame.
+    this.rect1.vertices.forEach((v: Point) => {
+      v.x += x;
+      v.y += y;
+    });
+    this.rect2.vertices.forEach((v: Point) => {
+      v.x += this.halfWidth;
+      v.y += this.halfHeight;
     });
 
     const hit = polygonPolygon.keyFunction(this.rect1, this.rect2);
 
-    this.ctx.fillStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
     this.ctx.beginPath();
     this.rect1.vertices.forEach((rect: Point, i: number) => {
-      rect.x += x;
-      rect.y += y;
       if (i === 0) {
         this.ctx?.moveTo(rect.x, rect.y);
       } else {
@@ -50,11 +62,9 @@ class RectToRect extends AnimationBaseClass {
     this.ctx.closePath();
     this.ctx.fill();
 
-    this.ctx.fillStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
+    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
     this.ctx.beginPath();
     this.rect2.vertices.forEach((rect: Point, i: number) => {
-      rect.x += this.halfWidth;
-      rect.y += this.halfHeight;
       if (i === 0) {
         this.ctx?.moveTo(rect.x, rect.y);
       } else {
@@ -65,15 +75,14 @@ class RectToRect extends AnimationBaseClass {
     this.ctx.fill();
 
     if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
+      this.ctx.save();
+      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
       this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
+      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+      this.ctx.shadowBlur = 14;
+      this.ctx.fillStyle = "#cdd3ff";
+      this.ctx.fillText("collision detected", this.halfWidth, 40);
+      this.ctx.restore();
     }
 
     this.raf(this.draw);
