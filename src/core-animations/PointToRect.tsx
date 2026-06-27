@@ -3,7 +3,85 @@ import AnimationBaseClass from "./AnimationBaseClass";
 import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 import { polygonPoint } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
 import { RectangleObject } from "../pages/createJSON/formulas/animation/Rectangle";
-import { Point } from "../types/shapes";
+
+export function drawPointToRectangle(
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
+  time: number,
+  sineCurveFn: (
+    startingValue: number,
+    differential: number,
+    speed: number,
+    time: number
+  ) => number,
+  polygonPointFn: (
+    polygon: { vertices: { x: number; y: number }[] },
+    point: { x: number; y: number }
+  ) => boolean,
+  rectangleFn: (
+    width: number,
+    height: number,
+    angle?: number,
+    options?: {
+      rotate?: boolean;
+      rotateSpeed?: number;
+      clockwise?: boolean;
+      time?: number;
+    }
+  ) => { vertices: { x: number; y: number }[] }
+): void {
+  const halfWidth = canvasWidth / 2;
+  const halfHeight = canvasHeight / 2;
+
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  ctx.fillStyle = "transparent";
+
+  const x = sineCurveFn(halfWidth, 200, 0.001, time);
+  const y = sineCurveFn(halfHeight, 200, 0.001, time);
+
+  const rect = rectangleFn(100, 100, 0, {
+    rotate: true,
+    rotateSpeed: 2000,
+    time,
+  });
+  rect.vertices.forEach((vertex) => {
+    vertex.x += halfWidth;
+    vertex.y += halfHeight;
+  });
+
+  const hit = polygonPointFn(rect, { x, y });
+  const hitColor = "hsl(330, 95%, " + (55 + 25 * Math.sin(time / 120)) + "%)";
+
+  ctx.fillStyle = hit ? hitColor : "#ff9f1c";
+  ctx.beginPath();
+  rect.vertices.forEach((vertex, index) => {
+    if (index === 0) {
+      ctx.moveTo(vertex.x, vertex.y);
+      return;
+    }
+    ctx.lineTo(vertex.x, vertex.y);
+  });
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = hit ? hitColor : "#818cf8";
+  ctx.beginPath();
+  ctx.arc(x, y, 5, 0, 2 * Math.PI);
+  ctx.fill();
+
+  if (hit) {
+    ctx.save();
+    ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+    ctx.textAlign = "center";
+    ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = "#cdd3ff";
+    ctx.fillText("collision detected", halfWidth, 40);
+    ctx.restore();
+  }
+}
+
 class PointToRectangle extends AnimationBaseClass {
   static t = "point to polygon collision";
   static l = "point-to-rectangle-collision";
@@ -28,54 +106,33 @@ class PointToRectangle extends AnimationBaseClass {
   }
   draw = () => {
     if (!this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.ctx.fillStyle = "transparent";
-
-    let { x, y } = this.makePointMove();
-    this.circle1.x = x;
-    this.circle1.y = y;
-
-    const hit = polygonPoint.keyFunction(this.rect, { x: this.circle1.x, y: this.circle1.y });
-    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
-
-    this.rect = RectangleObject.keyFunction(100, 100, 0, {
-      rotate: true,
-      rotateSpeed: 2000,
-      time: performance.now(),
-    });
-    this.ctx.beginPath();
-    this.rect.vertices.forEach((rect: Point, i: number) => {
-      rect.x += this.halfWidth;
-      rect.y += this.halfHeight;
-      if (i === 0) {
-        this.ctx?.moveTo(rect.x, rect.y);
-      } else {
-        this.ctx?.lineTo(rect.x, rect.y);
-      }
-    });
-    this.ctx.closePath();
-    this.ctx.fill();
-
-    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8"; /* indigo dot at rest, pink pulse on collision */
-    this.ctx.beginPath();
-    this.ctx.arc(
-      this.circle1.x,
-      this.circle1.y,
-      this.circle1.radius,
-      0,
-      2 * Math.PI
+    drawPointToRectangle(
+      this.ctx,
+      this.canvasWidth,
+      this.canvasHeight,
+      performance.now(),
+      sineCurve.keyFunction as (
+        startingValue: number,
+        differential: number,
+        speed: number,
+        time: number
+      ) => number,
+      polygonPoint.keyFunction as (
+        polygon: { vertices: { x: number; y: number }[] },
+        point: { x: number; y: number }
+      ) => boolean,
+      RectangleObject.keyFunction as (
+        width: number,
+        height: number,
+        angle?: number,
+        options?: {
+          rotate?: boolean;
+          rotateSpeed?: number;
+          clockwise?: boolean;
+          time?: number;
+        }
+      ) => { vertices: { x: number; y: number }[] }
     );
-    this.ctx.fill();
-    if (hit) {
-      this.ctx.save();
-      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-      this.ctx.shadowBlur = 14;
-      this.ctx.fillStyle = "#cdd3ff";
-      this.ctx.fillText("collision detected", this.halfWidth, 40);
-      this.ctx.restore();
-    }
 
     this.raf(this.draw);
   };

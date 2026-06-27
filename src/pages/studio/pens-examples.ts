@@ -15,19 +15,17 @@ import { findPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle"
 import { sineCurve } from "@utilspalooza/core/SineCurve";
 import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
 import { pointToCircle } from "@utilspalooza/core/PointToCircle";
-import { pointToRect } from "@utilspalooza/core/PointToRect";
 import { circleToCircle } from "@utilspalooza/core/CircleToCircle";
 import { circleToRect } from "@utilspalooza/core/CircleToRect";
 import { lineToCircle } from "@utilspalooza/core/LineToCircle";
 import { lineToLine } from "@utilspalooza/core/LineToLine";
 import { lineToPoint } from "@utilspalooza/core/LineToPoint";
-import { lineToRect } from "@utilspalooza/core/LineToRect";
-import { rectToRect } from "@utilspalooza/core/RectToRect";
+import { lineLine as lineLineFn } from "@utilspalooza/core/CollisionObjectAPI/LineLine";
 import { polygonToPolygon } from "@utilspalooza/core/PolygonToPolygon";
+import { polygonLine as polygonLineFn } from "@utilspalooza/core/CollisionObjectAPI/PolygonLine";
 import { getPointOnLine } from "@utilspalooza/core/GetPointOnLine";
 import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
 import { starVertices } from "@utilspalooza/core/Star";
-import { createRect } from "@utilspalooza/core/Rectangle";
 import { drawEquilateralTriangle } from "./pen-snippets";
 import { drawEquilateralTriangle as drawEquilateralTriangleAnimation } from "../../core-animations/EquilateralTriangle";
 import { equilateralTriangle } from "@utilspalooza/core/EquilateralTriangle";
@@ -75,7 +73,6 @@ import { drawMoveToDestination } from "../../core-animations/MoveToDestination";
 import { drawPointTowards } from "../../core-animations/PointTowards";
 import { drawSineCurve } from "../../core-animations/SineCurve";
 import { drawDeMystifySineCosine } from "../../core-animations/DeMystifySineCosine";
-import { drawPointToCircleFunctionString } from "../../core-animations/PointToCircle";
 import { springValue, criticalDamping } from "@utilspalooza/core/Animate";
 import { drawSpring } from "../../core-animations/Spring";
 import { drawColorLerp } from "../../core-animations/ColorLerp";
@@ -92,9 +89,18 @@ import { drawPolygon } from "../../core-animations/Polygon";
 import { drawStar } from "../../core-animations/Star";
 import { drawCircleFromThreePoints } from "../../core-animations/CircleFromThreePoints";
 import { drawTriangleDataFromLine } from "../../core-animations/TriangleDataFromLine";
+import { drawCircleToCircle } from "../../core-animations/CircleToCircle";
 import { pointCircle as pointCircleFn } from "@utilspalooza/core/CollisionObjectAPI/PointCircle";
 import { drawPointToCircle } from "../../core-animations/PointToCircle";
 import { drawLineToCircle } from "../../core-animations/LineToCircle";
+import { drawLineToLine } from "../../core-animations/LineToLine";
+import { drawLineToPoint } from "../../core-animations/LineToPoint";
+import { drawLineToRectangle } from "../../core-animations/LineToRect";
+import { drawPointToRectangle } from "../../core-animations/PointToRect";
+import { drawRectToRect } from "../../core-animations/RectToRect";
+import { drawCircleToRectangle } from "../../core-animations/CircleToRect";
+import { drawPolygonToPolygon } from "../../core-animations/PolygonToPolygonCollision";
+import { polygonPoint } from "../../pages/createJSON/formulas/collision-detection/PolygonCollision";
 
 export interface ExamplePen {
   group: string;
@@ -245,7 +251,7 @@ function spawnBalls() {
 let balls = spawnBalls();
 
 function draw() {
-  drawBallBall(ctx, balls, canvas.width, canvas.height);
+  drawBallBall(ctx, balls, canvas.width, canvas.height, ballToBallBouncePhysics);
   requestAnimationFrame(draw);
 }
 
@@ -276,7 +282,17 @@ let orbiterRadius = 22;
 let orbitRadius = 180;
 
 function draw() {
-  drawOrbitalMotion(ctx, canvas.width, canvas.height, pct, sunRadius, orbiterRadius, orbitRadius);
+  drawOrbitalMotion(
+    ctx,
+    canvas.width,
+    canvas.height,
+    pct,
+    sunRadius,
+    orbiterRadius,
+    orbitRadius,
+    findPointAroundCircle,
+    SphereLighting.keyFunction
+  );
   pct = (pct + 0.15) % 100;
   requestAnimationFrame(draw);
 }
@@ -404,7 +420,7 @@ function pointDistance(p1, p2) {
 }
 
 function draw() {
-  drawQuadraticBezier(ctx, p0, p1, p2, dragTarget);
+  drawQuadraticBezier(ctx, p0, p1, p2, dragTarget, quadraticBezier);
   requestAnimationFrame(draw);
 }
 
@@ -456,7 +472,15 @@ resize();
 let i = 0;
 
 function draw() {
-  drawMoveItemAroundCircle(ctx, canvas.width / 2, canvas.height / 2, canvas.width, canvas.height, i);
+  drawMoveItemAroundCircle(
+    ctx,
+    canvas.width / 2,
+    canvas.height / 2,
+    canvas.width,
+    canvas.height,
+    i,
+    findPointAroundCircle
+  );
   i += 0.5;
   if (i > 100) i = 0;
   requestAnimationFrame(draw);
@@ -563,7 +587,7 @@ let differential = 200;
 let speed = 0.005;
 
 function draw() {
-  drawSineCurve(ctx, canvas.width, canvas.height, startValue, differential, speed);
+  drawSineCurve(ctx, canvas.width, canvas.height, startValue, differential, speed, sineCurve);
   requestAnimationFrame(draw);
 }
 
@@ -595,7 +619,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  drawDeMystifySineCosine(ctx, canvas.width, canvas.height, null);
+  drawDeMystifySineCosine(
+    ctx,
+    canvas.width,
+    canvas.height,
+    null,
+    unitCirclePoint,
+    radToDeg
+  );
   requestAnimationFrame(draw);
 }
 
@@ -607,8 +638,8 @@ draw();`;
 
 const POINT_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const POINT_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-const sineCurve = { keyFunction: ${sineCurve.toString()} };
-const pointCircle = { keyFunction: ${pointCircleFn.toString()} };
+${sineCurve.toString()}
+${pointCircleFn.toString()}
 
 ${drawPointToCircle.toString()}
 
@@ -620,34 +651,57 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  drawPointToCircle(ctx, canvas.width, canvas.height, performance.now());
+  drawPointToCircle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    pointCircle
+  );
   requestAnimationFrame(draw);
 }
 
 draw();`;
 
 const POINT_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_RECT_JS = `// ─── ray-casting point-in-polygon test ────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
-  }
-  return inside;
+const POINT_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
+
+${polygonPoint.keyFunction.toString()}
+
+${lineLength.toString()}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const rotateQ = rotate ? options.time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
 }
 
-function buildRect(cx, cy, hw, hh, angle) {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return [
-    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
-    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
-    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
-    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
-  ];
-}
+${drawPointToRectangle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -656,45 +710,16 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  let angle = Date.now() * 0.001;
-  let rect = buildRect(cx, cy, 50, 50, angle);
-
-  let px = cx + Math.sin(Date.now() * 0.001) * 200;
-  let py = cy + Math.sin(Date.now() * 0.0008) * 150;
-
-  let hit = polyContainsPoint(rect, px, py);
-
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
-  ctx.beginPath();
-  ctx.moveTo(rect[0].x, rect[0].y);
-  for (let i = 1; i < rect.length; i++) {
-    ctx.lineTo(rect[i].x, rect[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
-  ctx.beginPath();
-  ctx.arc(px, py, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (hit) drawCollisionText(cx);
+  drawPointToRectangle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonPoint,
+    createRect
+  );
 
   requestAnimationFrame(draw);
 }
@@ -705,23 +730,14 @@ const CIRCLE_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const CIRCLE_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${circleToCircle.toString()}
 
+${drawCircleToCircle.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -734,18 +750,14 @@ function draw() {
   let c2r = 100;
 
   let hit = circleToCircle(c1x, c1y, c1r, c2x, c2y, c2r);
-
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
-  ctx.beginPath();
-  ctx.arc(c1x, c1y, c1r, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
-  ctx.beginPath();
-  ctx.arc(c2x, c2y, c2r, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (hit) drawCollisionText(cx);
+  drawCircleToCircle(
+    ctx,
+    { x: c1x, y: c1y, radius: c1r },
+    { x: c2x, y: c2y, radius: c2r },
+    hit,
+    canvas.width,
+    performance.now()
+  );
 
   requestAnimationFrame(draw);
 }
@@ -753,41 +765,104 @@ function draw() {
 draw();`;
 
 const CIRCLE_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const CIRCLE_RECT_JS = `// ─── polygon-circle overlap test ───────────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
-  }
-  return inside;
+const CIRCLE_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
+
+${pointCircleFn.toString()}
+
+function linePoint(line, point, buffer = 0.1) {
+  const d1 = Math.hypot(point.x - line.startPoint.x, point.y - line.startPoint.y);
+  const d2 = Math.hypot(point.x - line.endPoint.x, point.y - line.endPoint.y);
+  const lineLen = lineLength(line);
+  return d1 + d2 >= lineLen - buffer && d1 + d2 <= lineLen + buffer;
 }
 
-function buildRect(cx, cy, hw, hh, angle) {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return [
-    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
-    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
-    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
-    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
-  ];
-}
+${lineLength.toString()}
 
-function circleOverlapsPoly(cx, cy, cr, pts) {
-  if (polyContainsPoint(pts, cx, cy)) return true;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const x0 = pts[j].x, y0 = pts[j].y;
-    const x1 = pts[i].x, y1 = pts[i].y;
-    const dx = x1 - x0, dy = y1 - y0;
-    const t = Math.max(0, Math.min(1, ((cx - x0) * dx + (cy - y0) * dy) / (dx * dx + dy * dy)));
-    const px = x0 + t * dx, py = y0 + t * dy;
-    const dist = Math.sqrt((cx - px) * (cx - px) + (cy - py) * (cy - py));
-    if (dist < cr) return true;
-  }
+function lineCircle(line, circle) {
+  let inside1 = pointCircle(line.startPoint, circle);
+  let inside2 = pointCircle(line.endPoint, circle);
+  if (inside1 || inside2) return true;
+
+  let len = lineLength(line);
+  let dot =
+    ((circle.x - line.startPoint.x) * (line.endPoint.x - line.startPoint.x) +
+      (circle.y - line.startPoint.y) * (line.endPoint.y - line.startPoint.y)) /
+    Math.pow(len, 2);
+
+  let closestX =
+    line.startPoint.x + dot * (line.endPoint.x - line.startPoint.x);
+  let closestY =
+    line.startPoint.y + dot * (line.endPoint.y - line.startPoint.y);
+
+  let onSegment = linePoint(line, { x: closestX, y: closestY });
+  if (!onSegment) return false;
+
+  let tempLine = {
+    startPoint: { x: closestX, y: closestY },
+    endPoint: { x: circle.x, y: circle.y },
+  };
+  let distance = lineLength(tempLine);
+
+  if (distance <= circle.radius) return true;
   return false;
 }
+
+${polygonPoint.keyFunction.toString()}
+
+function polygonCircle(polygon, circle) {
+  let next = 0;
+  const { vertices } = polygon;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
+    let line = { startPoint, endPoint };
+    let collision = lineCircle(line, circle);
+    if (collision) return true;
+  }
+
+  let centerInside = polygonPoint(polygon, {
+    x: circle.x,
+    y: circle.y,
+  });
+  if (centerInside) return true;
+
+  return false;
+}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const rotateQ = rotate ? options.time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
+
+${drawCircleToRectangle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -796,44 +871,16 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let centerX = canvas.width / 2, centerY = canvas.height / 2;
-  let angle = Date.now() * 0.001;
-  let rect = buildRect(centerX + Math.sin(Date.now() * 0.0005) * 100, centerY, 50, 50, angle);
-
-  let cx = centerX, cy = centerY, cr = 100;
-
-  let hit = circleOverlapsPoly(cx, cy, cr, rect);
-
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
-  ctx.beginPath();
-  ctx.arc(cx, cy, cr, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
-  ctx.beginPath();
-  ctx.moveTo(rect[0].x, rect[0].y);
-  for (let i = 1; i < rect.length; i++) {
-    ctx.lineTo(rect[i].x, rect[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-
-  if (hit) drawCollisionText(centerX);
+  drawCircleToRectangle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonCircle,
+    createRect
+  );
 
   requestAnimationFrame(draw);
 }
@@ -891,23 +938,14 @@ const LINE_LINE_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_LINE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${lineToLine.toString()}
 
+${drawLineToLine.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -930,24 +968,14 @@ function draw() {
   let y3b = y3 - Math.sin(angle1) * len;
 
   let hit = lineToLine(x1, y1, x2, y2, x3a, y3a, x3b, y3b);
-
-  // Draw static line (cyan when hit)
-  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-
-  // Draw moving line (red when hit)
-  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x3a, y3a);
-  ctx.lineTo(x3b, y3b);
-  ctx.stroke();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  drawLineToLine(
+    ctx,
+    { startPoint: { x: x3a, y: y3a }, endPoint: { x: x3b, y: y3b } },
+    { startPoint: { x: x1, y: y1 }, endPoint: { x: x2, y: y2 } },
+    hit,
+    canvas.width / 2,
+    performance.now()
+  );
 
   requestAnimationFrame(draw);
 }
@@ -958,23 +986,14 @@ const LINE_POINT_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_POINT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${lineToPoint.toString()}
 
+${drawLineToPoint.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -986,23 +1005,13 @@ function draw() {
   let px = centerX + Math.sin(Date.now() * 0.001) * 150;
   let py = centerY + Math.sin(Date.now() * 0.0008) * 150;
 
+  const line = {
+    startPoint: { x: x1, y: y1 },
+    endPoint: { x: x2, y: y2 },
+  };
+  const point = { x: px, y: py };
   let hit = lineToPoint(x1, y1, x2, y2, px, py, 20);
-
-  // Line changes color on hit
-  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-
-  // Dot is indigo at rest, pulses pink on collision
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
-  ctx.beginPath();
-  ctx.arc(px, py, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  drawLineToPoint(ctx, line, point, 5, hit, canvas.width);
 
   requestAnimationFrame(draw);
 }
@@ -1011,7 +1020,56 @@ draw();`;
 
 const LINE_RECT_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_RECT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineToRect.toString()}
+${lineLineFn.toString()}
+
+function polygonLine(polygon, line) {
+  let next = 0;
+  const vertices = polygon.vertices;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+    const tempLine = {
+      startPoint: { x: vertices[current].x, y: vertices[current].y },
+      endPoint: { x: vertices[next].x, y: vertices[next].y },
+    };
+    if (lineLine(line, tempLine).hit) return true;
+  }
+  return false;
+}
+
+${lineLength.toString()}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const time = options.time ?? 0;
+  const rotateQ = rotate ? time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
+
+${drawLineToRectangle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1019,53 +1077,39 @@ const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
+let rotate1 = 0;
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   let centerX = canvas.width / 2, centerY = canvas.height / 2;
+  const rect = createRect(100, 100, 0, {
+    rotate: true,
+    rotateSpeed: 2000,
+    time: performance.now(),
+  });
+  rect.vertices.forEach((vertex) => {
+    vertex.x += centerX;
+    vertex.y += centerY;
+  });
 
-  // Static rect at center
-  let rx = centerX - 50, ry = centerY - 50;
-  let rw = 100, rh = 100;
-
-  // Moving and rotating line
-  let angle = Date.now() * 0.003;
   let x1 = centerX + Math.sin(Date.now() * 0.0005) * 150;
   let y1 = centerY;
   const lineLen = 100;
-  let x2 = x1 + Math.cos(angle) * lineLen;
-  let y2 = y1 + Math.sin(angle) * lineLen;
-  let x3 = x1 - Math.cos(angle) * lineLen;
-  let y3 = y1 - Math.sin(angle) * lineLen;
+  let x2 = x1 + lineLen * Math.cos(2 * Math.PI * (rotate1 / 360));
+  let y2 = y1 + lineLen * Math.sin(2 * Math.PI * (rotate1 / 360));
+  let x3 = x1 - lineLen * Math.cos(2 * Math.PI * (rotate1 / 360));
+  let y3 = y1 - lineLen * Math.sin(2 * Math.PI * (rotate1 / 360));
+  rotate1++;
+  if (rotate1 > 360) rotate1 = 0;
 
-  let hit = lineToRect(x2, y2, x3, y3, rx, ry, rw, rh);
-
-  // Rect: orange at rest, pulses pink on collision
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
-  ctx.fillRect(rx, ry, rw, rh);
-
-  // Line: indigo at rest, pulses pink on collision
-  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x2, y2);
-  ctx.lineTo(x3, y3);
-  ctx.stroke();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  const line = {
+    startPoint: { x: x2, y: y2 },
+    endPoint: { x: x3, y: y3 },
+  };
+  let hit = polygonLine(rect, line);
+  drawLineToRectangle(ctx, rect, line, hit, canvas.width, performance.now());
 
   requestAnimationFrame(draw);
 }
@@ -1073,33 +1117,89 @@ function draw() {
 draw();`;
 
 const RECT_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const RECT_RECT_JS = `// ─── polygon-polygon SAT test ──────────────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
+const RECT_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
+
+${lineLineFn.toString()}
+
+function polygonLine(polygon, line) {
+  let next = 0;
+  const { vertices } = polygon;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let x3 = vertices[current].x;
+    let y3 = vertices[current].y;
+    let x4 = vertices[next].x;
+    let y4 = vertices[next].y;
+
+    let tempLine = {
+      startPoint: { x: x3, y: y3 },
+      endPoint: { x: x4, y: y4 },
+    };
+    let hit = lineLine(line, tempLine).hit;
+    if (hit) return true;
   }
-  return inside;
-}
 
-function buildRect(cx, cy, hw, hh, angle) {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return [
-    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
-    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
-    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
-    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
-  ];
-}
-
-function polyPolyOverlap(p1, p2) {
-  for (let i = 0; i < p1.length; i++) if (polyContainsPoint(p2, p1[i].x, p1[i].y)) return true;
-  for (let i = 0; i < p2.length; i++) if (polyContainsPoint(p1, p2[i].x, p2[i].y)) return true;
   return false;
 }
+
+${polygonPoint.keyFunction.toString()}
+
+function polygonPolygon(polygon1, polygon2) {
+  let next = 0;
+  const { vertices } = polygon1;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
+    let line = { startPoint, endPoint };
+
+    let collision = polygonLine(polygon2, line);
+    if (collision) return true;
+
+    collision = polygonPoint(polygon1, polygon2.vertices[0]);
+    if (collision) return true;
+  }
+
+  return false;
+}
+
+${lineLength.toString()}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const rotateQ = rotate ? options.time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
+
+${drawRectToRect.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1108,50 +1208,16 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
-
-function drawPoly(pts, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length; i++) {
-    ctx.lineTo(pts[i].x, pts[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-
-  // Rect1: moving and rotating
-  let rect1x = cx + Math.sin(Date.now() * 0.0005) * 150;
-  let rect1y = cy;
-  let angle1 = Date.now() * 0.001;
-  let rect1 = buildRect(rect1x, rect1y, 50, 50, angle1);
-
-  // Rect2: at center, rotating
-  let angle2 = Date.now() * 0.0008;
-  let rect2 = buildRect(cx, cy, 50, 50, angle2);
-
-  let hit = polyPolyOverlap(rect1, rect2);
-
-  drawPoly(rect1, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c');
-  drawPoly(rect2, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8');
-
-  if (hit) drawCollisionText(cx);
+  drawRectToRect(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonPolygon,
+    createRect
+  );
 
   requestAnimationFrame(draw);
 }
@@ -1159,38 +1225,60 @@ function draw() {
 draw();`;
 
 const POLYGON_POLYGON_HTML = `<canvas id="canvas"></canvas>`;
-const POLYGON_POLYGON_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${polygonToPolygon.toString()}
+const POLYGON_POLYGON_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
 
-// ─── buildStar helper ──────────────────────────────────────────────────────
-function buildStar(cx, cy, spikes, outer, inner, angleOffset) {
-  const pts = [];
-  const step = Math.PI / spikes;
-  for (let i = 0; i < 2 * spikes; i++) {
-    const r = i % 2 === 0 ? outer : inner;
-    const a = i * step + (angleOffset || 0);
-    pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+${lineLineFn.toString()}
+
+function polygonLine(polygon, line) {
+  let next = 0;
+  const { vertices } = polygon;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let x3 = vertices[current].x;
+    let y3 = vertices[current].y;
+    let x4 = vertices[next].x;
+    let y4 = vertices[next].y;
+
+    let tempLine = {
+      startPoint: { x: x3, y: y3 },
+      endPoint: { x: x4, y: y4 },
+    };
+    let hit = lineLine(line, tempLine).hit;
+    if (hit) return true;
   }
-  return pts;
-}
 
-// ─── polyContainsPoint helper ──────────────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
-  }
-  return inside;
-}
-
-function polyPolyOverlap(p1, p2) {
-  for (let i = 0; i < p1.length; i++) if (polyContainsPoint(p2, p1[i].x, p1[i].y)) return true;
-  for (let i = 0; i < p2.length; i++) if (polyContainsPoint(p1, p2[i].x, p2[i].y)) return true;
   return false;
 }
+
+${polygonPoint.keyFunction.toString()}
+
+function polygonPolygon(polygon1, polygon2) {
+  let next = 0;
+  const { vertices } = polygon1;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
+    let line = { startPoint, endPoint };
+
+    let collision = polygonLine(polygon2, line);
+    if (collision) return true;
+
+    collision = polygonPoint(polygon1, polygon2.vertices[0]);
+    if (collision) return true;
+  }
+
+  return false;
+}
+
+${starVertices.toString()}
+
+${drawPolygonToPolygon.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1199,49 +1287,16 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
-
-function drawPoly(points, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 1; i < points.length; i++) {
-    ctx.lineTo(points[i].x, points[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-}
-
 function draw() {
-  ctx.fillStyle = '#1e1b4b';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  let t = Date.now() * 0.001;
-
-  // Large 9-spike star at center (yellow/cyan)
-  let star1 = buildStar(cx, cy, 9, 150, 25, 0);
-
-  // Small 5-spike star moving (orange/red)
-  let star2x = cx + Math.sin(t * 0.8) * 200;
-  let star2y = cy + Math.cos(t * 0.6) * 150;
-  let star2 = buildStar(star2x, star2y, 5, 50, 15, t);
-
-  let hit = polyPolyOverlap(star1, star2);
-
-  drawPoly(star1, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8');
-  drawPoly(star2, hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c');
-
-  if (hit) drawCollisionText(cx);
+  drawPolygonToPolygon(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonPolygon,
+    starVertices
+  );
 
   requestAnimationFrame(draw);
 }
@@ -1568,11 +1623,65 @@ const COLOR_AND_VECTOR_PENS: ExamplePen[] = [
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
       js: `function lerp(a, b, t) { return a + (b - a) * t; }
-${rgbToHsl.toString()}
-${hslToRgb.toString()}
-${lerpColorFn.toString()}
-${lerpColorHsl.toString()}
-${rgbToCss.toString()}
+function rgbToHsl(rgb) {
+  const rn = rgb.r / 255;
+  const gn = rgb.g / 255;
+  const bn = rgb.b / 255;
+  const max = Math.max(rn, gn, bn);
+  const min = Math.min(rn, gn, bn);
+  const d = max - min;
+  let h = 0;
+  if (d !== 0) {
+    if (max === rn) h = ((gn - bn) / d) % 6;
+    else if (max === gn) h = (bn - rn) / d + 2;
+    else h = (rn - gn) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  const l = (max + min) / 2;
+  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+  return { h, s: s * 100, l: l * 100 };
+}
+function hslToRgb(hsl) {
+  const sn = hsl.s / 100;
+  const ln = hsl.l / 100;
+  const c = (1 - Math.abs(2 * ln - 1)) * sn;
+  const hp = ((((hsl.h % 360) + 360) % 360)) / 60;
+  const x = c * (1 - Math.abs((hp % 2) - 1));
+  let r1 = 0, g1 = 0, b1 = 0;
+  if (hp < 1) [r1, g1, b1] = [c, x, 0];
+  else if (hp < 2) [r1, g1, b1] = [x, c, 0];
+  else if (hp < 3) [r1, g1, b1] = [0, c, x];
+  else if (hp < 4) [r1, g1, b1] = [0, x, c];
+  else if (hp < 5) [r1, g1, b1] = [x, 0, c];
+  else [r1, g1, b1] = [c, 0, x];
+  const m = ln - c / 2;
+  return {
+    r: Math.round((r1 + m) * 255),
+    g: Math.round((g1 + m) * 255),
+    b: Math.round((b1 + m) * 255),
+  };
+}
+function lerpColor(a, b, t) {
+  return {
+    r: lerp(a.r, b.r, t),
+    g: lerp(a.g, b.g, t),
+    b: lerp(a.b, b.b, t),
+  };
+}
+function lerpColorHsl(a, b, t) {
+  const ha = rgbToHsl(a);
+  const hb = rgbToHsl(b);
+  const dh = ((((hb.h - ha.h) % 360) + 540) % 360) - 180;
+  return hslToRgb({
+    h: ha.h + dh * t,
+    s: lerp(ha.s, hb.s, t),
+    l: lerp(ha.l, hb.l, t),
+  });
+}
+function rgbToCss(rgb) {
+  return 'rgb(' + Math.round(rgb.r) + ', ' + Math.round(rgb.g) + ', ' + Math.round(rgb.b) + ')';
+}
 ${drawColorLerp.toString()}
 
 const canvas = document.getElementById('canvas');
@@ -1706,7 +1815,16 @@ const basePoints = Array.from({ length: 9 }, (_, i) => {
   return { x: Math.cos(a) * r, y: Math.sin(a) * r };
 });
 function draw() {
-  drawVectorRotate(ctx, canvas.width / 2, canvas.height / 2, basePoints, performance.now() * 0.001, canvas.width, canvas.height);
+  drawVectorRotate(
+    ctx,
+    canvas.width / 2,
+    canvas.height / 2,
+    basePoints,
+    performance.now() * 0.001,
+    canvas.width,
+    canvas.height,
+    vecRotate
+  );
   requestAnimationFrame(draw);
 }
 draw();`,
@@ -2203,11 +2321,11 @@ export const EXAMPLE_PENS: ExamplePen[] = [
     group: "Collision Detection",
     key: "point-to-rectangle-collision",
     label: "Point to Rectangle",
-    blurb: "Detect when a moving point enters an axis-aligned rectangle.",
+    blurb: "Detect when a moving point enters a rotating rectangle.",
     payload: {
       title: "Point to Rectangle",
       description:
-        "Axis-aligned rectangle collision: px in [rx, rx+w] and py in [ry, ry+h].",
+        "Point-in-polygon collision against a spinning rectangle.",
       html: POINT_RECT_HTML,
       css: FULLSCREEN_CSS,
       js: POINT_RECT_JS,
@@ -2347,8 +2465,14 @@ export const EXAMPLE_PENS: ExamplePen[] = [
       html: `<canvas id="canvas"></canvas><div id="controls"><label>t: <input type="range" id="t" min="-40" max="140" step="1" value="50"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${getPointOnLine.toString()}
-const GetPointOnLineFunc = getPointOnLine;
+function getPointOnLine(startPoint, endPoint, percentage) {
+  let x = startPoint.x + percentage * (endPoint.x - startPoint.x);
+  let y = startPoint.y + percentage * (endPoint.y - startPoint.y);
+  return { x, y };
+}
+
+const T_MIN = -0.4;
+const T_MAX = 1.4;
 
 ${drawGetPointOnLine.toString()}
 
@@ -2365,7 +2489,7 @@ let startPoint = {x: canvas.width * 0.2, y: canvas.height * 0.7};
 let endPoint = {x: canvas.width * 0.8, y: canvas.height * 0.3};
 
 function draw() {
-  drawGetPointOnLine(ctx, startPoint, endPoint, t);
+  drawGetPointOnLine(ctx, startPoint, endPoint, t, getPointOnLine);
   requestAnimationFrame(draw);
 }
 
@@ -2517,7 +2641,35 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>rotation: <input type="range" id="rotation" min="0" max="360" step="1" value="0"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${createRect.toString()}
+${lineLength.toString()}
+${getRotation.keyFunction.toString()}
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const time = options.time ?? 0;
+  const rotateQ = rotate ? time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
 
 // ─── the drawing helper from the /examples animation ────────────────────────
 ${drawPolygon.toString()}
@@ -2567,9 +2719,6 @@ draw();`,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${equilateralTriangle.toString()}
 
-// alias used inside drawEquilateralTriangle
-const EquilateralTriangleFunc = equilateralTriangle;
-
 ${drawEquilateralTriangleAnimation.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
@@ -2601,7 +2750,16 @@ function getAngle(from, to) {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   angle = getAngle(startPoint, endPoint);
-  drawEquilateralTriangle(ctx, backgroundTris, angle, startPoint, endPoint, canvas.width, canvas.height);
+  drawEquilateralTriangle(
+    ctx,
+    backgroundTris,
+    angle,
+    startPoint,
+    endPoint,
+    canvas.width,
+    canvas.height,
+    equilateralTriangle
+  );
 }
 
 canvas.addEventListener('pointerdown', (e) => {
@@ -2708,7 +2866,17 @@ render();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>points: <input type="range" id="points" min="3" max="100" step="5" value="20"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${DistributeAroundCircle.keyFunction.toString()}
+function distributeAroundCircle(centerPoint, radius, totalItems) {
+  const points = [];
+  for (let i = 0; i < totalItems; i++) {
+    const angle = (Math.PI * 2 * i) / totalItems;
+    points.push({
+      x: centerPoint.x + radius * Math.cos(angle),
+      y: centerPoint.y + radius * Math.sin(angle),
+    });
+  }
+  return points;
+}
 
 function cosWave(startValue, differential, speed) {
   const currentDate = new Date();
@@ -2728,7 +2896,13 @@ resize();
 let totalItems = 20;
 
 function draw() {
-  drawDistributeAroundCircle(ctx, canvas.width, canvas.height, totalItems);
+  drawDistributeAroundCircle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    totalItems,
+    distributeAroundCircle
+  );
   requestAnimationFrame(draw);
 }
 
@@ -2776,7 +2950,14 @@ function draw() {
   let startPoint = {x: canvas.width * 0.3, y: canvas.height / 2};
   let endPoint = {x: canvas.width * 0.7 + Math.sin(t) * 100, y: canvas.height / 2 + Math.cos(t) * 80};
 
-  drawLineLength(ctx, startPoint, endPoint, canvas.width, canvas.height);
+  drawLineLength(
+    ctx,
+    startPoint,
+    endPoint,
+    canvas.width,
+    canvas.height,
+    lineLength
+  );
   requestAnimationFrame(draw);
 }
 

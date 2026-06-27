@@ -7,7 +7,17 @@ export function drawPointToCircle(
   ctx: CanvasRenderingContext2D,
   canvasWidth: number,
   canvasHeight: number,
-  time: number
+  time: number,
+  sineCurveFn: (
+    startingValue: number,
+    differential: number,
+    speed: number,
+    time: number
+  ) => number,
+  pointCircleFn: (
+    point: { x: number; y: number },
+    circle: { x: number; y: number; radius: number }
+  ) => boolean
 ): void {
   const halfWidth = canvasWidth / 2;
   const halfHeight = canvasHeight / 2;
@@ -15,18 +25,18 @@ export function drawPointToCircle(
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   const circle = { x: halfWidth, y: halfHeight, radius: 100 };
-  const x = sineCurve.keyFunction(halfWidth, 200, 0.001, performance.now());
-  const y = sineCurve.keyFunction(halfHeight, 200, 0.001, performance.now());
+  const x = sineCurveFn(halfWidth, 200, 0.001, time);
+  const y = sineCurveFn(halfHeight, 200, 0.001, time);
 
-  const hit = pointCircle.keyFunction({ x, y }, circle);
-  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
+  const hit = pointCircleFn({ x, y }, circle);
+  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(time / 120)) + "%)" : "#ff9f1c";
 
   ctx.beginPath();
   ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
   ctx.fill();
 
   ctx.beginPath();
-  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
+  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(time / 120)) + "%)" : "#818cf8";
   ctx.arc(x, y, 5, 0, 2 * Math.PI);
   ctx.fill();
 
@@ -41,55 +51,6 @@ export function drawPointToCircle(
     ctx.restore();
   }
 }
-
-// Export the function strings for CodePen pens
-export const drawPointToCircleFunctionString = `// ─── sineCurve function ─────────────────────────────────────────────────────
-function sineCurve(startingValue, differential, speed, time) {
-  return startingValue + Math.sin(time * speed) * differential;
-}
-
-// ─── pointCircle collision detection ────────────────────────────────────────
-function pointCircle(point, circle) {
-  let distX = point.x - circle.x;
-  let distY = point.y - circle.y;
-  let distance = Math.sqrt(distX * distX + distY * distY);
-  return distance <= circle.radius;
-}
-
-// ─── drawPointToCircle canonical animation ──────────────────────────────────
-function drawPointToCircle(ctx, canvasWidth, canvasHeight, time) {
-  const halfWidth = canvasWidth / 2;
-  const halfHeight = canvasHeight / 2;
-
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-  const circle = { x: halfWidth, y: halfHeight, radius: 100 };
-  const x = sineCurve(halfWidth, 200, 0.001, time);
-  const y = sineCurve(halfHeight, 200, 0.001, time);
-
-  const hit = pointCircle({ x, y }, circle);
-  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
-
-  ctx.beginPath();
-  ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
-  ctx.arc(x, y, 5, 0, 2 * Math.PI);
-  ctx.fill();
-
-  if (hit) {
-    ctx.save();
-    ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-    ctx.textAlign = "center";
-    ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-    ctx.shadowBlur = 14;
-    ctx.fillStyle = "#cdd3ff";
-    ctx.fillText("collision detected", halfWidth, 40);
-    ctx.restore();
-  }
-}`;
 
 class PointToCircleCollision extends AnimationBaseClass {
   static t = "point to circle collision";
@@ -115,40 +76,22 @@ class PointToCircleCollision extends AnimationBaseClass {
   }
   draw = () => {
     if (!this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    this.circle2.x = this.halfWidth;
-    this.circle2.y = this.halfHeight;
-    let { x, y } = this.makePointMove();
-
-    const hit = pointCircle.keyFunction({ x, y }, this.circle2);
-    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
-
-    this.ctx.beginPath();
-    this.ctx.arc(
-      this.circle2.x,
-      this.circle2.y,
-      this.circle2.radius,
-      0,
-      2 * Math.PI
+    drawPointToCircle(
+      this.ctx,
+      this.canvasWidth,
+      this.canvasHeight,
+      performance.now(),
+      sineCurve.keyFunction as (
+        startingValue: number,
+        differential: number,
+        speed: number,
+        time: number
+      ) => number,
+      pointCircle.keyFunction as (
+        point: { x: number; y: number },
+        circle: { x: number; y: number; radius: number }
+      ) => boolean
     );
-    this.ctx.fill();
-
-    this.ctx.beginPath();
-    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8"; /* indigo dot at rest, pink pulse on collision */
-    this.ctx.arc(x, y, this.circle1.radius, 0, 2 * Math.PI);
-    this.ctx.fill();
-
-    if (hit) {
-      this.ctx.save();
-      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-      this.ctx.shadowBlur = 14;
-      this.ctx.fillStyle = "#cdd3ff";
-      this.ctx.fillText("collision detected", this.halfWidth, 40);
-      this.ctx.restore();
-    }
 
     this.raf(this.draw);
   };

@@ -10,13 +10,18 @@ function drawGetPointOnLine(
   ctx: any,
   startPoint: Point,
   endPoint: Point,
-  t: number
+  t: number,
+  getPointOnLineFn: (
+    startPoint: Point,
+    endPoint: Point,
+    percentage: number
+  ) => Point
 ): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   // dashed extension line — the part of the lerp that lives OUTSIDE [0,1]
-  const extStart = GetPointOnLineFunc(startPoint, endPoint, T_MIN);
-  const extEnd = GetPointOnLineFunc(startPoint, endPoint, T_MAX);
+  const extStart = getPointOnLineFn(startPoint, endPoint, T_MIN);
+  const extEnd = getPointOnLineFn(startPoint, endPoint, T_MAX);
   ctx.save();
   ctx.setLineDash([6, 8]);
   ctx.strokeStyle = "rgba(244,114,182,0.35)";
@@ -38,7 +43,7 @@ function drawGetPointOnLine(
 
   // evenly-spaced tick ghosts so the subdivision is visible
   [0, 0.25, 0.5, 0.75, 1].forEach((tick) => {
-    const p = GetPointOnLineFunc(startPoint, endPoint, tick);
+    const p = getPointOnLineFn(startPoint, endPoint, tick);
     ctx.beginPath();
     ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
     ctx.fillStyle = "rgba(255,255,255,0.6)";
@@ -60,7 +65,7 @@ function drawGetPointOnLine(
   });
 
   // the moving marker — orange on the segment, pink when extrapolating
-  const point: Point = GetPointOnLineFunc(startPoint, endPoint, t);
+  const point: Point = getPointOnLineFn(startPoint, endPoint, t);
   const extrapolating = t < 0 || t > 1;
   ctx.fillStyle = extrapolating ? "#f472b6" : "#f97316";
   ctx.beginPath();
@@ -114,7 +119,13 @@ export default class GetPointOnLineAnimation extends AnimationBaseClass {
 
   draw = () => {
     if (!this.ctx || !this.canvas || !this.startPoint || !this.endPoint) return;
-    drawGetPointOnLine(this.ctx, this.startPoint, this.endPoint, this.perc);
+    drawGetPointOnLine(
+      this.ctx,
+      this.startPoint,
+      this.endPoint,
+      this.perc,
+      GetPointOnLineFunc
+    );
 
     if (this.textDiv) {
       const a = this.startPoint;

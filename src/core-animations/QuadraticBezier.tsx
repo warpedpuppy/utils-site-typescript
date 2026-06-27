@@ -13,7 +13,8 @@ function drawQuadraticBezier(
   p0: Point,
   p1: Point,
   p2: Point,
-  dragTarget: HandleKey | null
+  dragTarget: HandleKey | null,
+  quadraticBezierFn: (percentage: number, startPoint: Point, controlPoint: Point, endPoint: Point) => Point
 ): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -34,14 +35,14 @@ function drawQuadraticBezier(
   ctx.lineWidth = 3;
   ctx.beginPath();
   for (let i = 0; i <= 100; i++) {
-    const pt = quadraticBezier(i / 100, p0, p1, p2) as Point;
+    const pt = quadraticBezierFn(i / 100, p0, p1, p2) as Point;
     i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y);
   }
   ctx.stroke();
 
   // ── Moving dot (oscillates along the curve) ───────────────────────────
   const tDot = (Math.sin(Date.now() * 0.0009) + 1) / 2;
-  const dotPt = quadraticBezier(tDot, p0, p1, p2) as Point;
+  const dotPt = quadraticBezierFn(tDot, p0, p1, p2) as Point;
 
   ctx.fillStyle = "#f97316";
   ctx.beginPath();
@@ -118,7 +119,14 @@ export default class QuadraticBezierAnimation extends AnimationBaseClass {
 
   draw = () => {
     if (!this.ctx) return;
-    drawQuadraticBezier(this.ctx, this.p0, this.p1, this.p2, this.dragTarget);
+    drawQuadraticBezier(
+      this.ctx,
+      this.p0,
+      this.p1,
+      this.p2,
+      this.dragTarget,
+      quadraticBezier
+    );
     this.raf(this.draw);
   };
 

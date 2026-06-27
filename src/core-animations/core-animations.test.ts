@@ -109,13 +109,13 @@ describe("Point-to-Circle: CodePen uses canonical draw function", () => {
     expect(pointToCircleAnim).toContain("export function drawPointToCircle");
   });
 
-  it("pens-examples imports drawPointToCircleFunctionString from core-animations", () => {
+  it("pens-examples imports drawPointToCircle from core-animations", () => {
     expect(pensExamples).toContain(
-      'import { drawPointToCircleFunctionString } from "../../core-animations/PointToCircle'
+      'import { drawPointToCircle } from "../../core-animations/PointToCircle'
     );
   });
 
   it("CodePen calls drawPointToCircle in animation loop", () => {
-    expect(pensExamples).toContain("drawPointToCircle(ctx");
+    expect(pensExamples).toContain("drawPointToCircle(");
   });
 });

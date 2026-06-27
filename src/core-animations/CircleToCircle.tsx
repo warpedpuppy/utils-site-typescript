@@ -2,6 +2,39 @@ import { Circle } from "../types/shapes";
 import { circleCircle } from "../pages/createJSON/formulas/collision-detection/CircleCollision";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+export function drawCircleToCircle(
+  ctx: CanvasRenderingContext2D,
+  circle1: Circle,
+  circle2: Circle,
+  hit: boolean,
+  canvasWidth: number,
+  time: number = performance.now()
+) {
+  const pulseLightness = 55 + 25 * Math.sin(time / 120);
+  const hitColor = `hsl(330, 95%, ${pulseLightness}%)`;
+
+  ctx.fillStyle = hit ? hitColor : "#ff9f1c";
+  ctx.beginPath();
+  ctx.arc(circle2.x, circle2.y, circle2.radius, 0, 2 * Math.PI);
+  ctx.fill();
+
+  ctx.fillStyle = hit ? hitColor : "#818cf8";
+  ctx.beginPath();
+  ctx.arc(circle1.x, circle1.y, circle1.radius, 0, 2 * Math.PI);
+  ctx.fill();
+
+  if (!hit) return;
+
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", canvasWidth / 2, 40);
+  ctx.restore();
+}
+
 class CircleToCircleAnimation extends AnimationBaseClass {
   static t = "circle to circle collision";
   static l = "circle-to-circle-collision";
@@ -41,27 +74,13 @@ class CircleToCircleAnimation extends AnimationBaseClass {
     this.circle2.y = y;
 
     const hit = circleCircle.keyFunction(this.circle1, this.circle2);
-
-    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
-    this.ctx.beginPath();
-    this.ctx.arc(this.circle2.x, this.circle2.y, this.circle2.radius, 0, 2 * Math.PI);
-    this.ctx.fill();
-
-    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
-    this.ctx.beginPath();
-    this.ctx.arc(this.circle1.x, this.circle1.y, this.circle1.radius, 0, 2 * Math.PI);
-    this.ctx.fill();
-
-    if (hit) {
-      this.ctx.save();
-      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-      this.ctx.shadowBlur = 14;
-      this.ctx.fillStyle = "#cdd3ff";
-      this.ctx.fillText("collision detected", this.halfWidth, 40);
-      this.ctx.restore();
-    }
+    drawCircleToCircle(
+      this.ctx,
+      this.circle1,
+      this.circle2,
+      hit,
+      this.canvasWidth
+    );
 
     this.raf(this.draw);
   };

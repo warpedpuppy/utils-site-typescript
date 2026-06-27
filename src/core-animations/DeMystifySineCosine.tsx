@@ -7,7 +7,14 @@ function drawDeMystifySineCosine(
   ctx: any,
   canvasWidth: any,
   canvasHeight: any,
-  textDiv: HTMLElement | null
+  textDiv: HTMLElement | null,
+  unitCirclePointFn: (
+    centerX: number,
+    centerY: number,
+    radius: number,
+    currentPoint: number
+  ) => { x: number; y: number },
+  radToDegFn: (radians: number) => number
 ): void {
   const now = performance.now() * 0.001;
   const progress = (Math.sin(now) + 1) / 2;
@@ -15,10 +22,10 @@ function drawDeMystifySineCosine(
   const radius = Math.min(canvasWidth * 0.22, canvasHeight * 0.28, 130);
   const centerX = canvasWidth * 0.28;
   const centerY = canvasHeight * 0.62;
-  const point = unitCirclePoint(centerX, centerY, radius, -angle);
+  const point = unitCirclePointFn(centerX, centerY, radius, -angle);
   const adjacent = point.x - centerX;
   const opposite = centerY - point.y;
-  const degrees = radToDeg(angle);
+  const degrees = radToDegFn(angle);
   const ratioPanelX = canvasWidth * 0.58;
   const ratioPanelWidth = canvasWidth * 0.28;
   const ratioScale = ratioPanelWidth / radius;
@@ -152,7 +159,9 @@ export default class DeMystifySineCosine extends AnimationBaseClass {
       this.ctx,
       this.canvasWidth,
       this.canvasHeight,
-      this.textDiv
+      this.textDiv,
+      unitCirclePoint,
+      radToDeg
     );
     this.raf(this.draw);
   };

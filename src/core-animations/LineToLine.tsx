@@ -3,6 +3,42 @@ import AnimationBaseClass from "./AnimationBaseClass";
 import { lineLine } from "../pages/createJSON/formulas/collision-detection/LineCollision";
 import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 
+export function drawLineToLine(
+  ctx: CanvasRenderingContext2D,
+  line1: Line,
+  line2: Line,
+  hit: boolean,
+  halfWidth: number,
+  time: number
+) {
+  const pulse = "hsl(330, 95%, " + (55 + 25 * Math.sin(time / 120)) + "%)";
+
+  ctx.lineWidth = 3;
+
+  ctx.strokeStyle = hit ? pulse : "#ff9f1c";
+  ctx.beginPath();
+  ctx.moveTo(line1.startPoint.x, line1.startPoint.y);
+  ctx.lineTo(line1.endPoint.x, line1.endPoint.y);
+  ctx.stroke();
+
+  ctx.strokeStyle = hit ? pulse : "#818cf8";
+  ctx.beginPath();
+  ctx.moveTo(line2.startPoint.x, line2.startPoint.y);
+  ctx.lineTo(line2.endPoint.x, line2.endPoint.y);
+  ctx.stroke();
+
+  if (!hit) return;
+
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", halfWidth, 40);
+  ctx.restore();
+}
+
 class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";
   static l = "line-to-line-collision";
@@ -32,8 +68,6 @@ class LineToLineCollision extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    this.ctx.lineWidth = 3;
-
     let { x, y } = this.makePointMove();
     let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
     let y1 = y + this.lineLength * Math.sin(2 * Math.PI * (this.rotate1 / 360));
@@ -48,29 +82,14 @@ class LineToLineCollision extends AnimationBaseClass {
     this.line2.endPoint = { x: this.halfWidth + 100, y: this.halfHeight };
 
     const hit = lineLine.keyFunction(this.line1, this.line2).hit;
-
-    this.ctx.strokeStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.line1.startPoint.x, this.line1.startPoint.y);
-    this.ctx.lineTo(this.line1.endPoint.x, this.line1.endPoint.y);
-    this.ctx.stroke();
-
-    this.ctx.strokeStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.line2.startPoint.x, this.line2.startPoint.y);
-    this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);
-    this.ctx.stroke();
-
-    if (hit) {
-      this.ctx.save();
-      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-      this.ctx.shadowBlur = 14;
-      this.ctx.fillStyle = "#cdd3ff";
-      this.ctx.fillText("collision detected", this.halfWidth, 40);
-      this.ctx.restore();
-    }
+    drawLineToLine(
+      this.ctx,
+      this.line1,
+      this.line2,
+      hit,
+      this.halfWidth,
+      performance.now()
+    );
 
     this.raf(this.draw);
   };
