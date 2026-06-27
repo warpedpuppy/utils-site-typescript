@@ -3,7 +3,16 @@ import { Helmet } from "react-helmet-async";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import coreApi from "./core-api.json";
 import MiniDemo, { MiniDemoProps } from "../../components/MiniDemo/MiniDemo";
+import EasingMiniDemo from "../../components/MiniDemo/EasingMiniDemo";
 import { pingPong } from "@utilspalooza/core/PingPong";
+import {
+  linear, easeIn, easeOut, easeInOut,
+  easeInQuad, easeOutQuad, easeInOutQuad,
+  easeInCubic, easeOutCubic, easeInOutCubic,
+  easeInQuart, easeOutQuart, easeInOutQuart,
+  easeInQuint, easeOutQuint, easeInOutQuint,
+  easeOutElastic, easeOutBounce,
+} from "@utilspalooza/core/Easing";
 import { SCALAR_TRANSFORM_DEMOS } from "../../components/MiniDemo/scalarTransforms";
 import {
   CATCH_ALL_CONCEPT,
@@ -34,6 +43,15 @@ const TRANSFORM_FN_NAMES: Record<string, string> = {
   clamp: "clamp",
   wrap: "wrap",
   smoothstep: "smoothstep",
+};
+
+const EASING_DEMOS: Record<string, (t: number) => number> = {
+  linear, easeIn, easeOut, easeInOut,
+  easeInQuad, easeOutQuad, easeInOutQuad,
+  easeInCubic, easeOutCubic, easeInOutCubic,
+  easeInQuart, easeOutQuart, easeInOutQuart,
+  easeInQuint, easeOutQuint, easeInOutQuint,
+  easeOutElastic, easeOutBounce,
 };
 
 const MINI_DEMOS: Record<string, MiniDemoProps> = {
@@ -144,6 +162,12 @@ function ApiEntryCard({
         <code>{`${entry.name}${entry.kind === "type" ? "" : `: ${entry.signature}`}`}</code>
       </pre>
       {entry.description && <p>{cleanDoc(entry.description)}</p>}
+      {visual.kind === "mini-demo" && EASING_DEMOS[entry.name] && (
+        <>
+          <p className="api-docs__demo-caption">See it move:</p>
+          <EasingMiniDemo ease={EASING_DEMOS[entry.name]} label={`${entry.name}(t)`} height={200} />
+        </>
+      )}
       {visual.kind === "mini-demo" && MINI_DEMOS[entry.name] && (
         <>
           <p className="api-docs__demo-caption">See it move:</p>
