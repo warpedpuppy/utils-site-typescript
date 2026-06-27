@@ -1,9 +1,21 @@
-import { useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import coreApi from "./core-api.json";
 import MiniDemo, { MiniDemoProps } from "../../components/MiniDemo/MiniDemo";
 import { pingPong } from "@utilspalooza/core/PingPong";
 import { SCALAR_TRANSFORM_DEMOS } from "../../components/MiniDemo/scalarTransforms";
+import {
+  CATCH_ALL_CONCEPT,
+  CONCEPTS,
+  getEntryUsageLead,
+  getEntryVisual,
+  getModuleDocMode,
+  makeConceptId,
+  MODULE_ENTRY_ORDER,
+  MODULE_GUIDES,
+  ModuleDocMode,
+} from "./docsManifest";
 import "./ApiDocs.scss";
 
 // ── Mini-demos ───────────────────────────────────────────────────────────────
@@ -64,108 +76,149 @@ function groupByModule(entries: ApiEntry[]): [string, ApiEntry[]][] {
     list.push(entry);
     groups.set(entry.module, list);
   }
-  return [...groups.entries()];
+  return [...groups.entries()].map(([module, list]) => [module, sortModuleEntries(module, list)]);
 }
 
-// ── Teaching map ────────────────────────────────────────────────────────────
-// The ONLY hand-maintained part of the Overview: which source modules belong to
-// which "concept" a learner would recognise, and one sentence on what the
-// concept teaches. Everything else below is derived from core-api.json, so
-// adding a function to the library makes it appear here automatically — a new
-// module nobody has slotted yet falls into the "More core math" catch-all rather
-// than vanishing. Order is pedagogical: foundations first, systems last.
-const CONCEPTS: { title: string; blurb: string; modules: string[] }[] = [
-  {
-    title: "Numbers in motion",
-    blurb:
-      "The scalar building blocks: turn time, input, or distance into a usable value. Almost every animation downstream is just these, repeated.",
-    modules: ["Lerp", "InverseLerp", "MapRange", "Clamp", "Wrap", "PingPong", "Smoothstep"],
-  },
-  {
-    title: "Easing & tweening",
-    blurb:
-      "Why motion feels alive instead of robotic. The curves that shape acceleration, plus tiny time-driven helpers that sample them — they move values, never your render layer.",
-    modules: ["Easing", "Animate"],
-  },
-  {
-    title: "Angles & trigonometry",
-    blurb:
-      "Where sine and cosine stop being homework and become rotation, orbits, and waves. Degrees, radians, and the unit circle, made visible.",
-    modules: [
-      "AngleInterpolation", "DegToRad", "RadToDeg", "UnitCirclePoint",
-      "GetRotation", "SineCurve", "SineWave", "WaveAmplitude", "DFT",
-    ],
-  },
-  {
-    title: "Vectors",
-    blurb:
-      "How anything that moves knows where it is going. Add, scale, rotate, reflect, normalize — the grammar of position and velocity in 2D.",
-    modules: ["Vec2"],
-  },
-  {
-    title: "Points, lines & curves",
-    blurb:
-      "The geometry under shapes and paths: distances, points along a line, triangle math, Bézier curves, and placing things evenly around a circle.",
-    modules: [
-      "Distance", "LineLength", "GetPointOnLine", "MoveAlongLine", "MoveToward",
-      "GetTriangleData", "CircleFromThreePoints", "FindPointAroundCircle",
-      "DistributeAroundCircle", "EquilateralTriangle", "Rectangle", "Star",
-      "QuadraticBezier", "BezierCurve",
-    ],
-  },
-  {
-    title: "Collision detection",
-    blurb:
-      "The question every game asks: are these two things touching? Circles, rectangles, lines, points, and polygons, in every combination.",
-    modules: [
-      "CircleToCircle", "CircleToRect", "LineToCircle", "LineToLine",
-      "LineToPoint", "LineToRect", "PointToCircle", "PointToRect",
-      "PolygonToPolygon", "RectToRect",
-      "CollisionObjectAPI/CircleCircle", "CollisionObjectAPI/LineCircle",
-      "CollisionObjectAPI/LineLine", "CollisionObjectAPI/LinePoint",
-      "CollisionObjectAPI/PointCircle", "CollisionObjectAPI/PolygonCircle",
-      "CollisionObjectAPI/PolygonLine", "CollisionObjectAPI/PolygonPoint",
-      "CollisionObjectAPI/PolygonPolygon",
-    ],
-  },
-  {
-    title: "Color",
-    blurb:
-      "Color as math you can interpolate. Convert between RGB and HSL, blend two colors, and build palettes that actually go together.",
-    modules: ["Color", "GetRandomColors"],
-  },
-  {
-    title: "Physics & systems",
-    blurb:
-      "Where simple rules produce complex, lifelike behavior: bouncing, orbits, flocking, gravity, lensing, and cellular automata.",
-    modules: [
-      "Boids", "BallBounce", "BallToBallBounce", "OrbitalMotion",
-      "GameOfLife", "GRStep", "LensDeflection", "SphereLighting",
-    ],
-  },
-  {
-    title: "Helpers",
-    blurb:
-      "The small conveniences every demo needs and nobody wants to rewrite: random numbers, number formatting, centering on a parent.",
-    modules: ["RandomIntegerBetween", "RandomNumberBetween", "NumberWithCommas", "CenterOnParent"],
-  },
-  {
-    title: "Core types",
-    blurb:
-      "The shared shapes — Point, Circle, Line, Polygon, Vector — that the whole library speaks in.",
-    modules: ["types"],
-  },
-];
+function sortModuleEntries(module: string, entries: ApiEntry[]): ApiEntry[] {
+  const preferredOrder = MODULE_ENTRY_ORDER[module];
+  if (!preferredOrder) return entries;
+  const rank = new Map(preferredOrder.map((name, index) => [name, index]));
+  return [...entries].sort((a, b) => {
+    const aRank = rank.get(a.name) ?? Number.MAX_SAFE_INTEGER;
+    const bRank = rank.get(b.name) ?? Number.MAX_SAFE_INTEGER;
+    if (aRank !== bRank) return aRank - bRank;
+    return a.name.localeCompare(b.name);
+  });
+}
 
-const CATCH_ALL = {
-  title: "More core math",
-  blurb: "Recently added to the package and not yet slotted into a concept above.",
-};
+function renderImportLine(entry: ApiEntry): string {
+  if (entry.kind === "type") {
+    return `import type { ${entry.name} } from "@utilspalooza/core";`;
+  }
+  return `import { ${entry.name} } from "@utilspalooza/core";`;
+}
+
+function renderEntryMeta(entry: ApiEntry, mode: ModuleDocMode) {
+  const guide = MODULE_GUIDES[entry.module];
+  return (
+    <div className="api-docs__entry-meta">
+      <span className={`api-docs__kind api-docs__kind--${entry.kind}`}>{entry.kind}</span>
+      {mode === "guide" && guide && <span className="api-docs__role">{guide.badgeLabel}</span>}
+    </div>
+  );
+}
+
+function ApiEntryCard({
+  entry,
+  mode,
+  onJumpToConcept,
+}: {
+  entry: ApiEntry;
+  mode: ModuleDocMode;
+  onJumpToConcept: (conceptId: string) => void;
+}) {
+  const concept = getConceptForModule(entry.module);
+  const visual = getEntryVisual(entry.name);
+  return (
+    <article className="api-docs__fn" key={`${entry.module}.${entry.name}`} id={entry.name}>
+      <div className="api-docs__fn-head">
+        <code className="api-docs__fn-name">{entry.name}</code>
+        {renderEntryMeta(entry, mode)}
+      </div>
+      {concept && (
+        <div className="api-docs__crumbs">
+          <button type="button" onClick={() => onJumpToConcept(concept.id)}>
+            Overview
+          </button>
+          <span>/</span>
+          <button type="button" onClick={() => onJumpToConcept(concept.id)}>
+            {concept.title}
+          </button>
+        </div>
+      )}
+      {mode === "guide" && <p className="api-docs__usage-lead">{getEntryUsageLead(entry)}</p>}
+      <pre className="api-docs__fn-sig">
+        <code>{renderImportLine(entry)}</code>
+      </pre>
+      <pre className="api-docs__fn-sig">
+        <code>{`${entry.name}${entry.kind === "type" ? "" : `: ${entry.signature}`}`}</code>
+      </pre>
+      {entry.description && <p>{cleanDoc(entry.description)}</p>}
+      {visual.kind === "mini-demo" && MINI_DEMOS[entry.name] && (
+        <>
+          <p className="api-docs__demo-caption">See it move:</p>
+          <MiniDemo {...MINI_DEMOS[entry.name]} />
+        </>
+      )}
+      {visual.kind === "example" && visual.exampleSlug && (
+        <div className="api-docs__example-callout">
+          <p>See it in a richer canvas example:</p>
+          <Link to={`/examples/${visual.exampleSlug}`}>
+            {visual.exampleLabel ?? "Open the example"}
+          </Link>
+        </div>
+      )}
+      {entry.params.length > 0 && (
+        <dl className="api-docs__params">
+          {entry.params.map((param) => (
+            <div key={param.name}>
+              <dt>{param.name}</dt>
+              <dd>{cleanDoc(param.text)}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {entry.returns && (
+        <p className="api-docs__returns">
+          <span>returns</span> {cleanDoc(entry.returns)}
+        </p>
+      )}
+      {entry.example && (
+        <pre className="api-docs__fn-example">
+          <code>{entry.example}</code>
+        </pre>
+      )}
+    </article>
+  );
+}
+
+
+function countConceptModulesByMode(entries: ApiEntry[]) {
+  const seen = new Map<string, ModuleDocMode>();
+  for (const entry of entries) {
+    if (!seen.has(entry.module)) {
+      seen.set(entry.module, getModuleDocMode(entry.module));
+    }
+  }
+
+  let systemGuideModules = 0;
+  let conceptSetModules = 0;
+  let referenceModules = 0;
+  for (const [module, mode] of seen.entries()) {
+    if (mode === "guide") {
+      const guideKind = MODULE_GUIDES[module]?.guideKind;
+      if (guideKind === "system") systemGuideModules += 1;
+      else conceptSetModules += 1;
+      continue;
+    }
+    referenceModules += 1;
+  }
+
+  return { systemGuideModules, conceptSetModules, referenceModules };
+}
 
 // Build concept groups straight from the generated docs data. Each concept lists
 // every export whose source module it claims; anything unclaimed is collected
 // into the catch-all so nothing the package exports is ever hidden here.
-function buildConceptGroups(): { title: string; blurb: string; items: ApiEntry[] }[] {
+function buildConceptGroups(): {
+  id: string;
+  title: string;
+  blurb: string;
+  items: ApiEntry[];
+  systemGuideModules: number;
+  conceptSetModules: number;
+  referenceModules: number;
+}[] {
   const moduleToConcept = new Map<string, number>();
   CONCEPTS.forEach((concept, i) => {
     for (const mod of concept.modules) moduleToConcept.set(mod, i);
@@ -180,18 +233,34 @@ function buildConceptGroups(): { title: string; blurb: string; items: ApiEntry[]
   }
 
   const groups = CONCEPTS.map((concept, i) => ({
+    id: makeConceptId(concept.title),
     title: concept.title,
     blurb: concept.blurb,
     items: buckets[i],
+    ...countConceptModulesByMode(buckets[i]),
   })).filter((g) => g.items.length > 0);
 
   if (leftovers.length > 0) {
-    groups.push({ ...CATCH_ALL, items: leftovers });
+    groups.push({
+      id: makeConceptId(CATCH_ALL_CONCEPT.title),
+      ...CATCH_ALL_CONCEPT,
+      items: leftovers,
+      ...countConceptModulesByMode(leftovers),
+    });
   }
   return groups;
 }
 
 const conceptGroups = buildConceptGroups();
+const conceptByModule = new Map(
+  conceptGroups.flatMap((group) =>
+    [...new Set(group.items.map((entry) => entry.module))].map((module) => [module, group] as const),
+  ),
+);
+
+function getConceptForModule(module: string) {
+  return conceptByModule.get(module);
+}
 
 const effects = [
   {
@@ -216,7 +285,7 @@ const effects = [
   },
 ];
 
-function Overview({ onPick }: { onPick: (name: string) => void }) {
+function Overview({ onPick }: { onPick: (name: string, conceptId: string) => void }) {
   const total = apiEntries.length;
   return (
     <>
@@ -232,16 +301,40 @@ function Overview({ onPick }: { onPick: (name: string) => void }) {
         </div>
         <div className="api-docs__grid">
           {conceptGroups.map((group) => (
-            <article className="api-docs__card" key={group.title}>
+            <article
+              className="api-docs__card"
+              key={group.title}
+              id={`${CONCEPT_PREFIX}${group.id}`}
+            >
               <h3>{group.title}</h3>
               <p>{group.blurb}</p>
+              <div className="api-docs__card-meta">
+                <span>{group.referenceModules} reference module{group.referenceModules === 1 ? "" : "s"}</span>
+                {group.systemGuideModules > 0 && (
+                  <span>
+                    {group.systemGuideModules} system guide
+                    {group.systemGuideModules === 1 ? "" : "s"}
+                  </span>
+                )}
+                {group.conceptSetModules > 0 && (
+                  <span>
+                    {group.conceptSetModules} concept set
+                    {group.conceptSetModules === 1 ? "" : "s"}
+                  </span>
+                )}
+              </div>
               <div className="api-docs__chips">
                 {group.items.map((item) => (
                   <button
                     type="button"
                     key={`${item.module}.${item.name}`}
-                    onClick={() => onPick(item.name)}
+                    onClick={() => onPick(item.name, group.id)}
                     title={`Open ${item.name} in the reference`}
+                    className={
+                      getModuleDocMode(item.module) === "guide"
+                        ? "api-docs__chip api-docs__chip--guide"
+                        : "api-docs__chip"
+                    }
                   >
                     {item.name}
                   </button>
@@ -290,9 +383,11 @@ effect.destroy();`}</code></pre>
 function Documentation({
   query,
   setQuery,
+  onJumpToConcept,
 }: {
   query: string;
   setQuery: (value: string) => void;
+  onJumpToConcept: (conceptId: string) => void;
 }) {
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -309,14 +404,19 @@ function Documentation({
 
   const total = apiEntries.length;
   const shown = groups.reduce((n, [, list]) => n + list.length, 0);
+  const visibleEntryNames = useMemo(
+    () => new Set(groups.flatMap(([, entries]) => entries.map((entry) => entry.name))),
+    [groups],
+  );
 
   return (
     <section className="api-docs__section">
       <div className="api-docs__section-head">
         <h2>Function Reference</h2>
         <p>
-          Generated from the source JSDoc — every <code>@utilspalooza/core</code>{" "}
-          export, always complete.
+          Generated from the source JSDoc. Pure functions still read like a normal
+          reference; the handful of bigger systems are documented from the top down
+          so you can see how to use them before reading every member.
         </p>
       </div>
 
@@ -337,51 +437,39 @@ function Documentation({
       {groups.map(([module, entries]) => (
         <div className="api-docs__module" key={module}>
           <h3 className="api-docs__module-title">{module}</h3>
-          {entries.map((entry) => (
-            <article
-              className="api-docs__fn"
-              key={`${entry.module}.${entry.name}`}
-              id={entry.name}
-            >
-              <div className="api-docs__fn-head">
-                <code className="api-docs__fn-name">{entry.name}</code>
-                <span className={`api-docs__kind api-docs__kind--${entry.kind}`}>
-                  {entry.kind}
-                </span>
+          {MODULE_GUIDES[module] && (
+            <article className="api-docs__guide">
+              <div className="api-docs__guide-head">
+                <h4>{MODULE_GUIDES[module]!.title}</h4>
+                <span>start here</span>
               </div>
+              <p>{MODULE_GUIDES[module]!.whatItIs}</p>
+              <p>{MODULE_GUIDES[module]!.howToStart}</p>
               <pre className="api-docs__fn-sig">
-                <code>{`${entry.name}${
-                  entry.kind === "type" ? "" : `: ${entry.signature}`
-                }`}</code>
+                <code>{MODULE_GUIDES[module]!.importSnippet}</code>
               </pre>
-              {entry.description && <p>{cleanDoc(entry.description)}</p>}
-              {MINI_DEMOS[entry.name] && (
-                <>
-                  <p className="api-docs__demo-caption">See it move:</p>
-                  <MiniDemo {...MINI_DEMOS[entry.name]} />
-                </>
-              )}
-              {entry.params.length > 0 && (
-                <dl className="api-docs__params">
-                  {entry.params.map((param) => (
-                    <div key={param.name}>
-                      <dt>{param.name}</dt>
-                      <dd>{cleanDoc(param.text)}</dd>
-                    </div>
+              <div className="api-docs__guide-pieces">
+                {MODULE_GUIDES[module]!.keyPieceNames
+                  .filter((name) => visibleEntryNames.has(name))
+                  .map((name) => (
+                    <button
+                      type="button"
+                      key={name}
+                      onClick={() => document.getElementById(name)?.scrollIntoView({ block: "start" })}
+                    >
+                      {name}
+                    </button>
                   ))}
-                </dl>
-              )}
-              {entry.returns && (
-                <p className="api-docs__returns">
-                  <span>returns</span> {cleanDoc(entry.returns)}
-                </p>
-              )}
-              {entry.example && (
-                <pre className="api-docs__fn-example">
-                  <code>{entry.example}</code>
-                </pre>
-              )}
+              </div>
             </article>
+          )}
+          {entries.map((entry) => (
+            <ApiEntryCard
+              key={`${entry.module}.${entry.name}`}
+              entry={entry}
+              mode={getModuleDocMode(module)}
+              onJumpToConcept={onJumpToConcept}
+            />
           ))}
         </div>
       ))}
@@ -397,19 +485,144 @@ const TABS = [
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
+const OVERVIEW_SCROLL_KEY = "api-docs:overview-scroll-y";
+const CONCEPT_PREFIX = "concept-";
+
+function isTabId(value: string | null): value is TabId {
+  return TABS.some((tab) => tab.id === value);
+}
+
+function getTabFromSearch(search: string): TabId {
+  const value = new URLSearchParams(search).get("tab");
+  return isTabId(value) ? value : "overview";
+}
 
 function ApiDocs() {
-  const [tab, setTab] = useState<TabId>("overview");
-  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const tab = getTabFromSearch(location.search);
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search],
+  );
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  const lastTabRef = useRef<TabId | null>(null);
+  const overviewScrollRef = useRef(0);
+  const pendingDocTargetRef = useRef<string | null>(searchParams.get("fn"));
+  const pendingOverviewConceptRef = useRef<string | null>(searchParams.get("concept"));
+
+  const saveOverviewScroll = () => {
+    overviewScrollRef.current = window.scrollY;
+    sessionStorage.setItem(OVERVIEW_SCROLL_KEY, String(window.scrollY));
+  };
+
+  const restoreOverviewScroll = () => {
+    const saved =
+      overviewScrollRef.current ||
+      Number(sessionStorage.getItem(OVERVIEW_SCROLL_KEY) ?? "0");
+    window.scrollTo({ top: Number.isFinite(saved) ? saved : 0, behavior: "auto" });
+  };
+
+  const scrollConceptIntoView = (conceptId: string) => {
+    document.getElementById(`${CONCEPT_PREFIX}${conceptId}`)?.scrollIntoView({
+      block: "start",
+    });
+  };
+
+  const updateSearch = (
+    nextTab: TabId,
+    nextQuery = "",
+    nextFn?: string,
+    nextConcept?: string,
+    replace = false,
+  ) => {
+    const params = new URLSearchParams();
+    if (nextTab !== "overview") params.set("tab", nextTab);
+    const trimmedQuery = nextQuery.trim();
+    if (trimmedQuery) params.set("q", trimmedQuery);
+    if (nextFn) params.set("fn", nextFn);
+    if (nextConcept) params.set("concept", nextConcept);
+    navigate(
+      {
+        pathname: location.pathname,
+        search: params.toString() ? `?${params.toString()}` : "",
+      },
+      { replace },
+    );
+  };
+
+  useEffect(() => {
+    const nextQuery = searchParams.get("q") ?? "";
+    setQuery((current) => (current === nextQuery ? current : nextQuery));
+    pendingDocTargetRef.current = searchParams.get("fn");
+    pendingOverviewConceptRef.current = searchParams.get("concept");
+  }, [searchParams]);
+
+  useLayoutEffect(() => {
+    const previousTab = lastTabRef.current;
+    if (tab === previousTab) return;
+
+    if (tab === "overview") {
+      requestAnimationFrame(() => {
+        const conceptId = pendingOverviewConceptRef.current;
+        if (conceptId) {
+          scrollConceptIntoView(conceptId);
+        } else if (previousTab !== null) {
+          restoreOverviewScroll();
+        }
+      });
+    } else {
+      requestAnimationFrame(() => {
+        const target = pendingDocTargetRef.current;
+        if (target) {
+          document.getElementById(target)?.scrollIntoView({ block: "start" });
+        } else {
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }
+      });
+    }
+
+    lastTabRef.current = tab;
+  }, [tab]);
 
   // A concept chip on the Overview jumps to the reference, pre-filtered to that
   // export, and scrolls it into view once the Documentation tab has rendered.
-  const pickFunction = (name: string) => {
+  const pickFunction = (name: string, conceptId: string) => {
+    saveOverviewScroll();
     setQuery(name);
-    setTab("documentation");
-    requestAnimationFrame(() => {
-      document.getElementById(name)?.scrollIntoView({ block: "start" });
-    });
+    pendingDocTargetRef.current = name;
+    pendingOverviewConceptRef.current = conceptId;
+    updateSearch("documentation", name, name, conceptId);
+  };
+
+  const setTab = (nextTab: TabId) => {
+    if (nextTab === tab) return;
+    if (tab === "overview") saveOverviewScroll();
+    if (nextTab === "overview") {
+      pendingDocTargetRef.current = null;
+      pendingOverviewConceptRef.current = null;
+      updateSearch("overview");
+      return;
+    }
+    updateSearch("documentation", query, undefined, pendingOverviewConceptRef.current ?? undefined);
+  };
+
+  const setDocumentationQuery = (value: string) => {
+    setQuery(value);
+    pendingDocTargetRef.current = null;
+    updateSearch(
+      "documentation",
+      value,
+      undefined,
+      pendingOverviewConceptRef.current ?? undefined,
+      true,
+    );
+  };
+
+  const jumpToConcept = (conceptId: string) => {
+    pendingDocTargetRef.current = null;
+    pendingOverviewConceptRef.current = conceptId;
+    updateSearch("overview", "", undefined, conceptId);
   };
 
   return (
@@ -453,7 +666,11 @@ function ApiDocs() {
       {tab === "overview" ? (
         <Overview onPick={pickFunction} />
       ) : (
-        <Documentation query={query} setQuery={setQuery} />
+        <Documentation
+          query={query}
+          setQuery={setDocumentationQuery}
+          onJumpToConcept={jumpToConcept}
+        />
       )}
     </main>
   );

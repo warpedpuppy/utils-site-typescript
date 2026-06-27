@@ -94,6 +94,7 @@ import { drawCircleFromThreePoints } from "../../core-animations/CircleFromThree
 import { drawTriangleDataFromLine } from "../../core-animations/TriangleDataFromLine";
 import { pointCircle as pointCircleFn } from "@utilspalooza/core/CollisionObjectAPI/PointCircle";
 import { drawPointToCircle } from "../../core-animations/PointToCircle";
+import { drawLineToCircle } from "../../core-animations/LineToCircle";
 
 export interface ExamplePen {
   group: string;
@@ -580,7 +581,11 @@ draw();`;
 
 // ── Demystify Sine & Cosine ────────────────────────────────────────────────
 const DEMYSTIFY_SINE_COSINE_HTML = `<canvas id="canvas"></canvas>`;
-const DEMYSTIFY_SINE_COSINE_JS = `${sineCurve.toString()}
+const DEMYSTIFY_SINE_COSINE_JS = `${unitCirclePoint.toString()}
+
+${radToDegFn.toString()}
+
+${drawDeMystifySineCosine.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -590,97 +595,7 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cy = canvas.height / 2;
-  let x1 = canvas.width / 3;    // 33% axis
-  let x2 = canvas.width * 2 / 3; // 66% axis
-  let centerX = canvas.width / 2; // horizontal axis
-  const RADIUS = 100;
-
-  // Draw axes (green)
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, cy);
-  ctx.lineTo(canvas.width, cy);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x1, 0);
-  ctx.lineTo(x1, canvas.height);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x2, 0);
-  ctx.lineTo(x2, canvas.height);
-  ctx.stroke();
-
-  // Draw circles
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(x1, cy, RADIUS, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(x2, cy, RADIUS, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Spin points on circles
-  let t = Date.now() * 0.001;
-  let cos1 = Math.cos(t);
-  let sin1 = Math.sin(t);
-  let pt1x = x1 + cos1 * RADIUS;
-  let pt1y = cy + sin1 * RADIUS;
-
-  let cos2 = Math.cos(t);
-  let sin2 = Math.sin(t);
-  let pt2x = x2 + cos2 * RADIUS;
-  let pt2y = cy + sin2 * RADIUS;
-
-  // First circle: red sine line, green cosine line
-  ctx.strokeStyle = '#ef4444'; // red for sine
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(pt1x, pt1y);
-  ctx.lineTo(pt1x, cy);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#34d399'; // green for cosine
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(pt1x, pt1y);
-  ctx.lineTo(x1, pt1y);
-  ctx.stroke();
-
-  // Unit lines at origin
-  ctx.strokeStyle = '#34d399'; // green
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(x1, cy);
-  ctx.lineTo(x1 + RADIUS, cy);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#ef4444'; // red
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(x1, cy);
-  ctx.lineTo(x1, cy - RADIUS);
-  ctx.stroke();
-
-  // Spinning points
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(pt1x, pt1y, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(pt2x, pt2y, 5, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawDeMystifySineCosine(ctx, canvas.width, canvas.height, null);
   requestAnimationFrame(draw);
 }
 
@@ -929,23 +844,14 @@ const LINE_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${lineToCircle.toString()}
 
+${drawLineToCircle.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.save();
-  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-  ctx.textAlign = "center";
-  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = "#cdd3ff";
-  ctx.fillText("collision detected", x, 40);
-  ctx.restore();
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -967,22 +873,14 @@ function draw() {
   let y2 = lineCy - Math.sin(lineAngle) * lineLen;
 
   let hit = lineToCircle(x1, y1, x2, y2, cx, cy, cr);
-
-  // Draw static circle
-  ctx.fillStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#818cf8';
-  ctx.beginPath();
-  ctx.arc(cx, cy, cr, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw moving line
-  ctx.strokeStyle = hit ? 'hsl(330, 95%, ' + (55 + 25 * Math.sin(performance.now() / 120)) + '%)' : '#ff9f1c';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  drawLineToCircle(
+    ctx,
+    { startPoint: { x: x1, y: y1 }, endPoint: { x: x2, y: y2 } },
+    { x: cx, y: cy, radius: cr },
+    hit,
+    canvas.width / 2,
+    performance.now()
+  );
 
   requestAnimationFrame(draw);
 }
@@ -2272,14 +2170,14 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "demystify-sine-cosine",
+    key: "demystify-sine-and-cosine",
     label: "Demystify Sine & Cosine",
     blurb:
-      "See sine and cosine visually: a point moves on a circle, and its x/y coordinates trace the curves.",
+      "A unit-circle triangle that shows cosine shrinking horizontally while sine grows vertically.",
     payload: {
       title: "Demystify Sine & Cosine",
       description:
-        "Visualize how sine and cosine come from a point moving on a circle.",
+        "See sine and cosine as adjacent and opposite over a shared radius in the top-right quarter of a circle.",
       html: DEMYSTIFY_SINE_COSINE_HTML,
       css: FULLSCREEN_CSS,
       js: DEMYSTIFY_SINE_COSINE_JS,
