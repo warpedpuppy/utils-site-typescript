@@ -62,7 +62,7 @@ interface Body {
   trail: { x: number; y: number }[];
 }
 
-function newtonAccel(
+export function newtonAccel(
   bx: number, by: number,
   sunX: number, sunY: number,
   GM: number
@@ -75,7 +75,7 @@ function newtonAccel(
   return [f * dx, f * dy];
 }
 
-function grAccel(
+export function grAccel(
   bx: number, by: number,
   sunX: number, sunY: number,
   GM: number,
@@ -87,6 +87,100 @@ function grAccel(
   const r3 = r2 * Math.sqrt(r2);
   const f = -GM / r3 * (1 + epsilon / r2);
   return [f * dx, f * dy];
+}
+
+/** Standalone draw — steps physics AND draws. Embed with `newtonAccel` and `grAccel` via `.toString()`. */
+export function drawOrbitalPrecession(
+  ctx: CanvasRenderingContext2D,
+  newton: Body,
+  gr: Body,
+  epsilon: number,
+  stepsPerFrame: number
+): void {
+  const GM = 400;
+  const MAX_TRAIL = 2400;
+  const TRAIL_CHUNKS = 12;
+  const W = ctx.canvas.width;
+  const H = ctx.canvas.height;
+  const sunX = W / 2;
+  const sunY = H / 2;
+
+  for (let i = 0; i < stepsPerFrame; i++) {
+    const [nax, nay] = newtonAccel(newton.x, newton.y, sunX, sunY, GM);
+    newton.vx += nax; newton.vy += nay;
+    newton.x += newton.vx; newton.y += newton.vy;
+    newton.trail.push({ x: newton.x, y: newton.y });
+    if (newton.trail.length > MAX_TRAIL) newton.trail.shift();
+
+    const [gax, gay] = grAccel(gr.x, gr.y, sunX, sunY, GM, epsilon);
+    gr.vx += gax; gr.vy += gay;
+    gr.x += gr.vx; gr.y += gr.vy;
+    gr.trail.push({ x: gr.x, y: gr.y });
+    if (gr.trail.length > MAX_TRAIL) gr.trail.shift();
+  }
+
+  ctx.fillStyle = "#04040e";
+  ctx.fillRect(0, 0, W, H);
+
+  function drawTrail(trail: { x: number; y: number }[], r: number, g: number, b: number) {
+    if (trail.length < 2) return;
+    const chunkSize = Math.max(1, Math.floor(trail.length / TRAIL_CHUNKS));
+    for (let c = 0; c < TRAIL_CHUNKS; c++) {
+      const start = c * chunkSize;
+      if (start >= trail.length) break;
+      const end = Math.min(start + chunkSize + 1, trail.length);
+      const alpha = ((c + 1) / TRAIL_CHUNKS) * 0.75;
+      ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(trail[start].x, trail[start].y);
+      for (let i = start + 1; i < end; i++) ctx.lineTo(trail[i].x, trail[i].y);
+      ctx.stroke();
+    }
+  }
+
+  drawTrail(newton.trail, 96, 165, 250);
+  drawTrail(gr.trail, 251, 191, 36);
+
+  const R = 22;
+  const glow = ctx.createRadialGradient(sunX, sunY, R * 0.8, sunX, sunY, R * 2.2);
+  glow.addColorStop(0, "rgba(253,186,36,0.3)");
+  glow.addColorStop(1, "rgba(253,186,36,0)");
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(sunX, sunY, R * 2.2, 0, 2 * Math.PI);
+  ctx.fill();
+
+  const grad = ctx.createRadialGradient(sunX - R * 0.3, sunY - R * 0.3, 0, sunX, sunY, R);
+  grad.addColorStop(0, "#fff7a1");
+  grad.addColorStop(0.4, "#fde047");
+  grad.addColorStop(0.8, "#f97316");
+  grad.addColorStop(1, "#7c2d12");
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(sunX, sunY, R, 0, 2 * Math.PI);
+  ctx.fill();
+
+  function drawPlanet(body: Body, color: string, radius: number) {
+    ctx.beginPath();
+    ctx.arc(body.x, body.y, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.5)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  drawPlanet(newton, "#60a5fa", 9);
+  drawPlanet(gr, "#fbbf24", 9);
+
+  ctx.font = "bold 11px monospace";
+  ctx.textAlign = "right";
+  ctx.fillStyle = "rgba(96,165,250,0.85)";
+  ctx.fillText("Newtonian", W - 16, H - 32);
+  ctx.fillStyle = "rgba(251,191,36,0.85)";
+  ctx.fillText("General Relativity", W - 16, H - 16);
+  ctx.textAlign = "left";
 }
 
 const PrecessionFormula: CollisionDetectionObject = {
@@ -109,9 +203,6 @@ function grAccel(bx, by, sunX, sunY, GM, epsilon) {
 }`,
 };
 
-const MAX_TRAIL = 2400;
-const TRAIL_CHUNKS = 12;
-const GM = 400;
 const R0 = 195;
 const V0 = 1.04;
 
@@ -140,118 +231,9 @@ class OrbitalPrecession extends Template {
     this.gr     = { x: x0, y: y0, vx: 0, vy: -V0, trail: [] };
   }
 
-  step() {
-    const sunX = this.halfWidth;
-    const sunY = this.halfHeight;
-
-    // Newtonian
-    const [nax, nay] = newtonAccel(this.newton.x, this.newton.y, sunX, sunY, GM);
-    this.newton.vx += nax;
-    this.newton.vy += nay;
-    this.newton.x  += this.newton.vx;
-    this.newton.y  += this.newton.vy;
-    this.newton.trail.push({ x: this.newton.x, y: this.newton.y });
-    if (this.newton.trail.length > MAX_TRAIL) this.newton.trail.shift();
-
-    // GR
-    const [gax, gay] = grAccel(this.gr.x, this.gr.y, sunX, sunY, GM, this.epsilon);
-    this.gr.vx += gax;
-    this.gr.vy += gay;
-    this.gr.x  += this.gr.vx;
-    this.gr.y  += this.gr.vy;
-    this.gr.trail.push({ x: this.gr.x, y: this.gr.y });
-    if (this.gr.trail.length > MAX_TRAIL) this.gr.trail.shift();
-  }
-
-  drawTrail(
-    ctx: CanvasRenderingContext2D,
-    trail: { x: number; y: number }[],
-    r: number, g: number, b: number
-  ) {
-    if (trail.length < 2) return;
-    const chunkSize = Math.max(1, Math.floor(trail.length / TRAIL_CHUNKS));
-    for (let c = 0; c < TRAIL_CHUNKS; c++) {
-      const start = c * chunkSize;
-      if (start >= trail.length) break;
-      const end = Math.min(start + chunkSize + 1, trail.length);
-      const alpha = ((c + 1) / TRAIL_CHUNKS) * 0.75;
-      ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(trail[start].x, trail[start].y);
-      for (let i = start + 1; i < end; i++) ctx.lineTo(trail[i].x, trail[i].y);
-      ctx.stroke();
-    }
-  }
-
-  drawSun(ctx: CanvasRenderingContext2D) {
-    const cx = this.halfWidth;
-    const cy = this.halfHeight;
-    const R = 22;
-
-    const glow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R * 2.2);
-    glow.addColorStop(0, "rgba(253,186,36,0.3)");
-    glow.addColorStop(1, "rgba(253,186,36,0)");
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(cx, cy, R * 2.2, 0, 2 * Math.PI);
-    ctx.fill();
-
-    const grad = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, 0, cx, cy, R);
-    grad.addColorStop(0,    "#fff7a1");
-    grad.addColorStop(0.4,  "#fde047");
-    grad.addColorStop(0.8,  "#f97316");
-    grad.addColorStop(1,    "#7c2d12");
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, 0, 2 * Math.PI);
-    ctx.fill();
-  }
-
-  drawPlanet(
-    ctx: CanvasRenderingContext2D,
-    body: Body,
-    color: string,
-    radius: number
-  ) {
-    ctx.beginPath();
-    ctx.arc(body.x, body.y, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,0.5)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  drawLabels(ctx: CanvasRenderingContext2D) {
-    ctx.font = "bold 11px monospace";
-    ctx.textAlign = "right";
-
-    ctx.fillStyle = "rgba(96,165,250,0.85)";
-    ctx.fillText("Newtonian", this.canvasWidth - 16, this.canvasHeight - 32);
-
-    ctx.fillStyle = "rgba(251,191,36,0.85)";
-    ctx.fillText("General Relativity", this.canvasWidth - 16, this.canvasHeight - 16);
-
-    ctx.textAlign = "left";
-  }
-
   drawFrame() {
     if (!this.ctx) return;
-    const ctx = this.ctx;
-
-    // Space background
-    ctx.fillStyle = "#04040e";
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    for (let i = 0; i < this.stepsPerFrame; i++) this.step();
-
-    this.drawTrail(ctx, this.newton.trail, 96, 165, 250);
-    this.drawTrail(ctx, this.gr.trail,     251, 191, 36);
-    this.drawSun(ctx);
-    this.drawPlanet(ctx, this.newton, "#60a5fa", 9);
-    this.drawPlanet(ctx, this.gr,     "#fbbf24", 9);
-    this.drawLabels(ctx);
+    drawOrbitalPrecession(this.ctx, this.newton, this.gr, this.epsilon, this.stepsPerFrame);
   }
 
   addControls() {

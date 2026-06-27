@@ -93,6 +93,18 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "demystify-sine-and-cosine",
   "bezier-curves",
   "fourier-epicycles",
+  "game-of-life",
+  "wave-interference",
+  "gravitational-lensing",
+  "orbital-precession",
+  "center-on-parent",
+  "degrees-to-radians",
+  "radians-to-degrees",
+  "format-number-with-commas",
+  "random-integer-between",
+  "random-number-between",
+  "sierpinski",
+  "klimt",
 ]);
 
 // ─── The Studio dropdown: example-derived pens only ─────────────────────────

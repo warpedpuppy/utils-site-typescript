@@ -92,6 +92,84 @@ interface Star {
   brightness: number;
 }
 
+/** Standalone draw — self-contained, embed via `.toString()` in CodePen. */
+export function drawGravitationalLensing(
+  ctx: CanvasRenderingContext2D,
+  lensX: number,
+  lensY: number,
+  mass: number,
+  numRays: number,
+  time: number,
+  stars: { x: number; y: number; r: number; brightness: number }[]
+): void {
+  const W = ctx.canvas.width;
+  const H = ctx.canvas.height;
+
+  function rayExit(x0: number, y0: number, slope: number): { x: number; y: number } {
+    const dx = W - x0;
+    const y_right = y0 + slope * dx;
+    if (y_right >= 0 && y_right <= H) return { x: W, y: y_right };
+    if (slope < 0 && y0 > 0) {
+      const x_top = x0 + (-y0) / slope;
+      if (x_top >= x0 && x_top <= W) return { x: x_top, y: 0 };
+    }
+    if (slope > 0 && y0 < H) {
+      const x_bot = x0 + (H - y0) / slope;
+      if (x_bot >= x0 && x_bot <= W) return { x: x_bot, y: H };
+    }
+    return { x: W, y: y_right };
+  }
+
+  ctx.fillStyle = "#02020c";
+  ctx.fillRect(0, 0, W, H);
+
+  for (const s of stars) {
+    const twinkle = s.brightness * (0.7 + 0.3 * Math.sin(time * 0.8 + s.x));
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+    ctx.fillStyle = `rgba(200, 220, 255, ${twinkle})`;
+    ctx.fill();
+  }
+
+  const spacing = H / (numRays + 1);
+  const minImpact = 16;
+  for (let i = 1; i <= numRays; i++) {
+    const y0 = i * spacing;
+    const b = y0 - lensY;
+    if (Math.abs(b) < minImpact) continue;
+    const slope = -mass / b;
+    const normDist = Math.abs(b) / (H / 2);
+    const alpha = Math.max(0.08, 0.65 - normDist * 0.45);
+    ctx.strokeStyle = `rgba(255, 195, 65, ${alpha})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, y0);
+    ctx.lineTo(lensX, y0);
+    const exit = rayExit(lensX, y0, slope);
+    ctx.lineTo(exit.x, exit.y);
+    ctx.stroke();
+  }
+
+  const pulse = 0.85 + 0.15 * Math.sin(time * 1.8);
+  const glow = ctx.createRadialGradient(lensX, lensY, 0, lensX, lensY, 60 * pulse);
+  glow.addColorStop(0, "rgba(200, 240, 255, 0.55)");
+  glow.addColorStop(0.3, "rgba(120, 180, 255, 0.25)");
+  glow.addColorStop(1, "rgba(80,  120, 255, 0)");
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(lensX, lensY, 60 * pulse, 0, 2 * Math.PI);
+  ctx.fill();
+
+  const core = ctx.createRadialGradient(lensX - 3, lensY - 3, 0, lensX, lensY, 14);
+  core.addColorStop(0, "#ffffff");
+  core.addColorStop(0.4, "#c8e8ff");
+  core.addColorStop(1, "#5080c0");
+  ctx.beginPath();
+  ctx.arc(lensX, lensY, 14, 0, 2 * Math.PI);
+  ctx.fillStyle = core;
+  ctx.fill();
+}
+
 class GravitationalLensing extends Template {
   static t = "Gravitational lensing";
   static l = "gravitational-lensing";
@@ -128,122 +206,18 @@ class GravitationalLensing extends Template {
 
   drawFrame() {
     if (!this.ctx) return;
-    const ctx = this.ctx;
     const W = this.canvasWidth;
     const H = this.canvasHeight;
-    const t = this.time;
 
-    // Drift the lens on its own so the distortion is always in motion —
-    // a slow bob through the ray bundle (manual drag overrides this).
     if (this.autoMove && !this.dragging) {
-      const yb = this.homeY + this.halfHeight * 0.5 * Math.sin(t * 0.6);
-      const xb = this.homeX + this.halfWidth * 0.1 * Math.sin(t * 0.3);
+      const yb = this.homeY + this.halfHeight * 0.5 * Math.sin(this.time * 0.6);
+      const xb = this.homeX + this.halfWidth * 0.1 * Math.sin(this.time * 0.3);
       this.lensY = Math.min(Math.max(yb, 12), H - 12);
       this.lensX = Math.min(Math.max(xb, 12), W - 12);
     }
 
-    // Space background
-    ctx.fillStyle = "#02020c";
-    ctx.fillRect(0, 0, W, H);
-
-    // Background stars
-    for (const s of this.stars) {
-      const twinkle = s.brightness * (0.7 + 0.3 * Math.sin(t * 0.8 + s.x));
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
-      ctx.fillStyle = `rgba(200, 220, 255, ${twinkle})`;
-      ctx.fill();
-    }
-
-    // Draw light rays
-    this.drawRays(ctx, W, H);
-
-    // Lens glow
-    const pulse = 0.85 + 0.15 * Math.sin(t * 1.8);
-    const glow = ctx.createRadialGradient(
-      this.lensX, this.lensY, 0,
-      this.lensX, this.lensY, 60 * pulse
-    );
-    glow.addColorStop(0,   "rgba(200, 240, 255, 0.55)");
-    glow.addColorStop(0.3, "rgba(120, 180, 255, 0.25)");
-    glow.addColorStop(1,   "rgba(80,  120, 255, 0)");
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(this.lensX, this.lensY, 60 * pulse, 0, 2 * Math.PI);
-    ctx.fill();
-
-    // Lens core
-    const core = ctx.createRadialGradient(
-      this.lensX - 3, this.lensY - 3, 0,
-      this.lensX, this.lensY, 14
-    );
-    core.addColorStop(0, "#ffffff");
-    core.addColorStop(0.4, "#c8e8ff");
-    core.addColorStop(1, "#5080c0");
-    ctx.beginPath();
-    ctx.arc(this.lensX, this.lensY, 14, 0, 2 * Math.PI);
-    ctx.fillStyle = core;
-    ctx.fill();
-
+    drawGravitationalLensing(this.ctx, this.lensX, this.lensY, this.mass, this.numRays, this.time, this.stars);
     this.time += 0.03;
-  }
-
-  drawRays(ctx: CanvasRenderingContext2D, W: number, H: number) {
-    const spacing = H / (this.numRays + 1);
-    const minImpact = 16;
-
-    for (let i = 1; i <= this.numRays; i++) {
-      const y0 = i * spacing;
-      const b = y0 - this.lensY;
-      if (Math.abs(b) < minImpact) continue;
-
-      const slope = -this.mass / b;
-
-      // Alpha: brighter near the optical axis (centre rays show lensing best)
-      const normDist = Math.abs(b) / (H / 2);
-      const alpha = Math.max(0.08, 0.65 - normDist * 0.45);
-      ctx.strokeStyle = `rgba(255, 195, 65, ${alpha})`;
-      ctx.lineWidth = 1;
-
-      // Segment 1: horizontal to lens plane
-      ctx.beginPath();
-      ctx.moveTo(0, y0);
-      ctx.lineTo(this.lensX, y0);
-
-      // Segment 2: deflected ray from lens to canvas edge
-      const exit = this.rayExit(this.lensX, y0, slope, W, H);
-      ctx.lineTo(exit.x, exit.y);
-      ctx.stroke();
-    }
-  }
-
-  rayExit(
-    x0: number,
-    y0: number,
-    slope: number,
-    W: number,
-    H: number
-  ): { x: number; y: number } {
-    // Find which canvas edge the deflected ray hits first
-    const dx = W - x0;
-
-    // Right edge
-    const y_right = y0 + slope * dx;
-    if (y_right >= 0 && y_right <= H) return { x: W, y: y_right };
-
-    // Top edge (slope < 0 → ray going up)
-    if (slope < 0 && y0 > 0) {
-      const x_top = x0 + (-y0) / slope;
-      if (x_top >= x0 && x_top <= W) return { x: x_top, y: 0 };
-    }
-
-    // Bottom edge (slope > 0 → ray going down)
-    if (slope > 0 && y0 < H) {
-      const x_bot = x0 + (H - y0) / slope;
-      if (x_bot >= x0 && x_bot <= W) return { x: x_bot, y: H };
-    }
-
-    return { x: W, y: y_right };
   }
 
   addControls() {
