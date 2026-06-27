@@ -17,52 +17,19 @@ It checks two separate contracts:
    matches the animation slug (`static l`).
 2. Pens listed in `CANONICAL_DRAW_PEN_KEYS` embed their exported
    `src/core-animations` `draw*` function verbatim via `.toString()`.
+   Effects mounted through `@utilspalooza/effects` (`glitter`,
+   `pretty-ring`, `sparklies`) are explicit exceptions and stay enforced only
+   at the slug-sync layer.
 
 Studio-only projects are explicit exceptions in `STUDIO_ONLY_KEYS`.
 
 ## Current Canonical Draw Coverage
 
-As of 2026-06-27, these example-derived pens are canonicalized and enforced:
-
-- `angle-lerp-shortest-turn`
-- `ball-bounce`
-- `ball-orbiting-a-sun`
-- `balls-bouncing-against-each-other`
-- `circle-to-circle-collision`
-- `circle-to-rectangle-collision`
-- `circle-from-three-points`
-- `color-families`
-- `color-lerp`
-- `distribute-around-circle`
-- `easing-functions`
-- `draw-rectangle`
-- `draw-star`
-- `equilateral-trianlge-points`
-- `demystify-sine-and-cosine`
-- `find-points-on-a-circle`
-- `get-a-point-on-a-line`
-- `get-triangle-data-from-line`
-- `line-length`
-- `lerp-smooth-follow`
-- `line-to-line-collision`
-- `line-to-point-collision`
-- `line-to-rectangle-collision`
-- `move-to-changing-point`
-- `murmuration`
-- `point-object-towards-another`
-- `point-to-circle-collision`
-- `point-to-rectangle-collision`
-- `quadratic-bezier-curve`
-- `rectangle-to-rectangle-collision`
-- `sine-curve`
-- `spring-damped-harmonic`
-- `vector-reflection`
-- `vector-rotation`
-- `line-to-circle-collision`
-- `polygon-to-polygon-collision`
-
-When another pen is changed to embed its core `draw*` helper, add its slug to
-`CANONICAL_DRAW_PEN_KEYS`.
+As of 2026-06-27, `52` example-derived pens are canonicalized and `3` are
+explicit effects exceptions.
+The authoritative slug list lives in `CANONICAL_DRAW_PEN_KEYS` inside
+`src/pages/studio/studio-pens-sync.test.ts`; do not maintain a second manual
+slug list here.
 
 ## Remaining Work
 
@@ -70,15 +37,18 @@ The old "Bucket 1 candidates" framing is no longer enough. The real live
 checklist for the remaining non-canonicalized slugs now lives in
 `.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`.
 
-As of 2026-06-27, `36` example-derived pens are canonicalized and `19` still
-need work.
+As of 2026-06-27, there are `0` remaining canonicalization items. The only
+non-canonical draw-layer entries are the `3` explicit effects exceptions in
+`.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`.
 
 ## Resume Checklist
 
 1. Inspect `src/pages/studio/studio-pens-sync.test.ts`.
-2. Pick a remaining slug from `.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`.
-3. Update `src/pages/studio/pens-examples.ts` so the CodePen JS embeds that
-   draw helper via `.toString()` plus any support helpers it references.
+2. If new draw-layer work appears later, pick the slug from
+   `.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`.
+3. Update the matching Studio pen payload file (`src/pages/studio/pens-examples.ts`
+   or `src/pages/studio/pens.ts`) so the CodePen JS embeds that draw helper via
+   `.toString()` plus any support helpers it references.
 4. Add the slug to `CANONICAL_DRAW_PEN_KEYS`.
 5. Run:
 
