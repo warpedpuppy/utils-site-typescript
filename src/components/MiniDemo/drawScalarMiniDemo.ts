@@ -43,6 +43,14 @@ export interface ScalarMiniDemoFrame {
   inputMin?: number;
   /** Upper bound of the input pane's display range. Defaults to `length`. */
   inputMax?: number;
+  /**
+   * Lower bound of the OUTPUT pane's display range. Defaults to 0 (so existing
+   * callers are unchanged). Set it to map an output that doesn't start at zero —
+   * e.g. the interactive mapRange demo where `outMin` is itself a slider.
+   */
+  outputMin?: number;
+  /** Upper bound of the output pane's display range. Defaults to `length`. */
+  outputMax?: number;
 }
 
 const INDIGO = "#6366f1";
@@ -55,7 +63,7 @@ const DIM = "rgba(255,255,255,0.55)";
 /** Draw one frame of the two-pane scalar demo. Pure given (ctx, frame). */
 export function drawScalarMiniDemo(
   ctx: CanvasRenderingContext2D,
-  { value, length, width, height, label, input, inputMin, inputMax }: ScalarMiniDemoFrame
+  { value, length, width, height, label, input, inputMin, inputMax, outputMin, outputMax }: ScalarMiniDemoFrame
 ): void {
   // Transform mode iff an `input` was supplied (see ScalarMiniDemoFrame above).
   const transform = input !== undefined;
@@ -64,7 +72,12 @@ export function drawScalarMiniDemo(
   const leftMax = transform ? inputMax ?? length : length;
   const leftSpan = leftMax - leftMin;
   const leftFrac = leftSpan > 0 ? clamp01((leftValue - leftMin) / leftSpan) : 0;
-  const rightFrac = length > 0 ? clamp01(value / length) : 0;
+  // Output pane spans [outMin, outMax]; defaults to [0, length] so every existing
+  // caller reads exactly as before (value / length).
+  const outMin = outputMin ?? 0;
+  const outMax = outputMax ?? length;
+  const outSpan = outMax - outMin;
+  const rightFrac = outSpan !== 0 ? clamp01((value - outMin) / outSpan) : 0;
 
   ctx.clearRect(0, 0, width, height);
 
@@ -153,9 +166,9 @@ export function drawScalarMiniDemo(
     // The "output: X" readout (below) already names this pane, so use the bottom
     // row for the track-end labels — that's what makes clamp's "pin at the walls"
     // read clearly (the dot parks exactly on 0 / length).
-    ctx.fillText("0", rightX, trackY + r + 18);
+    ctx.fillText(`${Math.round(outMin)}`, rightX, trackY + r + 18);
     ctx.textAlign = "right";
-    ctx.fillText(`${Math.round(length)}`, rightX + paneW, trackY + r + 18);
+    ctx.fillText(`${Math.round(outMax)}`, rightX + paneW, trackY + r + 18);
     ctx.fillStyle = DIM;
     ctx.font = "bold 13px monospace";
     ctx.textAlign = "left";

@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import coreApi from "./core-api.json";
 import MiniDemo, { MiniDemoProps } from "../../components/MiniDemo/MiniDemo";
 import EasingMiniDemo from "../../components/MiniDemo/EasingMiniDemo";
+import InteractiveMiniDemo from "../../components/MiniDemo/InteractiveMiniDemo";
+import { INTERACTIVE_DEMOS } from "../../components/MiniDemo/interactiveDemos";
 import { pingPong } from "@utilspalooza/core/PingPong";
 import {
   linear, easeIn, easeOut, easeInOut,
@@ -168,7 +170,13 @@ function ApiEntryCard({
           <EasingMiniDemo ease={EASING_DEMOS[entry.name]} label={`${entry.name}(t)`} height={200} />
         </>
       )}
-      {visual.kind === "mini-demo" && MINI_DEMOS[entry.name] && (
+      {visual.kind === "mini-demo" && INTERACTIVE_DEMOS[entry.name] && (
+        <>
+          <p className="api-docs__demo-caption">Play with the arguments:</p>
+          <InteractiveMiniDemo demo={INTERACTIVE_DEMOS[entry.name]} />
+        </>
+      )}
+      {visual.kind === "mini-demo" && !INTERACTIVE_DEMOS[entry.name] && MINI_DEMOS[entry.name] && (
         <>
           <p className="api-docs__demo-caption">See it move:</p>
           <MiniDemo {...MINI_DEMOS[entry.name]} />
