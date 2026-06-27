@@ -165,6 +165,15 @@ export const MODULE_GUIDES: Partial<Record<string, ModuleGuide>> = {
 };
 
 export const MODULE_ENTRY_ORDER: Partial<Record<string, string[]>> = {
+  Easing: [
+    "linear",
+    "easeIn", "easeOut", "easeInOut",
+    "easeInQuad", "easeOutQuad", "easeInOutQuad",
+    "easeInCubic", "easeOutCubic", "easeInOutCubic",
+    "easeInQuart", "easeOutQuart", "easeInOutQuart",
+    "easeInQuint", "easeOutQuint", "easeInOutQuint",
+    "easeOutElastic", "easeOutBounce",
+  ],
   Animate: [
     "tweenValue",
     "tweenObject",
@@ -224,6 +233,26 @@ export const MODULE_ENTRY_ORDER: Partial<Record<string, string[]>> = {
 };
 
 export const ENTRY_VISUALS: Partial<Record<string, DocVisualConfig>> = {
+  // Easing mini-demos (all 18 functions from Easing.ts, in teaching order)
+  linear: { kind: "mini-demo" },
+  easeIn: { kind: "mini-demo" },
+  easeOut: { kind: "mini-demo" },
+  easeInOut: { kind: "mini-demo" },
+  easeInQuad: { kind: "mini-demo" },
+  easeOutQuad: { kind: "mini-demo" },
+  easeInOutQuad: { kind: "mini-demo" },
+  easeInCubic: { kind: "mini-demo" },
+  easeOutCubic: { kind: "mini-demo" },
+  easeInOutCubic: { kind: "mini-demo" },
+  easeInQuart: { kind: "mini-demo" },
+  easeOutQuart: { kind: "mini-demo" },
+  easeInOutQuart: { kind: "mini-demo" },
+  easeInQuint: { kind: "mini-demo" },
+  easeOutQuint: { kind: "mini-demo" },
+  easeInOutQuint: { kind: "mini-demo" },
+  easeOutElastic: { kind: "mini-demo" },
+  easeOutBounce: { kind: "mini-demo" },
+  // Scalar primitive mini-demos
   pingPong: { kind: "mini-demo" },
   lerp: { kind: "mini-demo" },
   inverseLerp: { kind: "mini-demo" },
