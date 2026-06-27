@@ -9,7 +9,13 @@ interface GradientBall extends Ball {
   l: number;
 }
 
-function drawBallBall(ctx: any, balls: any[], canvasWidth: any, canvasHeight: any): void {
+function drawBallBall(
+  ctx: any,
+  balls: any[],
+  canvasWidth: any,
+  canvasHeight: any,
+  bounceFn: (ball1: Ball, ball2: Ball) => void
+): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   const SPEED_LIMIT = 5;
 
@@ -35,7 +41,7 @@ function drawBallBall(ctx: any, balls: any[], canvasWidth: any, canvasHeight: an
     ctx.fill();
 
     balls.forEach((ball2) => {
-      ballToBallBouncePhysics(ball1, ball2);
+      bounceFn(ball1, ball2);
     });
 
     // Keep on screen
@@ -128,7 +134,13 @@ export default class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       };
     }
 
-    drawBallBall(this.ctx, this.balls, this.canvasWidth, this.canvasHeight);
+    drawBallBall(
+      this.ctx,
+      this.balls,
+      this.canvasWidth,
+      this.canvasHeight,
+      ballToBallBouncePhysics
+    );
     this.raf(this.draw);
   };
 

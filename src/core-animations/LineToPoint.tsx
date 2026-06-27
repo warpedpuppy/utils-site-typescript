@@ -2,6 +2,42 @@ import { Point, Line, Circle } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { linePoint } from "../pages/createJSON/formulas/collision-detection/LineCollision";
 import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+export function drawLineToPoint(
+  ctx: CanvasRenderingContext2D,
+  line: Line,
+  point: Point,
+  radius: number,
+  hit: boolean,
+  canvasWidth: number,
+  time: number = performance.now()
+) {
+  const pulseLightness = 55 + 25 * Math.sin(time / 120);
+  const hitColor = `hsl(330, 95%, ${pulseLightness}%)`;
+
+  ctx.strokeStyle = hit ? hitColor : "#ff9f1c";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(line.startPoint.x, line.startPoint.y);
+  ctx.lineTo(line.endPoint.x, line.endPoint.y);
+  ctx.stroke();
+
+  ctx.fillStyle = hit ? hitColor : "#818cf8";
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
+  ctx.fill();
+
+  if (!hit) return;
+
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", canvasWidth / 2, 40);
+  ctx.restore();
+}
+
 class LineToPointCollision extends AnimationBaseClass {
   static t = "line to point collision";
   static l = "line-to-point-collision";
@@ -42,28 +78,14 @@ class LineToPointCollision extends AnimationBaseClass {
 
     const hit = linePoint.keyFunction(this.line, this.point);
 
-    this.ctx.strokeStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#ff9f1c";
-    this.ctx.lineWidth = 3;
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.halfWidth - 200, this.halfHeight);
-    this.ctx.lineTo(this.halfWidth + 200, this.halfHeight);
-    this.ctx.stroke();
-
-    this.ctx.fillStyle = hit ? "hsl(330, 95%, " + (55 + 25 * Math.sin(performance.now() / 120)) + "%)" : "#818cf8";
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, this.circle.radius, 0, 2 * Math.PI);
-    this.ctx.fill();
-
-    if (hit) {
-      this.ctx.save();
-      this.ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
-      this.ctx.shadowBlur = 14;
-      this.ctx.fillStyle = "#cdd3ff";
-      this.ctx.fillText("collision detected", this.halfWidth, 40);
-      this.ctx.restore();
-    }
+    drawLineToPoint(
+      this.ctx,
+      this.line,
+      this.point,
+      this.circle.radius,
+      hit,
+      this.canvasWidth
+    );
 
     this.raf(this.draw);
   };

@@ -5,6 +5,9 @@ gallery.
 
 Current resume snapshot: `.claude/handoffs/2026-06-27-api-trig-studio-handoff.md`
 
+Tracked remaining-items checklist:
+`.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`
+
 ## Current Rule
 
 `src/pages/studio/studio-pens-sync.test.ts` is the enforceable source of truth.
@@ -19,12 +22,14 @@ Studio-only projects are explicit exceptions in `STUDIO_ONLY_KEYS`.
 
 ## Current Canonical Draw Coverage
 
-As of 2026-06-26, these example-derived pens are canonicalized and enforced:
+As of 2026-06-27, these example-derived pens are canonicalized and enforced:
 
 - `angle-lerp-shortest-turn`
 - `ball-bounce`
 - `ball-orbiting-a-sun`
 - `balls-bouncing-against-each-other`
+- `circle-to-circle-collision`
+- `circle-to-rectangle-collision`
 - `circle-from-three-points`
 - `color-families`
 - `color-lerp`
@@ -39,34 +44,39 @@ As of 2026-06-26, these example-derived pens are canonicalized and enforced:
 - `get-triangle-data-from-line`
 - `line-length`
 - `lerp-smooth-follow`
+- `line-to-line-collision`
+- `line-to-point-collision`
+- `line-to-rectangle-collision`
 - `move-to-changing-point`
 - `murmuration`
 - `point-object-towards-another`
 - `point-to-circle-collision`
+- `point-to-rectangle-collision`
 - `quadratic-bezier-curve`
+- `rectangle-to-rectangle-collision`
 - `sine-curve`
 - `spring-damped-harmonic`
 - `vector-reflection`
 - `vector-rotation`
+- `line-to-circle-collision`
+- `polygon-to-polygon-collision`
 
 When another pen is changed to embed its core `draw*` helper, add its slug to
 `CANONICAL_DRAW_PEN_KEYS`.
 
 ## Remaining Work
 
-All Bucket 1 candidates (exported standalone draw helpers) are now canonicalized.
+The old "Bucket 1 candidates" framing is no longer enough. The real live
+checklist for the remaining non-canonicalized slugs now lives in
+`.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`.
 
-`demystify-sine-and-cosine` is now a normal Examples animation again, and its
-CodePen is canonicalized against the exported `drawDeMystifySineCosine()`
-helper.
-
-Other animations need standalone exported `draw*` functions before their pens
-can be covered by the verbatim draw-function identity test.
+As of 2026-06-27, `36` example-derived pens are canonicalized and `19` still
+need work.
 
 ## Resume Checklist
 
 1. Inspect `src/pages/studio/studio-pens-sync.test.ts`.
-2. Pick a remaining candidate with an exported `draw*` function.
+2. Pick a remaining slug from `.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`.
 3. Update `src/pages/studio/pens-examples.ts` so the CodePen JS embeds that
    draw helper via `.toString()` plus any support helpers it references.
 4. Add the slug to `CANONICAL_DRAW_PEN_KEYS`.

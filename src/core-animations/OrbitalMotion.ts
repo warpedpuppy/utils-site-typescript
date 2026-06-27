@@ -12,7 +12,16 @@ function drawOrbitalMotion(
   pct: number,
   sunRadius: number,
   orbiterRadius: number,
-  orbitRadius: number
+  orbitRadius: number,
+  findPointAroundCircleFn: (
+    centerPoint: { x: number; y: number },
+    radius: number,
+    currentPoint: number
+  ) => { x: number; y: number },
+  sphereLightingFn: (
+    orbiter: { x: number; y: number; radius: number },
+    lightSource: { x: number; y: number }
+  ) => { x: number; y: number }
 ): void {
   const cx = canvasWidth / 2;
   const cy = canvasHeight / 2;
@@ -61,14 +70,14 @@ function drawOrbitalMotion(
   ctx.fill();
 
   // orbiter position — reuses the existing findPointAroundCircle formula
-  const { x: ox, y: oy } = findPointAroundCircle(
+  const { x: ox, y: oy } = findPointAroundCircleFn(
     { x: cx, y: cy },
     orbitRadius,
     pct
   );
 
   // highlight position — the new SphereLighting formula does the real work
-  const highlight = SphereLighting.keyFunction(
+  const highlight = sphereLightingFn(
     { x: ox, y: oy, radius: orbiterRadius },
     { x: cx, y: cy }
   );
@@ -118,7 +127,12 @@ export default class OrbitalMotionAnimation extends AnimationBaseClass {
       this.pct,
       this.sunRadius,
       this.orbiterRadius,
-      this.orbitRadius
+      this.orbitRadius,
+      findPointAroundCircle,
+      SphereLighting.keyFunction as (
+        orbiter: { x: number; y: number; radius: number },
+        lightSource: { x: number; y: number }
+      ) => { x: number; y: number }
     );
     this.pct = (this.pct + 0.15) % 100;
     this.raf(this.draw);

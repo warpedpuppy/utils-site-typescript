@@ -8,7 +8,12 @@ function drawMoveItemAroundCircle(
   halfHeight: any,
   canvasWidth: any,
   canvasHeight: any,
-  i: number
+  i: number,
+  findPointAroundCircleFn: (
+    centerPoint: { x: number; y: number },
+    radius: number,
+    currentPoint: number
+  ) => { x: number; y: number }
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   ctx.strokeStyle = "green";
@@ -28,7 +33,7 @@ function drawMoveItemAroundCircle(
   ctx.arc(halfWidth, halfHeight, 200, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let point = FindPointAroundCircleFunc(
+  let point = findPointAroundCircleFn(
     { x: halfWidth, y: halfHeight },
     200,
     i
@@ -73,7 +78,8 @@ export default class MoveItemAroundCircleAnimation extends AnimationBaseClass {
       this.halfHeight,
       this.canvasWidth,
       this.canvasHeight,
-      this.i
+      this.i,
+      FindPointAroundCircleFunc
     );
     this.i += 0.5;
     if (this.i > 100) this.i = 0;

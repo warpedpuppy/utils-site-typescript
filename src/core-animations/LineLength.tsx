@@ -9,7 +9,8 @@ function drawLineLength(
   startPoint: Point,
   endPoint: Point,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
+  lineLengthFn: (line: { startPoint: Point; endPoint: Point }) => number
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   ctx.font = "bold 12px Verdana";
@@ -20,7 +21,7 @@ function drawLineLength(
   ctx.lineWidth = 1;
   ctx.moveTo(startPoint.x, startPoint.y);
   ctx.lineTo(endPoint.x, startPoint.y);
-  let adjacent = LineLengthFunc({
+  let adjacent = lineLengthFn({
     startPoint: { x: startPoint.x, y: startPoint.y },
     endPoint: { x: endPoint.x, y: startPoint.y },
   });
@@ -35,7 +36,7 @@ function drawLineLength(
   // OPPOSITE
   ctx.moveTo(endPoint.x, startPoint.y);
   ctx.lineTo(endPoint.x, endPoint.y);
-  let opposite = LineLengthFunc({
+  let opposite = lineLengthFn({
     startPoint: { x: endPoint.x, y: startPoint.y },
     endPoint: { x: endPoint.x, y: endPoint.y },
   });
@@ -50,7 +51,7 @@ function drawLineLength(
 
   // HYPOTENUSE
   let hypotenuse = Math.floor(
-    LineLengthFunc({
+    lineLengthFn({
       startPoint: startPoint,
       endPoint: endPoint,
     })
@@ -118,7 +119,8 @@ export default class LineLengthAnimation extends AnimationBaseClass {
       this.startPoint,
       this.endPoint,
       this.canvasWidth,
-      this.canvasHeight
+      this.canvasHeight,
+      LineLengthFunc
     );
     this.raf(this.draw);
   };

@@ -8,7 +8,13 @@ function drawSineCurve(
   canvasHeight: any,
   startValue: number,
   differential: number,
-  speed: number
+  speed: number,
+  sineCurveFn: (
+    startingValue: number,
+    differential: number,
+    speed: number,
+    time: number
+  ) => number
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   ctx.strokeStyle = "green";
@@ -28,7 +34,7 @@ function drawSineCurve(
   ctx.arc(canvasWidth / 2, canvasHeight / 2, 200, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let val = sineCurve(startValue, differential, speed, performance.now());
+  let val = sineCurveFn(startValue, differential, speed, performance.now());
   ctx.beginPath();
   ctx.arc(canvasWidth / 2, canvasHeight / 2 + val, 20, 0, 2 * Math.PI);
   ctx.stroke();
@@ -130,7 +136,8 @@ export default class SineCurveAnimation extends AnimationBaseClass {
       this.canvasHeight,
       this.startValue,
       this.differential,
-      this.speed
+      this.speed,
+      sineCurve
     );
     this.raf(this.draw);
   };

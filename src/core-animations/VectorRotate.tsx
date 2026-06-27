@@ -11,7 +11,8 @@ function drawVectorRotate(
   basePoints: V[],
   angle: number,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
+  rotateFn: (v: V, radians: number) => V
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -25,7 +26,7 @@ function drawVectorRotate(
   ctx.lineTo(cx, canvasHeight);
   ctx.stroke();
 
-  const rotated = basePoints.map((p) => vecRotate(p, angle));
+  const rotated = basePoints.map((p) => rotateFn(p, angle));
 
   rotated.forEach((p, i) => {
     const x = cx + p.x;
@@ -106,7 +107,8 @@ class VectorRotateAnimation extends AnimationBaseClass {
       this.basePoints,
       this.angle,
       this.canvasWidth,
-      this.canvasHeight
+      this.canvasHeight,
+      vecRotate
     );
     this.raf(this.draw);
   };
