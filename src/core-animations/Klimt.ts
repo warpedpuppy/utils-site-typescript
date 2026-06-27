@@ -29,6 +29,142 @@ const deg2rad = (deg: number) => deg * (Math.PI / 180);
 const toCss = (n: number) =>
   `rgb(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255})`;
 
+interface KlimtSwirl {
+  quadrant: string;
+  w: number;
+  h: number;
+  curve: number;
+  interval: number;
+  curveCounter: number;
+  curveQ: number;
+  poolCounter: number;
+  testCounter: number;
+  pool: Array<{ x: number; y: number; rotation: number; color: string; placed: boolean }>;
+}
+
+/**
+ * Create the initial state for the Klimt animation — four swirls, one per
+ * canvas quadrant. Pass the returned array to `drawKlimt` each frame.
+ * Self-contained (no module-level imports) so a CodePen can embed it via .toString().
+ */
+export function createKlimtSwirls(width: number, height: number): KlimtSwirl[] {
+  const COLORS = [
+    0xfff0f5, 0xe6e6fa, 0xff7575, 0xffb775, 0xfff175,
+    0xc3ff76, 0x7bffb8, 0x7de8ff, 0x799fff, 0xff93f7,
+  ];
+  const CURVES = [45, -45, 135, -135];
+  const TILE_Q = 260;
+  const toCss = (n: number) => `rgb(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255})`;
+  const randInt = (min: number, max: number) => Math.floor(Math.random() * (max + 1 - min) + min);
+  const seedXY = (q: string, w: number, h: number) => {
+    if (q === 'TL') return { x: w * 0.25, y: h * 0.15 };
+    if (q === 'TR') return { x: w * 0.75, y: h * 0.15 };
+    if (q === 'BL') return { x: w * 0.75, y: h * 0.35 };
+    return { x: w * 0.25, y: h * 0.35 }; // BR
+  };
+
+  return (['TL', 'TR', 'BL', 'BR'] as const).map(quadrant => {
+    const pool: KlimtSwirl['pool'] = [];
+    let colorCounter = 0;
+    for (let i = 0; i < TILE_Q; i++) {
+      pool.push({ x: 0, y: 0, rotation: 0, color: toCss(COLORS[colorCounter]), placed: false });
+      colorCounter = (colorCounter + 1) % COLORS.length;
+    }
+    const seed = seedXY(quadrant, width, height);
+    pool[0].x = seed.x;
+    pool[0].y = seed.y;
+    pool[0].placed = true;
+    return {
+      quadrant,
+      w: width,
+      h: height,
+      curve: CURVES[Math.floor(Math.random() * CURVES.length)],
+      interval: randInt(1, 2),
+      curveCounter: 0,
+      curveQ: randInt(85, 150),
+      poolCounter: 1,
+      testCounter: 0,
+      pool,
+    };
+  });
+}
+
+/**
+ * Step and render one frame of the Klimt animation.
+ * Mutates each swirl's state in place. Call `createKlimtSwirls` once to build
+ * the initial state, then call this every animation frame.
+ * Self-contained (no module-level imports) so a CodePen can embed it via .toString().
+ */
+export function drawKlimt(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  swirls: KlimtSwirl[]
+): void {
+  const CURVES = [45, -45, 135, -135];
+  const BRICK_W = 18;
+  const BRICK_H = 9;
+  const BRICK_ALPHA = 0.24;
+  const deg2rad = (deg: number) => deg * (Math.PI / 180);
+  const randInt = (min: number, max: number) => Math.floor(Math.random() * (max + 1 - min) + min);
+  const seedXY = (q: string, w: number, h: number) => {
+    if (q === 'TL') return { x: w * 0.25, y: h * 0.15 };
+    if (q === 'TR') return { x: w * 0.75, y: h * 0.15 };
+    if (q === 'BL') return { x: w * 0.75, y: h * 0.35 };
+    return { x: w * 0.25, y: h * 0.35 }; // BR
+  };
+
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, width, height);
+
+  for (const swirl of swirls) {
+    swirl.w = width;
+    swirl.h = height;
+
+    swirl.testCounter++;
+    if (swirl.testCounter % swirl.interval === 0) {
+      swirl.testCounter = 0;
+      const s = swirl.pool[swirl.poolCounter];
+      swirl.poolCounter = (swirl.poolCounter + 1) % swirl.pool.length;
+
+      swirl.curveCounter++;
+      swirl.curve *= 1.025;
+      s.rotation = deg2rad(swirl.curve);
+
+      if (swirl.curveCounter > swirl.curveQ) {
+        swirl.curve = CURVES[Math.floor(Math.random() * CURVES.length)];
+        swirl.curveCounter = 0;
+        swirl.curveQ = randInt(85, 150);
+      }
+
+      const prevIndex = swirl.poolCounter > 1 ? swirl.poolCounter - 2 : swirl.pool.length - 1;
+      const prev = swirl.pool[prevIndex];
+      s.x = prev.x + BRICK_H * Math.sin(prev.rotation);
+      s.y = prev.y - BRICK_H * Math.cos(prev.rotation);
+
+      const buffer = 1;
+      if (swirl.poolCounter === 0 || s.y < -buffer || s.x < -buffer || s.x > width + buffer || s.y > height + buffer) {
+        const np = seedXY(swirl.quadrant, width, height);
+        s.x = np.x;
+        s.y = np.y;
+      }
+      s.placed = true;
+    }
+
+    ctx.globalAlpha = BRICK_ALPHA;
+    for (const s of swirl.pool) {
+      if (!s.placed) continue;
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rotation);
+      ctx.fillStyle = s.color;
+      ctx.fillRect(-BRICK_W / 2, -BRICK_H, BRICK_W, BRICK_H);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
 /**
  * Place the next rectangle tip-to-tail after the previous rectangle.
  */

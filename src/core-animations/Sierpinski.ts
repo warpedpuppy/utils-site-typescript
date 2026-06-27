@@ -80,6 +80,60 @@ interface Tri {
   hasSpawned: boolean;
 }
 
+/**
+ * Step and render one frame of the infinite-zoom Sierpinski animation.
+ * Mutates `state` in place. Embed `sierpinskiMidpoints.toString()` in the
+ * same scope before calling this from a CodePen.
+ */
+export function drawSierpinski(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  state: { triangles: Tri[]; rotation: number }
+): void {
+  const ratioIncrease = 0.01;
+  const expandIncrease = Math.pow(2, ratioIncrease);
+  const threshold = Math.max(width, height) * 2;
+
+  state.rotation += 0.01;
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, width, height);
+  ctx.save();
+  ctx.translate(width / 2, height / 2);
+  ctx.rotate(state.rotation);
+
+  for (const t of state.triangles) {
+    t.radius *= expandIncrease;
+    const [m1, m2, m3] = sierpinskiMidpoints(t.radius, t.phase);
+    ctx.fillStyle = '#ffffff';
+    for (const pt of [m1, m2, m3]) {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = '#ffd900';
+    ctx.lineWidth = 1;
+    const drawEdge = (a: Point, b: Point) => {
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(a.x + t.ratio * (b.x - a.x), a.y + t.ratio * (b.y - a.y));
+      ctx.stroke();
+    };
+    drawEdge(m1, m2);
+    drawEdge(m2, m3);
+    drawEdge(m3, m1);
+    if (t.ratio < 1) {
+      t.ratio = Math.min(1, t.ratio + ratioIncrease);
+    } else if (!t.hasSpawned && t.radius / 2 >= 1) {
+      t.hasSpawned = true;
+      state.triangles.push({ radius: t.radius / 2, phase: t.phase + Math.PI / 3, ratio: 0, hasSpawned: false });
+    }
+  }
+  state.triangles = state.triangles.filter(t => t.radius <= threshold);
+
+  ctx.restore();
+}
+
 class Sierpinski extends Template {
   static t = "Sierpinski Triangle";
   static l = "sierpinski";

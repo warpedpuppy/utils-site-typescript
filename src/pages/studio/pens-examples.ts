@@ -35,18 +35,22 @@ import { drawBezierCurves } from "../../core-animations/BezierCurves";
 import { dft } from "@utilspalooza/core/DFT";
 import { heartPath, drawFourierEpicycles } from "../../core-animations/FourierEpicycles";
 import { gameOfLifeStep } from "@utilspalooza/core/GameOfLife";
-import { waveAmplitude } from "@utilspalooza/core/WaveAmplitude";
-import { lensDeflection } from "@utilspalooza/core/LensDeflection";
-import { grStep } from "@utilspalooza/core/GRStep";
+import { drawGameOfLife } from "../../core-animations/GameOfLife";
+import { drawWaveInterference } from "../../core-animations/WaveInterference";
+import { drawGravitationalLensing } from "../../core-animations/GravitationalLensing";
+import { newtonAccel, grAccel, drawOrbitalPrecession } from "../../core-animations/OrbitalPrecession";
 import { lineLength } from "@utilspalooza/core/LineLength";
 import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
 import { SphereLighting } from "../../pages/createJSON/formulas/animation/OrbitalMotion";
-import { centerOnParent as centerOnParentFn } from "@utilspalooza/core/CenterOnParent";
-import { degToRad as degToRadFn } from "@utilspalooza/core/DegToRad";
-import { numberWithCommas as numberWithCommasFn } from "@utilspalooza/core/NumberWithCommas";
 import { radToDeg as radToDegFn } from "@utilspalooza/core/RadToDeg";
-import { randomIntegerBetween as randomIntegerBetweenFn } from "@utilspalooza/core/RandomIntegerBetween";
-import { randomNumberBetween as randomNumberBetweenFn } from "@utilspalooza/core/RandomNumberBetween";
+import { drawCenterOnParent } from "../../core-animations/CenterOnParentAnimation";
+import { drawDegreesToRadians } from "../../core-animations/DegToRadAnimation";
+import { drawRadiansToDegrees } from "../../core-animations/Rad2DegAnimation";
+import { drawFormatNumberWithCommas } from "../../core-animations/NumberWithCommasAnimation";
+import { drawRandomIntegerBetween } from "../../core-animations/RandomIntegerAnimation";
+import { drawRandomNumberBetween } from "../../core-animations/RandomNumberAnimation";
+import { sierpinskiMidpoints, drawSierpinski } from "../../core-animations/Sierpinski";
+import { createKlimtSwirls, drawKlimt } from "../../core-animations/Klimt";
 import {
   hslToRgb,
   lerpColor as lerpColorFn,
@@ -1373,32 +1377,18 @@ const SIMPLE_EQUATION_PENS: ExamplePen[] = [
       description: "Center a child box by subtracting its size from the parent size and halving the remainder.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${centerOnParentFn.toString()}
+      js: `${drawCenterOnParent.toString()}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const parent = { x: canvas.width * 0.14, y: canvas.height * 0.16, width: canvas.width * 0.72, height: canvas.height * 0.68 };
-  const t = performance.now() * 0.001;
-  const child = { width: 110 + Math.sin(t) * 45, height: 80 + Math.cos(t * 0.8) * 32 };
-  const pos = centerOnParent(child, parent);
-  ctx.strokeStyle = 'rgba(129, 140, 248, 0.55)';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(parent.x, parent.y, parent.width, parent.height);
-  ctx.fillStyle = '#818cf8';
-  ctx.fillRect(parent.x + pos.x, parent.y + pos.y, child.width, child.height);
-  ctx.fillStyle = '#d8e2ff';
-  ctx.font = '14px monospace';
-  ctx.fillText('centerOnParent(child, parent) => { x: ' + pos.x.toFixed(1) + ', y: ' + pos.y.toFixed(1) + ' }', 18, 30);
-  requestAnimationFrame(draw);
+function loop() {
+  drawCenterOnParent(ctx, canvas.width, canvas.height, performance.now() * 0.001);
+  requestAnimationFrame(loop);
 }
-draw();`,
+loop();`,
       editors: "001",
     },
   },
@@ -1412,7 +1402,7 @@ draw();`,
       description: "JavaScript trig uses radians, so 180 degrees becomes PI radians.",
       html: `<canvas id="canvas"></canvas><div id="controls"><label>degrees <input id="deg" type="range" min="0" max="360" value="45"></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `${degToRadFn.toString()}
+      js: `${drawDegreesToRadians.toString()}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1420,31 +1410,11 @@ const slider = document.getElementById('deg');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function draw() {
-  const degrees = Number(slider.value);
-  const radians = degToRad(degrees);
-  const cx = canvas.width / 2, cy = canvas.height / 2;
-  const r = Math.min(canvas.width, canvas.height) * 0.28;
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.lineTo(cx + Math.cos(radians) * r, cy + Math.sin(radians) * r);
-  ctx.stroke();
-  ctx.fillStyle = '#d8e2ff';
-  ctx.font = '16px monospace';
-  ctx.fillText(degrees + ' degrees = ' + radians.toFixed(3) + ' radians', 18, 32);
-  requestAnimationFrame(draw);
+function loop() {
+  drawDegreesToRadians(ctx, canvas.width, canvas.height, Number(slider.value));
+  requestAnimationFrame(loop);
 }
-draw();`,
+loop();`,
       editors: "001",
     },
   },
@@ -1458,7 +1428,7 @@ draw();`,
       description: "Radians are the natural unit for trig; degrees are often easier to read.",
       html: `<canvas id="canvas"></canvas><div id="controls"><label>radians <input id="rad" type="range" min="0" max="6.283" step="0.001" value="0.785"></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `${radToDegFn.toString()}
+      js: `${drawRadiansToDegrees.toString()}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1466,31 +1436,11 @@ const slider = document.getElementById('rad');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function draw() {
-  const radians = Number(slider.value);
-  const degrees = radToDeg(radians);
-  const cx = canvas.width / 2, cy = canvas.height / 2;
-  const r = Math.min(canvas.width, canvas.height) * 0.28;
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.strokeStyle = '#a78bfa';
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.lineTo(cx + Math.cos(radians) * r, cy + Math.sin(radians) * r);
-  ctx.stroke();
-  ctx.fillStyle = '#d8e2ff';
-  ctx.font = '16px monospace';
-  ctx.fillText(radians.toFixed(3) + ' radians = ' + degrees.toFixed(1) + ' degrees', 18, 32);
-  requestAnimationFrame(draw);
+function loop() {
+  drawRadiansToDegrees(ctx, canvas.width, canvas.height, Number(slider.value));
+  requestAnimationFrame(loop);
 }
-draw();`,
+loop();`,
       editors: "001",
     },
   },
@@ -1504,28 +1454,18 @@ draw();`,
       description: "A tiny formatting helper for making large values scan quickly.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${numberWithCommasFn.toString()}
+      js: `${drawFormatNumberWithCommas.toString()}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function draw() {
-  const raw = Math.floor(1000 + performance.now() * 87);
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.textAlign = 'center';
-  ctx.font = '22px monospace';
-  ctx.fillStyle = 'rgba(255,255,255,0.45)';
-  ctx.fillText(String(raw), canvas.width / 2, canvas.height / 2 - 28);
-  ctx.font = 'bold 44px monospace';
-  ctx.fillStyle = '#818cf8';
-  ctx.fillText(numberWithCommas(raw), canvas.width / 2, canvas.height / 2 + 36);
-  requestAnimationFrame(draw);
+function loop() {
+  drawFormatNumberWithCommas(ctx, canvas.width, canvas.height, performance.now());
+  requestAnimationFrame(loop);
 }
-draw();`,
+loop();`,
       editors: "001",
     },
   },
@@ -1539,7 +1479,7 @@ draw();`,
       description: "Generate whole numbers with inclusive lower and upper bounds.",
       html: `<canvas id="canvas"></canvas><div id="controls"><button id="roll">roll</button></div>`,
       css: FULLSCREEN_CSS,
-      js: `${randomIntegerBetweenFn.toString()}
+      js: `${drawRandomIntegerBetween.toString()}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1547,24 +1487,9 @@ let values = [];
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-function roll() { values = Array.from({ length: 28 }, () => randomIntegerBetween(1, 6)); draw(); }
+function randomIntegerBetween(min, max) { max++; return Math.floor(Math.random() * (max - min) + min); }
+function roll() { values = Array.from({ length: 28 }, () => randomIntegerBetween(1, 6)); drawRandomIntegerBetween(ctx, canvas.width, canvas.height, values); }
 document.getElementById('roll').addEventListener('click', roll);
-function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const size = Math.min(58, canvas.width / 10);
-  const startX = (canvas.width - size * 7) / 2;
-  values.forEach((v, i) => {
-    const x = startX + (i % 7) * size;
-    const y = canvas.height / 2 - size * 2 + Math.floor(i / 7) * size;
-    ctx.fillStyle = '#818cf8';
-    ctx.fillRect(x + 5, y + 5, size - 10, size - 10);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 20px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(String(v), x + size / 2, y + size / 2 + 7);
-  });
-}
 roll();`,
       editors: "001",
     },
@@ -1579,7 +1504,7 @@ roll();`,
       description: "Generate decimal values greater than or equal to min and less than max.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${randomNumberBetweenFn.toString()}
+      js: `${drawRandomNumberBetween.toString()}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1587,27 +1512,16 @@ let samples = [];
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function draw() {
-  if (samples.length > 160) samples.shift();
-  samples.push(randomNumberBetween(20, canvas.width - 20));
-  ctx.fillStyle = 'rgba(10,10,15,0.22)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  samples.forEach((x, i) => {
-    const y = canvas.height - 24 - i * 3;
-    ctx.fillStyle = 'hsla(' + (210 + i) + ', 85%, 65%, 0.75)';
-    ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.fillStyle = '#d8e2ff';
-  ctx.font = '14px monospace';
-  ctx.fillText('randomNumberBetween(20, width - 20)', 18, 30);
-  requestAnimationFrame(draw);
-}
+function randomNumberBetween(min, max) { return Math.random() * (max - min) + min; }
 ctx.fillStyle = '#0a0a0f';
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-draw();`,
+function loop() {
+  if (samples.length > 160) samples.shift();
+  samples.push(randomNumberBetween(20, canvas.width - 20));
+  drawRandomNumberBetween(ctx, canvas.width, canvas.height, samples);
+  requestAnimationFrame(loop);
+}
+loop();`,
       editors: "001",
     },
   },
@@ -1928,31 +1842,25 @@ const PRETTY_AND_FRACTAL_PENS: ExamplePen[] = [
       description: "Each triangle splits into three smaller triangles; repeat and the fractal appears.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `const canvas = document.getElementById('canvas');
+      js: `${sierpinskiMidpoints.toString()}
+
+${drawSierpinski.toString()}
+
+const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-function tri(a, b, c, depth) {
-  if (depth === 0) {
-    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(c.x, c.y); ctx.closePath(); ctx.fill();
-    return;
-  }
-  const ab = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-  const bc = { x: (b.x + c.x) / 2, y: (b.y + c.y) / 2 };
-  const ca = { x: (c.x + a.x) / 2, y: (c.y + a.y) / 2 };
-  tri(a, ab, ca, depth - 1); tri(ab, b, bc, depth - 1); tri(ca, bc, c, depth - 1);
+
+const state = {
+  triangles: [{ radius: canvas.height / 4, phase: 0, ratio: 0, hasSpawned: false }],
+  rotation: 0
+};
+function loop() {
+  drawSierpinski(ctx, canvas.width, canvas.height, state);
+  requestAnimationFrame(loop);
 }
-function draw() {
-  ctx.fillStyle = '#0a0a0f'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const s = Math.min(canvas.width, canvas.height) * 0.78;
-  const a = { x: canvas.width / 2, y: canvas.height / 2 - s * 0.48 };
-  const b = { x: canvas.width / 2 - s * 0.5, y: canvas.height / 2 + s * 0.38 };
-  const c = { x: canvas.width / 2 + s * 0.5, y: canvas.height / 2 + s * 0.38 };
-  ctx.fillStyle = '#818cf8';
-  tri(a, b, c, 6);
-}
-draw();`,
+loop();`,
       editors: "001",
     },
   },
@@ -2074,39 +1982,22 @@ draw();`,
       description: "Curving gold ribbons with jewel accents, loosely inspired by Klimt ornament.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `const canvas = document.getElementById('canvas');
+      js: `${createKlimtSwirls.toString()}
+
+${drawKlimt.toString()}
+
+const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-const palette = ['#f6d365', '#d4af37', '#fff3b0', '#5f8f3f', '#1f5f5b', '#b7352d'];
-function draw() {
-  const t = performance.now() * 0.00022;
-  ctx.fillStyle = 'rgba(3,3,2,0.14)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.save(); ctx.translate(canvas.width / 2, canvas.height / 2); ctx.globalCompositeOperation = 'lighter';
-  for (let r = 0; r < 7; r++) {
-    ctx.strokeStyle = palette[r % palette.length]; ctx.lineWidth = 5 + r;
-    ctx.beginPath();
-    for (let i = 0; i < 260; i++) {
-      const a = i * 0.12 + t * (r + 1);
-      const rad = 10 + i * 0.75 + Math.sin(i * 0.08 + r) * 18;
-      const x = Math.cos(a + r) * rad;
-      const y = Math.sin(a - r * 0.4) * rad;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-  for (let i = 0; i < 140; i++) {
-    const a = i * 2.399 + t;
-    const r = Math.sqrt(i) * 19;
-    ctx.fillStyle = palette[i % palette.length];
-    ctx.globalAlpha = 0.55;
-    ctx.fillRect(Math.cos(a) * r, Math.sin(a) * r, 5, 5);
-  }
-  ctx.restore(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-  requestAnimationFrame(draw);
+
+const swirls = createKlimtSwirls(canvas.width, canvas.height);
+function loop() {
+  drawKlimt(ctx, canvas.width, canvas.height, swirls);
+  requestAnimationFrame(loop);
 }
-draw();`,
+loop();`,
       editors: "001",
     },
   },
@@ -3069,51 +2960,44 @@ draw();`,
         "Four rules on a grid: 1. Underpop = death. 2. 2-3 neighbors = survive. 3. Overpop = death. 4. Exactly 3 neighbors = birth.",
       html: `<canvas id="canvas"></canvas><div id="controls"><button id="reset">Reset</button><button id="toggle">Pause/Play</button></div>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${gameOfLifeStep.toString()}
+      js: `${gameOfLifeStep.toString()}
+${drawGameOfLife.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+const CELL = 12;
+let cols, rows, grid, running = true, tickInterval;
+
+function resize() {
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  cols = Math.floor(canvas.width / CELL);
+  rows = Math.floor(canvas.height / CELL);
+  grid = new Uint8Array(cols * rows);
+  randomize();
+}
 window.addEventListener('resize', resize);
-resize();
 
-// ─── state ───────────────────────────────────────────────────────────────────
-const cellSize = 8;
-let cols = Math.floor(canvas.width / cellSize);
-let rows = Math.floor(canvas.height / cellSize);
-let grid = new Uint8Array(cols * rows);
-let paused = false;
-
-function randomizeGrid() {
-  for (let i = 0; i < grid.length; i++) {
-    grid[i] = Math.random() > 0.7 ? 1 : 0;
-  }
+function randomize() {
+  for (let i = 0; i < grid.length; i++) grid[i] = Math.random() < 0.3 ? 1 : 0;
 }
 
+function tick() { grid = gameOfLifeStep(grid, cols, rows); }
+
 function draw() {
-  if (!paused) grid = gameOfLifeStep(grid, cols, rows);
-
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = '#818cf8';
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < cols; x++) {
-      if (grid[y * cols + x]) {
-        ctx.fillRect(x * cellSize, y * cellSize, cellSize - 1, cellSize - 1);
-      }
-    }
-  }
-
+  drawGameOfLife(ctx, grid, cols, rows);
   requestAnimationFrame(draw);
 }
 
-document.getElementById('reset').addEventListener('click', randomizeGrid);
-document.getElementById('toggle').addEventListener('click', () => { paused = !paused; });
+document.getElementById('reset').addEventListener('click', randomize);
+document.getElementById('toggle').addEventListener('click', () => {
+  running = !running;
+  if (running) tickInterval = setInterval(tick, 100);
+  else clearInterval(tickInterval);
+});
 
-randomizeGrid();
+resize();
+tickInterval = setInterval(tick, 100);
 draw();`,
       editors: "001",
     },
@@ -3130,47 +3014,33 @@ draw();`,
         "Multiple sources create ripples; where peaks meet = bright, where troughs meet = dark.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${waveAmplitude.toString()}
+      js: `${drawWaveInterference.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const off = document.createElement('canvas');
-const offCtx = off.getContext('2d');
+
 function resize() {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
-  off.width = Math.ceil(canvas.width / 2);
-  off.height = Math.ceil(canvas.height / 2);
 }
-window.addEventListener('resize', resize);
+window.addEventListener('resize', () => { resize(); sources = makeSources(); });
 resize();
 
-function draw() {
-  let time = Date.now() * 0.001;
-  let sources = [
-    {x: canvas.width * 0.2, y: canvas.height * 0.3},
-    {x: canvas.width * 0.8, y: canvas.height * 0.3},
-    {x: canvas.width * 0.5, y: canvas.height * 0.8},
+function makeSources() {
+  return [
+    { x: canvas.width / 2 - 80, y: canvas.height / 2 },
+    { x: canvas.width / 2 + 80, y: canvas.height / 2 },
   ];
-  let idata = offCtx.createImageData(off.width, off.height);
-  let data = idata.data;
+}
 
-  for (let i = 0; i < data.length; i += 4) {
-    let px = (i / 4) % off.width;
-    let py = Math.floor((i / 4) / off.width);
-    let amp = waveAmplitude(px * 2, py * 2, sources, time, 0.02, 3);
-    let val = Math.floor(127.5 + amp * 127.5);
-    data[i] = val;
-    data[i+1] = val;
-    data[i+2] = val;
-    data[i+3] = 255;
-  }
+let sources = makeSources();
+const wavelength = 60;
+const speed = 1.5;
+let time = 0;
 
-  offCtx.putImageData(idata, 0, 0);
-  ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
-
+function draw() {
+  drawWaveInterference(ctx, sources, wavelength, speed, time);
+  time += speed * 0.06;
   requestAnimationFrame(draw);
 }
 
@@ -3190,42 +3060,34 @@ draw();`,
         "Light rays pass near a massive object and are deflected by its gravity.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lensDeflection.toString()}
+      js: `${drawGravitationalLensing.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
 
+const mass = 120;
+const numRays = 50;
+let lensX = canvas.width * 0.45, lensY = canvas.height / 2;
+let homeX = lensX, homeY = lensY;
+let time = 0;
+
+const stars = Array.from({ length: 80 }, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 1.4 + 0.3,
+  brightness: 0.3 + Math.random() * 0.7,
+}));
+
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let lx = canvas.width / 2, ly = canvas.height / 2;
-  let mass = 50000;
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.4)';
-  ctx.lineWidth = 1;
-
-  for (let y0 = canvas.height * 0.1; y0 < canvas.height * 0.9; y0 += 30) {
-    ctx.beginPath();
-    for (let x = 0; x < canvas.width; x += 5) {
-      let deflection = lensDeflection(x, y0, lx, ly, mass);
-      let y = y0 + deflection;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-
-  ctx.fillStyle = '#fcd34d';
-  ctx.beginPath();
-  ctx.arc(lx, ly, 30, 0, Math.PI * 2);
-  ctx.fill();
-
+  const yb = homeY + canvas.height / 2 * 0.5 * Math.sin(time * 0.6);
+  const xb = homeX + canvas.width / 2 * 0.1 * Math.sin(time * 0.3);
+  lensY = Math.min(Math.max(yb, 12), canvas.height - 12);
+  lensX = Math.min(Math.max(xb, 12), canvas.width - 12);
+  drawGravitationalLensing(ctx, lensX, lensY, mass, numRays, time, stars);
+  time += 0.03;
   requestAnimationFrame(draw);
 }
 
@@ -3243,68 +3105,37 @@ draw();`,
       title: "Orbital Precession",
       description:
         "Einstein's correction to Newtonian gravity causes elliptical orbits to slowly rotate.",
-      html: `<canvas id="canvas"></canvas><div id="controls"><label>GR strength: <input type="range" id="gr" min="0" max="0.0001" step="0.00001" value="0.00001"></label></div>`,
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>GR ε: <input type="range" id="gr" min="0" max="3000" step="50" value="800"></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${grStep.toString()}
+      js: `${newtonAccel.toString()}
+${grAccel.toString()}
+${drawOrbitalPrecession.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
 
-// ─── state ───────────────────────────────────────────────────────────────────
-let orbiter = {x: 0, y: 0, vx: 0, vy: 0};
-let sun = {x: canvas.width / 2, y: canvas.height / 2, mass: 100};
-let grStrength = 0.00001;
-let trail = [];
+const R0 = 195, V0 = 1.04;
+let epsilon = 800;
+const stepsPerFrame = 4;
 
-function init() {
-  orbiter.x = sun.x + 150;
-  orbiter.y = sun.y;
-  orbiter.vx = 0;
-  orbiter.vy = 5;
-  trail = [];
+function makeBody() {
+  return { x: canvas.width / 2 + R0, y: canvas.height / 2, vx: 0, vy: -V0, trail: [] };
 }
+let newton = makeBody();
+let gr = makeBody();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  grStep(orbiter, sun, grStrength);
-
-  trail.push({x: orbiter.x, y: orbiter.y});
-  if (trail.length > 1000) trail.shift();
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  for (let i = 0; i < trail.length; i++) {
-    if (i === 0) ctx.moveTo(trail[i].x, trail[i].y);
-    else ctx.lineTo(trail[i].x, trail[i].y);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = '#fcd34d';
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, 20, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(orbiter.x, orbiter.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawOrbitalPrecession(ctx, newton, gr, epsilon, stepsPerFrame);
   requestAnimationFrame(draw);
 }
 
 document.getElementById('gr').addEventListener('input', e => {
-  grStrength = parseFloat(e.target.value);
+  epsilon = Number(e.target.value);
 });
 
-init();
 draw();`,
       editors: "001",
     },

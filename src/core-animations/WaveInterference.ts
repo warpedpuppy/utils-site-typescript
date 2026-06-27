@@ -46,13 +46,7 @@ CONTROLS
   • sources — add a third emitter and watch the pattern change
   • speed — rate at which the wavefronts travel`;
 
-function waveAmplitude(
-  px: number,
-  py: number,
-  sources: { x: number; y: number }[],
-  k: number,
-  t: number
-): number {
+function waveAmpFormula(px: number, py: number, sources: { x: number; y: number }[], k: number, t: number): number {
   let amp = 0;
   for (const src of sources) {
     const r = Math.hypot(px - src.x, py - src.y);
@@ -62,7 +56,7 @@ function waveAmplitude(
 }
 
 const WaveFormula: CollisionDetectionObject = {
-  keyFunction: waveAmplitude,
+  keyFunction: waveAmpFormula,
   dependencies: [],
   functionString: `// Amplitude at pixel (px, py) from N wave sources
 function waveAmplitude(px, py, sources, k, t) {
@@ -83,9 +77,69 @@ const SOURCE_COLORS = ["#ff6b6b", "#69d2e7", "#ffd93d"];
 const DOT_RADIUS = 10;
 const HIT_RADIUS = 22;
 
-// dark-navy → bright-cyan colour ramp
 const DARK = [0, 6, 28] as const;
 const BRIGHT = [190, 238, 255] as const;
+
+/** Standalone draw — embed via `.toString()` in CodePen alongside nothing else (self-contained). */
+export function drawWaveInterference(
+  ctx: CanvasRenderingContext2D,
+  sources: { x: number; y: number }[],
+  wavelength: number,
+  _speed: number,
+  time: number
+): void {
+  const W = ctx.canvas.width;
+  const H = ctx.canvas.height;
+  const k = (2 * Math.PI) / wavelength;
+  const N = sources.length;
+  const dark = [0, 6, 28];
+  const bright = [190, 238, 255];
+  const dotColors = ["#ff6b6b", "#69d2e7", "#ffd93d"];
+  const dotRadius = 10;
+
+  function waveAmp(px: number, py: number): number {
+    let amp = 0;
+    for (const src of sources) {
+      const r = Math.hypot(px - src.x, py - src.y);
+      amp += Math.cos(k * r - time);
+    }
+    return amp;
+  }
+
+  const imgData = ctx.createImageData(W, H);
+  const data = imgData.data;
+
+  for (let py = 0; py < H; py += 2) {
+    for (let px = 0; px < W; px += 2) {
+      const amp = waveAmp(px, py);
+      const n = (amp / N + 1) / 2;
+      const b = Math.pow(Math.max(0, Math.min(1, n)), 1.4);
+      const rv = Math.round(dark[0] + b * (bright[0] - dark[0]));
+      const gv = Math.round(dark[1] + b * (bright[1] - dark[1]));
+      const bv = Math.round(dark[2] + b * (bright[2] - dark[2]));
+
+      for (let dy = 0; dy < 2; dy++) {
+        for (let dx = 0; dx < 2; dx++) {
+          if (py + dy >= H || px + dx >= W) continue;
+          const i = ((py + dy) * W + (px + dx)) * 4;
+          data[i] = rv; data[i + 1] = gv; data[i + 2] = bv; data[i + 3] = 255;
+        }
+      }
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+
+  sources.forEach((src, i) => {
+    ctx.beginPath();
+    ctx.arc(src.x, src.y, dotRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = dotColors[i % dotColors.length];
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
 
 class WaveInterference extends Template {
   static t = "Wave interference";
@@ -120,52 +174,7 @@ class WaveInterference extends Template {
 
   drawFrame() {
     if (!this.ctx || !this.canvas) return;
-    const W = this.canvasWidth;
-    const H = this.canvasHeight;
-    const k = (2 * Math.PI) / this.wavelength;
-    const t = this.time;
-    const N = this.sources.length;
-
-    const imgData = this.ctx.createImageData(W, H);
-    const data = imgData.data;
-
-    // Sample every 2 pixels, fill 2×2 blocks — 4× speedup
-    for (let py = 0; py < H; py += 2) {
-      for (let px = 0; px < W; px += 2) {
-        const amp = waveAmplitude(px, py, this.sources, k, t);
-        const n = (amp / N + 1) / 2;               // 0–1
-        const b = Math.pow(Math.max(0, Math.min(1, n)), 1.4);
-        const r = Math.round(DARK[0] + b * (BRIGHT[0] - DARK[0]));
-        const g = Math.round(DARK[1] + b * (BRIGHT[1] - DARK[1]));
-        const bl = Math.round(DARK[2] + b * (BRIGHT[2] - DARK[2]));
-
-        for (let dy = 0; dy < 2; dy++) {
-          for (let dx = 0; dx < 2; dx++) {
-            if (py + dy >= H || px + dx >= W) continue;
-            const i = ((py + dy) * W + (px + dx)) * 4;
-            data[i] = r;
-            data[i + 1] = g;
-            data[i + 2] = bl;
-            data[i + 3] = 255;
-          }
-        }
-      }
-    }
-
-    this.ctx.putImageData(imgData, 0, 0);
-
-    // Draw source dots on top
-    this.sources.forEach((src, i) => {
-      if (!this.ctx) return;
-      this.ctx.beginPath();
-      this.ctx.arc(src.x, src.y, DOT_RADIUS, 0, 2 * Math.PI);
-      this.ctx.fillStyle = SOURCE_COLORS[i % SOURCE_COLORS.length];
-      this.ctx.fill();
-      this.ctx.strokeStyle = "rgba(255,255,255,0.8)";
-      this.ctx.lineWidth = 2;
-      this.ctx.stroke();
-    });
-
+    drawWaveInterference(this.ctx, this.sources, this.wavelength, this.speed, this.time);
     this.time += this.speed * 0.06;
   }
 
