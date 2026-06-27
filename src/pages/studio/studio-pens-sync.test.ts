@@ -91,6 +91,8 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "point-to-circle-collision",
   "polygon-to-polygon-collision",
   "demystify-sine-and-cosine",
+  "bezier-curves",
+  "fourier-epicycles",
 ]);
 
 // ─── The Studio dropdown: example-derived pens only ─────────────────────────

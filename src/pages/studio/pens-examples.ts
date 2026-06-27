@@ -30,8 +30,10 @@ import { drawEquilateralTriangle } from "./pen-snippets";
 import { drawEquilateralTriangle as drawEquilateralTriangleAnimation } from "../../core-animations/EquilateralTriangle";
 import { equilateralTriangle } from "@utilspalooza/core/EquilateralTriangle";
 import { circleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
-import { bezierPoint } from "@utilspalooza/core/BezierCurve";
+import { deCasteljau } from "@utilspalooza/core/DeCasteljau";
+import { drawBezierCurves } from "../../core-animations/BezierCurves";
 import { dft } from "@utilspalooza/core/DFT";
+import { heartPath, drawFourierEpicycles } from "../../core-animations/FourierEpicycles";
 import { gameOfLifeStep } from "@utilspalooza/core/GameOfLife";
 import { waveAmplitude } from "@utilspalooza/core/WaveAmplitude";
 import { lensDeflection } from "@utilspalooza/core/LensDeflection";
@@ -2976,8 +2978,11 @@ draw();`,
         "Cubic Bézier: recursively interpolate between control points.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${bezierPoint.toString()}
+      js: `// ─── core algorithm ──────────────────────────────────────────────────────────
+${deCasteljau.toString()}
+
+// ─── standalone draw ─────────────────────────────────────────────────────────
+${drawBezierCurves.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2986,49 +2991,22 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
+let t = 0;
+let dir = 1;
+
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let t = Date.now() * 0.001;
-  let p0 = {x: canvas.width * 0.1, y: canvas.height * 0.5};
-  let p1 = {x: canvas.width * 0.3, y: canvas.height * 0.2 + Math.sin(t) * 50};
-  let p2 = {x: canvas.width * 0.7, y: canvas.height * 0.8 + Math.cos(t) * 50};
-  let p3 = {x: canvas.width * 0.9, y: canvas.height * 0.5};
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(p0.x, p0.y);
-  ctx.lineTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.lineTo(p3.x, p3.y);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i <= 1; i += 0.01) {
-    let pt = bezierPoint(p0, p1, p2, p3, i);
-    if (i === 0) ctx.moveTo(pt.x, pt.y);
-    else ctx.lineTo(pt.x, pt.y);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = '#c7d2fe';
-  ctx.beginPath();
-  ctx.arc(p0.x, p0.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p3.x, p3.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#a78bfa';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 5, 0, Math.PI * 2);
-  ctx.fill();
-
+  const w = canvas.width;
+  const h = canvas.height;
+  const points = [
+    { x: w * 0.15, y: h * 0.8, color: '#e74c3c' },
+    { x: w * 0.35, y: h * 0.2, color: '#3498db' },
+    { x: w * 0.65, y: h * 0.2, color: '#2ecc71' },
+    { x: w * 0.85, y: h * 0.8, color: '#f39c12' },
+  ];
+  drawBezierCurves(ctx, points, t);
+  t += 0.005 * dir;
+  if (t >= 1) { t = 1; dir = -1; }
+  if (t <= 0) { t = 0; dir = 1; }
   requestAnimationFrame(draw);
 }
 
@@ -3051,19 +3029,9 @@ draw();`,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${dft.toString()}
 
-function squarePoints() {
-  let pts = [];
-  for (let i = 0; i < 50; i++) {
-    let t = i / 50;
-    let x, y;
-    if (t < 0.25) { x = t*4; y = -1; }
-    else if (t < 0.5) { x = 1; y = (t-0.25)*4-1; }
-    else if (t < 0.75) { x = 1-(t-0.5)*4; y = 1; }
-    else { x = -1; y = 1-(t-0.75)*4; }
-    pts.push({x: x*50, y: y*50});
-  }
-  return pts;
-}
+${heartPath.toString()}
+
+${drawFourierEpicycles.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -3073,53 +3041,15 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let epicycles = dft(squarePoints()).slice(0, 15);
+const numCircles = 64;
+let fourier = dft(heartPath(numCircles * 4)).slice(0, numCircles);
 let trail = [];
+let time = 0;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let time = Date.now() * 0.001;
-  let x = canvas.width / 2, y = canvas.height / 2;
-
-  for (let epi of epicycles) {
-    let prevX = x, prevY = y;
-    let angle = time * epi.freq + epi.phase;
-    x += epi.amp * Math.cos(angle);
-    y += epi.amp * Math.sin(angle);
-
-    ctx.strokeStyle = 'rgba(150, 180, 255, 0.2)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(prevX, prevY, epi.amp, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(prevX, prevY);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  }
-
-  trail.push({x, y});
-  if (trail.length > 500) trail.shift();
-
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  for (let i = 0; i < trail.length; i++) {
-    if (i === 0) ctx.moveTo(trail[i].x, trail[i].y);
-    else ctx.lineTo(trail[i].x, trail[i].y);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = '#a78bfa';
-  ctx.beginPath();
-  ctx.arc(x, y, 4, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawFourierEpicycles(ctx, fourier, time, trail);
+  time += 1;
+  if (time >= fourier.length) { time = 0; trail.length = 0; }
   requestAnimationFrame(draw);
 }
 
