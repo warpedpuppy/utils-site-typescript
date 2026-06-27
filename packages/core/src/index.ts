@@ -13,6 +13,7 @@ export * from './CircleToCircle';
 export * from './CircleToRect';
 export * from './Clamp';
 export * from './Color';
+export * from './DeCasteljau';
 export * from './DegToRad';
 export * from './DFT';
 export * from './Distance';

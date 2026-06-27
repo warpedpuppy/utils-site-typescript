@@ -236,6 +236,7 @@ export const ENTRY_VISUALS: Partial<Record<string, DocVisualConfig>> = {
   Flock: { kind: "example", exampleSlug: "murmuration", exampleLabel: "Open the murmuration example" },
   boidsStep: { kind: "example", exampleSlug: "murmuration", exampleLabel: "Open the murmuration example" },
   bezierPoint: { kind: "example", exampleSlug: "bezier-curves", exampleLabel: "Open the Bezier curves example" },
+  deCasteljau: { kind: "example", exampleSlug: "bezier-curves", exampleLabel: "Open the Bezier curves example" },
   centerOnParent: { kind: "example", exampleSlug: "center-on-parent", exampleLabel: "Open the center-on-parent example" },
   quadraticBezier: { kind: "example", exampleSlug: "quadratic-bezier-curve", exampleLabel: "Open the quadratic Bezier example" },
   circleFromThreePoints: { kind: "example", exampleSlug: "circle-from-three-points", exampleLabel: "Open the circle-from-three-points example" },

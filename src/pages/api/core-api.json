@@ -837,6 +837,25 @@
     "example": "rgbToHsl({ r: 255, g: 0, b: 0 }); // => { h: 0, s: 100, l: 50 }"
   },
   {
+    "name": "deCasteljau",
+    "kind": "function",
+    "module": "DeCasteljau",
+    "signature": "(points: Point[], t: number) => { point: Point; levels: Point[][]; }",
+    "description": "Evaluate any-degree Bézier curve at parameter `t` using de Casteljau's algorithm.\n\nDe Casteljau works by repeatedly lerping between adjacent control points until\na single point remains. At each level of reduction you get the intermediate\n\"construction\" points that make the algorithm visual — pass the returned `levels`\narray to your canvas code to draw the animated hull the way a textbook would.\nWorks for quadratic (3 pts), cubic (4 pts), quartic (5 pts), or any degree.",
+    "params": [
+      {
+        "name": "points",
+        "text": "The ordered control points defining the curve (any length >= 2)."
+      },
+      {
+        "name": "t",
+        "text": "Position along the curve, 0–1 (0 = start, 1 = end)."
+      }
+    ],
+    "returns": "An object `{ point, levels }` where `point` is the `{ x, y }` on the\ncurve at `t`, and `levels` is an array of point arrays — `levels[0]` is the\noriginal control polygon, each subsequent level is the next reduction step,\nand the last level contains only `point`.",
+    "example": "deCasteljau([{x:0,y:0},{x:0,y:50},{x:50,y:50},{x:50,y:0}], 0.5).point;"
+  },
+  {
     "name": "degToRad",
     "kind": "function",
     "module": "DegToRad",

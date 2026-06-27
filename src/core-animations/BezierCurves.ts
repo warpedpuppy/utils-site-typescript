@@ -1,7 +1,6 @@
 import Template from "./animationTemplate";
 import { CollisionDetectionObject } from "../types/types";
-
-interface Point { x: number; y: number; }
+import { deCasteljau } from "@utilspalooza/core/DeCasteljau";
 
 const ELI5 = `〰️ Bézier Curves — What's going on?
 
@@ -25,29 +24,7 @@ As t goes from 0 → 1, that final point traces the entire curve.
 Drag the colored dots to reshape the curve in real time.
 Real-world uses: font design, SVG paths, CSS animations, game movement paths.`;
 
-interface ControlPoint extends Point {
-  dragging: boolean;
-  color: string;
-}
-
-// de Casteljau's algorithm — returns the interpolated point AND all intermediate levels
-function deCasteljau(pts: Point[], t: number): { point: Point; levels: Point[][] } {
-  const levels: Point[][] = [pts.map((p) => ({ ...p }))];
-  let current = pts.map((p) => ({ ...p }));
-
-  while (current.length > 1) {
-    const next: Point[] = [];
-    for (let i = 0; i < current.length - 1; i++) {
-      next.push({
-        x: (1 - t) * current[i].x + t * current[i + 1].x,
-        y: (1 - t) * current[i].y + t * current[i + 1].y,
-      });
-    }
-    levels.push(next);
-    current = next;
-  }
-  return { point: current[0], levels };
-}
+interface ControlPoint { x: number; y: number; dragging: boolean; color: string; }
 
 const BezierFormula: CollisionDetectionObject = {
   keyFunction: deCasteljau,
@@ -67,8 +44,106 @@ const BezierFormula: CollisionDetectionObject = {
   }
   return { point: current[0], levels };
 }`,
-    dependencies: [],
+  dependencies: [],
 };
+
+/**
+ * Standalone draw function for the Bézier curves animation.
+ * Self-contained — all it needs is a 2D context, an array of control points
+ * (with optional per-point `color`), and the current `t` value (0–1).
+ * CodePen embeds this via `.toString()` alongside `deCasteljau.toString()`.
+ */
+export function drawBezierCurves(
+  ctx: CanvasRenderingContext2D,
+  points: { x: number; y: number; color?: string }[],
+  t: number
+): void {
+  const defaultPalette = ["#e74c3c", "#3498db", "#2ecc71", "#f39c12", "#9b59b6"];
+  const POINT_RADIUS = 10;
+
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  const pts = points;
+
+  // Draw the full Bezier curve
+  ctx.strokeStyle = "#2c3e50";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  const steps = 200;
+  for (let i = 0; i <= steps; i++) {
+    const ti = i / steps;
+    const { point } = deCasteljau(pts, ti);
+    if (i === 0) ctx.moveTo(point.x, point.y);
+    else ctx.lineTo(point.x, point.y);
+  }
+  ctx.stroke();
+
+  // Draw construction lines between control points (hull)
+  ctx.strokeStyle = "rgba(0,0,0,0.15)";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Draw de Casteljau construction at current t
+  const { levels } = deCasteljau(pts, t);
+  const levelColors = ["rgba(230,100,100,0.8)", "rgba(100,180,100,0.8)", "rgba(100,100,230,0.8)", "rgba(200,150,50,0.8)"];
+
+  for (let lvl = 1; lvl < levels.length; lvl++) {
+    const color = levelColors[(lvl - 1) % levelColors.length];
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(levels[lvl][0].x, levels[lvl][0].y);
+    for (let i = 1; i < levels[lvl].length; i++) {
+      ctx.lineTo(levels[lvl][i].x, levels[lvl][i].y);
+    }
+    ctx.stroke();
+
+    // Draw dots at interpolated points
+    for (const p of levels[lvl]) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, lvl === levels.length - 1 ? 6 : 4, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+
+  // Draw final point on curve at t
+  if (levels.length > 0) {
+    const tip = levels[levels.length - 1][0];
+    ctx.fillStyle = "#e74c3c";
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(tip.x, tip.y, 7, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // Draw t label
+  ctx.fillStyle = "#333";
+  ctx.font = "bold 14px monospace";
+  ctx.fillText(`t = ${t.toFixed(2)}`, 12, ctx.canvas.height - 12);
+
+  // Draw control points
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i];
+    ctx.fillStyle = p.color ?? defaultPalette[i % defaultPalette.length];
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, POINT_RADIUS, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#333";
+    ctx.font = "bold 11px monospace";
+    ctx.fillText(`P${i}`, p.x + 13, p.y - 6);
+  }
+}
 
 class BezierCurves extends Template {
   static t = "Bézier curves";
@@ -88,8 +163,7 @@ class BezierCurves extends Template {
   infoPanel: HTMLDivElement | null = null;
   mode: number = 3; // 2=quadratic, 3=cubic, 4=quartic
 
-  keyFunction(controlPoints: Point[], t: number): Point {
-    // de Casteljau: lerp between each adjacent pair, recursively, until one point remains
+  keyFunction(controlPoints: { x: number; y: number }[], t: number): { x: number; y: number } {
     return deCasteljau(controlPoints, t).point;
   }
 
@@ -194,92 +268,8 @@ class BezierCurves extends Template {
 
   draw = () => {
     if (!this.ctx || !this.canvas) return;
-    const ctx = this.ctx;
-    const pts = this.controlPoints;
-
-    ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    // Draw the full Bezier curve
-    ctx.strokeStyle = "#2c3e50";
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    const steps = 200;
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const { point } = deCasteljau(pts, t);
-      if (i === 0) ctx.moveTo(point.x, point.y);
-      else ctx.lineTo(point.x, point.y);
-    }
-    ctx.stroke();
-
-    // Draw construction lines between control points (hull)
-    ctx.strokeStyle = "rgba(0,0,0,0.15)";
-    ctx.lineWidth = 1;
-    ctx.setLineDash([5, 5]);
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Draw de Casteljau construction at current t
-    const t = this.animT;
-    const { levels } = deCasteljau(pts, t);
-    const levelColors = ["rgba(230,100,100,0.8)", "rgba(100,180,100,0.8)", "rgba(100,100,230,0.8)", "rgba(200,150,50,0.8)"];
-
-    for (let lvl = 1; lvl < levels.length; lvl++) {
-      const color = levelColors[(lvl - 1) % levelColors.length];
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(levels[lvl][0].x, levels[lvl][0].y);
-      for (let i = 1; i < levels[lvl].length; i++) {
-        ctx.lineTo(levels[lvl][i].x, levels[lvl][i].y);
-      }
-      ctx.stroke();
-
-      // Draw dots at interpolated points
-      for (const p of levels[lvl]) {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, lvl === levels.length - 1 ? 6 : 4, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-    }
-
-    // Draw final point on curve at t
-    if (levels.length > 0) {
-      const tip = levels[levels.length - 1][0];
-      ctx.fillStyle = "#e74c3c";
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(tip.x, tip.y, 7, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
-    }
-
-    // Draw t label
-    ctx.fillStyle = "#333";
-    ctx.font = "bold 14px monospace";
-    ctx.fillText(`t = ${t.toFixed(2)}`, 12, this.canvasHeight - 12);
-
-    // Draw control points
-    for (let i = 0; i < pts.length; i++) {
-      const p = pts[i];
-      ctx.fillStyle = p.color;
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, this.POINT_RADIUS, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = "#333";
-      ctx.font = "bold 11px monospace";
-      ctx.fillText(`P${i}`, p.x + 13, p.y - 6);
-    }
-
-    // Advance t
+    drawBezierCurves(this.ctx, this.controlPoints, this.animT);
+    // Advance t with ping-pong
     this.animT += 0.005 * this.animDir;
     if (this.animT >= 1) { this.animT = 1; this.animDir = -1; }
     if (this.animT <= 0) { this.animT = 0; this.animDir = 1; }
