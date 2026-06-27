@@ -58,7 +58,7 @@ CONTROLS
     while rotating, showing the knife-edge between packing and chaos.
   • Rotate speed — how fast the whole pattern spins.`;
 
-function phyllotaxisPoint(
+export function phyllotaxisPoint(
   n: number,
   angleDeg: number,
   scale: number
@@ -92,6 +92,105 @@ const PRESETS: { label: string; angle: number }[] = [
 
 function easeInOut(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+interface PhyllotaxisDrawState {
+  angleDeg: number;
+  numSeeds: number;
+  seedRadius: number;
+  scale: number;
+  colorMode: "gradient" | "mono";
+  showSpirals: boolean;
+  rotationAngleDeg: number;
+}
+
+export function drawPhyllotaxis(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  state: PhyllotaxisDrawState
+) {
+  const getSpiralCounts = () => {
+    const fibs: number[] = [1, 1];
+    while (fibs[fibs.length - 1] < state.numSeeds) {
+      const n = fibs.length;
+      fibs.push(fibs[n - 1] + fibs[n - 2]);
+    }
+    let cwCount = 1;
+    let ccwCount = 1;
+    for (let i = 0; i + 1 < fibs.length; i++) {
+      if (fibs[i + 1] <= state.numSeeds) {
+        cwCount = fibs[i];
+        ccwCount = fibs[i + 1];
+      } else {
+        break;
+      }
+    }
+    return { cwCount, ccwCount };
+  };
+
+  ctx.fillStyle = "#0a0a0f";
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.save();
+  ctx.translate(width / 2, height / 2);
+  ctx.rotate((state.rotationAngleDeg * Math.PI) / 180);
+
+  let cwCount = 1;
+  let ccwCount = 1;
+  if (state.showSpirals) {
+    ({ cwCount, ccwCount } = getSpiralCounts());
+    const drawFamily = (step: number, color: string) => {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      for (let i = 0; i + step < state.numSeeds; i++) {
+        const [x0, y0] = phyllotaxisPoint(i, state.angleDeg, state.scale);
+        const [x1, y1] = phyllotaxisPoint(i + step, state.angleDeg, state.scale);
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    };
+
+    drawFamily(cwCount, "rgba(100,220,255,0.35)");
+    drawFamily(ccwCount, "rgba(255,180,80,0.35)");
+  }
+
+  for (let n = 0; n < state.numSeeds; n++) {
+    const [x, y] = phyllotaxisPoint(n, state.angleDeg, state.scale);
+
+    let color: string;
+    if (state.colorMode === "gradient") {
+      const t = n / Math.max(1, state.numSeeds - 1);
+      const hue = 30 + t * 200;
+      const sat = 80 + t * 15;
+      const lit = 45 + t * 25;
+      color = `hsl(${hue},${sat}%,${lit}%)`;
+    } else {
+      color = "#f0e6c8";
+    }
+
+    ctx.beginPath();
+    ctx.arc(x, y, state.seedRadius, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  if (state.showSpirals) {
+    ctx.fillStyle = "#e0f0ff";
+    ctx.font = "bold 12px monospace";
+    ctx.textAlign = "left";
+    ctx.fillText(
+      `Spirals: ${cwCount} CW (cyan)  ·  ${ccwCount} CCW (orange)  — both Fibonacci`,
+      14,
+      height - 14
+    );
+  }
 }
 
 class Phyllotaxis extends Template {
@@ -164,99 +263,9 @@ class Phyllotaxis extends Template {
     return "[" + terms.map((t, i) => (i === 0 ? "0" : "") + t).join("; ") + "]";
   }
 
-  // --- spiral overlay (called inside rotated ctx) ---
-
-  drawSpiralLines(ctx: CanvasRenderingContext2D) {
-    const fibs: number[] = [1, 1];
-    while (fibs[fibs.length - 1] < this.numSeeds) {
-      const n = fibs.length;
-      fibs.push(fibs[n - 1] + fibs[n - 2]);
-    }
-    let cwCount = 1, ccwCount = 1;
-    for (let i = 0; i + 1 < fibs.length; i++) {
-      if (fibs[i + 1] <= this.numSeeds) {
-        cwCount = fibs[i];
-        ccwCount = fibs[i + 1];
-      } else break;
-    }
-
-    const drawFamily = (step: number, color: string) => {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      for (let i = 0; i + step < this.numSeeds; i++) {
-        const [x0, y0] = phyllotaxisPoint(i,        this.angleDeg, this.scale);
-        const [x1, y1] = phyllotaxisPoint(i + step, this.angleDeg, this.scale);
-        ctx.beginPath();
-        ctx.moveTo(x0, y0);
-        ctx.lineTo(x1, y1);
-        ctx.stroke();
-      }
-      ctx.setLineDash([]);
-    };
-
-    drawFamily(cwCount,  "rgba(100,220,255,0.35)");
-    drawFamily(ccwCount, "rgba(255,180,80,0.35)");
-
-    // Store counts for the text label drawn in screen space
-    this._cwCount  = cwCount;
-    this._ccwCount = ccwCount;
-  }
-
-  _cwCount  = 1;
-  _ccwCount = 1;
-
-  drawSpiralLabel(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "#e0f0ff";
-    ctx.font = "bold 12px monospace";
-    ctx.textAlign = "left";
-    ctx.fillText(
-      `Spirals: ${this._cwCount} CW (cyan)  ·  ${this._ccwCount} CCW (orange)  — both Fibonacci`,
-      14,
-      this.canvasHeight - 14
-    );
-  }
-
-  // --- draw ---
-
   draw() {
     if (!this.ctx) return;
-    const ctx = this.ctx;
-
-    ctx.fillStyle = "#0a0a0f";
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    // Apply rotation around canvas center
-    ctx.save();
-    ctx.translate(this.halfWidth, this.halfHeight);
-    ctx.rotate(this.rotationAngleDeg * Math.PI / 180);
-
-    if (this.showSpirals) this.drawSpiralLines(ctx);
-
-    for (let n = 0; n < this.numSeeds; n++) {
-      const [x, y] = phyllotaxisPoint(n, this.angleDeg, this.scale);
-
-      let color: string;
-      if (this.colorMode === "gradient") {
-        const t = n / Math.max(1, this.numSeeds - 1);
-        const hue = 30 + t * 200;
-        const sat = 80 + t * 15;
-        const lit = 45 + t * 25;
-        color = `hsl(${hue},${sat}%,${lit}%)`;
-      } else {
-        color = "#f0e6c8";
-      }
-
-      ctx.beginPath();
-      ctx.arc(x, y, this.seedRadius, 0, 2 * Math.PI);
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-
-    ctx.restore();
-
-    // Spiral label in screen space (not rotated)
-    if (this.showSpirals) this.drawSpiralLabel(ctx);
+    drawPhyllotaxis(this.ctx, this.canvasWidth, this.canvasHeight, this);
   }
 
   // --- snap animation (manual only) ---

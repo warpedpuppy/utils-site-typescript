@@ -62,7 +62,7 @@ Available effects:
 The site is the proof layer:
 
 - `/examples` — live demos that show what the math does
-- `/recipes` route is currently implemented at `/create-json` — choose formulas and copy/download code
+- `/recipes` route is currently implemented at `/create-json` — choose formulas and copy/download standalone snippets when npm is not the right path
 - `/api` — package API reference
 - `/studio` — larger build-with-it projects and CodePen-style examples
 - `/about` — project context

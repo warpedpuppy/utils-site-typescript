@@ -2,6 +2,11 @@ import { describe, expect, it } from "vitest";
 import vm from "node:vm";
 import { CODEPEN_GALLERY } from "./pens";
 
+// This is intentionally narrower than CANONICAL_DRAW_PEN_KEYS in the sync test.
+// It is a smoke-test allowlist for canonicalized pens whose serialized runtime
+// is currently known to boot cleanly under a bare VM stub. Some pens are still
+// canonical at the draw-function identity layer while carrying separate runtime
+// caveats documented in .claude/STUDIO-CANONICALIZATION-CHECKLIST.md.
 const CANONICAL_DRAW_PEN_KEYS = new Set([
   "angle-lerp-shortest-turn",
   "ball-bounce",
@@ -39,6 +44,21 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "get-triangle-data-from-line",
   "demystify-sine-and-cosine",
   "polygon-to-polygon-collision",
+  "fourier-epicycles",
+  "game-of-life",
+  "wave-interference",
+  "gravitational-lensing",
+  "orbital-precession",
+  "center-on-parent",
+  "degrees-to-radians",
+  "radians-to-degrees",
+  "format-number-with-commas",
+  "random-integer-between",
+  "random-number-between",
+  "sierpinski",
+  "klimt",
+  "flow-field",
+  "phyllotaxis",
 ]);
 
 function createCanvasContextStub() {

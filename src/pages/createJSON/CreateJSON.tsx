@@ -78,7 +78,7 @@ function CreateJSON() {
           <p>Recipes</p>
           <h1>Copy the exact code you need.</h1>
           <span>
-            Choose formulas, copy typed snippets, or download a standalone file when npm is not the easiest path.
+            Choose formulas, copy typed snippets, or download a standalone file when installing `@utilspalooza/core` is not the easiest path.
           </span>
         </header>
         {selectionCount > 0 && (

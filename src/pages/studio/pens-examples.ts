@@ -734,6 +734,8 @@ draw();`;
 
 const CIRCLE_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const CIRCLE_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+${sineCurve.toString()}
+
 ${circleToCircle.toString()}
 
 ${drawCircleToCircle.toString()}
@@ -751,8 +753,8 @@ function draw() {
 
   let cx = canvas.width / 2, cy = canvas.height / 2;
   let c1x = cx, c1y = cy, c1r = 100;
-  let c2x = cx + Math.sin(Date.now() * 0.001) * 200;
-  let c2y = cy + Math.sin(Date.now() * 0.0008) * 150;
+  let c2x = sineCurve(cx, 200, 0.001, performance.now());
+  let c2y = sineCurve(cy, 200, 0.001, performance.now());
   let c2r = 100;
 
   let hit = circleToCircle(c1x, c1y, c1r, c2x, c2y, c2r);

@@ -11,7 +11,8 @@ import { CODEPEN_GALLERY } from "./pens";
  * The catalogue sync rule is strict for #1: every included /examples animation
  * gets exactly one matching Studio pen. The draw-function identity rule is
  * currently scoped to the pens that have actually been canonicalized to embed
- * their `src/core-animations` standalone draw function verbatim.
+ * their `src/core-animations` standalone draw function verbatim; effects
+ * mounted through `@utilspalooza/effects` are explicit exceptions.
  */
 
 // ─── The Examples catalogue: every animation registered in SiteData ──────────
@@ -32,6 +33,11 @@ for (const category of Object.values(SiteData)) {
 }
 
 const STUDIO_ONLY_KEYS = new Set(["audio-visualizer"]);
+const EFFECT_MOUNT_EXCEPTION_KEYS = new Set([
+  "glitter",
+  "pretty-ring",
+  "sparklies",
+]);
 
 // Docs-first scalar primitives (the "numbers in motion" group). These appear on
 // /examples via the shared scalar mini-demo but intentionally have NO CodePen
@@ -105,6 +111,8 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "random-number-between",
   "sierpinski",
   "klimt",
+  "flow-field",
+  "phyllotaxis",
 ]);
 
 // ─── The Studio dropdown: example-derived pens only ─────────────────────────
@@ -146,6 +154,7 @@ describe("Studio pens stay in sync with the Examples page", () => {
       const slug = cls?.l;
       if (!slug) continue; // not an animation (base class / template / helper)
       if (!exampleAnimations.some((a) => a.slug === slug)) continue;
+      if (EFFECT_MOUNT_EXCEPTION_KEYS.has(slug)) continue;
       if (!CANONICAL_DRAW_PEN_KEYS.has(slug)) continue;
 
       // The iron rule's "standalone draw functions" — module-level exports
