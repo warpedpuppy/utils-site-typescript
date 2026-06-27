@@ -3,6 +3,8 @@
 This directory owns `/studio` and the CodePen payloads generated for the Studio
 gallery.
 
+Current resume snapshot: `.claude/handoffs/2026-06-27-api-trig-studio-handoff.md`
+
 ## Current Rule
 
 `src/pages/studio/studio-pens-sync.test.ts` is the enforceable source of truth.
@@ -31,6 +33,7 @@ As of 2026-06-26, these example-derived pens are canonicalized and enforced:
 - `draw-rectangle`
 - `draw-star`
 - `equilateral-trianlge-points`
+- `demystify-sine-and-cosine`
 - `find-points-on-a-circle`
 - `get-a-point-on-a-line`
 - `get-triangle-data-from-line`
@@ -53,8 +56,9 @@ When another pen is changed to embed its core `draw*` helper, add its slug to
 
 All Bucket 1 candidates (exported standalone draw helpers) are now canonicalized.
 
-`demystify-sine-cosine` is hidden Studio-only for this sync rule, even though
-the core animation slug is `demystify-sine-and-cosine`.
+`demystify-sine-and-cosine` is now a normal Examples animation again, and its
+CodePen is canonicalized against the exported `drawDeMystifySineCosine()`
+helper.
 
 Other animations need standalone exported `draw*` functions before their pens
 can be covered by the verbatim draw-function identity test.

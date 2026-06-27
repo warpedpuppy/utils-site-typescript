@@ -31,7 +31,7 @@ for (const category of Object.values(SiteData)) {
   }
 }
 
-const STUDIO_ONLY_KEYS = new Set(["audio-visualizer", "demystify-sine-cosine"]);
+const STUDIO_ONLY_KEYS = new Set(["audio-visualizer"]);
 
 // Docs-first scalar primitives (the "numbers in motion" group). These appear on
 // /examples via the shared scalar mini-demo but intentionally have NO CodePen
@@ -68,6 +68,7 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "find-points-on-a-circle",
   "get-a-point-on-a-line",
   "line-length",
+  "line-to-circle-collision",
   "lerp-smooth-follow",
   "move-to-changing-point",
   "murmuration",
@@ -81,6 +82,7 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "equilateral-trianlge-points",
   "get-triangle-data-from-line",
   "point-to-circle-collision",
+  "demystify-sine-and-cosine",
 ]);
 
 // ─── The Studio dropdown: example-derived pens only ─────────────────────────

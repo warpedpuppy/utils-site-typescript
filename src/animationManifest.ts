@@ -25,6 +25,7 @@ import { RectangleObject as rectangleFormula } from "./pages/createJSON/formulas
 import { sineCurve as sineCurveFormula } from "./pages/createJSON/formulas/animation/SineCurve";
 import { StarObject as starFormula } from "./pages/createJSON/formulas/animation/Star";
 import { triangleDataFromLine as triangleDataFromLineFormula } from "./pages/createJSON/formulas/animation/TriangleDataFromLine";
+import { unitCirclePoint as unitCirclePointFormula } from "./pages/createJSON/formulas/animation/UnitCirclePoint";
 import { circleCircle } from "./pages/createJSON/formulas/collision-detection/CircleCollision";
 import {
   lineCircle,
@@ -143,8 +144,7 @@ const animationManifest: AnimationManifest = {
     DeMystifySineCosine: {
       t: "demystify sine and cosine",
       l: "demystify-sine-and-cosine",
-      include: false,
-      f: findPointAroundCircleFormula,
+      f: unitCirclePointFormula,
       load: () => import("./core-animations/DeMystifySineCosine"),
     },
   },

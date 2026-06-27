@@ -87,6 +87,22 @@
   border-color: rgba(255, 122, 0, 0.24);
 }
 
+.api-docs__card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  span {
+    padding: 2px 7px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+  }
+}
+
 .api-docs__card pre,
 .api-docs__wide-code {
   margin: 14px 0;
@@ -129,6 +145,19 @@
       border-color: var(--accent, #6366f1);
       background: rgba(99, 102, 241, 0.12);
     }
+  }
+}
+
+.api-docs__chip--guide {
+  border-color: rgba(125, 232, 255, 0.22) !important;
+  color: var(--text-muted) !important;
+  background: rgba(125, 232, 255, 0.05) !important;
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgb(125, 232, 255) !important;
+    color: var(--text) !important;
+    background: rgba(125, 232, 255, 0.12) !important;
   }
 }
 
@@ -248,7 +277,9 @@
 .api-docs__fn-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .api-docs__fn-name {
@@ -256,6 +287,13 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--text);
+}
+
+.api-docs__entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .api-docs__kind {
@@ -271,6 +309,106 @@
 .api-docs__kind--function {
   border-color: rgba(255, 122, 0, 0.35);
   color: var(--brand-orange-soft);
+}
+
+.api-docs__role {
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 232, 255, 0.28);
+  color: rgb(125, 232, 255);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.api-docs__guide {
+  border: 1px solid rgba(125, 232, 255, 0.2);
+  background: rgba(14, 28, 40, 0.72);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+
+  p {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin: 8px 0 0;
+  }
+}
+
+.api-docs__guide-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h4 {
+    margin: 0;
+    font-size: 0.98rem;
+  }
+
+  span {
+    font-family: "Space Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgb(125, 232, 255);
+  }
+}
+
+.api-docs__guide-pieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+
+  button {
+    padding: 3px 7px;
+    border: 1px solid rgba(125, 232, 255, 0.22);
+    border-radius: 6px;
+    color: rgb(125, 232, 255);
+    background: rgba(125, 232, 255, 0.08);
+    font-family: "Space Mono", monospace;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--text);
+      border-color: rgb(125, 232, 255);
+      background: rgba(125, 232, 255, 0.16);
+    }
+  }
+}
+
+.api-docs__crumbs {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+
+  span {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+
+  button {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: rgb(125, 232, 255);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
 }
 
 .api-docs__fn-sig,
@@ -290,6 +428,38 @@
 
 .api-docs__fn-example {
   margin-top: 10px;
+}
+
+.api-docs__usage-lead {
+  color: var(--text) !important;
+}
+
+.api-docs__example-callout {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 122, 0, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 122, 0, 0.06);
+
+  p {
+    margin: 0 0 8px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+
+  a {
+    color: var(--brand-orange-soft);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--text);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
 }
 
 .api-docs__params {
