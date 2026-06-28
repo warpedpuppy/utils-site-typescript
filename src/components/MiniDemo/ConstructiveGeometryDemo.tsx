@@ -9,6 +9,13 @@ import { lineToRect } from "@utilspalooza/core/LineToRect";
 import { pointToCircle } from "@utilspalooza/core/PointToCircle";
 import { pointToRect } from "@utilspalooza/core/PointToRect";
 import { rectToRect } from "@utilspalooza/core/RectToRect";
+import { polygonPoint } from "@utilspalooza/core/CollisionObjectAPI/PolygonPoint";
+import { polygonLine } from "@utilspalooza/core/CollisionObjectAPI/PolygonLine";
+import { polygonCircle } from "@utilspalooza/core/CollisionObjectAPI/PolygonCircle";
+import { polygonPolygon } from "@utilspalooza/core/CollisionObjectAPI/PolygonPolygon";
+import { polygonToPolygon } from "@utilspalooza/core/PolygonToPolygon";
+import { lineLine } from "@utilspalooza/core/CollisionObjectAPI/LineLine";
+import { lineCircle } from "@utilspalooza/core/CollisionObjectAPI/LineCircle";
 import { getRotation } from "@utilspalooza/core/GetRotation";
 import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
 import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
@@ -62,11 +69,26 @@ interface RailControls {
   waveTime: number;
 }
 
+// Polygon demos keep their own self-contained scene so they never disturb the
+// shared circle/point/handle defaults the vector & collision cuts rely on.
+interface PolyScene {
+  poly1: Point[];
+  poly2: Point[];
+  point: Point;
+  circle: Circle;
+  lineA: Point;
+  lineB: Point;
+}
+
 type DragState =
   | { kind: "circle"; key: keyof CirclePair; dx: number; dy: number }
   | { kind: "point"; key: keyof PointPair; dx: number; dy: number }
   | { kind: "handle"; key: keyof HandlePair; dx: number; dy: number }
-  | { kind: "rail"; key: keyof RailControls; dx: number };
+  | { kind: "rail"; key: keyof RailControls; dx: number }
+  | { kind: "poly-point"; dx: number; dy: number }
+  | { kind: "poly-circle"; dx: number; dy: number }
+  | { kind: "poly-handle"; key: "lineA" | "lineB"; dx: number; dy: number }
+  | { kind: "poly-translate"; key: "poly1" | "poly2"; dx: number; dy: number };
 
 interface ReadoutRow {
   label: string;
@@ -111,6 +133,14 @@ export default function ConstructiveGeometryDemo({
     phase: 0.15,
     waveTime: 18,
   });
+  const [polyScene, setPolyScene] = useState<PolyScene>(() => ({
+    poly1: regularPolygon(215, 118, 60, 5, -Math.PI / 2),
+    poly2: regularPolygon(348, 128, 54, 4, -Math.PI / 4),
+    point: { x: 100, y: 150 },
+    circle: { x: 108, y: 120, radius: 38 },
+    lineA: { x: 70, y: 72 },
+    lineB: { x: 360, y: 182 },
+  }));
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -207,8 +237,18 @@ export default function ConstructiveGeometryDemo({
         return buildLineToLineScene(handles, points);
       case "line-to-rect":
         return buildLineToRectScene(handles, points);
+      case "polygon-point":
+        return buildPolygonPointScene(polyScene);
+      case "polygon-line":
+        return buildPolygonLineScene(polyScene);
+      case "polygon-circle":
+        return buildPolygonCircleScene(polyScene);
+      case "polygon-polygon":
+        return buildPolygonPolygonScene(polyScene, "polygonPolygon");
+      case "polygon-to-polygon":
+        return buildPolygonPolygonScene(polyScene, "polygonToPolygon");
     }
-  }, [circles, controls, demo, handles, origin, points, size]);
+  }, [circles, controls, demo, handles, origin, points, polyScene, size]);
 
   // Resize the canvas buffer only when the logical size changes (not on every drag frame).
   // Setting canvas.width clears the canvas and resets ctx state; doing it every pointer-move
@@ -321,14 +361,29 @@ export default function ConstructiveGeometryDemo({
       case "line-to-rect":
         drawLineToRectScene(ctx, size.width, size.height, handles, points);
         break;
+      case "polygon-point":
+        drawPolygonPointScene(ctx, size.width, size.height, polyScene);
+        break;
+      case "polygon-line":
+        drawPolygonLineScene(ctx, size.width, size.height, polyScene);
+        break;
+      case "polygon-circle":
+        drawPolygonCircleScene(ctx, size.width, size.height, polyScene);
+        break;
+      case "polygon-polygon":
+        drawPolygonPolygonScene(ctx, size.width, size.height, polyScene, "polygonPolygon");
+        break;
+      case "polygon-to-polygon":
+        drawPolygonPolygonScene(ctx, size.width, size.height, polyScene, "polygonToPolygon");
+        break;
     }
-  }, [circles, controls, demo, handles, origin, points, size.height, size.width]);
+  }, [circles, controls, demo, handles, origin, points, polyScene, size.height, size.width]);
 
   const onPointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
     const point = getCanvasPoint(event, canvasRef.current);
     if (!point) return;
 
-    const drag = getDragState(point, demo.kind, circles, points, handles, controls, size.width, size.height);
+    const drag = getDragState(point, demo.kind, circles, points, handles, controls, polyScene, size.width, size.height);
     if (!drag) return;
     dragRef.current = drag;
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -401,6 +456,47 @@ export default function ConstructiveGeometryDemo({
         setControls((current) => ({
           ...current,
           [drag.key]: railValueForPosition(drag.key, point.x, origin, size.width),
+        }));
+        break;
+      case "poly-point":
+        setPolyScene((current) => ({
+          ...current,
+          point: clampPoint(
+            { x: Math.round(point.x - drag.dx), y: Math.round(point.y - drag.dy) },
+            size.width,
+            size.height,
+          ),
+        }));
+        break;
+      case "poly-circle":
+        setPolyScene((current) => ({
+          ...current,
+          circle: clampCircle(
+            { ...current.circle, x: Math.round(point.x - drag.dx), y: Math.round(point.y - drag.dy) },
+            size.width,
+            size.height,
+          ),
+        }));
+        break;
+      case "poly-handle":
+        setPolyScene((current) => ({
+          ...current,
+          [drag.key]: clampPoint(
+            { x: Math.round(point.x - drag.dx), y: Math.round(point.y - drag.dy) },
+            size.width,
+            size.height,
+          ),
+        }));
+        break;
+      case "poly-translate":
+        setPolyScene((current) => ({
+          ...current,
+          [drag.key]: translatePolygonTo(
+            current[drag.key],
+            { x: point.x - drag.dx, y: point.y - drag.dy },
+            size.width,
+            size.height,
+          ),
         }));
         break;
     }
@@ -1992,6 +2088,494 @@ function drawLineToRectScene(
   if (hit) drawStatusPill(ctx, width - 156, 18, "crossing!");
 }
 
+// ─── COLLISION: polygonPoint (ray casting) ───────────────────────────────────
+
+function buildPolygonPointScene(scene: PolyScene): SceneData {
+  const { poly1, point } = scene;
+  const inside = polygonPoint({ vertices: poly1 }, point);
+  const crossings = rayCrossings(poly1, point);
+  return {
+    call: `polygonPoint({ vertices }, ${formatPoint(point)}) = ${inside}`,
+    hint:
+      "Drag the point — or grab the polygon itself. A ray is cast to the right and we count how many edges it crosses: an odd count means the point is trapped inside, an even count means it escaped.",
+    readouts: [
+      { label: "edges", value: String(poly1.length) },
+      { label: "ray crossings to the right", value: String(crossings.length) },
+      { label: "parity", value: crossings.length % 2 === 1 ? "odd → inside" : "even → outside" },
+      { label: "state", value: inside ? "inside!" : "outside", tone: inside ? "live" : undefined },
+    ],
+  };
+}
+
+function drawPolygonPointScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  scene: PolyScene,
+) {
+  const { poly1, point } = scene;
+  const inside = polygonPoint({ vertices: poly1 }, point);
+  const crossings = rayCrossings(poly1, point);
+
+  drawBackdrop(ctx, width, height);
+  drawPolygonShape(
+    ctx,
+    poly1,
+    inside ? "#f97316" : "#818cf8",
+    inside ? "rgba(249, 115, 22, 0.16)" : "rgba(129, 140, 248, 0.12)",
+  );
+
+  ctx.setLineDash([6, 6]);
+  ctx.strokeStyle = inside ? "rgba(249, 115, 22, 0.9)" : "rgba(125, 211, 252, 0.85)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(point.x, point.y);
+  ctx.lineTo(width - PAD, point.y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  crossings.forEach((c, index) => {
+    drawCenter(ctx, c, "#fde68a", 6);
+    labelSegment(ctx, c.x, c.y - 14, `#${index + 1}`, "#fde68a");
+  });
+
+  drawPoint(ctx, point, "#fb7185", "p");
+
+  drawHeaderBox(ctx, [
+    { text: `ray crossings = ${crossings.length}`, color: "#e2e8f0" },
+    {
+      text: crossings.length % 2 === 1 ? "odd → inside" : "even → outside",
+      color: inside ? "#fdba74" : "#cbd5e1",
+    },
+  ]);
+  if (inside) drawStatusPill(ctx, width - 156, 18, "inside!");
+}
+
+// ─── COLLISION: polygonLine ──────────────────────────────────────────────────
+
+function buildPolygonLineScene(scene: PolyScene): SceneData {
+  const { poly1, lineA, lineB } = scene;
+  const line = { startPoint: lineA, endPoint: lineB };
+  const hit = polygonLine({ vertices: poly1 }, line);
+  const edges = polygonEdges(poly1);
+  const crossed = edges.filter((edge) => lineLine(line, edge).hit).length;
+  return {
+    call: `polygonLine({ vertices }, { startPoint, endPoint }) = ${hit}`,
+    hint:
+      "Drag the segment endpoints — or grab the polygon. The segment is run against every polygon edge with lineLine; the first edge it crosses makes the whole test true.",
+    readouts: [
+      { label: "edges tested", value: String(edges.length) },
+      { label: "edges crossed", value: String(crossed) },
+      { label: "state", value: hit ? "crossing!" : "no crossing", tone: hit ? "live" : undefined },
+    ],
+  };
+}
+
+function drawPolygonLineScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  scene: PolyScene,
+) {
+  const { poly1, lineA, lineB } = scene;
+  const line = { startPoint: lineA, endPoint: lineB };
+  const hit = polygonLine({ vertices: poly1 }, line);
+  const edges = polygonEdges(poly1);
+
+  drawBackdrop(ctx, width, height);
+  drawPolygonShape(
+    ctx,
+    poly1,
+    hit ? "#f97316" : "#818cf8",
+    hit ? "rgba(249, 115, 22, 0.1)" : "rgba(129, 140, 248, 0.1)",
+  );
+
+  edges.forEach((edge) => {
+    const result = lineLine(line, edge);
+    if (result.hit) {
+      ctx.strokeStyle = "#f97316";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(edge.startPoint.x, edge.startPoint.y);
+      ctx.lineTo(edge.endPoint.x, edge.endPoint.y);
+      ctx.stroke();
+    }
+  });
+
+  ctx.strokeStyle = hit ? "#fb7185" : "#a78bfa";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(lineA.x, lineA.y);
+  ctx.lineTo(lineB.x, lineB.y);
+  ctx.stroke();
+
+  edges.forEach((edge) => {
+    const result = lineLine(line, edge);
+    if (result.hit && result.intersectionX !== undefined && result.intersectionY !== undefined) {
+      drawCenter(ctx, { x: result.intersectionX, y: result.intersectionY }, "#fde68a", 6);
+    }
+  });
+
+  drawCenter(ctx, lineA, "#a78bfa", 7);
+  labelSegment(ctx, lineA.x - 20, lineA.y - 10, "a", "#a78bfa");
+  drawCenter(ctx, lineB, "#a78bfa", 7);
+  labelSegment(ctx, lineB.x + 18, lineB.y - 10, "b", "#a78bfa");
+
+  drawHeaderBox(ctx, [
+    { text: `tests ${edges.length} polygon edges`, color: "#e2e8f0" },
+    { text: `crossing: ${hit}`, color: hit ? "#fdba74" : "#cbd5e1" },
+  ]);
+  if (hit) drawStatusPill(ctx, width - 156, 18, "crossing!");
+}
+
+// ─── COLLISION: polygonCircle ────────────────────────────────────────────────
+
+function buildPolygonCircleScene(scene: PolyScene): SceneData {
+  const { poly1, circle } = scene;
+  const hit = polygonCircle({ vertices: poly1 }, circle);
+  const edges = polygonEdges(poly1);
+  const touching = edges.filter((edge) => lineCircle(edge, circle)).length;
+  const centerInside = polygonPoint({ vertices: poly1 }, { x: circle.x, y: circle.y });
+  const nearest = nearestEdge(poly1, { x: circle.x, y: circle.y });
+  return {
+    call: `polygonCircle({ vertices }, ${formatCircleObject(circle)}) = ${hit}`,
+    hint:
+      "Drag the circle — or grab the polygon. Each edge is checked with lineCircle, and the circle's center is also tested for being inside, so even a fully-swallowed circle still counts as a hit.",
+    readouts: [
+      { label: "nearest edge distance", value: `${fmt(nearest.dist)} vs radius ${fmt(circle.radius)}` },
+      { label: "edges touched", value: String(touching) },
+      { label: "center inside polygon", value: String(centerInside) },
+      { label: "state", value: hit ? "touching!" : "clear", tone: hit ? "live" : undefined },
+    ],
+  };
+}
+
+function drawPolygonCircleScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  scene: PolyScene,
+) {
+  const { poly1, circle } = scene;
+  const hit = polygonCircle({ vertices: poly1 }, circle);
+  const edges = polygonEdges(poly1);
+  const centerInside = polygonPoint({ vertices: poly1 }, { x: circle.x, y: circle.y });
+  const nearest = nearestEdge(poly1, { x: circle.x, y: circle.y });
+  const color = hit ? "#f97316" : "#818cf8";
+
+  drawBackdrop(ctx, width, height);
+  drawPolygonShape(
+    ctx,
+    poly1,
+    centerInside ? "#fb7185" : hit ? "#f97316" : "#a78bfa",
+    centerInside ? "rgba(249, 115, 22, 0.2)" : "rgba(129, 140, 248, 0.1)",
+  );
+
+  edges.forEach((edge) => {
+    if (lineCircle(edge, circle)) {
+      ctx.strokeStyle = "#f97316";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(edge.startPoint.x, edge.startPoint.y);
+      ctx.lineTo(edge.endPoint.x, edge.endPoint.y);
+      ctx.stroke();
+    }
+  });
+
+  drawCircle(ctx, circle, color, "r");
+
+  ctx.setLineDash([5, 5]);
+  ctx.strokeStyle = hit ? "rgba(249, 115, 22, 0.9)" : "rgba(255, 255, 255, 0.6)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(circle.x, circle.y);
+  ctx.lineTo(nearest.point.x, nearest.point.y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawCenter(ctx, circle, color, 5);
+  drawCenter(ctx, nearest.point, "#fde68a", 6);
+  labelSegment(
+    ctx,
+    (circle.x + nearest.point.x) / 2,
+    (circle.y + nearest.point.y) / 2 - 12,
+    `d = ${fmt(nearest.dist)}`,
+    hit ? "#fdba74" : "rgba(255,255,255,0.85)",
+  );
+
+  drawHeaderBox(ctx, [
+    { text: `nearest edge d = ${fmt(nearest.dist)}`, color: "#e2e8f0" },
+    {
+      text: centerInside ? "center is inside" : `radius = ${fmt(circle.radius)}`,
+      color: hit ? "#fb923c" : "#cbd5e1",
+    },
+  ]);
+  if (hit) drawStatusPill(ctx, width - 156, 18, "touching!");
+}
+
+// ─── COLLISION: polygonPolygon / polygonToPolygon ────────────────────────────
+
+function buildPolygonPolygonScene(
+  scene: PolyScene,
+  fnName: "polygonPolygon" | "polygonToPolygon",
+): SceneData {
+  const { poly1, poly2 } = scene;
+  const hit =
+    fnName === "polygonToPolygon"
+      ? polygonToPolygon(poly1, poly2)
+      : polygonPolygon({ vertices: poly1 }, { vertices: poly2 });
+  const crossings = polygonCrossings(poly1, poly2).length;
+  const v1in2 = poly1.filter((v) => polygonPoint({ vertices: poly2 }, v)).length;
+  const v2in1 = poly2.filter((v) => polygonPoint({ vertices: poly1 }, v)).length;
+
+  if (fnName === "polygonToPolygon") {
+    return {
+      call: `polygonToPolygon(poly1, poly2) = ${hit}`,
+      hint:
+        "Drag either polygon. This lighter test only asks whether any corner of one polygon sits inside the other — fast, but it can miss an edge-only crossing where no corner is contained. Watch the two readouts disagree.",
+      readouts: [
+        { label: "poly1 corners inside poly2", value: String(v1in2) },
+        { label: "poly2 corners inside poly1", value: String(v2in1) },
+        { label: "edge crossings (NOT tested here)", value: String(crossings) },
+        { label: "state", value: hit ? "overlapping!" : "separated", tone: hit ? "live" : undefined },
+      ],
+    };
+  }
+
+  return {
+    call: `polygonPolygon({ vertices: poly1 }, { vertices: poly2 }) = ${hit}`,
+    hint:
+      "Drag either polygon. Every edge of poly1 is run against poly2 with the polygonLine test, plus a containment check — so this catches the edge-only crossings the lighter polygonToPolygon can miss.",
+    readouts: [
+      { label: "edge crossings", value: String(crossings) },
+      { label: "poly2 corners inside poly1", value: String(v2in1) },
+      { label: "state", value: hit ? "overlapping!" : "separated", tone: hit ? "live" : undefined },
+    ],
+  };
+}
+
+function drawPolygonPolygonScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  scene: PolyScene,
+  fnName: "polygonPolygon" | "polygonToPolygon",
+) {
+  const { poly1, poly2 } = scene;
+  const hit =
+    fnName === "polygonToPolygon"
+      ? polygonToPolygon(poly1, poly2)
+      : polygonPolygon({ vertices: poly1 }, { vertices: poly2 });
+  const crossings = polygonCrossings(poly1, poly2);
+
+  drawBackdrop(ctx, width, height);
+  drawPolygonShape(
+    ctx,
+    poly1,
+    hit ? "#f97316" : "#818cf8",
+    hit ? "rgba(249, 115, 22, 0.1)" : "rgba(129, 140, 248, 0.1)",
+  );
+  drawPolygonShape(
+    ctx,
+    poly2,
+    hit ? "#fb7185" : "#a78bfa",
+    hit ? "rgba(251, 113, 133, 0.12)" : "rgba(167, 139, 250, 0.1)",
+  );
+
+  // Highlight contained corners (the only thing polygonToPolygon looks at).
+  poly1.forEach((v) => {
+    if (polygonPoint({ vertices: poly2 }, v)) drawCenter(ctx, v, "#fde68a", 6);
+  });
+  poly2.forEach((v) => {
+    if (polygonPoint({ vertices: poly1 }, v)) drawCenter(ctx, v, "#fde68a", 6);
+  });
+
+  // Mark edge crossings (what polygonPolygon adds on top).
+  crossings.forEach((c) => drawCenter(ctx, c, "#fb923c", 5));
+
+  labelSegment(ctx, polyCentroid(poly1).x, polyCentroid(poly1).y, "poly1", hit ? "#f97316" : "#818cf8");
+  labelSegment(ctx, polyCentroid(poly2).x, polyCentroid(poly2).y, "poly2", hit ? "#fb7185" : "#a78bfa");
+
+  drawHeaderBox(ctx, [
+    {
+      text: fnName === "polygonToPolygon" ? "corner-inside test" : "edge-cross + containment",
+      color: "#e2e8f0",
+    },
+    { text: hit ? "overlapping!" : "separated", color: hit ? "#fdba74" : "#cbd5e1" },
+  ]);
+  if (hit) drawStatusPill(ctx, width - 156, 18, "overlapping!");
+}
+
+// ─── Polygon helpers ─────────────────────────────────────────────────────────
+
+function getPolygonDragState(
+  point: Point,
+  kind: ConstructiveGeometryDemoDef["kind"],
+  scene: PolyScene,
+): DragState | null {
+  if (kind === "polygon-point") {
+    if (Math.hypot(point.x - scene.point.x, point.y - scene.point.y) <= 14) {
+      return { kind: "poly-point", dx: point.x - scene.point.x, dy: point.y - scene.point.y };
+    }
+    if (polygonPoint({ vertices: scene.poly1 }, point)) return polyTranslateDrag(point, "poly1", scene.poly1);
+    return null;
+  }
+
+  if (kind === "polygon-line") {
+    for (const key of (["lineB", "lineA"] as const)) {
+      const h = scene[key];
+      if (Math.hypot(point.x - h.x, point.y - h.y) <= 14) {
+        return { kind: "poly-handle", key, dx: point.x - h.x, dy: point.y - h.y };
+      }
+    }
+    if (polygonPoint({ vertices: scene.poly1 }, point)) return polyTranslateDrag(point, "poly1", scene.poly1);
+    return null;
+  }
+
+  if (kind === "polygon-circle") {
+    const c = scene.circle;
+    if (Math.hypot(point.x - c.x, point.y - c.y) <= c.radius) {
+      return { kind: "poly-circle", dx: point.x - c.x, dy: point.y - c.y };
+    }
+    if (polygonPoint({ vertices: scene.poly1 }, point)) return polyTranslateDrag(point, "poly1", scene.poly1);
+    return null;
+  }
+
+  // polygon-polygon / polygon-to-polygon — poly2 sits on top, so grab it first.
+  if (polygonPoint({ vertices: scene.poly2 }, point)) return polyTranslateDrag(point, "poly2", scene.poly2);
+  if (polygonPoint({ vertices: scene.poly1 }, point)) return polyTranslateDrag(point, "poly1", scene.poly1);
+  return null;
+}
+
+function polyTranslateDrag(point: Point, key: "poly1" | "poly2", verts: Point[]): DragState {
+  const c = polyCentroid(verts);
+  return { kind: "poly-translate", key, dx: point.x - c.x, dy: point.y - c.y };
+}
+
+function regularPolygon(
+  cx: number,
+  cy: number,
+  radius: number,
+  sides: number,
+  rotation = 0,
+): Point[] {
+  const verts: Point[] = [];
+  for (let i = 0; i < sides; i++) {
+    const a = rotation + (i / sides) * Math.PI * 2;
+    verts.push({ x: Math.round(cx + Math.cos(a) * radius), y: Math.round(cy + Math.sin(a) * radius) });
+  }
+  return verts;
+}
+
+function polygonEdges(verts: Point[]): { startPoint: Point; endPoint: Point }[] {
+  return verts.map((v, i) => ({ startPoint: v, endPoint: verts[(i + 1) % verts.length] }));
+}
+
+function polyCentroid(verts: Point[]): Point {
+  let x = 0;
+  let y = 0;
+  for (const v of verts) {
+    x += v.x;
+    y += v.y;
+  }
+  return { x: x / verts.length, y: y / verts.length };
+}
+
+function translatePolygonTo(
+  verts: Point[],
+  targetCentroid: Point,
+  width: number,
+  height: number,
+): Point[] {
+  const c = polyCentroid(verts);
+  let dx = targetCentroid.x - c.x;
+  let dy = targetCentroid.y - c.y;
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const v of verts) {
+    minX = Math.min(minX, v.x);
+    minY = Math.min(minY, v.y);
+    maxX = Math.max(maxX, v.x);
+    maxY = Math.max(maxY, v.y);
+  }
+  if (minX + dx < PAD) dx = PAD - minX;
+  if (maxX + dx > width - PAD) dx = width - PAD - maxX;
+  if (minY + dy < PAD) dy = PAD - minY;
+  if (maxY + dy > height - PAD) dy = height - PAD - maxY;
+
+  return verts.map((v) => ({ x: Math.round(v.x + dx), y: Math.round(v.y + dy) }));
+}
+
+function rayCrossings(verts: Point[], p: Point): Point[] {
+  const crossings: Point[] = [];
+  for (let i = 0; i < verts.length; i++) {
+    const vc = verts[i];
+    const vn = verts[(i + 1) % verts.length];
+    if (vc.y > p.y !== vn.y > p.y) {
+      const cx = ((vn.x - vc.x) * (p.y - vc.y)) / (vn.y - vc.y) + vc.x;
+      if (cx > p.x) crossings.push({ x: cx, y: p.y });
+    }
+  }
+  return crossings.sort((a, b) => a.x - b.x);
+}
+
+function polygonCrossings(poly1: Point[], poly2: Point[]): Point[] {
+  const out: Point[] = [];
+  for (const e1 of polygonEdges(poly1)) {
+    for (const e2 of polygonEdges(poly2)) {
+      const result = lineLine(e1, e2);
+      if (result.hit && result.intersectionX !== undefined && result.intersectionY !== undefined) {
+        out.push({ x: result.intersectionX, y: result.intersectionY });
+      }
+    }
+  }
+  return out;
+}
+
+function nearestEdge(verts: Point[], p: Point): { point: Point; dist: number } {
+  let best: Point = verts[0];
+  let bestDist = Infinity;
+  for (const edge of polygonEdges(verts)) {
+    const closest = closestPointOnSegment(p, edge.startPoint, edge.endPoint);
+    const d = distance(p, closest);
+    if (d < bestDist) {
+      bestDist = d;
+      best = closest;
+    }
+  }
+  return { point: best, dist: bestDist };
+}
+
+function closestPointOnSegment(p: Point, a: Point, b: Point): Point {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const lenSq = dx * dx + dy * dy || 1;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / lenSq));
+  return { x: a.x + t * dx, y: a.y + t * dy };
+}
+
+function drawPolygonShape(
+  ctx: CanvasRenderingContext2D,
+  verts: Point[],
+  color: string,
+  fill?: string,
+) {
+  ctx.beginPath();
+  verts.forEach((v, i) => (i === 0 ? ctx.moveTo(v.x, v.y) : ctx.lineTo(v.x, v.y)));
+  ctx.closePath();
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fill();
+  }
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  verts.forEach((v) => drawCenter(ctx, v, color, 3.5));
+}
+
 // ─── Rect drawing helper ─────────────────────────────────────────────────────
 
 function drawAabbRect(
@@ -2290,9 +2874,20 @@ function getDragState(
   points: PointPair,
   handles: HandlePair,
   controls: RailControls,
+  polyScene: PolyScene,
   width: number,
   height: number,
 ): DragState | null {
+  if (
+    kind === "polygon-point" ||
+    kind === "polygon-line" ||
+    kind === "polygon-circle" ||
+    kind === "polygon-polygon" ||
+    kind === "polygon-to-polygon"
+  ) {
+    return getPolygonDragState(point, kind, polyScene);
+  }
+
   if (kind === "circle-to-circle" || kind === "circle-circle") {
     const keys: (keyof CirclePair)[] = ["circle2", "circle1"];
     for (const key of keys) {
