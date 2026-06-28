@@ -22,7 +22,9 @@ export type GeometryDemoKind =
   | "vec-angle-between"
   | "vec-perpendicular"
   | "vec-lerp"
-  | "vec-limit";
+  | "vec-limit"
+  | "lerp-angle"
+  | "get-rotation";
 
 export interface ConstructiveGeometryDemoDef {
   kind: GeometryDemoKind;
@@ -113,5 +115,21 @@ export const CONSTRUCTIVE_GEOMETRY_DEMOS: Partial<Record<string, ConstructiveGeo
   vecLimit: {
     kind: "vec-limit",
     fnName: "vecLimit",
+  },
+  lerpAngle: {
+    kind: "lerp-angle",
+    fnName: "lerpAngle",
+  },
+  shortestAngleBetween: {
+    kind: "lerp-angle",
+    fnName: "shortestAngleBetween",
+  },
+  wrapAngle: {
+    kind: "lerp-angle",
+    fnName: "wrapAngle",
+  },
+  getRotation: {
+    kind: "get-rotation",
+    fnName: "getRotation",
   },
 };

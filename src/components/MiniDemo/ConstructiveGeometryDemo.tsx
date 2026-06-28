@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { lerpAngle, shortestAngleBetween, wrapAngle } from "@utilspalooza/core/AngleInterpolation";
 import { distance } from "@utilspalooza/core/Distance";
+import { getRotation } from "@utilspalooza/core/GetRotation";
 import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
 import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
 import { sineCurve } from "@utilspalooza/core/SineCurve";
@@ -174,8 +176,12 @@ export default function ConstructiveGeometryDemo({
         return buildVecLerpScene(origin, handles, controls.lerp);
       case "vec-limit":
         return buildVecLimitScene(origin, handles.a, controls.limit);
+      case "lerp-angle":
+        return buildLerpAngleScene(demo, size, handles, controls.lerp);
+      case "get-rotation":
+        return buildGetRotationScene(points);
     }
-  }, [circles, controls, demo, handles, origin, points]);
+  }, [circles, controls, demo, handles, origin, points, size]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -247,6 +253,12 @@ export default function ConstructiveGeometryDemo({
       case "vec-limit":
         drawLimitScene(ctx, size.width, size.height, origin, handles.a, controls.limit);
         break;
+      case "lerp-angle":
+        drawLerpAngleScene(ctx, size.width, size.height, handles, controls.lerp);
+        break;
+      case "get-rotation":
+        drawGetRotationScene(ctx, size.width, size.height, points);
+        break;
     }
   }, [circles, controls, demo.kind, handles, origin, points, scene.readouts, size.height, size.width]);
 
@@ -295,11 +307,13 @@ export default function ConstructiveGeometryDemo({
         }));
         break;
       case "handle":
-        if ((demo.kind === "unit-circle-point" || demo.kind === "sine-curve") && drag.key === "a") {
+        // Handles on unit-circle-point, sine-curve, and lerp-angle all snap to the circle.
+        if (demo.kind === "unit-circle-point" || demo.kind === "sine-curve" ||
+            (demo.kind === "lerp-angle" && (drag.key === "a" || drag.key === "b"))) {
           const layout = unitCircleLayout(size.width, size.height);
           setHandles((current) => ({
             ...current,
-            a: snapPointToCircle(
+            [drag.key]: snapPointToCircle(
               {
                 x: Math.round(point.x - drag.dx),
                 y: Math.round(point.y - drag.dy),
@@ -1219,6 +1233,141 @@ function drawLimitScene(
   drawHeaderBox(ctx, [{ text: `max = ${fmt(max)}`, color: "#e2e8f0" }]);
 }
 
+function buildGetRotationScene(points: PointPair): SceneData {
+  const { point1, point2 } = points;
+  const angle = getRotation(point1, point2);
+  return {
+    call: `getRotation(${formatPoint(point1)}, ${formatPoint(point2)}) = ${fmt(angle)} rad`,
+    hint:
+      "Drag either point. The arrow shows the heading from the current point toward the destination; getRotation is just atan2(dy, dx) made readable.",
+    readouts: [
+      { label: "current", value: formatPoint(point1) },
+      { label: "destination", value: formatPoint(point2) },
+      { label: "angle", value: `${fmt(angle)} rad = ${fmt(radToDeg(angle))}°`, tone: "live" },
+    ],
+  };
+}
+
+function drawGetRotationScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  points: PointPair,
+) {
+  const { point1, point2 } = points;
+  const angle = getRotation(point1, point2);
+
+  drawBackdrop(ctx, width, height);
+  drawVector(ctx, point1, point2, "#818cf8", "destination");
+  drawAngleArc(ctx, point1, point2, 44, "rgba(249, 115, 22, 0.95)");
+  drawCenter(ctx, point1, "#f97316", 7);
+  labelSegment(ctx, point1.x + 18, point1.y - 10, "current", "#f97316");
+
+  drawHeaderBox(ctx, [
+    { text: `angle = ${fmt(angle)} rad`, color: "#e2e8f0" },
+    { text: `= ${fmt(radToDeg(angle))}°`, color: "#fdba74" },
+  ]);
+
+  labelSegment(
+    ctx,
+    point1.x + 60,
+    point1.y - 14,
+    `${fmt(radToDeg(angle))}°`,
+    "rgba(249, 115, 22, 0.98)",
+  );
+}
+
+function buildLerpAngleScene(
+  demo: ConstructiveGeometryDemoDef,
+  size: { width: number; height: number },
+  handles: HandlePair,
+  t: number,
+): SceneData {
+  const layout = unitCircleLayout(size.width, size.height);
+  const angleA = Math.atan2(handles.a.y - layout.center.y, handles.a.x - layout.center.x);
+  const angleB = Math.atan2(handles.b.y - layout.center.y, handles.b.x - layout.center.x);
+  const shortest = shortestAngleBetween(angleA, angleB);
+  const lerped = lerpAngle(angleA, angleB, t);
+  // Show wrapAngle acting on the raw difference — that's exactly what shortestAngleBetween calls.
+  const rawDiff = angleB - angleA;
+  const wrapped = wrapAngle(rawDiff);
+
+  let callStr: string;
+  if (demo.fnName === "shortestAngleBetween") {
+    callStr = `shortestAngleBetween(${fmt(angleA)}, ${fmt(angleB)}) = ${fmt(shortest)}`;
+  } else if (demo.fnName === "wrapAngle") {
+    callStr = `wrapAngle(${fmt(rawDiff)}) = ${fmt(wrapped)}`;
+  } else {
+    callStr = `lerpAngle(${fmt(angleA)}, ${fmt(angleB)}, ${fmt(t)}) = ${fmt(lerped)}`;
+  }
+
+  return {
+    call: callStr,
+    hint:
+      "Drag either handle to set an angle. The shaded arc is the shortest path — lerpAngle always travels it, even across the 0°/360° seam.",
+    readouts: [
+      { label: "a", value: `${fmt(radToDeg(angleA))}°` },
+      { label: "b", value: `${fmt(radToDeg(angleB))}°` },
+      { label: "b − a (raw)", value: `${fmtSigned(radToDeg(rawDiff))}°` },
+      { label: "shortest (wrapped)", value: `${fmtSigned(radToDeg(shortest))}° ${shortest >= 0 ? "(CCW)" : "(CW)"}` },
+      { label: `lerp at t = ${fmt(t)}`, value: `${fmt(radToDeg(lerped))}°`, tone: "live" },
+    ],
+  };
+}
+
+function drawLerpAngleScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  handles: HandlePair,
+  t: number,
+) {
+  const layout = unitCircleLayout(width, height);
+  const { center, radius } = layout;
+  const angleA = Math.atan2(handles.a.y - center.y, handles.a.x - center.x);
+  const angleB = Math.atan2(handles.b.y - center.y, handles.b.x - center.x);
+  const shortest = shortestAngleBetween(angleA, angleB);
+  const lerped = lerpAngle(angleA, angleB, t);
+  const lerpedPt = { x: center.x + Math.cos(lerped) * radius, y: center.y + Math.sin(lerped) * radius };
+
+  drawBackdrop(ctx, width, height);
+  drawAxes(ctx, width, height, center);
+  drawUnitCircle(ctx, center, radius);
+  drawCenter(ctx, center, "#f8fafc", 5);
+
+  // Shaded short arc
+  if (Math.abs(shortest) > 0.01) {
+    ctx.fillStyle = "rgba(249, 115, 22, 0.12)";
+    ctx.beginPath();
+    ctx.moveTo(center.x, center.y);
+    ctx.arc(center.x, center.y, radius, angleA, angleA + shortest, shortest < 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(249, 115, 22, 0.7)";
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, radius, angleA, angleA + shortest, shortest < 0);
+    ctx.stroke();
+  }
+
+  // Arms A and B
+  drawVector(ctx, center, handles.a, "#818cf8", "a");
+  drawVector(ctx, center, handles.b, "#fb7185", "b");
+
+  // Lerped arm
+  drawVector(ctx, center, lerpedPt, "#f97316", `t=${fmt(t)}`);
+
+  // t rail and header
+  drawRail(ctx, width, height, "lerp", t, 0, 1);
+  drawHeaderBox(ctx, [
+    {
+      text: `shortest = ${fmtSigned(radToDeg(shortest))}° ${shortest >= 0 ? "(CCW)" : "(CW)"}`,
+      color: "#fdba74",
+    },
+    { text: `lerped = ${fmt(radToDeg(lerped))}°`, color: "#f97316" },
+  ]);
+}
+
 function drawBackdrop(ctx: CanvasRenderingContext2D, width: number, height: number) {
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = "rgba(0, 0, 0, 0.16)";
@@ -1514,7 +1663,7 @@ function getDragState(
     return null;
   }
 
-  if (kind === "distance") {
+  if (kind === "distance" || kind === "get-rotation") {
     const keys: (keyof PointPair)[] = ["point2", "point1"];
     for (const key of keys) {
       const current = points[key];
@@ -1538,12 +1687,13 @@ function getDragState(
     kind === "vec-lerp" ||
     kind === "vec-limit" ||
     kind === "sine-wave" ||
-    kind === "wave-amplitude"
+    kind === "wave-amplitude" ||
+    kind === "lerp-angle"
   ) {
     const railKey: keyof RailControls =
       kind === "vec-scale"
         ? "scale"
-        : kind === "vec-lerp"
+        : kind === "vec-lerp" || kind === "lerp-angle"
           ? "lerp"
           : kind === "vec-limit"
             ? "limit"
@@ -1567,6 +1717,18 @@ function getDragState(
     const current = handles.a;
     if (Math.hypot(point.x - current.x, point.y - current.y) <= 14) {
       return { kind: "handle", key: "a", dx: point.x - current.x, dy: point.y - current.y };
+    }
+    return null;
+  }
+
+  if (kind === "lerp-angle") {
+    // Check b before a (consistent with other two-handle demos).
+    const keys: (keyof HandlePair)[] = ["b", "a"];
+    for (const key of keys) {
+      const current = handles[key];
+      if (Math.hypot(point.x - current.x, point.y - current.y) <= 14) {
+        return { kind: "handle", key, dx: point.x - current.x, dy: point.y - current.y };
+      }
     }
     return null;
   }
