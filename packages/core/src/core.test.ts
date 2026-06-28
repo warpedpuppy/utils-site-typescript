@@ -381,6 +381,7 @@ describe("collision detection", () => {
     expect(pointToRect(5, 5, 0, 0, 10, 10)).toBe(true);
     expect(pointToRect(11, 5, 0, 0, 10, 10)).toBe(false);
     expect(pointToRect(0, 0, 0, 0, 10, 10)).toBe(true); // corner is inclusive
+    expect(pointToRect(10, 10, 0, 0, 10, 10)).toBe(true); // opposite corner is inclusive too
   });
 
   it("pointToPolygon: inside vs outside a square", () => {
@@ -402,6 +403,7 @@ describe("collision detection", () => {
   it("rectToRect: overlapping vs separated", () => {
     expect(rectToRect(0, 0, 10, 10, 5, 5, 10, 10)).toBe(true);
     expect(rectToRect(0, 0, 10, 10, 20, 20, 5, 5)).toBe(false);
+    expect(rectToRect(0, 0, 10, 10, 10, 0, 5, 5)).toBe(false); // edge-touch only is not overlap
   });
 
   it("rectToPolygon: rect overlapping a triangle vs clear of it", () => {
@@ -419,6 +421,8 @@ describe("collision detection", () => {
   it("circleToRect: circle overlapping a rect vs clear of it", () => {
     expect(circleToRect(0, 0, 5, 3, 0, 10, 10)).toBe(true); // overlaps left edge
     expect(circleToRect(-100, -100, 5, 0, 0, 10, 10)).toBe(false);
+    expect(circleToRect(-5, 5, 5, 0, 0, 10, 10)).toBe(true); // exact tangency on left edge
+    expect(circleToRect(5, 5, 2, 0, 0, 10, 10)).toBe(true); // fully inside rect
   });
 
   it("circleToCircle: touching, overlapping, apart", () => {
@@ -437,16 +441,23 @@ describe("collision detection — remaining raw functions", () => {
   it("lineToCircle: line through a circle vs clear of it", () => {
     expect(lineToCircle(0, 0, 10, 0, 5, 0, 2)).toBe(true); // passes through center
     expect(lineToCircle(0, 0, 10, 0, 5, 100, 2)).toBe(false); // far away
+    expect(lineToCircle(0, 0, 2, 0, 5, 0, 2)).toBe(false); // closest point clamps to endpoint
+    expect(lineToCircle(0, 0, 2, 0, 3, 0, 1)).toBe(true); // endpoint-touch after clamping
+    expect(lineToCircle(4, 4, 4, 4, 4, 4, 0.5)).toBe(true); // zero-length segment at center
+    expect(lineToCircle(4, 4, 4, 4, 10, 10, 1)).toBe(false); // zero-length segment away from circle
   });
 
   it("lineToLine: crossing segments vs parallel segments", () => {
     expect(lineToLine(0, 0, 10, 10, 0, 10, 10, 0)).toBe(true); // an X
     expect(lineToLine(0, 0, 10, 0, 0, 5, 10, 5)).toBe(false); // parallel
+    expect(lineToLine(0, 0, 10, 0, 10, 0, 10, 10)).toBe(true); // shared endpoint
+    expect(lineToLine(0, 0, 10, 0, 5, 0, 15, 0)).toBe(false); // collinear overlap counts as false here
   });
 
   it("lineToRect: line crossing a rect vs missing it", () => {
     expect(lineToRect(-5, 5, 15, 5, 0, 0, 10, 10)).toBe(true); // straight through
     expect(lineToRect(-5, -5, -1, -5, 0, 0, 10, 10)).toBe(false); // off to the side
+    expect(lineToRect(2, 2, 8, 8, 0, 0, 10, 10)).toBe(false); // fully inside, no edge crossing
   });
 
   it("polygonToPolygon (Point[]): overlapping vs separated squares", () => {
@@ -478,15 +489,35 @@ describe("collision detection — object API (CollisionObjectAPI)", () => {
     expect(circleCircle({ x: 0, y: 0, radius: 5 }, { x: 100, y: 0, radius: 5 })).toBe(false);
   });
 
+  it("circleCircle: exact tangency counts as a hit", () => {
+    expect(circleCircle({ x: 0, y: 0, radius: 5 }, { x: 10, y: 0, radius: 5 })).toBe(true);
+  });
+
   it("pointCircle: inside vs outside", () => {
     expect(pointCircle({ x: 1, y: 1 }, { x: 0, y: 0, radius: 5 })).toBe(true);
     expect(pointCircle({ x: 9, y: 9 }, { x: 0, y: 0, radius: 5 })).toBe(false);
+  });
+
+  it("pointCircle: points on the circle boundary count as hits", () => {
+    expect(pointCircle({ x: 5, y: 0 }, { x: 0, y: 0, radius: 5 })).toBe(true);
   });
 
   it("linePoint: point on the line vs off it", () => {
     const line = { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } };
     expect(linePoint(line, { x: 5, y: 0 })).toBe(true);
     expect(linePoint(line, { x: 5, y: 5 })).toBe(false);
+  });
+
+  it("linePoint: uses a built-in tolerance for near-line points", () => {
+    const line = { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } };
+    expect(linePoint(line, { x: 5, y: 0.05 })).toBe(true);
+    expect(linePoint(line, { x: 5, y: 0.2 })).toBe(false);
+  });
+
+  it("linePoint: handles zero-length segments as point checks", () => {
+    const pointSegment = { startPoint: { x: 3, y: 3 }, endPoint: { x: 3, y: 3 } };
+    expect(linePoint(pointSegment, { x: 3.05, y: 3 })).toBe(true);
+    expect(linePoint(pointSegment, { x: 3.2, y: 3 })).toBe(false);
   });
 
   it("lineLine: returns the intersection point when segments cross", () => {
@@ -506,10 +537,50 @@ describe("collision detection — object API (CollisionObjectAPI)", () => {
     expect(miss.hit).toBe(false);
   });
 
+  it("lineLine: counts shared endpoints as hits", () => {
+    const result = lineLine(
+      { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } },
+      { startPoint: { x: 10, y: 0 }, endPoint: { x: 10, y: 10 } },
+    );
+    expect(result.hit).toBe(true);
+    if (result.hit) {
+      expect(result.intersectionX).toBeCloseTo(10);
+      expect(result.intersectionY).toBeCloseTo(0);
+    }
+  });
+
+  it("lineLine: parallel or collinear segments return no hit", () => {
+    expect(
+      lineLine(
+        { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } },
+        { startPoint: { x: 0, y: 5 }, endPoint: { x: 10, y: 5 } },
+      ).hit,
+    ).toBe(false);
+
+    expect(
+      lineLine(
+        { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } },
+        { startPoint: { x: 5, y: 0 }, endPoint: { x: 15, y: 0 } },
+      ).hit,
+    ).toBe(false);
+  });
+
   it("lineCircle: line through a circle vs clear of it", () => {
     const through = { startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } };
     expect(lineCircle(through, { x: 5, y: 0, radius: 2 })).toBe(true);
     expect(lineCircle(through, { x: 5, y: 100, radius: 2 })).toBe(false);
+  });
+
+  it("lineCircle: clamps the closest point to the segment endpoints", () => {
+    const shortSegment = { startPoint: { x: 0, y: 0 }, endPoint: { x: 2, y: 0 } };
+    expect(lineCircle(shortSegment, { x: 5, y: 0, radius: 2 })).toBe(false);
+    expect(lineCircle(shortSegment, { x: 3, y: 0, radius: 1 })).toBe(true);
+  });
+
+  it("lineCircle: handles a zero-length segment safely", () => {
+    const pointSegment = { startPoint: { x: 4, y: 4 }, endPoint: { x: 4, y: 4 } };
+    expect(lineCircle(pointSegment, { x: 4, y: 4, radius: 0.5 })).toBe(true);
+    expect(lineCircle(pointSegment, { x: 10, y: 10, radius: 1 })).toBe(false);
   });
 
   it("polygonPoint: point inside the square vs outside", () => {
@@ -517,9 +588,33 @@ describe("collision detection — object API (CollisionObjectAPI)", () => {
     expect(polygonPoint(square, { x: 50, y: 50 })).toBe(false);
   });
 
+  it("polygonPoint: works for a concave polygon (L-shape)", () => {
+    const lShape = {
+      vertices: [
+        { x: 0, y: 0 },
+        { x: 10, y: 0 },
+        { x: 10, y: 4 },
+        { x: 4, y: 4 },
+        { x: 4, y: 10 },
+        { x: 0, y: 10 },
+      ],
+    };
+    expect(polygonPoint(lShape, { x: 2, y: 8 })).toBe(true);
+    expect(polygonPoint(lShape, { x: 8, y: 8 })).toBe(false);
+  });
+
+  it("polygonPoint: boundary points follow the raw ray-cast parity result", () => {
+    expect(polygonPoint(square, { x: 0, y: 5 })).toBe(true);
+    expect(polygonPoint(square, { x: 10, y: 10 })).toBe(false);
+  });
+
   it("polygonLine: line crossing the square vs missing it", () => {
     expect(polygonLine(square, { startPoint: { x: -5, y: 5 }, endPoint: { x: 15, y: 5 } })).toBe(true);
     expect(polygonLine(square, { startPoint: { x: 50, y: 50 }, endPoint: { x: 60, y: 60 } })).toBe(false);
+  });
+
+  it("polygonLine: a line fully inside the polygon does not count as an edge crossing", () => {
+    expect(polygonLine(square, { startPoint: { x: 2, y: 2 }, endPoint: { x: 8, y: 8 } })).toBe(false);
   });
 
   it("polygonCircle: circle touching the square vs clear of it", () => {
@@ -527,11 +622,52 @@ describe("collision detection — object API (CollisionObjectAPI)", () => {
     expect(polygonCircle(square, { x: 100, y: 100, radius: 2 })).toBe(false);
   });
 
+  it("polygonCircle: detects edge contact and full containment", () => {
+    expect(polygonCircle(square, { x: 12, y: 5, radius: 2 })).toBe(true); // tangent to right edge
+    expect(polygonCircle(square, { x: 5, y: 5, radius: 4.5 })).toBe(true); // fully inside, no edge crossing needed
+  });
+
   it("polygonPolygon: overlapping vs separated squares", () => {
     const overlapping = { vertices: square.vertices.map((p) => ({ x: p.x + 5, y: p.y + 5 })) };
     const apart = { vertices: square.vertices.map((p) => ({ x: p.x + 100, y: p.y + 100 })) };
     expect(polygonPolygon(square, overlapping)).toBe(true);
     expect(polygonPolygon(square, apart)).toBe(false);
+  });
+
+  it("polygonPolygon: detects containment in either direction", () => {
+    const inner = {
+      vertices: [
+        { x: 2, y: 2 },
+        { x: 8, y: 2 },
+        { x: 8, y: 8 },
+        { x: 2, y: 8 },
+      ],
+    };
+    const outer = {
+      vertices: [
+        { x: -5, y: -5 },
+        { x: 15, y: -5 },
+        { x: 15, y: 15 },
+        { x: -5, y: 15 },
+      ],
+    };
+
+    expect(polygonPolygon(outer, inner)).toBe(true);
+    expect(polygonPolygon(inner, outer)).toBe(true);
+  });
+
+  it("polygonPolygon: catches edge crossings even when no vertex is contained", () => {
+    const diamond = {
+      vertices: [
+        { x: 5, y: -2 },
+        { x: 12, y: 5 },
+        { x: 5, y: 12 },
+        { x: -2, y: 5 },
+      ],
+    };
+
+    expect(polygonPolygon(square, diamond)).toBe(true);
+    expect(polygonPolygon(diamond, square)).toBe(true);
   });
 });
 

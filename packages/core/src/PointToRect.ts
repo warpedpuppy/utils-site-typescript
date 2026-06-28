@@ -7,7 +7,7 @@
  * @param ry - Rectangle top edge.
  * @param rw - Rectangle width.
  * @param rh - Rectangle height.
- * @returns `true` if the point lies within the rectangle.
+ * @returns `true` if the point lies within the rectangle bounds, including edges.
  * @example
  * pointToRect(5, 5, 0, 0, 10, 10); // => true
  */

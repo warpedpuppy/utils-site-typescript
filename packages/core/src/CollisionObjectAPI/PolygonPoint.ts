@@ -3,8 +3,13 @@ import { Polygon, Point } from '../types';
 /**
  * Test whether a point is inside a polygon (ray-casting / even-odd rule).
  *
- * Casts a ray and counts edge crossings — an odd count means the point is inside.
- * Works for convex and concave polygons alike.
+ * Casts a horizontal ray from the point and counts how many polygon edges it
+ * crosses — an odd count means the point is inside. Works for both convex and
+ * concave polygons.
+ *
+ * Boundary points are not special-cased. A point on an edge or vertex follows
+ * the raw parity result from the ray test, so edge cases may differ depending
+ * on which boundary segment is hit.
  *
  * @param polygon - The polygon (`vertices`).
  * @param point - The point to test.
@@ -12,35 +17,21 @@ import { Polygon, Point } from '../types';
  * @example
  * polygonPoint({ vertices: square }, { x: 5, y: 5 }); // => true
  */
-export function polygonPoint(polygon: Polygon, point: Point) {
-  let collision = false;
-
-  // go through each of the vertices, plus the next
-  // vertex in the list
-  let next = 0;
+export function polygonPoint(polygon: Polygon, point: Point): boolean {
   const { vertices } = polygon;
-  // console.log(vertices, point);
-  for (let current = 0; current < vertices.length; current++) {
-    // get next vertex in list
-    // if we've hit the end, wrap around to 0
-    next = current + 1;
-    if (next === vertices.length) next = 0;
+  let inside = false;
 
-    // get the PVectors at our current position
-    // this makes our if statement a little cleaner
-    let vc = vertices[current]; // c for "current"
-    let vn = vertices[next]; // n for "next"
+  for (let current = 0, previous = vertices.length - 1; current < vertices.length; previous = current++) {
+    const { x: currentX, y: currentY } = vertices[current];
+    const { x: previousX, y: previousY } = vertices[previous];
 
-    // compare position, flip 'collision' variable
-    // back and forth
     if (
-      ((vc.y > point.y && vn.y < point.y) ||
-        (vc.y < point.y && vn.y > point.y)) &&
-      point.x < ((vn.x - vc.x) * (point.y - vc.y)) / (vn.y - vc.y) + vc.x
+      (currentY > point.y) !== (previousY > point.y) &&
+      point.x < ((previousX - currentX) * (point.y - currentY)) / (previousY - currentY) + currentX
     ) {
-      collision = !collision;
+      inside = !inside;
     }
   }
 
-  return collision;
+  return inside;
 }

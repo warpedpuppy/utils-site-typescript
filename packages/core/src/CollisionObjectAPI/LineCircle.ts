@@ -1,13 +1,11 @@
-import { pointCircle } from "./PointCircle";
-import { linePoint } from "./LinePoint";
-import { lineLength } from "../LineLength";
 import { Line, Circle } from '../types';
 
 /**
  * Test whether a line segment intersects a circle (object-argument form of `lineToCircle`).
  *
- * Returns early if either endpoint is inside the circle; otherwise projects the
- * circle's center onto the segment and checks the closest point's distance.
+ * Projects the circle's center onto the segment, clamps that projection to the
+ * segment bounds, and checks whether the closest point lies within the radius.
+ * This also handles degenerate zero-length segments safely.
  *
  * @param line - The line segment (`startPoint`, `endPoint`).
  * @param circle - The circle (`x`, `y`, `radius`).
@@ -15,38 +13,24 @@ import { Line, Circle } from '../types';
  * @example
  * lineCircle({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0, radius: 2 }); // => true
  */
-export function lineCircle(line: Line, circle: Circle) {
-  let inside1 = pointCircle(line.startPoint, circle);
-  let inside2 = pointCircle(line.endPoint, circle);
-  if (inside1 || inside2) return true;
+export function lineCircle(line: Line, circle: Circle): boolean {
+  const dx = line.endPoint.x - line.startPoint.x;
+  const dy = line.endPoint.y - line.startPoint.y;
+  const lengthSquared = dx * dx + dy * dy;
 
-  // get length of the line
-  let len = lineLength(line);
-
-  // get dot product of the line and circle
-  let dot =
-    ((circle.x - line.startPoint.x) * (line.endPoint.x - line.startPoint.x) +
-      (circle.y - line.startPoint.y) *
-        (line.endPoint.y - line.startPoint.y)) /
-    Math.pow(len, 2);
-
-  // find the closest point on the line
-  let closestX =
-    line.startPoint.x + dot * (line.endPoint.x - line.startPoint.x);
-  let closestY =
-    line.startPoint.y + dot * (line.endPoint.y - line.startPoint.y);
-
-  let onSegment = linePoint(line, { x: closestX, y: closestY });
-  if (!onSegment) return false;
-
-  let tempLine = {
-    startPoint: { x: closestX, y: closestY },
-    endPoint: { x: circle.x, y: circle.y },
-  };
-  let distance = lineLength(tempLine);
-
-  if (distance <= circle.radius) {
-    return true;
+  if (lengthSquared === 0) {
+    const pointDx = circle.x - line.startPoint.x;
+    const pointDy = circle.y - line.startPoint.y;
+    return pointDx * pointDx + pointDy * pointDy <= circle.radius * circle.radius;
   }
-  return false;
+
+  const projection =
+    ((circle.x - line.startPoint.x) * dx + (circle.y - line.startPoint.y) * dy) / lengthSquared;
+  const t = Math.max(0, Math.min(1, projection));
+  const closestX = line.startPoint.x + t * dx;
+  const closestY = line.startPoint.y + t * dy;
+  const distanceX = circle.x - closestX;
+  const distanceY = circle.y - closestY;
+
+  return distanceX * distanceX + distanceY * distanceY <= circle.radius * circle.radius;
 }
