@@ -6,7 +6,10 @@ export type GeometryDemoKind =
   | "circle-to-circle"
   | "circle-circle"
   | "distance"
+  | "unit-circle-point"
+  | "sine-curve"
   | "sine-wave"
+  | "wave-amplitude"
   | "vec-add"
   | "vec-subtract"
   | "vec-scale"
@@ -43,9 +46,21 @@ export const CONSTRUCTIVE_GEOMETRY_DEMOS: Partial<Record<string, ConstructiveGeo
     kind: "distance",
     fnName: "distance",
   },
+  unitCirclePoint: {
+    kind: "unit-circle-point",
+    fnName: "unitCirclePoint",
+  },
+  sineCurve: {
+    kind: "sine-curve",
+    fnName: "sineCurve",
+  },
   sineWave: {
     kind: "sine-wave",
     fnName: "sineWave",
+  },
+  waveAmplitude: {
+    kind: "wave-amplitude",
+    fnName: "waveAmplitude",
   },
   vecAdd: {
     kind: "vec-add",

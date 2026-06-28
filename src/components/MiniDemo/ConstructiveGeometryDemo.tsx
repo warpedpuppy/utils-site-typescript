@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { distance } from "@utilspalooza/core/Distance";
 import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
+import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
+import { sineCurve } from "@utilspalooza/core/SineCurve";
 import { sineWave } from "@utilspalooza/core/SineWave";
+import { waveAmplitude } from "@utilspalooza/core/WaveAmplitude";
 import {
   vecAdd,
   vecAngle,
@@ -46,6 +49,7 @@ interface RailControls {
   lerp: number;
   limit: number;
   phase: number;
+  waveTime: number;
 }
 
 type DragState =
@@ -92,6 +96,7 @@ export default function ConstructiveGeometryDemo({
     lerp: 0.5,
     limit: 90,
     phase: 0.15,
+    waveTime: 18,
   });
 
   useEffect(() => {
@@ -135,8 +140,14 @@ export default function ConstructiveGeometryDemo({
         return buildCircleScene(demo, circles);
       case "distance":
         return buildDistanceScene(points);
+      case "unit-circle-point":
+        return buildUnitCirclePointScene(size.width, size.height, handles.a);
+      case "sine-curve":
+        return buildSineCurveScene(size.width, size.height, handles.a);
       case "sine-wave":
         return buildSineWaveScene(size.width, size.height, handles.a, controls.phase);
+      case "wave-amplitude":
+        return buildWaveAmplitudeScene(points.point1, handles, controls.waveTime);
       case "vec-add":
         return buildVecAddScene(origin, handles);
       case "vec-subtract":
@@ -185,8 +196,17 @@ export default function ConstructiveGeometryDemo({
       case "distance":
         drawDistanceScene(ctx, size.width, size.height, points);
         break;
+      case "unit-circle-point":
+        drawUnitCirclePointScene(ctx, size.width, size.height, handles.a);
+        break;
+      case "sine-curve":
+        drawSineCurveScene(ctx, size.width, size.height, handles.a);
+        break;
       case "sine-wave":
         drawSineWaveScene(ctx, size.width, size.height, handles.a, controls.phase);
+        break;
+      case "wave-amplitude":
+        drawWaveAmplitudeScene(ctx, size.width, size.height, points.point1, handles, controls.waveTime);
         break;
       case "vec-add":
         drawDualVectorResultScene(ctx, size.width, size.height, origin, handles, "add");
@@ -275,6 +295,20 @@ export default function ConstructiveGeometryDemo({
         }));
         break;
       case "handle":
+        if ((demo.kind === "unit-circle-point" || demo.kind === "sine-curve") && drag.key === "a") {
+          const layout = unitCircleLayout(size.width, size.height);
+          setHandles((current) => ({
+            ...current,
+            a: snapPointToCircle(
+              {
+                x: Math.round(point.x - drag.dx),
+                y: Math.round(point.y - drag.dy),
+              },
+              layout,
+            ),
+          }));
+          break;
+        }
         setHandles((current) => ({
           ...current,
           [drag.key]: clampPoint(
@@ -373,6 +407,29 @@ function buildDistanceScene(points: PointPair): SceneData {
   };
 }
 
+function buildUnitCirclePointScene(width: number, height: number, handle: Point): SceneData {
+  const layout = unitCircleLayout(width, height);
+  const angle = Math.atan2(handle.y - layout.center.y, handle.x - layout.center.x);
+  const point = unitCirclePoint(layout.center.x, layout.center.y, layout.radius, angle);
+  const dx = point.x - layout.center.x;
+  const dy = point.y - layout.center.y;
+  const sampleY = sineCurve(layout.center.y, layout.radius, 1, angle - Math.PI / 2);
+
+  return {
+    call: `unitCirclePoint(${fmt(layout.center.x)}, ${fmt(layout.center.y)}, ${fmt(layout.radius)}, ${fmt(angle)})`,
+    hint:
+      "Drag the point around the circle. Cosine is the horizontal share of the radius; sine is the vertical share. In canvas coordinates, positive y points downward, so positive sine moves the point down.",
+    readouts: [
+      { label: "angle", value: `${fmt(angle)} rad = ${fmt(radToDeg(angle))}°` },
+      { label: "cos", value: fmt(point.cos) },
+      { label: "sin", value: fmt(point.sin) },
+      { label: "point", value: formatPoint({ x: point.x, y: point.y }) },
+      { label: "x / y", value: `${fmtSigned(dx)} , ${fmtSigned(dy)}`, tone: "live" },
+      { label: "same y via sineCurve", value: fmt(sampleY) },
+    ],
+  };
+}
+
 function buildSineWaveScene(width: number, height: number, handle: Point, phase: number): SceneData {
   const centerY = Math.round(height * 0.52);
   const originX = 48;
@@ -392,6 +449,53 @@ function buildSineWaveScene(width: number, height: number, handle: Point, phase:
       { label: "wavelength", value: fmt(wavelength) },
       { label: "phase", value: fmt(phase) },
       { label: `y @ x=${fmt(sampleX)}`, value: fmt(sampleY), tone: "live" },
+    ],
+  };
+}
+
+function buildSineCurveScene(width: number, height: number, handle: Point): SceneData {
+  const layout = unitCircleLayout(width, height);
+  const angle = Math.atan2(handle.y - layout.center.y, handle.x - layout.center.x);
+  const point = unitCirclePoint(layout.center.x, layout.center.y, layout.radius, angle);
+  const value = sineCurve(layout.center.y, layout.radius, 1, angle);
+
+  return {
+    call: `sineCurve(${fmt(layout.center.y)}, ${fmt(layout.radius)}, 1, ${fmt(angle)}) = ${fmt(value)}`,
+    hint:
+      "Drag the point around the unit circle. `sineCurve()` is just baseline + sine(time) × amplitude, so using the circle angle as time gives the exact same y-position on the right.",
+    readouts: [
+      { label: "time", value: `${fmt(angle)} rad = ${fmt(radToDeg(angle))}°` },
+      { label: "baseline", value: fmt(layout.center.y) },
+      { label: "amplitude", value: fmt(layout.radius) },
+      { label: "sin(time)", value: fmt(point.sin) },
+      { label: "returned y", value: fmt(value), tone: "live" },
+      { label: "matches point y", value: fmt(point.y) },
+    ],
+  };
+}
+
+function buildWaveAmplitudeScene(sample: Point, handles: HandlePair, time: number): SceneData {
+  const sources = [handles.a, handles.b];
+  const k = 0.05;
+  const omega = 0.1;
+  const r1 = distance(sample, handles.a);
+  const r2 = distance(sample, handles.b);
+  const a1 = Math.cos(k * r1 - omega * time);
+  const a2 = Math.cos(k * r2 - omega * time);
+  const value = waveAmplitude(sample.x, sample.y, sources, time, k, omega);
+
+  return {
+    call:
+      `waveAmplitude(${fmt(sample.x)}, ${fmt(sample.y)}, [` +
+      `${formatPoint(handles.a)}, ${formatPoint(handles.b)}], ${fmt(time)}, ${fmt(k)}, ${fmt(omega)}) = ${fmt(value)}`,
+    hint:
+      "Drag either source, drag the sample point, or scrub time. Each source contributes one cosine term based on its distance to the sample point; `waveAmplitude()` averages those terms into one interference value.",
+    readouts: [
+      { label: "sample", value: formatPoint(sample) },
+      { label: "time", value: fmt(time) },
+      { label: "r1 → cos(...)", value: `${fmt(r1)} → ${fmt(a1)}` },
+      { label: "r2 → cos(...)", value: `${fmt(r2)} → ${fmt(a2)}` },
+      { label: "average", value: fmt(value), tone: "live" },
     ],
   };
 }
@@ -666,6 +770,55 @@ function drawDistanceScene(
   labelSegment(ctx, point1.x + triangle.dx / 2, point1.y + triangle.dy / 2 - 16, `hyp = ${fmt(d)}`, "rgba(255, 255, 255, 0.95)");
 }
 
+function drawUnitCirclePointScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  handle: Point,
+) {
+  const layout = unitCircleLayout(width, height);
+  const angle = Math.atan2(handle.y - layout.center.y, handle.x - layout.center.x);
+  const point = unitCirclePoint(layout.center.x, layout.center.y, layout.radius, angle);
+  const corner = { x: point.x, y: layout.center.y };
+
+  drawBackdrop(ctx, width, height);
+  drawAxes(ctx, width, height, layout.center);
+  drawUnitCircle(ctx, layout.center, layout.radius);
+  drawVector(ctx, layout.center, point, "#818cf8", "r");
+  drawComponentGuides(ctx, layout.center, point);
+  drawCenter(ctx, layout.center, "#f8fafc", 5);
+  drawCenter(ctx, point, "#fb7185", 7);
+  drawCenter(ctx, corner, "rgba(125, 211, 252, 0.8)", 4);
+
+  drawAngleArc(ctx, layout.center, point, 40, "rgba(249, 115, 22, 0.95)");
+  drawHeaderBox(ctx, [
+    { text: `cos = ${fmt(point.cos)}`, color: "#86efac" },
+    { text: `sin = ${fmt(point.sin)}`, color: "#fb923c" },
+  ]);
+
+  labelSegment(
+    ctx,
+    layout.center.x + (point.x - layout.center.x) / 2,
+    layout.center.y + 18,
+    `x = ${fmtSigned(point.x - layout.center.x)}`,
+    "rgba(134, 239, 172, 0.95)",
+  );
+  labelSegment(
+    ctx,
+    point.x + 18,
+    layout.center.y + (point.y - layout.center.y) / 2,
+    `y = ${fmtSigned(point.y - layout.center.y)}`,
+    "rgba(251, 146, 60, 0.95)",
+  );
+  labelSegment(
+    ctx,
+    layout.center.x + 52,
+    layout.center.y - 12,
+    `${fmt(radToDeg(angle))}°`,
+    "rgba(249, 115, 22, 0.98)",
+  );
+}
+
 function drawSineWaveScene(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -729,6 +882,161 @@ function drawSineWaveScene(
   drawHeaderBox(ctx, [
     { text: `phase = ${fmt(phase)}`, color: "#e2e8f0" },
     { text: `sample y = ${fmt(sampleY)}`, color: "#fdba74" },
+  ]);
+}
+
+function drawSineCurveScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  handle: Point,
+) {
+  const layout = unitCircleLayout(width, height);
+  const angle = Math.atan2(handle.y - layout.center.y, handle.x - layout.center.x);
+  const point = unitCirclePoint(layout.center.x, layout.center.y, layout.radius, angle);
+  const value = sineCurve(layout.center.y, layout.radius, 1, angle);
+  const corner = { x: point.x, y: layout.center.y };
+  const graphX = Math.round(width * 0.72);
+  const graphLeft = Math.round(width * 0.5);
+  const graphTop = layout.center.y - layout.radius;
+  const graphBottom = layout.center.y + layout.radius;
+
+  drawBackdrop(ctx, width, height);
+  drawAxes(ctx, width, height, layout.center);
+  drawUnitCircle(ctx, layout.center, layout.radius);
+  drawVector(ctx, layout.center, point, "#818cf8", "r");
+  drawComponentGuides(ctx, layout.center, point);
+  drawCenter(ctx, layout.center, "#f8fafc", 5);
+  drawCenter(ctx, point, "#fb7185", 7);
+  drawCenter(ctx, corner, "rgba(125, 211, 252, 0.8)", 4);
+
+  ctx.strokeStyle = "rgba(255,255,255,0.18)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(graphLeft, layout.center.y);
+  ctx.lineTo(width - PAD, layout.center.y);
+  ctx.stroke();
+
+  ctx.setLineDash([6, 6]);
+  ctx.strokeStyle = "rgba(251, 146, 60, 0.85)";
+  ctx.beginPath();
+  ctx.moveTo(point.x, point.y);
+  ctx.lineTo(graphX, point.y);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(96, 165, 250, 0.85)";
+  ctx.beginPath();
+  ctx.moveTo(graphX, graphTop);
+  ctx.lineTo(graphX, graphBottom);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawCenter(ctx, { x: graphX, y: value }, "#f97316", 7);
+  labelSegment(ctx, graphX + 24, value - 10, `y = ${fmt(value)}`, "#f97316");
+  labelSegment(ctx, graphX + 26, layout.center.y - 10, "baseline", "rgba(255,255,255,0.92)");
+  labelSegment(ctx, graphX + 34, graphTop + 8, `amp = ${fmt(layout.radius)}`, "rgba(96, 165, 250, 0.95)");
+
+  drawHeaderBox(ctx, [
+    { text: `sin(time) = ${fmt(point.sin)}`, color: "#fb923c" },
+    { text: `baseline + sin(time) * amplitude = ${fmt(value)}`, color: "#e2e8f0" },
+  ]);
+
+  labelSegment(
+    ctx,
+    layout.center.x + 52,
+    layout.center.y - 12,
+    `${fmt(radToDeg(angle))}°`,
+    "rgba(249, 115, 22, 0.98)",
+  );
+}
+
+function drawWaveAmplitudeScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  sample: Point,
+  handles: HandlePair,
+  time: number,
+) {
+  const sources = [handles.a, handles.b];
+  const colors = ["#818cf8", "#fb7185"];
+  const k = 0.05;
+  const omega = 0.1;
+  const value = waveAmplitude(sample.x, sample.y, sources, time, k, omega);
+  const radii = sources.map((source) => distance(sample, source));
+  const contributions = radii.map((radius) => Math.cos(k * radius - omega * time));
+  const meter = {
+    x: width - 54,
+    top: 42,
+    bottom: height - 52,
+  };
+  const meterMid = (meter.top + meter.bottom) / 2;
+  const meterY = meterMid - value * ((meter.bottom - meter.top) / 2);
+
+  drawBackdrop(ctx, width, height);
+
+  sources.forEach((source, index) => {
+    ctx.strokeStyle = `${colors[index]}66`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(source.x, source.y, radii[index], 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.setLineDash([6, 6]);
+    ctx.strokeStyle = `${colors[index]}cc`;
+    ctx.beginPath();
+    ctx.moveTo(source.x, source.y);
+    ctx.lineTo(sample.x, sample.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    drawCenter(ctx, source, colors[index], 7);
+    labelSegment(ctx, source.x + 22, source.y - 10, `s${index + 1}`, colors[index]);
+  });
+
+  drawCenter(ctx, sample, "#f97316", 7);
+  labelSegment(ctx, sample.x + 24, sample.y - 10, "sample", "#f97316");
+
+  labelSegment(
+    ctx,
+    (handles.a.x + sample.x) / 2,
+    (handles.a.y + sample.y) / 2 - 12,
+    `r1 = ${fmt(radii[0])}`,
+    colors[0],
+  );
+  labelSegment(
+    ctx,
+    (handles.b.x + sample.x) / 2,
+    (handles.b.y + sample.y) / 2 + 16,
+    `r2 = ${fmt(radii[1])}`,
+    colors[1],
+  );
+
+  ctx.strokeStyle = "rgba(255,255,255,0.2)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(meter.x, meter.top);
+  ctx.lineTo(meter.x, meter.bottom);
+  ctx.stroke();
+
+  ctx.setLineDash([5, 5]);
+  ctx.beginPath();
+  ctx.moveTo(meter.x - 18, meterMid);
+  ctx.lineTo(meter.x + 18, meterMid);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawCenter(ctx, { x: meter.x, y: meterY }, "#f97316", 7);
+  labelSegment(ctx, meter.x - 10, meter.top - 6, "+1", "#f8fafc");
+  labelSegment(ctx, meter.x - 8, meterMid - 8, "0", "#cbd5e1");
+  labelSegment(ctx, meter.x - 10, meter.bottom + 4, "-1", "#f8fafc");
+  labelSegment(ctx, meter.x - 44, meterY - 10, `amp = ${fmt(value)}`, "#f97316");
+
+  drawRail(ctx, width, height, "waveTime", time, 0, 60);
+  drawHeaderBox(ctx, [
+    { text: `cos1 = ${fmt(contributions[0])}`, color: colors[0] },
+    { text: `cos2 = ${fmt(contributions[1])}`, color: colors[1] },
+    { text: `average = ${fmt(value)}`, color: "#fdba74" },
   ]);
 }
 
@@ -1217,12 +1525,41 @@ function getDragState(
     return null;
   }
 
-  if (kind === "vec-scale" || kind === "vec-lerp" || kind === "vec-limit" || kind === "sine-wave") {
+  if (kind === "unit-circle-point" || kind === "sine-curve") {
+    const current = handles.a;
+    if (Math.hypot(point.x - current.x, point.y - current.y) <= 14) {
+      return { kind: "handle", key: "a", dx: point.x - current.x, dy: point.y - current.y };
+    }
+    return null;
+  }
+
+  if (
+    kind === "vec-scale" ||
+    kind === "vec-lerp" ||
+    kind === "vec-limit" ||
+    kind === "sine-wave" ||
+    kind === "wave-amplitude"
+  ) {
     const railKey: keyof RailControls =
-      kind === "vec-scale" ? "scale" : kind === "vec-lerp" ? "lerp" : kind === "vec-limit" ? "limit" : "phase";
+      kind === "vec-scale"
+        ? "scale"
+        : kind === "vec-lerp"
+          ? "lerp"
+          : kind === "vec-limit"
+            ? "limit"
+            : kind === "sine-wave"
+              ? "phase"
+              : "waveTime";
     const rail = railPosition(railKey, controls[railKey], width, height);
     if (point.y >= rail.y - 14 && point.y <= rail.y + 14 && point.x >= rail.x - 14 && point.x <= rail.x + 14) {
       return { kind: "rail", key: railKey, dx: point.x - rail.x };
+    }
+  }
+
+  if (kind === "wave-amplitude") {
+    const current = points.point1;
+    if (Math.hypot(point.x - current.x, point.y - current.y) <= 14) {
+      return { kind: "point", key: "point1", dx: point.x - current.x, dy: point.y - current.y };
     }
   }
 
@@ -1285,6 +1622,26 @@ function handleFromVector(origin: Point, vector: Vector, scale: number): Point {
   };
 }
 
+function unitCircleLayout(width: number, height: number) {
+  return {
+    center: {
+      x: Math.round(width * 0.28),
+      y: Math.round(height * 0.58),
+    },
+    radius: Math.min(84, Math.round(width * 0.18), Math.round(height * 0.28)),
+  };
+}
+
+function snapPointToCircle(point: Point, layout: ReturnType<typeof unitCircleLayout>): Point {
+  const dx = point.x - layout.center.x;
+  const dy = point.y - layout.center.y;
+  const length = Math.hypot(dx, dy) || 1;
+  return {
+    x: Math.round(layout.center.x + (dx / length) * layout.radius),
+    y: Math.round(layout.center.y + (dy / length) * layout.radius),
+  };
+}
+
 function dotReading(dot: number, angle: number) {
   if (Math.abs(dot) < 0.001) return "perpendicular: no overlap";
   if (dot > 0) return `same-ish way (${fmt(radToDeg(angle))}° apart)`;
@@ -1306,8 +1663,9 @@ function railPosition(
   const x1 = width - 28;
   const y = height - 26;
   const min = key === "scale" ? -2 : key === "lerp" ? 0 : key === "phase" ? -1 : 20;
-  const max = key === "scale" ? 2 : key === "lerp" ? 1 : key === "phase" ? 1 : 140;
-  const frac = (value - min) / (max - min);
+  const max = key === "scale" ? 2 : key === "lerp" ? 1 : key === "phase" ? 1 : key === "waveTime" ? 60 : 140;
+  const resolvedMin = key === "waveTime" ? 0 : min;
+  const frac = (value - resolvedMin) / (max - resolvedMin);
   return { x: x0 + frac * (x1 - x0), y };
 }
 
@@ -1323,6 +1681,7 @@ function railValueForPosition(
   if (key === "scale") return -2 + frac * 4;
   if (key === "lerp") return frac;
   if (key === "phase") return -1 + frac * 2;
+  if (key === "waveTime") return frac * 60;
   return 20 + frac * 120;
 }
 
