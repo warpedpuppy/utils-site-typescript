@@ -19,14 +19,22 @@ export interface InteractiveMiniDemoProps {
  */
 export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  // `args` renders the readout + slider thumbs; the rAF loop reads/writes argsRef
-  // so it stays smooth and never re-subscribes. They're kept in lockstep.
+  // `args` state drives the controlled sliders and readouts on initial render and
+  // after user interaction. During auto-sweep, only argsRef is updated per-frame;
+  // the swept arg's DOM nodes are updated imperatively so we don't re-render at 60fps.
   const [args, setArgs] = useState<number[]>(() => demo.args.map((a) => a.value));
   const [auto, setAuto] = useState(true);
   const argsRef = useRef(args);
   const autoRef = useRef(auto);
   argsRef.current = args;
   autoRef.current = auto;
+
+  // Refs for imperative per-frame updates of the swept arg — avoids a setState
+  // (and full re-render) on every rAF tick during auto-sweep.
+  const sweptSliderRef = useRef<HTMLInputElement | null>(null);
+  const sweptReadoutRef = useRef<HTMLSpanElement | null>(null);
+  const sweptCallArgRef = useRef<HTMLSpanElement | null>(null);
+  const resultRef = useRef<HTMLSpanElement | null>(null);
 
   // Reset when the demo identity changes (e.g. navigating between functions).
   useEffect(() => {
@@ -51,9 +59,7 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
       return { w: cssW, h: height };
     };
     let size = fit();
-    const onResize = () => {
-      size = fit();
-    };
+    const onResize = () => { size = fit(); };
     window.addEventListener("resize", onResize);
 
     const inputArg = demo.args[demo.inputIndex];
@@ -62,17 +68,26 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
 
     const loop = () => {
       const next = argsRef.current.slice();
+
       if (autoRef.current) {
-        // Sweep the input across its full slider range via a 0→1→0 pingPong dial.
         t += 1 / 160;
         const f = pingPong(t, 1);
         const swept = inputArg.min + f * (inputArg.max - inputArg.min);
-        next[demo.inputIndex] = Math.round(swept / inputArg.step) * inputArg.step;
+        const snapped = Math.round(swept / inputArg.step) * inputArg.step;
+        next[demo.inputIndex] = snapped;
         argsRef.current = next;
-        setArgs(next); // keep the input slider thumb + readout following the sweep
+        // Imperative DOM updates — no setState, no re-render.
+        const fmtSwept = fmt(snapped);
+        if (sweptSliderRef.current) sweptSliderRef.current.value = String(snapped);
+        if (sweptReadoutRef.current) sweptReadoutRef.current.textContent = fmtSwept;
+        if (sweptCallArgRef.current) sweptCallArgRef.current.textContent = fmtSwept;
       }
 
-      const value = demo.call(next);
+      const raw = demo.call(next);
+      // Guard against Infinity/NaN so bad arg combos never crash the drawing.
+      const value = isFinite(raw) ? raw : 0;
+      if (resultRef.current) resultRef.current.textContent = fmt(value);
+
       const inR = demo.inputRange(next);
       const outR = demo.outputRange(next);
       drawScalarMiniDemo(ctx, {
@@ -97,15 +112,15 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
   }, [demo, height]);
 
   const onSlide = (i: number, raw: number) => {
+    // Read from argsRef (not stale state) so the current swept position is preserved.
     const next = argsRef.current.slice();
     next[i] = raw;
     argsRef.current = next;
-    setArgs(next);
-    // Grabbing the input slider takes over from the auto-sweep.
+    setArgs([...next]);
     if (i === demo.inputIndex && autoRef.current) setAuto(false);
   };
 
-  const value = demo.call(args);
+  const safeResult = isFinite(demo.call(args)) ? demo.call(args) : 0;
 
   return (
     <div className="mini-demo mini-demo--interactive">
@@ -115,13 +130,16 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
           {demo.fnName}(
           {demo.args.map((a, i) => (
             <span key={a.name}>
-              <span className={i === demo.inputIndex ? "mini-demo__arg mini-demo__arg--input" : "mini-demo__arg"}>
+              <span
+                ref={i === demo.inputIndex ? sweptCallArgRef : undefined}
+                className={i === demo.inputIndex ? "mini-demo__arg mini-demo__arg--input" : "mini-demo__arg"}
+              >
                 {fmt(args[i])}
               </span>
               {i < demo.args.length - 1 ? ", " : ""}
             </span>
           ))}
-          ) = <span className="mini-demo__result">{fmt(value)}</span>
+          ) = <span ref={resultRef} className="mini-demo__result">{fmt(safeResult)}</span>
         </code>
       </div>
 
@@ -135,6 +153,7 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
               {i === demo.inputIndex && <span className="mini-demo__control-tag">{auto ? "auto" : "manual"}</span>}
             </span>
             <input
+              ref={i === demo.inputIndex ? sweptSliderRef : undefined}
               type="range"
               min={a.min}
               max={a.max}
@@ -142,7 +161,12 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
               value={args[i]}
               onChange={(e) => onSlide(i, Number(e.target.value))}
             />
-            <span className="mini-demo__control-val">{fmt(args[i])}</span>
+            <span
+              ref={i === demo.inputIndex ? sweptReadoutRef : undefined}
+              className="mini-demo__control-val"
+            >
+              {fmt(args[i])}
+            </span>
           </label>
         ))}
         {!auto && (
