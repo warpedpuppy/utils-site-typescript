@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // scalarTransforms — the single source for the "numbers in motion" transform
-// demos (lerp, inverseLerp, mapRange, clamp, wrap, smoothstep).
+// demos (lerp, inverseLerp, mapRange, clamp, wrap, smoothstep, smootherstep).
 //
 // Unlike pingPong (a generator: one number, same on both sides), each of these
 // turns an INPUT into an OUTPUT, so its mini-demo must show input → output. To
@@ -19,7 +19,7 @@ import { inverseLerp } from "@utilspalooza/core/InverseLerp";
 import { mapRange } from "@utilspalooza/core/MapRange";
 import { clamp } from "@utilspalooza/core/Clamp";
 import { wrap } from "@utilspalooza/core/Wrap";
-import { smoothstep } from "@utilspalooza/core/Smoothstep";
+import { smoothstep, smootherstep } from "@utilspalooza/core/Smoothstep";
 import { pingPong } from "@utilspalooza/core/PingPong";
 
 /** Time advanced per animation frame. Shared so /api and /examples run identically. */
@@ -148,6 +148,23 @@ export const smoothstepDemo: ScalarTransformDemo = {
   },
 };
 
+export const smootherstepDemo: ScalarTransformDemo = {
+  slug: "smootherstep",
+  title: "smootherstep",
+  length: 1,
+  label: "smootherstep(0, 100, x)",
+  inputMin: 0,
+  inputMax: 100,
+  eli5:
+    "smootherstep is smoothstep with even softer starts and stops. The input on the left still " +
+    "moves at a constant speed, but the output on the right lingers a little longer near both " +
+    "ends before committing to the middle of the trip.",
+  sample: (t) => {
+    const x = dial(t) * 100;
+    return { input: x, value: smootherstep(0, 100, x) };
+  },
+};
+
 /** Pedagogical order, matching the ApiDocs "Numbers in motion" concept group. */
 export const SCALAR_TRANSFORM_DEMOS: ScalarTransformDemo[] = [
   lerpDemo,
@@ -156,4 +173,5 @@ export const SCALAR_TRANSFORM_DEMOS: ScalarTransformDemo[] = [
   clampDemo,
   wrapDemo,
   smoothstepDemo,
+  smootherstepDemo,
 ];

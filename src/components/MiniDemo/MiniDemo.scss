@@ -15,6 +15,13 @@
     background: rgba(99, 102, 241, 0.08);
   }
 
+  &--geometry {
+    background:
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.08), transparent 34%),
+      rgba(99, 102, 241, 0.08);
+  }
+
   &__call {
     font-family: monospace;
     font-size: 0.95rem;
@@ -100,5 +107,60 @@
     &:hover {
       background: rgba(249, 115, 22, 0.2);
     }
+  }
+
+  &__geometry-readout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.35rem 0.9rem;
+    margin: 0.45rem 0 0.35rem;
+    font-family: monospace;
+
+    div {
+      display: grid;
+      gap: 0.12rem;
+      padding: 0.45rem 0.55rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    code {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.78rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  }
+
+  &__readout-label {
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__touching {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+
+    &.is-live {
+      color: #fb923c;
+    }
+  }
+
+  &__hint {
+    margin: 0.2rem 0 0.55rem !important;
+    font-size: 0.82rem !important;
+    color: rgba(255, 255, 255, 0.62) !important;
+
+    code {
+      color: #f8fafc;
+    }
+  }
+
+  &__canvas--draggable {
+    cursor: grab;
+    touch-action: none;
   }
 }
