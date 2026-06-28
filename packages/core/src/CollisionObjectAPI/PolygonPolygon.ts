@@ -5,8 +5,9 @@ import { Polygon, Line } from '../types';
 /**
  * Test whether two polygons overlap (object-argument form).
  *
- * Walks each edge of the first polygon and tests it against the second, then also
- * checks whether one polygon is fully contained in the other.
+ * Walks each edge of the first polygon and tests it against the second. If no
+ * edges cross, it then checks both containment directions by testing a sample
+ * vertex from each polygon against the other polygon.
  *
  * @param polygon1 - First polygon (`vertices`).
  * @param polygon2 - Second polygon (`vertices`).
@@ -14,28 +15,18 @@ import { Polygon, Line } from '../types';
  * @example
  * polygonPolygon({ vertices: squareA }, { vertices: squareB }); // => true when overlapping
  */
-export function polygonPolygon(polygon1: Polygon, polygon2: Polygon) {
-  let next = 0;
+export function polygonPolygon(polygon1: Polygon, polygon2: Polygon): boolean {
   const { vertices } = polygon1;
+
   for (let current = 0; current < vertices.length; current++) {
-    next = current + 1;
-    if (next === vertices.length) next = 0;
+    const startPoint = vertices[current];
+    const endPoint = vertices[(current + 1) % vertices.length];
+    const edge: Line = { startPoint, endPoint };
 
-    let startPoint = vertices[current];
-    let endPoint = vertices[next];
-
-    // now we can use these two points (a line) to compare
-    // to the other polygon's vertices using polyLine()
-
-    let line: Line = { startPoint, endPoint };
-
-    let collision = polygonLine(polygon2, line);
-    if (collision) return true;
-
-    // optional: check if the 2nd polygon is INSIDE the first
-    collision = polygonPoint(polygon1, polygon2.vertices[0]);
-    if (collision) return true;
+    if (polygonLine(polygon2, edge)) {
+      return true;
+    }
   }
 
-  return false;
+  return polygonPoint(polygon1, polygon2.vertices[0]) || polygonPoint(polygon2, polygon1.vertices[0]);
 }

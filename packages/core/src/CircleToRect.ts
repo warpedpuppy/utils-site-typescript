@@ -11,7 +11,7 @@
  * @param ry - Rectangle top edge.
  * @param rw - Rectangle width.
  * @param rh - Rectangle height.
- * @returns `true` if the circle and rectangle overlap.
+ * @returns `true` if the circle and rectangle overlap or touch.
  * @example
  * circleToRect(3, 0, 5, 0, 0, 10, 10); // => true
  */

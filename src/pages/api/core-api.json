@@ -489,7 +489,7 @@
         "text": "Rectangle height."
       }
     ],
-    "returns": "`true` if the circle and rectangle overlap.",
+    "returns": "`true` if the circle and rectangle overlap or touch.",
     "example": "circleToRect(3, 0, 5, 0, 0, 10, 10); // => true"
   },
   {
@@ -531,7 +531,7 @@
         "text": "Second circle (`x`, `y`, `radius`)."
       }
     ],
-    "returns": "`true` if the circles touch or overlap.",
+    "returns": "`true` if the circles touch or overlap, including exact tangency.",
     "example": "circleCircle({ x: 0, y: 0, radius: 5 }, { x: 6, y: 0, radius: 5 }); // => true"
   },
   {
@@ -539,7 +539,7 @@
     "kind": "function",
     "module": "CollisionObjectAPI/LineCircle",
     "signature": "(line: Line, circle: Circle) => boolean",
-    "description": "Test whether a line segment intersects a circle (object-argument form of `lineToCircle`).\n\nReturns early if either endpoint is inside the circle; otherwise projects the\ncircle's center onto the segment and checks the closest point's distance.",
+    "description": "Test whether a line segment intersects a circle (object-argument form of `lineToCircle`).\n\nProjects the circle's center onto the segment, clamps that projection to the\nsegment bounds, and checks whether the closest point lies within the radius.\nThis also handles degenerate zero-length segments safely.",
     "params": [
       {
         "name": "line",
@@ -557,8 +557,8 @@
     "name": "lineLine",
     "kind": "function",
     "module": "CollisionObjectAPI/LineLine",
-    "signature": "(line1: Line, line2: Line) => { hit: boolean; intersectionX: number; intersectionY: number; } | { hit: boolean; intersectionX?: undefined; intersectionY?: undefined; }",
-    "description": "Test whether two line segments cross, and report where (object-argument form).\n\nUnlike the boolean `lineToLine`, this returns the intersection coordinates when\nthe segments meet — useful for drawing a marker at the crossing.",
+    "signature": "(line1: Line, line2: Line) => { readonly hit: false; intersectionX?: undefined; intersectionY?: undefined; } | { hit: boolean; intersectionX: number; intersectionY: number; } | { hit: boolean; intersectionX?: undefined; intersectionY?: undefined; }",
+    "description": "Test whether two line segments cross, and report where (object-argument form).\n\nUnlike the boolean `lineToLine`, this returns the intersection coordinates when\nthe segments meet — useful for drawing a marker at the crossing.\n\nParallel or collinear segments return `{ hit: false }` in this implementation.",
     "params": [
       {
         "name": "line1",
@@ -577,7 +577,7 @@
     "kind": "function",
     "module": "CollisionObjectAPI/LinePoint",
     "signature": "(line: Line, point: Point) => boolean",
-    "description": "Test whether a point lies on a line segment (object-argument form).\n\nChecks whether the distances from the point to each endpoint add up to the\nsegment's length (within a small buffer to absorb floating-point error).",
+    "description": "Test whether a point lies on a line segment (object-argument form).\n\nProjects the point onto the segment, clamps that projection to the segment\nbounds, and checks whether the nearest point lands within a built-in `0.1`\nunit tolerance.",
     "params": [
       {
         "name": "line",
@@ -588,7 +588,7 @@
         "text": "The point to test."
       }
     ],
-    "returns": "`true` if the point sits on the segment within the buffer tolerance.",
+    "returns": "`true` if the point sits on the segment within the built-in `0.1` tolerance.",
     "example": "linePoint({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0 }); // => true"
   },
   {
@@ -596,7 +596,7 @@
     "kind": "function",
     "module": "CollisionObjectAPI/PointCircle",
     "signature": "(point: Point, circle: Circle) => boolean",
-    "description": "Test whether a point falls inside a circle (object-argument form of `pointToCircle`).",
+    "description": "Test whether a point falls inside or on a circle (object-argument form of `pointToCircle`).",
     "params": [
       {
         "name": "point",
@@ -607,7 +607,7 @@
         "text": "The circle (`x`, `y`, `radius`)."
       }
     ],
-    "returns": "`true` if the point is within the circle.",
+    "returns": "`true` if the point is within `radius` of the circle center.",
     "example": "pointCircle({ x: 1, y: 1 }, { x: 0, y: 0, radius: 5 }); // => true"
   },
   {
@@ -615,7 +615,7 @@
     "kind": "function",
     "module": "CollisionObjectAPI/PolygonCircle",
     "signature": "(polygon: Polygon, circle: Circle) => boolean",
-    "description": "Test whether a circle overlaps a polygon.\n\nChecks the circle against each polygon edge, then also tests whether the circle's\ncenter is inside the polygon (catching the fully-contained case).",
+    "description": "Test whether a circle overlaps a polygon.\n\nWalks each polygon edge and tests it against the circle. If no edge touches\nthe circle, it then checks whether the circle's center sits inside the polygon,\nwhich catches the fully-contained case.",
     "params": [
       {
         "name": "polygon",
@@ -634,7 +634,7 @@
     "kind": "function",
     "module": "CollisionObjectAPI/PolygonLine",
     "signature": "(polygon: Polygon, line: Line) => boolean",
-    "description": "Test whether a line segment crosses any edge of a polygon.\n\nWalks each polygon edge and runs a segment-vs-segment intersection test against `line`.",
+    "description": "Test whether a line segment crosses any edge of a polygon.\n\nWalks each polygon edge and runs a segment-vs-segment intersection test\nagainst `line`.\n\nThis checks edge crossings only. A line segment fully contained inside the\npolygon, with no boundary intersection, returns `false`.",
     "params": [
       {
         "name": "polygon",
@@ -653,7 +653,7 @@
     "kind": "function",
     "module": "CollisionObjectAPI/PolygonPoint",
     "signature": "(polygon: Polygon, point: Point) => boolean",
-    "description": "Test whether a point is inside a polygon (ray-casting / even-odd rule).\n\nCasts a ray and counts edge crossings — an odd count means the point is inside.\nWorks for convex and concave polygons alike.",
+    "description": "Test whether a point is inside a polygon (ray-casting / even-odd rule).\n\nCasts a horizontal ray from the point and counts how many polygon edges it\ncrosses — an odd count means the point is inside. Works for both convex and\nconcave polygons.\n\nBoundary points are not special-cased. A point on an edge or vertex follows\nthe raw parity result from the ray test, so edge cases may differ depending\non which boundary segment is hit.",
     "params": [
       {
         "name": "polygon",
@@ -672,7 +672,7 @@
     "kind": "function",
     "module": "CollisionObjectAPI/PolygonPolygon",
     "signature": "(polygon1: Polygon, polygon2: Polygon) => boolean",
-    "description": "Test whether two polygons overlap (object-argument form).\n\nWalks each edge of the first polygon and tests it against the second, then also\nchecks whether one polygon is fully contained in the other.",
+    "description": "Test whether two polygons overlap (object-argument form).\n\nWalks each edge of the first polygon and tests it against the second. If no\nedges cross, it then checks both containment directions by testing a sample\nvertex from each polygon against the other polygon.",
     "params": [
       {
         "name": "polygon1",
@@ -1481,7 +1481,7 @@
     "kind": "function",
     "module": "LineToCircle",
     "signature": "(x1: number, y1: number, x2: number, y2: number, cx: number, cy: number, cr: number) => boolean",
-    "description": "Test whether a line segment intersects a circle.\n\nFinds the closest point on the segment to the circle's center and checks\nwhether it lies within the radius.",
+    "description": "Test whether a line segment intersects a circle.\n\nFinds the closest point on the segment to the circle's center and checks\nwhether it lies within the radius. This also handles degenerate zero-length\nsegments safely.",
     "params": [
       {
         "name": "x1",
@@ -1520,7 +1520,7 @@
     "kind": "function",
     "module": "LineToLine",
     "signature": "(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) => boolean",
-    "description": "Test whether two line segments cross.",
+    "description": "Test whether two line segments cross.\n\nParallel or collinear segments return `false` in this implementation.",
     "params": [
       {
         "name": "x1",
@@ -1856,7 +1856,7 @@
         "text": "Rectangle height."
       }
     ],
-    "returns": "`true` if the point lies within the rectangle.",
+    "returns": "`true` if the point lies within the rectangle bounds, including edges.",
     "example": "pointToRect(5, 5, 0, 0, 10, 10); // => true"
   },
   {
@@ -2056,7 +2056,7 @@
         "text": "Second rect height."
       }
     ],
-    "returns": "`true` if the two rectangles overlap.",
+    "returns": "`true` if the two rectangles have positive overlapping area.",
     "example": "rectToRect(0, 0, 10, 10, 5, 5, 10, 10); // => true"
   },
   {

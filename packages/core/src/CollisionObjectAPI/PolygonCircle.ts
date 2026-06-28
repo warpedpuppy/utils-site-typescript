@@ -1,12 +1,13 @@
 import { lineCircle } from "./LineCircle";
 import { polygonPoint } from "./PolygonPoint";
-import { Polygon, Circle } from '../types';
+import { Polygon, Circle, Line } from '../types';
 
 /**
  * Test whether a circle overlaps a polygon.
  *
- * Checks the circle against each polygon edge, then also tests whether the circle's
- * center is inside the polygon (catching the fully-contained case).
+ * Walks each polygon edge and tests it against the circle. If no edge touches
+ * the circle, it then checks whether the circle's center sits inside the polygon,
+ * which catches the fully-contained case.
  *
  * @param polygon - The polygon (`vertices`).
  * @param circle - The circle (`x`, `y`, `radius`).
@@ -14,41 +15,21 @@ import { Polygon, Circle } from '../types';
  * @example
  * polygonCircle({ vertices: square }, { x: 5, y: 5, radius: 2 }); // => true
  */
-export function polygonCircle(polygon: Polygon, circle: Circle) {
-  // go through each of the vertices, plus
-  // the next vertex in the list
-  let next = 0;
+export function polygonCircle(polygon: Polygon, circle: Circle): boolean {
   const { vertices } = polygon;
+
   for (let current = 0; current < vertices.length; current++) {
-    // get next vertex in list
-    // if we've hit the end, wrap around to 0
-    next = current + 1;
-    if (next === vertices.length) next = 0;
+    const startPoint = vertices[current];
+    const endPoint = vertices[(current + 1) % vertices.length];
+    const edge: Line = { startPoint, endPoint };
 
-    // get the PVectors at our current position
-    // this makes our if statement a little cleaner
-    let startPoint = vertices[current]; // c for "current"
-    let endPoint = vertices[next]; // n for "next"
-
-    // check for collision between the circle and
-    // a line formed between the two vertices
-    let line = { startPoint, endPoint };
-    let collision = lineCircle(line, circle);
-    if (collision) return true;
+    if (lineCircle(edge, circle)) {
+      return true;
+    }
   }
 
-  // the above algorithm only checks if the circle
-  // is touching the edges of the polygon – in most
-  // cases this is enough, but you can un-comment the
-  // following code to also test if the center of the
-  // circle is inside the polygon
-
-  let centerInside = polygonPoint(polygon, {
+  return polygonPoint(polygon, {
     x: circle.x,
     y: circle.y,
   });
-  if (centerInside) return true;
-
-  // otherwise, after all that, return false
-  return false;
 }

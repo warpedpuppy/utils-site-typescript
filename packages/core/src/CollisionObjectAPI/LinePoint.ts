@@ -1,39 +1,37 @@
-import { lineLength } from "../LineLength";
 import { Line, Point } from '../types';
 
 /**
  * Test whether a point lies on a line segment (object-argument form).
  *
- * Checks whether the distances from the point to each endpoint add up to the
- * segment's length (within a small buffer to absorb floating-point error).
+ * Projects the point onto the segment, clamps that projection to the segment
+ * bounds, and checks whether the nearest point lands within a built-in `0.1`
+ * unit tolerance.
  *
  * @param line - The line segment (`startPoint`, `endPoint`).
  * @param point - The point to test.
- * @returns `true` if the point sits on the segment within the buffer tolerance.
+ * @returns `true` if the point sits on the segment within the built-in `0.1` tolerance.
  * @example
  * linePoint({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0 }); // => true
  */
-export function linePoint(line: Line, point: Point) {
-  // get distance from the point to the two ends of the line
-  let tempLine: Line = { startPoint: line.startPoint, endPoint: point };
-  let d1 = lineLength(tempLine);
+export function linePoint(line: Line, point: Point): boolean {
+  const threshold = 0.1;
+  const dx = line.endPoint.x - line.startPoint.x;
+  const dy = line.endPoint.y - line.startPoint.y;
+  const lengthSquared = dx * dx + dy * dy;
 
-  tempLine = { startPoint: line.endPoint, endPoint: point };
-  let d2 = lineLength(tempLine);
-
-  // get the length of the line
-  let lineLen = lineLength(line);
-
-  // since floats are so minutely accurate, add
-  // a little buffer zone that will give collision
-  let buffer = 0.1; // higher # = less accurate
-
-  // if the two distances are equal to the line's
-  // length, the point is on the line!
-  // note we use the buffer here to give a range,
-  // rather than one #
-  if (d1 + d2 >= lineLen - buffer && d1 + d2 <= lineLen + buffer) {
-    return true;
+  if (lengthSquared === 0) {
+    const pointDx = point.x - line.startPoint.x;
+    const pointDy = point.y - line.startPoint.y;
+    return pointDx * pointDx + pointDy * pointDy <= threshold * threshold;
   }
-  return false;
+
+  const projection =
+    ((point.x - line.startPoint.x) * dx + (point.y - line.startPoint.y) * dy) / lengthSquared;
+  const t = Math.max(0, Math.min(1, projection));
+  const closestX = line.startPoint.x + t * dx;
+  const closestY = line.startPoint.y + t * dy;
+  const distanceX = point.x - closestX;
+  const distanceY = point.y - closestY;
+
+  return distanceX * distanceX + distanceY * distanceY <= threshold * threshold;
 }

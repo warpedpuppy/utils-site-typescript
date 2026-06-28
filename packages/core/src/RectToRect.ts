@@ -9,7 +9,7 @@
  * @param y2 - Second rect top edge.
  * @param w2 - Second rect width.
  * @param h2 - Second rect height.
- * @returns `true` if the two rectangles overlap.
+ * @returns `true` if the two rectangles have positive overlapping area.
  * @example
  * rectToRect(0, 0, 10, 10, 5, 5, 10, 10); // => true
  */

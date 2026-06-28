@@ -1,6 +1,8 @@
 /**
  * Test whether two line segments cross.
  *
+ * Parallel or collinear segments return `false` in this implementation.
+ *
  * @param x1 - First segment start x.
  * @param y1 - First segment start y.
  * @param x2 - First segment end x.
@@ -14,9 +16,10 @@
  * lineToLine(0, 0, 10, 10, 0, 10, 10, 0); // => true (an X)
  */
 export function lineToLine(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number): boolean {
-  let denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-  if (Math.abs(denom) < 0.0001) return false;
-  let t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-  let u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+  const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+  if (Math.abs(denominator) < 0.0001) return false;
+
+  const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
+  const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denominator;
   return t >= 0 && t <= 1 && u >= 0 && u <= 1;
 }
