@@ -4,21 +4,16 @@
   overflow: visible;
 }
 
-.utilspalooza-logo__core {
-  fill: var(--brand-orange);
-  filter: drop-shadow(0 0 8px rgba(255, 122, 0, 0.65));
+.utilspalooza-logo__center {
+  fill: rgba(100, 200, 185, 0.28);
+  stroke: rgba(100, 200, 185, 0.5);
+  stroke-width: 0.5;
 }
 
-.utilspalooza-logo__orbit {
+.utilspalooza-logo__rings {
   fill: none;
   stroke: var(--brand-orange-soft);
-  stroke-width: 2.2;
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: rotate(-28deg);
-}
-
-.utilspalooza-logo__dot {
-  fill: var(--brand-yellow);
-  filter: drop-shadow(0 0 7px rgba(255, 176, 0, 0.6));
+  stroke-width: 1.3;
+  stroke-linejoin: miter;
+  filter: drop-shadow(0 0 4px rgba(255, 140, 50, 0.45));
 }

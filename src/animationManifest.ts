@@ -209,6 +209,12 @@ const animationManifest: AnimationManifest = {
       f: polygonPolygon,
       load: () => import("./core-animations/PolygonToPolygonCollision"),
     },
+    CircleFieldCollision: {
+      t: "circle field (collision at scale)",
+      l: "circle-field",
+      f: circleCircle,
+      load: () => import("./core-animations/CircleField"),
+    },
   },
   "useful little things": {
     ColorLerpAnimation: {

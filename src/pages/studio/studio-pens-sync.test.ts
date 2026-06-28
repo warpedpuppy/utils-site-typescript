@@ -113,6 +113,7 @@ const CANONICAL_DRAW_PEN_KEYS = new Set([
   "klimt",
   "flow-field",
   "phyllotaxis",
+  "circle-field",
 ]);
 
 // ─── The Studio dropdown: example-derived pens only ─────────────────────────

@@ -96,6 +96,7 @@ import { drawStar } from "../../core-animations/Star";
 import { drawCircleFromThreePoints } from "../../core-animations/CircleFromThreePoints";
 import { drawTriangleDataFromLine } from "../../core-animations/TriangleDataFromLine";
 import { drawCircleToCircle } from "../../core-animations/CircleToCircle";
+import { drawCircleField } from "../../core-animations/CircleField";
 import { pointCircle as pointCircleFn } from "@utilspalooza/core/CollisionObjectAPI/PointCircle";
 import { drawPointToCircle } from "../../core-animations/PointToCircle";
 import { drawLineToCircle } from "../../core-animations/LineToCircle";
@@ -767,6 +768,41 @@ function draw() {
     performance.now()
   );
 
+  requestAnimationFrame(draw);
+}
+
+draw();`;
+
+const CIRCLE_FIELD_HTML = `<canvas id="canvas"></canvas>`;
+const CIRCLE_FIELD_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+${circleToCircle.toString()}
+
+${drawCircleField.toString()}
+
+// ─── canvas setup ────────────────────────────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; init(); }
+window.addEventListener('resize', resize);
+
+function init() {
+  const n = Math.max(14, Math.floor(canvas.width * canvas.height / 10000));
+  balls = Array.from({ length: n }, (_, i) => ({
+    x: 30 + Math.random() * (canvas.width - 60),
+    y: 30 + Math.random() * (canvas.height - 60),
+    r: 14 + Math.random() * 22,
+    vx: (Math.random() - 0.5) * 4,
+    vy: (Math.random() - 0.5) * 4,
+    hue: (i / n) * 360,
+    hit: 0,
+  }));
+}
+
+let balls = [];
+resize();
+
+function draw() {
+  drawCircleField(ctx, balls, canvas.width, canvas.height, circleToCircle);
   requestAnimationFrame(draw);
 }
 
@@ -2345,6 +2381,22 @@ export const EXAMPLE_PENS: ExamplePen[] = [
       html: POLYGON_POLYGON_HTML,
       css: FULLSCREEN_CSS,
       js: POLYGON_POLYGON_JS,
+      editors: "001",
+    },
+  },
+  {
+    group: "Collision Detection",
+    key: "circle-field",
+    label: "Circle Field (Collision at Scale)",
+    blurb:
+      "Many circles bouncing in a field — circleToCircle runs every pair every frame (the classic O(n²) approach).",
+    payload: {
+      title: "Circle Field",
+      description:
+        "O(n²) circleToCircle detection with elastic collision response across a whole field of circles.",
+      html: CIRCLE_FIELD_HTML,
+      css: FULLSCREEN_CSS,
+      js: CIRCLE_FIELD_JS,
       editors: "001",
     },
   },
