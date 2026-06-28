@@ -213,7 +213,10 @@ function ApiEntryCard({
       {visual.kind === "example" && visual.exampleSlug && (
         <div className="api-docs__example-callout">
           <p>See it in a richer canvas example:</p>
-          <Link to={`/examples/${visual.exampleSlug}`}>
+          <Link
+            to={`/examples/${visual.exampleSlug}`}
+            state={{ fromApi: true, fnName: entry.name }}
+          >
             {visual.exampleLabel ?? "Open the example"}
           </Link>
         </div>
@@ -455,7 +458,6 @@ function Documentation({
       ? apiEntries.filter(
           (e) =>
             e.name.toLowerCase().includes(q) ||
-            e.module.toLowerCase().includes(q) ||
             e.description.toLowerCase().includes(q),
         )
       : apiEntries;

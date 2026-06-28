@@ -24,14 +24,14 @@ class PrettyRing extends Template {
     if (this.textDiv) this.textDiv.innerHTML = ELI5;
     if (!this.canvas) return;
     this.effect = mountPrettyRing(this.canvas, {
-      background: "#02050b",
-      count: 760,
+      background: "#000000",
+      count: 1000,
       density: 1,
       interactive: true,
-      layers: 3,
+      layers: 1,
       seed: 11,
       speed: 1,
-      wobble: 46,
+      wobble: 25,
     });
   }
 

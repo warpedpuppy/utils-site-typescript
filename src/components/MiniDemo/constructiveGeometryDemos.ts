@@ -24,7 +24,15 @@ export type GeometryDemoKind =
   | "vec-lerp"
   | "vec-limit"
   | "lerp-angle"
-  | "get-rotation";
+  | "get-rotation"
+  | "point-to-circle"
+  | "point-to-rect"
+  | "line-to-point"
+  | "circle-to-rect"
+  | "rect-to-rect"
+  | "line-to-circle"
+  | "line-to-line"
+  | "line-to-rect";
 
 export interface ConstructiveGeometryDemoDef {
   kind: GeometryDemoKind;
@@ -131,5 +139,37 @@ export const CONSTRUCTIVE_GEOMETRY_DEMOS: Partial<Record<string, ConstructiveGeo
   getRotation: {
     kind: "get-rotation",
     fnName: "getRotation",
+  },
+  pointToCircle: {
+    kind: "point-to-circle",
+    fnName: "pointToCircle",
+  },
+  pointToRect: {
+    kind: "point-to-rect",
+    fnName: "pointToRect",
+  },
+  lineToPoint: {
+    kind: "line-to-point",
+    fnName: "lineToPoint",
+  },
+  circleToRect: {
+    kind: "circle-to-rect",
+    fnName: "circleToRect",
+  },
+  rectToRect: {
+    kind: "rect-to-rect",
+    fnName: "rectToRect",
+  },
+  lineToCircle: {
+    kind: "line-to-circle",
+    fnName: "lineToCircle",
+  },
+  lineToLine: {
+    kind: "line-to-line",
+    fnName: "lineToLine",
+  },
+  lineToRect: {
+    kind: "line-to-rect",
+    fnName: "lineToRect",
   },
 };

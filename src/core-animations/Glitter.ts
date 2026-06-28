@@ -24,12 +24,14 @@ class Glitter extends Template {
     if (this.textDiv) this.textDiv.innerHTML = ELI5;
     if (!this.canvas) return;
     this.effect = mountGlitter(this.canvas, {
-      background: "#170425",
+      background: "#400175",
       density: 1,
       interactive: true,
       seed: 23,
       speed: 1,
-      color: [255, 238, 92],
+      color: [255, 255, 0],
+      dotCount: 1000,
+      beamCount: 360,
     });
   }
 

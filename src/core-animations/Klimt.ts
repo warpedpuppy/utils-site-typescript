@@ -1,10 +1,18 @@
 import Template from "./animationTemplate";
 import { CollisionDetectionObject } from "../types/types";
 
-const BG = "#000000";
+const BG = "#0a0705";
 const COLORS = [
-  0xfff0f5, 0xe6e6fa, 0xff7575, 0xffb775, 0xfff175, 0xc3ff76, 0x7bffb8,
-  0x7de8ff, 0x799fff, 0xff93f7,
+  0xffd700, // gold
+  0xdaa520, // goldenrod
+  0xb8860b, // dark goldenrod
+  0xcd853f, // bronze
+  0xb87333, // copper
+  0xf0e68c, // pale gold
+  0x8b6914, // antique gold
+  0x191970, // midnight blue (Klimt shadow tones)
+  0x4b0082, // deep indigo
+  0x8b0000, // dark red
 ];
 const CURVES = [45, -45, 135, -135];
 const CURVED_QS = [85, 150] as const;
@@ -49,8 +57,9 @@ interface KlimtSwirl {
  */
 export function createKlimtSwirls(width: number, height: number): KlimtSwirl[] {
   const COLORS = [
-    0xfff0f5, 0xe6e6fa, 0xff7575, 0xffb775, 0xfff175,
-    0xc3ff76, 0x7bffb8, 0x7de8ff, 0x799fff, 0xff93f7,
+    0xffd700, 0xdaa520, 0xb8860b,
+    0xcd853f, 0xb87333, 0xf0e68c,
+    0x8b6914, 0x191970, 0x4b0082, 0x8b0000,
   ];
   const CURVES = [45, -45, 135, -135];
   const TILE_Q = 260;
@@ -79,7 +88,7 @@ export function createKlimtSwirls(width: number, height: number): KlimtSwirl[] {
       w: width,
       h: height,
       curve: CURVES[Math.floor(Math.random() * CURVES.length)],
-      interval: randInt(1, 2),
+      interval: randInt(4, 7),
       curveCounter: 0,
       curveQ: randInt(85, 150),
       poolCounter: 1,
@@ -114,7 +123,7 @@ export function drawKlimt(
     return { x: w * 0.25, y: h * 0.35 }; // BR
   };
 
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = '#0a0705';
   ctx.fillRect(0, 0, width, height);
 
   for (const swirl of swirls) {
@@ -197,7 +206,7 @@ class RainbowSwirls {
     this.w = w;
     this.h = h;
     this.curve = CURVES[Math.floor(Math.random() * CURVES.length)];
-    this.interval = randIntBetween(1, 2);
+    this.interval = randIntBetween(4, 7);
     this.curveQ = randIntBetween(CURVED_QS[0], CURVED_QS[1]);
 
     let colorCounter = 0;
@@ -371,11 +380,12 @@ class Klimt extends Template {
   }
 }
 
-const ELI5 = `Klimt-Inspired Swirls — ribbons built from smaller translucent rectangles.
+const ELI5 = `Klimt-Inspired Swirls — gold-leaf ribbons built from translucent rectangles.
 
-Each ribbon keeps a longer pool of colored bricks. Every few frames it reuses
-the next brick, rotates it a little more, and places it tip-to-tail from the
-previous brick. Smaller tiles make the curve feel more woven, and the larger
-pool means each spiral trail lasts longer before old bricks are recycled.`;
+Inspired by Gustav Klimt's "Tree of Life" and "The Kiss" — the same tip-to-tail
+brick math, now in golds, bronzes, and midnight blues. Each swirl slowly places
+a brick every several frames, rotating it a little more each time, so the trail
+curves into an organic spiral. The palette pulls from gold leaf, copper, indigo,
+and deep crimson — Klimt's ornamental vocabulary, reduced to math.`;
 
 export default Klimt;

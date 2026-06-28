@@ -1,6 +1,6 @@
 import "./NavBar.scss";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import UtilspaloozaLogo from "../Logo/UtilspaloozaLogo";
 function NavBar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -16,7 +16,7 @@ function NavBar() {
         <div className="logo-container">
           <UtilspaloozaLogo />
         </div>
-        <Link to="/">utilspalooza</Link>
+        <NavLink to="/" end>utilspalooza</NavLink>
       </h1>
 
       <div
@@ -29,11 +29,11 @@ function NavBar() {
         <span></span>
       </div>
       <div id="nav-links" className={collapsed ? "collapsed" : ""}>
-        <Link to="/examples">examples</Link>
-        <Link to="/create-json">recipes</Link>
-        <Link to="/api">api</Link>
-        <Link to="/studio">studio</Link>
-        <Link to="/about">about</Link>
+        <NavLink to="/examples">examples</NavLink>
+        <NavLink to="/create-json">recipes</NavLink>
+        <NavLink to="/api">api</NavLink>
+        <NavLink to="/studio">studio</NavLink>
+        <NavLink to="/about">about</NavLink>
       </div>
     </nav>
   );
