@@ -1802,6 +1802,29 @@
     "example": "pointToCircle(1, 1, 0, 0, 5); // => true"
   },
   {
+    "name": "pointToPolygon",
+    "kind": "function",
+    "module": "PointToPolygon",
+    "signature": "(px: number, py: number, vertices: Point[]) => boolean",
+    "description": "Test whether a point falls inside a polygon (ray-casting / even-odd rule).\n\nCasts a horizontal ray from the point and counts how many polygon edges it\ncrosses — an odd count means the point is inside. Works for both convex and\nconcave polygons.",
+    "params": [
+      {
+        "name": "px",
+        "text": "Point x."
+      },
+      {
+        "name": "py",
+        "text": "Point y."
+      },
+      {
+        "name": "vertices",
+        "text": "The polygon vertices, in order."
+      }
+    ],
+    "returns": "`true` if the point lies inside the polygon.",
+    "example": "const square = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];\npointToPolygon(5, 5, square); // => true\npointToPolygon(20, 20, square); // => false"
+  },
+  {
     "name": "pointToRect",
     "kind": "function",
     "module": "PointToRect",
@@ -1961,6 +1984,37 @@
     ],
     "returns": "`{ vertices }` — the four corners as points.",
     "example": "createRect(10, 10).vertices.length; // => 4"
+  },
+  {
+    "name": "rectToPolygon",
+    "kind": "function",
+    "module": "RectToPolygon",
+    "signature": "(rx: number, ry: number, rw: number, rh: number, vertices: Point[]) => boolean",
+    "description": "Test whether an axis-aligned rectangle overlaps a polygon.\n\nCombines three checks so no overlap is missed:\n1. Any polygon vertex inside the rectangle.\n2. Any rectangle corner inside the polygon.\n3. Any polygon edge crossing any rectangle edge.\n\nThe vertex-only approach used by most simple implementations fails when one\nshape is entirely inside the other, or when edges cross without either shape's\nvertices being contained. All three checks together are complete.",
+    "params": [
+      {
+        "name": "rx",
+        "text": "Rectangle left edge."
+      },
+      {
+        "name": "ry",
+        "text": "Rectangle top edge."
+      },
+      {
+        "name": "rw",
+        "text": "Rectangle width."
+      },
+      {
+        "name": "rh",
+        "text": "Rectangle height."
+      },
+      {
+        "name": "vertices",
+        "text": "The polygon vertices, in order."
+      }
+    ],
+    "returns": "`true` if the rectangle and polygon overlap.",
+    "example": "const tri = [{ x: 5, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];\nrectToPolygon(3, 3, 8, 8, tri); // => true\nrectToPolygon(50, 50, 10, 10, tri); // => false"
   },
   {
     "name": "rectToRect",

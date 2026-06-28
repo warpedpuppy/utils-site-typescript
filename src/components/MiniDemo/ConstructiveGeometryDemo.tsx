@@ -10,6 +10,7 @@ import { pointToCircle } from "@utilspalooza/core/PointToCircle";
 import { pointToRect } from "@utilspalooza/core/PointToRect";
 import { rectToRect } from "@utilspalooza/core/RectToRect";
 import { polygonPoint } from "@utilspalooza/core/CollisionObjectAPI/PolygonPoint";
+import { pointToPolygon } from "@utilspalooza/core/PointToPolygon";
 import { polygonLine } from "@utilspalooza/core/CollisionObjectAPI/PolygonLine";
 import { polygonCircle } from "@utilspalooza/core/CollisionObjectAPI/PolygonCircle";
 import { polygonPolygon } from "@utilspalooza/core/CollisionObjectAPI/PolygonPolygon";
@@ -239,6 +240,8 @@ export default function ConstructiveGeometryDemo({
         return buildLineToRectScene(handles, points);
       case "polygon-point":
         return buildPolygonPointScene(polyScene);
+      case "point-to-polygon":
+        return buildPointToPolygonScene(polyScene);
       case "polygon-line":
         return buildPolygonLineScene(polyScene);
       case "polygon-circle":
@@ -363,6 +366,9 @@ export default function ConstructiveGeometryDemo({
         break;
       case "polygon-point":
         drawPolygonPointScene(ctx, size.width, size.height, polyScene);
+        break;
+      case "point-to-polygon":
+        drawPointToPolygonScene(ctx, size.width, size.height, polyScene);
         break;
       case "polygon-line":
         drawPolygonLineScene(ctx, size.width, size.height, polyScene);
@@ -2151,6 +2157,89 @@ function drawPolygonPointScene(
   if (inside) drawStatusPill(ctx, width - 156, 18, "inside!");
 }
 
+// ─── COLLISION: pointToPolygon ──────────────────────────────────────────────
+
+function buildPointToPolygonScene(scene: PolyScene): SceneData {
+  const { poly1, point } = scene;
+  const inside = pointToPolygon(point.x, point.y, poly1);
+  const crossings = rayCrossings(poly1, point);
+  return {
+    call: `pointToPolygon(${fmt(point.x)}, ${fmt(point.y)}, vertices) = ${inside}`,
+    hint:
+      "Drag the point — or grab the polygon itself. A ray is cast to the right and every edge crossing flips the parity: odd crossings = inside, even = outside.",
+    readouts: [
+      { label: "px", value: fmt(point.x) },
+      { label: "py", value: fmt(point.y) },
+      { label: "ray crossings", value: String(crossings.length) },
+      { label: "parity", value: crossings.length % 2 === 1 ? "odd → inside" : "even → outside" },
+      { label: "state", value: inside ? "inside!" : "outside", tone: inside ? "live" : undefined },
+    ],
+  };
+}
+
+function drawPointToPolygonScene(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  scene: PolyScene,
+) {
+  const { poly1, point } = scene;
+  const inside = pointToPolygon(point.x, point.y, poly1);
+  const crossings = rayCrossings(poly1, point);
+
+  drawBackdrop(ctx, width, height);
+  drawPolygonShape(
+    ctx,
+    poly1,
+    inside ? "#f97316" : "#818cf8",
+    inside ? "rgba(249, 115, 22, 0.16)" : "rgba(129, 140, 248, 0.12)",
+  );
+
+  // Ray to the right edge
+  ctx.setLineDash([6, 6]);
+  ctx.strokeStyle = inside ? "rgba(249, 115, 22, 0.9)" : "rgba(125, 211, 252, 0.85)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(point.x, point.y);
+  ctx.lineTo(width - PAD, point.y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Highlight each crossed edge and mark the crossing point
+  const edgeList = polygonEdges(poly1);
+  edgeList.forEach((edge) => {
+    const vc = edge.startPoint, vn = edge.endPoint;
+    const straddles = (vc.y > point.y) !== (vn.y > point.y);
+    const cx = ((vn.x - vc.x) * (point.y - vc.y)) / (vn.y - vc.y) + vc.x;
+    if (straddles && cx > point.x) {
+      ctx.strokeStyle = "#f97316";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(vc.x, vc.y);
+      ctx.lineTo(vn.x, vn.y);
+      ctx.stroke();
+    }
+  });
+
+  crossings.forEach((c, index) => {
+    drawCenter(ctx, c, "#fde68a", 6);
+    labelSegment(ctx, c.x, c.y - 14, `#${index + 1}`, "#fde68a");
+  });
+
+  // Coordinate labels next to the point
+  labelSegment(ctx, point.x + 14, point.y - 8, `(${fmt(point.x)}, ${fmt(point.y)})`, "#fb7185");
+  drawPoint(ctx, point, "#fb7185", "p");
+
+  drawHeaderBox(ctx, [
+    { text: `ray crossings = ${crossings.length}`, color: "#e2e8f0" },
+    {
+      text: crossings.length % 2 === 1 ? "odd → inside" : "even → outside",
+      color: inside ? "#fdba74" : "#cbd5e1",
+    },
+  ]);
+  if (inside) drawStatusPill(ctx, width - 156, 18, "inside!");
+}
+
 // ─── COLLISION: polygonLine ──────────────────────────────────────────────────
 
 function buildPolygonLineScene(scene: PolyScene): SceneData {
@@ -2413,7 +2502,7 @@ function getPolygonDragState(
   kind: ConstructiveGeometryDemoDef["kind"],
   scene: PolyScene,
 ): DragState | null {
-  if (kind === "polygon-point") {
+  if (kind === "polygon-point" || kind === "point-to-polygon") {
     if (Math.hypot(point.x - scene.point.x, point.y - scene.point.y) <= 14) {
       return { kind: "poly-point", dx: point.x - scene.point.x, dy: point.y - scene.point.y };
     }
@@ -2880,6 +2969,7 @@ function getDragState(
 ): DragState | null {
   if (
     kind === "polygon-point" ||
+    kind === "point-to-polygon" ||
     kind === "polygon-line" ||
     kind === "polygon-circle" ||
     kind === "polygon-polygon" ||

@@ -20,7 +20,9 @@ import {
   easeOutElastic,
   pointToCircle,
   pointToRect,
+  pointToPolygon,
   rectToRect,
+  rectToPolygon,
   circleToRect,
   circleToCircle,
   lineToPoint,
@@ -381,9 +383,37 @@ describe("collision detection", () => {
     expect(pointToRect(0, 0, 0, 0, 10, 10)).toBe(true); // corner is inclusive
   });
 
+  it("pointToPolygon: inside vs outside a square", () => {
+    const square = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];
+    expect(pointToPolygon(5, 5, square)).toBe(true);
+    expect(pointToPolygon(20, 20, square)).toBe(false);
+  });
+
+  it("pointToPolygon: works for a concave polygon (L-shape)", () => {
+    // L-shape: outer square with inner top-right corner missing
+    const lShape = [
+      { x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 5 },
+      { x: 5, y: 5 }, { x: 5, y: 10 }, { x: 0, y: 10 },
+    ];
+    expect(pointToPolygon(2, 8, lShape)).toBe(true);  // in the bottom of the L
+    expect(pointToPolygon(8, 8, lShape)).toBe(false); // in the missing corner
+  });
+
   it("rectToRect: overlapping vs separated", () => {
     expect(rectToRect(0, 0, 10, 10, 5, 5, 10, 10)).toBe(true);
     expect(rectToRect(0, 0, 10, 10, 20, 20, 5, 5)).toBe(false);
+  });
+
+  it("rectToPolygon: rect overlapping a triangle vs clear of it", () => {
+    const tri = [{ x: 5, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];
+    expect(rectToPolygon(3, 3, 8, 8, tri)).toBe(true);  // triangle vertices inside rect
+    expect(rectToPolygon(50, 50, 10, 10, tri)).toBe(false);
+  });
+
+  it("rectToPolygon: polygon entirely containing the rect (corner-inside-polygon check)", () => {
+    // big polygon surrounds a small rect — no polygon vertex is inside the rect
+    const bigSquare = [{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 100, y: 100 }, { x: 0, y: 100 }];
+    expect(rectToPolygon(40, 40, 20, 20, bigSquare)).toBe(true); // rect is inside polygon
   });
 
   it("circleToRect: circle overlapping a rect vs clear of it", () => {

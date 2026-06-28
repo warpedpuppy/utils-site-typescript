@@ -37,7 +37,8 @@ export type GeometryDemoKind =
   | "polygon-line"
   | "polygon-circle"
   | "polygon-polygon"
-  | "polygon-to-polygon";
+  | "polygon-to-polygon"
+  | "point-to-polygon";
 
 export interface ConstructiveGeometryDemoDef {
   kind: GeometryDemoKind;
@@ -196,5 +197,9 @@ export const CONSTRUCTIVE_GEOMETRY_DEMOS: Partial<Record<string, ConstructiveGeo
   polygonToPolygon: {
     kind: "polygon-to-polygon",
     fnName: "polygonToPolygon",
+  },
+  pointToPolygon: {
+    kind: "point-to-polygon",
+    fnName: "pointToPolygon",
   },
 };
