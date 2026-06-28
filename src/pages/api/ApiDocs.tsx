@@ -5,7 +5,13 @@ import coreApi from "./core-api.json";
 import MiniDemo, { MiniDemoProps } from "../../components/MiniDemo/MiniDemo";
 import EasingMiniDemo from "../../components/MiniDemo/EasingMiniDemo";
 import InteractiveMiniDemo from "../../components/MiniDemo/InteractiveMiniDemo";
+import AnimateMiniDemo from "../../components/MiniDemo/AnimateMiniDemo";
+import ColorMiniDemo from "../../components/MiniDemo/ColorMiniDemo";
+import ConstructiveGeometryDemo from "../../components/MiniDemo/ConstructiveGeometryDemo";
 import { INTERACTIVE_DEMOS } from "../../components/MiniDemo/interactiveDemos";
+import { ANIMATE_DEMOS } from "../../components/MiniDemo/animateDemos";
+import { COLOR_DEMOS } from "../../components/MiniDemo/colorDemos";
+import { CONSTRUCTIVE_GEOMETRY_DEMOS } from "../../components/MiniDemo/constructiveGeometryDemos";
 import { pingPong } from "@utilspalooza/core/PingPong";
 import {
   linear, easeIn, easeOut, easeInOut,
@@ -45,6 +51,7 @@ const TRANSFORM_FN_NAMES: Record<string, string> = {
   clamp: "clamp",
   wrap: "wrap",
   smoothstep: "smoothstep",
+  smootherstep: "smootherstep",
 };
 
 const EASING_DEMOS: Record<string, (t: number) => number> = {
@@ -139,6 +146,7 @@ function ApiEntryCard({
 }) {
   const concept = getConceptForModule(entry.module);
   const visual = getEntryVisual(entry.name);
+  const geometryDemo = CONSTRUCTIVE_GEOMETRY_DEMOS[entry.name];
   return (
     <article className="api-docs__fn" key={`${entry.module}.${entry.name}`} id={entry.name}>
       <div className="api-docs__fn-head">
@@ -174,6 +182,26 @@ function ApiEntryCard({
         <>
           <p className="api-docs__demo-caption">Play with the arguments:</p>
           <InteractiveMiniDemo demo={INTERACTIVE_DEMOS[entry.name]} />
+        </>
+      )}
+      {visual.kind === "mini-demo" && ANIMATE_DEMOS[entry.name] && (
+        <>
+          <p className="api-docs__demo-caption">Sample the timeline:</p>
+          <AnimateMiniDemo demo={ANIMATE_DEMOS[entry.name]} />
+        </>
+      )}
+      {visual.kind === "mini-demo" && COLOR_DEMOS[entry.name] && (
+        <>
+          <p className="api-docs__demo-caption">
+            {entry.name === "sphereLighting" ? "Drag the light:" : "See the conversion:"}
+          </p>
+          <ColorMiniDemo demo={COLOR_DEMOS[entry.name]} />
+        </>
+      )}
+      {visual.kind === "mini-demo" && geometryDemo && (
+        <>
+          <p className="api-docs__demo-caption">Drag the scene:</p>
+          <ConstructiveGeometryDemo demo={geometryDemo} />
         </>
       )}
       {visual.kind === "mini-demo" && !INTERACTIVE_DEMOS[entry.name] && MINI_DEMOS[entry.name] && (
