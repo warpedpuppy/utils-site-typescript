@@ -596,6 +596,8 @@ function buildDistanceScene(points: PointPair): SceneData {
 function buildUnitCirclePointScene(width: number, height: number, handle: Point): SceneData {
   const layout = unitCircleLayout(width, height);
   const angle = Math.atan2(handle.y - layout.center.y, handle.x - layout.center.x);
+  const cycleAngle = normalizeCycleAngle(angle);
+  const cycleFraction = cycleAngle / (Math.PI * 2);
   const point = unitCirclePoint(layout.center.x, layout.center.y, layout.radius, angle);
   const dx = point.x - layout.center.x;
   const dy = point.y - layout.center.y;
@@ -604,14 +606,16 @@ function buildUnitCirclePointScene(width: number, height: number, handle: Point)
   return {
     call: `unitCirclePoint(${fmt(layout.center.x)}, ${fmt(layout.center.y)}, ${fmt(layout.radius)}, ${fmt(angle)})`,
     hint:
-      "Drag the point around the circle. Cosine is the horizontal share of the radius; sine is the vertical share. In canvas coordinates, positive y points downward, so positive sine moves the point down.",
+      "Drag the point around the circle. One angle gives you three linked facts at once: cosine is the horizontal radius share, sine is the vertical radius share, and that same angle is already a sample position on the 0→2π sine cycle.",
     readouts: [
       { label: "angle", value: `${fmt(angle)} rad = ${fmt(radToDeg(angle))}°` },
+      { label: "cycle position", value: `${fmt(cycleAngle)} rad = ${fmt(cycleFraction * 100)}% of 2π` },
       { label: "cos", value: fmt(point.cos) },
       { label: "sin", value: fmt(point.sin) },
-      { label: "point", value: formatPoint({ x: point.x, y: point.y }) },
-      { label: "x / y", value: `${fmtSigned(dx)} , ${fmtSigned(dy)}`, tone: "live" },
-      { label: "same y via sineCurve", value: fmt(sampleY) },
+      { label: "x offset", value: `${fmt(point.cos)} × ${fmt(layout.radius)} = ${fmtSigned(dx)}` },
+      { label: "y offset", value: `${fmt(point.sin)} × ${fmt(layout.radius)} = ${fmtSigned(dy)}`, tone: "live" },
+      { label: "returned point", value: formatPoint({ x: point.x, y: point.y }) },
+      { label: "same y on sine strip", value: fmt(sampleY) },
     ],
   };
 }
@@ -625,18 +629,21 @@ function buildSineWaveScene(width: number, height: number, handle: Point, phase:
   const sampleX = Math.round(width * 0.58);
   const sampleY = sineWave(sampleX, centerY, amplitude, wavelength, phase);
   const cycleFraction = normalizeCycleFraction(sampleX / wavelength + phase);
+  const cycleAngle = cycleFraction * Math.PI * 2;
+  const offset = sampleY - centerY;
 
   return {
     call: `sineWave(x, ${fmt(centerY)}, ${fmt(amplitude)}, ${fmt(wavelength)}, ${fmt(phase)})`,
     hint:
-      "Drag the crest handle or the orange phase rail. The handle sets the wave's height and quarter-wavelength; phase shifts the whole oscillation left and right. The strip below shows one full wavelength, and the sample dot marks where x lands inside that cycle.",
+      "Drag the crest handle or the orange phase rail. This is the same sine story as `sineCurve()`, except the cycle is spread across x-distance: every wavelength repeats one full 0→2π oscillation.",
     readouts: [
       { label: "centerY", value: fmt(centerY) },
       { label: "amplitude", value: fmt(amplitude) },
       { label: "wavelength", value: fmt(wavelength) },
       { label: "phase", value: fmt(phase) },
-      { label: "cycle position", value: `${fmt(cycleFraction * wavelength)} px = ${fmt(cycleFraction * 100)}% of λ` },
-      { label: `y @ x=${fmt(sampleX)}`, value: fmt(sampleY), tone: "live" },
+      { label: "cycle position", value: `${fmt(cycleFraction * wavelength)} px = ${fmt(cycleFraction * 100)}% of λ = ${fmt(cycleAngle)} rad` },
+      { label: "sin(cycle) × amplitude", value: `${fmt(Math.sin(cycleAngle))} × ${fmt(amplitude)} = ${fmtSigned(offset)}` },
+      { label: `y @ x=${fmt(sampleX)}`, value: `${fmt(centerY)} + ${fmtSigned(offset)} = ${fmt(sampleY)}`, tone: "live" },
     ],
   };
 }
@@ -652,15 +659,16 @@ function buildSineCurveScene(width: number, height: number, handle: Point): Scen
   return {
     call: `sineCurve(${fmt(layout.center.y)}, ${fmt(layout.radius)}, 1, ${fmt(angle)}) = ${fmt(value)}`,
     hint:
-      "Drag the point around the unit circle. `sineCurve()` is baseline + sine(time) × amplitude, and the strip on the right is that same vertical motion unwrapped across one full cycle.",
+      "Drag the same circle point as before. Nothing new is hiding here: `sineCurve()` just takes that sine height, scales it by amplitude, and lays the motion out across a full 0→2π cycle.",
     readouts: [
       { label: "time", value: `${fmt(angle)} rad = ${fmt(radToDeg(angle))}°` },
       { label: "cycle position", value: `${fmt(cycleAngle)} rad = ${fmt(cycleFraction * 100)}% of 2π` },
       { label: "baseline", value: fmt(layout.center.y) },
       { label: "amplitude", value: fmt(layout.radius) },
       { label: "sin(time)", value: fmt(point.sin) },
-      { label: "returned y", value: fmt(value), tone: "live" },
-      { label: "matches point y", value: fmt(point.y) },
+      { label: "sin × amplitude", value: `${fmt(point.sin)} × ${fmt(layout.radius)} = ${fmtSigned(point.y - layout.center.y)}` },
+      { label: "returned y", value: `${fmt(layout.center.y)} + ${fmtSigned(point.y - layout.center.y)} = ${fmt(value)}`, tone: "live" },
+      { label: "same circle height", value: fmt(point.y) },
     ],
   };
 }
@@ -682,13 +690,13 @@ function buildWaveAmplitudeScene(sample: Point, handles: HandlePair, time: numbe
       `waveAmplitude(${fmt(sample.x)}, ${fmt(sample.y)}, [` +
       `${formatPoint(handles.a)}, ${formatPoint(handles.b)}], ${fmt(time)}, ${fmt(k)}, ${fmt(omega)}) = ${fmt(value)}`,
     hint:
-      "Drag either source, drag the sample point, or scrub time. Each source contributes one cosine term based on its distance to the sample point; `waveAmplitude()` averages those terms into one interference value.",
+      "Drag either source, drag the sample point, or scrub time. Each source turns distance into its own cosine contribution; `waveAmplitude()` does not pick one winner, it averages those live terms into the final interference value.",
     readouts: [
       { label: "sample", value: formatPoint(sample) },
       { label: "time", value: fmt(time) },
       { label: "r1 → phase → cos(...)", value: `${fmt(r1)} → ${fmt(p1)} rad → ${fmt(a1)}` },
       { label: "r2 → phase → cos(...)", value: `${fmt(r2)} → ${fmt(p2)} rad → ${fmt(a2)}` },
-      { label: "average", value: fmt(value), tone: "live" },
+      { label: "average", value: `(${fmt(a1)} + ${fmt(a2)}) / 2 = ${fmt(value)}`, tone: "live" },
     ],
   };
 }
@@ -971,8 +979,17 @@ function drawUnitCirclePointScene(
 ) {
   const layout = unitCircleLayout(width, height);
   const angle = Math.atan2(handle.y - layout.center.y, handle.x - layout.center.x);
+  const cycleAngle = normalizeCycleAngle(angle);
+  const cycleFraction = cycleAngle / (Math.PI * 2);
   const point = unitCirclePoint(layout.center.x, layout.center.y, layout.radius, angle);
   const corner = { x: point.x, y: layout.center.y };
+  const stripLeft = Math.round(width * 0.54);
+  const stripRight = width - PAD;
+  const stripWidth = stripRight - stripLeft;
+  const stripX = stripLeft + stripWidth * cycleFraction;
+  const stripCenterY = layout.center.y;
+  const stripTop = stripCenterY - layout.radius;
+  const stripBottom = stripCenterY + layout.radius;
 
   drawBackdrop(ctx, width, height);
   drawAxes(ctx, width, height, layout.center);
@@ -983,24 +1000,61 @@ function drawUnitCirclePointScene(
   drawCenter(ctx, point, "#fb7185", 7);
   drawCenter(ctx, corner, "rgba(125, 211, 252, 0.8)", 4);
 
+  ctx.strokeStyle = "rgba(255,255,255,0.18)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(stripLeft, stripCenterY);
+  ctx.lineTo(stripRight, stripCenterY);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(129, 140, 248, 0.92)";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (let i = 0; i <= 64; i += 1) {
+    const t = i / 64;
+    const x = stripLeft + stripWidth * t;
+    const theta = t * Math.PI * 2;
+    const y = sineCurve(layout.center.y, layout.radius, 1, theta);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  ctx.setLineDash([6, 6]);
+  ctx.strokeStyle = "rgba(251, 146, 60, 0.85)";
+  ctx.beginPath();
+  ctx.moveTo(point.x, point.y);
+  ctx.lineTo(stripX, point.y);
+  ctx.stroke();
+
+  ctx.strokeStyle = "rgba(96, 165, 250, 0.85)";
+  ctx.beginPath();
+  ctx.moveTo(stripX, stripTop);
+  ctx.lineTo(stripX, stripBottom);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawCenter(ctx, { x: stripX, y: point.y }, "#f97316", 7);
+
   drawAngleArc(ctx, layout.center, point, 40, "rgba(249, 115, 22, 0.95)");
   drawHeaderBox(ctx, [
     { text: `cos = ${fmt(point.cos)}`, color: "#86efac" },
     { text: `sin = ${fmt(point.sin)}`, color: "#fb923c" },
+    { text: `same angle already sits at ${fmt(cycleAngle)} rad on the sine strip`, color: "#c4b5fd" },
   ]);
 
   labelSegment(
     ctx,
     layout.center.x + (point.x - layout.center.x) / 2,
     layout.center.y + 18,
-    `x = ${fmtSigned(point.x - layout.center.x)}`,
+    `x = cos(θ) × r = ${fmtSigned(point.x - layout.center.x)}`,
     "rgba(134, 239, 172, 0.95)",
   );
   labelSegment(
     ctx,
     point.x + 18,
     layout.center.y + (point.y - layout.center.y) / 2,
-    `y = ${fmtSigned(point.y - layout.center.y)}`,
+    `y = sin(θ) × r = ${fmtSigned(point.y - layout.center.y)}`,
     "rgba(251, 146, 60, 0.95)",
   );
   labelSegment(
@@ -1010,6 +1064,10 @@ function drawUnitCirclePointScene(
     `${fmt(radToDeg(angle))}°`,
     "rgba(249, 115, 22, 0.98)",
   );
+  labelSegment(ctx, stripX + 28, point.y - 10, `same y`, "#f97316");
+  labelSegment(ctx, stripLeft + 16, stripBottom + 18, "0", "rgba(226, 232, 240, 0.9)");
+  labelSegment(ctx, stripLeft + stripWidth / 2, stripBottom + 18, "π", "rgba(226, 232, 240, 0.9)");
+  labelSegment(ctx, stripRight - 16, stripBottom + 18, "2π", "rgba(226, 232, 240, 0.9)");
 }
 
 function drawSineWaveScene(
@@ -1029,6 +1087,7 @@ function drawSineWaveScene(
   const sampleX = Math.round(width * 0.58);
   const sampleY = sineWave(sampleX, centerY, amplitude, wavelength, phase);
   const cycleFraction = normalizeCycleFraction(sampleX / wavelength + phase);
+  const cycleAngle = cycleFraction * Math.PI * 2;
   const stripLeft = Math.max(originX + 12, width - 220);
   const stripRight = width - PAD;
   const stripWidth = stripRight - stripLeft;
@@ -1036,6 +1095,7 @@ function drawSineWaveScene(
   const stripAmplitude = 14;
   const stripCenterY = stripY + 22;
   const stripX = stripLeft + stripWidth * cycleFraction;
+  const stripSampleY = stripCenterY + Math.sin(cycleFraction * Math.PI * 2) * stripAmplitude;
 
   drawBackdrop(ctx, width, height);
 
@@ -1074,7 +1134,7 @@ function drawSineWaveScene(
   labelSegment(ctx, crestX + 18, crestY - 10, "crest", "#fb7185");
 
   drawCenter(ctx, { x: sampleX, y: sampleY }, "#f97316", 6);
-  labelSegment(ctx, sampleX + 22, sampleY - 12, `y = ${fmt(sampleY)}`, "#f97316");
+  labelSegment(ctx, sampleX + 36, sampleY - 12, `same y = ${fmt(sampleY)}`, "#f97316");
 
   labelSegment(ctx, originX + 18, centerY - amplitude / 2, `amp = ${fmt(amplitude)}`, "rgba(96, 165, 250, 0.95)");
   labelSegment(ctx, originX + wavelength / 8, crestY - 14, `λ/4 = ${fmt(wavelength / 4)}`, "rgba(125, 211, 252, 0.95)");
@@ -1112,7 +1172,8 @@ function drawSineWaveScene(
   ctx.stroke();
   ctx.setLineDash([]);
 
-  drawCenter(ctx, { x: stripX, y: stripCenterY + Math.sin(cycleFraction * Math.PI * 2) * stripAmplitude }, "#f97316", 5);
+  drawCenter(ctx, { x: stripX, y: stripSampleY }, "#f97316", 5);
+  labelSegment(ctx, stripX + 28, stripSampleY - 10, "same cycle point", "#f97316");
   labelSegment(ctx, stripLeft + 16, stripY - 10, "0", "rgba(226, 232, 240, 0.9)");
   labelSegment(ctx, stripLeft + stripWidth / 2, stripY - 10, "λ/2", "rgba(226, 232, 240, 0.9)");
   labelSegment(ctx, stripRight - 12, stripY - 10, "λ", "rgba(226, 232, 240, 0.9)");
@@ -1120,8 +1181,8 @@ function drawSineWaveScene(
   drawRail(ctx, width, height, "phase", phase, -1, 1);
   drawHeaderBox(ctx, [
     { text: `phase = ${fmt(phase)}`, color: "#e2e8f0" },
-    { text: `sample sits ${fmt(cycleFraction * 100)}% through one wavelength`, color: "#c4b5fd" },
-    { text: `sample y = ${fmt(sampleY)}`, color: "#fdba74" },
+    { text: `x lands ${fmt(cycleFraction * 100)}% through one wavelength = ${fmt(cycleAngle)} rad`, color: "#c4b5fd" },
+    { text: `that repeated sine sample gives y = ${fmt(sampleY)}`, color: "#fdba74" },
   ]);
 }
 
@@ -1189,7 +1250,7 @@ function drawSineCurveScene(
   ctx.setLineDash([]);
 
   drawCenter(ctx, { x: graphX, y: value }, "#f97316", 7);
-  labelSegment(ctx, graphX + 24, value - 10, `y = ${fmt(value)}`, "#f97316");
+  labelSegment(ctx, graphX + 36, value - 10, `same y = ${fmt(value)}`, "#f97316");
   labelSegment(ctx, graphX + 26, layout.center.y - 10, "baseline", "rgba(255,255,255,0.92)");
   labelSegment(ctx, graphX + 34, graphTop + 8, `amp = ${fmt(layout.radius)}`, "rgba(96, 165, 250, 0.95)");
   labelSegment(ctx, graphLeft + 20, graphBottom + 18, "0", "rgba(226, 232, 240, 0.9)");
@@ -1198,8 +1259,8 @@ function drawSineCurveScene(
 
   drawHeaderBox(ctx, [
     { text: `sin(time) = ${fmt(point.sin)}`, color: "#fb923c" },
-    { text: `time unwraps to ${fmt(cycleAngle)} rad on the 0→2π strip`, color: "#c4b5fd" },
-    { text: `baseline + sin(time) * amplitude = ${fmt(value)}`, color: "#e2e8f0" },
+    { text: `the same time unwraps to ${fmt(cycleAngle)} rad on the 0→2π strip`, color: "#c4b5fd" },
+    { text: `baseline + sin(time) × amplitude = ${fmt(value)}`, color: "#e2e8f0" },
   ]);
 
   labelSegment(
@@ -1209,6 +1270,7 @@ function drawSineCurveScene(
     `${fmt(radToDeg(angle))}°`,
     "rgba(249, 115, 22, 0.98)",
   );
+  labelSegment(ctx, point.x + 26, point.y - 34, "circle height", "#fb923c");
 }
 
 function drawWaveAmplitudeScene(
@@ -1234,6 +1296,9 @@ function drawWaveAmplitudeScene(
   };
   const meterMid = (meter.top + meter.bottom) / 2;
   const meterY = meterMid - value * ((meter.bottom - meter.top) / 2);
+  const contributionYs = contributions.map((contribution) =>
+    meterMid - contribution * ((meter.bottom - meter.top) / 2),
+  );
   const stripLeft = Math.max(width - 214, 250);
   const stripRight = width - 84;
   const stripWidth = stripRight - stripLeft;
@@ -1334,16 +1399,25 @@ function drawWaveAmplitudeScene(
   ctx.setLineDash([]);
 
   drawCenter(ctx, { x: meter.x, y: meterY }, "#f97316", 7);
+  contributionYs.forEach((y, index) => {
+    ctx.strokeStyle = `${colors[index]}cc`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(meter.x - 16, y);
+    ctx.lineTo(meter.x + 16, y);
+    ctx.stroke();
+    labelSegment(ctx, meter.x - 42, y - 8, `c${index + 1}`, colors[index]);
+  });
   labelSegment(ctx, meter.x - 10, meter.top - 6, "+1", "#f8fafc");
   labelSegment(ctx, meter.x - 8, meterMid - 8, "0", "#cbd5e1");
   labelSegment(ctx, meter.x - 10, meter.bottom + 4, "-1", "#f8fafc");
-  labelSegment(ctx, meter.x - 44, meterY - 10, `amp = ${fmt(value)}`, "#f97316");
+  labelSegment(ctx, meter.x - 44, meterY - 10, `avg = ${fmt(value)}`, "#f97316");
 
   drawRail(ctx, width, height, "waveTime", time, 0, 60);
   drawHeaderBox(ctx, [
     { text: `phase1 = ${fmt(phases[0])} rad → cos1 = ${fmt(contributions[0])}`, color: colors[0] },
     { text: `phase2 = ${fmt(phases[1])} rad → cos2 = ${fmt(contributions[1])}`, color: colors[1] },
-    { text: `average = ${fmt(value)}`, color: "#fdba74" },
+    { text: `average = (${fmt(contributions[0])} + ${fmt(contributions[1])}) / 2 = ${fmt(value)}`, color: "#fdba74" },
   ]);
 }
 
@@ -2079,12 +2153,15 @@ function buildLineToLineScene(handles: HandlePair, points: PointPair): SceneData
     ? -((a.x - b.x) * (a.y - c.y) - (a.y - b.y) * (a.x - c.x)) / denom
     : NaN;
   const hit = lineToLine(a.x, a.y, b.x, b.y, c.x, c.y, d2.x, d2.y);
+  const tInside = !isNaN(t) && t >= 0 && t <= 1;
+  const uInside = !isNaN(u) && u >= 0 && u <= 1;
   return {
     call: `lineToLine(${fmt(a.x)}, ${fmt(a.y)}, ${fmt(b.x)}, ${fmt(b.y)}, ${fmt(c.x)}, ${fmt(c.y)}, ${fmt(d2.x)}, ${fmt(d2.y)}) = ${hit}`,
     hint: "Drag any endpoint. The algorithm finds where the two infinite lines would meet (parameters t and u), then checks if that meeting point falls within both segments (0 ≤ t ≤ 1 AND 0 ≤ u ≤ 1).",
     readouts: [
-      { label: "t (on seg 1)", value: isNaN(t) ? "parallel" : `${fmt(t)} ${t >= 0 && t <= 1 ? "✓" : "✗"}`, tone: !isNaN(t) && t >= 0 && t <= 1 ? "live" : undefined },
-      { label: "u (on seg 2)", value: isNaN(u) ? "parallel" : `${fmt(u)} ${u >= 0 && u <= 1 ? "✓" : "✗"}`, tone: !isNaN(u) && u >= 0 && u <= 1 ? "live" : undefined },
+      { label: "t (on seg 1)", value: isNaN(t) ? "parallel" : `${fmt(t)} ${tInside ? "in range" : "out of range"}`, tone: tInside ? "live" : undefined },
+      { label: "u (on seg 2)", value: isNaN(u) ? "parallel" : `${fmt(u)} ${uInside ? "in range" : "out of range"}`, tone: uInside ? "live" : undefined },
+      { label: "gate", value: isNaN(t) || isNaN(u) ? "parallel -> no shared point" : tInside && uInside ? "both inside [0,1] -> crossing" : "one parameter falls outside [0,1]" },
       { label: "state", value: hit ? "crossing!" : "no intersection", tone: hit ? "live" : undefined },
     ],
   };
@@ -2103,10 +2180,15 @@ function drawLineToLineScene(
   const t = Math.abs(denom) > 0.0001
     ? ((a.x - c.x) * (c.y - d2.y) - (a.y - c.y) * (c.x - d2.x)) / denom
     : NaN;
+  const u = Math.abs(denom) > 0.0001
+    ? -((a.x - b.x) * (a.y - c.y) - (a.y - b.y) * (a.x - c.x)) / denom
+    : NaN;
   const hit = lineToLine(a.x, a.y, b.x, b.y, c.x, c.y, d2.x, d2.y);
   const intersect = hit && !isNaN(t)
     ? { x: a.x + t * (b.x - a.x), y: a.y + t * (b.y - a.y) }
     : null;
+  const tInside = !isNaN(t) && t >= 0 && t <= 1;
+  const uInside = !isNaN(u) && u >= 0 && u <= 1;
 
   drawBackdrop(ctx, width, height);
 
@@ -2139,7 +2221,8 @@ function drawLineToLineScene(
   }
 
   drawHeaderBox(ctx, [
-    { text: `t = ${isNaN(t) ? "parallel" : fmt(t)}`, color: "#818cf8" },
+    { text: `t = ${isNaN(t) ? "parallel" : fmt(t)} · u = ${isNaN(u) ? "parallel" : fmt(u)}`, color: "#e2e8f0" },
+    { text: isNaN(t) || isNaN(u) ? "parallel/collinear here -> false" : tInside && uInside ? "both land inside the segments" : "meeting point falls outside at least one segment", color: hit ? "#c4b5fd" : "#cbd5e1" },
     { text: `crossing: ${hit}`, color: hit ? "#fdba74" : "#e2e8f0" },
   ]);
   if (hit) drawStatusPill(ctx, width - 156, 18, "crossing!");
@@ -2157,14 +2240,21 @@ function buildLineToRectScene(handles: HandlePair, points: PointPair): SceneData
   const hitRight = lineToLine(a.x, a.y, b.x, b.y, rx + rw, ry, rx + rw, ry + rh);
   const hitTop = lineToLine(a.x, a.y, b.x, b.y, rx, ry, rx + rw, ry);
   const hitBottom = lineToLine(a.x, a.y, b.x, b.y, rx, ry + rh, rx + rw, ry + rh);
+  const firstHit =
+    hitLeft ? "left" :
+      hitRight ? "right" :
+        hitTop ? "top" :
+          hitBottom ? "bottom" :
+            "none";
   return {
     call: `lineToRect(${fmt(a.x)}, ${fmt(a.y)}, ${fmt(b.x)}, ${fmt(b.y)}, ${fmt(rx)}, ${fmt(ry)}, ${fmt(rw)}, ${fmt(rh)}) = ${hit}`,
-    hint: "Drag the segment or the rectangle. lineToRect tests the segment against each of the four rect edges using lineToLine — if any edge returns true, the function returns true.",
+    hint: "Drag the segment or the rectangle. `lineToRect()` only checks the four rectangle edges with `lineToLine()`. If no boundary edge is crossed, a fully contained segment still returns false.",
     readouts: [
       { label: "left edge", value: hitLeft ? "hit ✓" : "miss", tone: hitLeft ? "live" : undefined },
       { label: "right edge", value: hitRight ? "hit ✓" : "miss", tone: hitRight ? "live" : undefined },
       { label: "top edge", value: hitTop ? "hit ✓" : "miss", tone: hitTop ? "live" : undefined },
       { label: "bottom edge", value: hitBottom ? "hit ✓" : "miss", tone: hitBottom ? "live" : undefined },
+      { label: "first winning edge", value: firstHit, tone: hit ? "live" : undefined },
       { label: "state", value: hit ? "crossing!" : "no hit", tone: hit ? "live" : undefined },
     ],
   };
@@ -2183,11 +2273,12 @@ function drawLineToRectScene(
   const rw = RECT_HALF_W * 2, rh = RECT_HALF_H * 2;
   const hit = lineToRect(a.x, a.y, b.x, b.y, rx, ry, rw, rh);
   const edges = [
-    { x1: rx, y1: ry, x2: rx, y2: ry + rh },
-    { x1: rx + rw, y1: ry, x2: rx + rw, y2: ry + rh },
-    { x1: rx, y1: ry, x2: rx + rw, y2: ry },
-    { x1: rx, y1: ry + rh, x2: rx + rw, y2: ry + rh },
+    { name: "left", x1: rx, y1: ry, x2: rx, y2: ry + rh },
+    { name: "right", x1: rx + rw, y1: ry, x2: rx + rw, y2: ry + rh },
+    { name: "top", x1: rx, y1: ry, x2: rx + rw, y2: ry },
+    { name: "bottom", x1: rx, y1: ry + rh, x2: rx + rw, y2: ry + rh },
   ];
+  const firstHit = edges.find((edge) => lineToLine(a.x, a.y, b.x, b.y, edge.x1, edge.y1, edge.x2, edge.y2))?.name ?? "none";
 
   drawBackdrop(ctx, width, height);
 
@@ -2196,12 +2287,16 @@ function drawLineToRectScene(
 
   edges.forEach((edge) => {
     const edgeHit = lineToLine(a.x, a.y, b.x, b.y, edge.x1, edge.y1, edge.x2, edge.y2);
-    ctx.strokeStyle = edgeHit ? "#f97316" : (hit ? "rgba(249,115,22,0.35)" : "rgba(129,140,248,0.65)");
-    ctx.lineWidth = edgeHit ? 3.5 : 2;
+    const isPrimary = edge.name === firstHit;
+    ctx.strokeStyle = edgeHit ? (isPrimary ? "#f97316" : "rgba(249,115,22,0.45)") : (hit ? "rgba(249,115,22,0.2)" : "rgba(129,140,248,0.65)");
+    ctx.lineWidth = edgeHit ? (isPrimary ? 3.5 : 2.5) : 2;
     ctx.beginPath();
     ctx.moveTo(edge.x1, edge.y1);
     ctx.lineTo(edge.x2, edge.y2);
     ctx.stroke();
+    if (isPrimary) {
+      labelSegment(ctx, (edge.x1 + edge.x2) / 2, (edge.y1 + edge.y2) / 2 - 12, edge.name, "#fde68a");
+    }
   });
 
   ctx.strokeStyle = hit ? "#fb7185" : "#a78bfa";
@@ -2218,7 +2313,8 @@ function drawLineToRectScene(
 
   drawHeaderBox(ctx, [
     { text: `tests 4 rect edges with lineToLine`, color: "#e2e8f0" },
-    { text: `result: ${hit}`, color: hit ? "#fdba74" : "#cbd5e1" },
+    { text: hit ? `first winning edge: ${firstHit}` : "no edge crossing found", color: hit ? "#c4b5fd" : "#cbd5e1" },
+    { text: hit ? "only boundary hits count here" : "a fully inside segment still returns false", color: hit ? "#fdba74" : "#cbd5e1" },
   ]);
   if (hit) drawStatusPill(ctx, width - 156, 18, "crossing!");
 }
@@ -2295,12 +2391,13 @@ function buildPointToPolygonScene(scene: PolyScene): SceneData {
   return {
     call: `pointToPolygon(${fmt(point.x)}, ${fmt(point.y)}, vertices) = ${inside}`,
     hint:
-      "Drag the point — or grab the polygon itself. A ray is cast to the right and every edge crossing flips the parity: odd crossings = inside, even = outside.",
+      "Drag the point — or grab the polygon itself. A ray is cast to the right, and every time that ray crosses an edge the answer flips: outside -> inside -> outside -> inside.",
     readouts: [
       { label: "px", value: fmt(point.x) },
       { label: "py", value: fmt(point.y) },
-      { label: "ray crossings", value: String(crossings.length) },
-      { label: "parity", value: crossings.length % 2 === 1 ? "odd → inside" : "even → outside" },
+      { label: "ray crossings", value: crossings.length ? String(crossings.length) : "0" },
+      { label: "flip path", value: crossings.length === 0 ? "start outside -> stay outside" : `${Array.from({ length: crossings.length }, (_, index) => index % 2 === 0 ? "inside" : "outside").join(" -> ")}` },
+      { label: "parity", value: crossings.length % 2 === 1 ? "odd -> inside" : "even -> outside", tone: "live" },
       { label: "state", value: inside ? "inside!" : "outside", tone: inside ? "live" : undefined },
     ],
   };
@@ -2353,6 +2450,12 @@ function drawPointToPolygonScene(
   crossings.forEach((c, index) => {
     drawCenter(ctx, c, "#fde68a", 6);
     labelSegment(ctx, c.x, c.y - 14, `#${index + 1}`, "#fde68a");
+    if (index < crossings.length - 1) {
+      const nextLabel = index % 2 === 0 ? "inside" : "outside";
+      labelSegment(ctx, c.x + 22, c.y + 16, nextLabel, "#fdba74");
+    } else {
+      labelSegment(ctx, c.x + 28, c.y + 16, inside ? "inside" : "outside", "#fdba74");
+    }
   });
 
   // Coordinate labels next to the point
@@ -2362,7 +2465,11 @@ function drawPointToPolygonScene(
   drawHeaderBox(ctx, [
     { text: `ray crossings = ${crossings.length}`, color: "#e2e8f0" },
     {
-      text: crossings.length % 2 === 1 ? "odd → inside" : "even → outside",
+      text: crossings.length === 0 ? "no crossings: the ray never flips" : "each crossing flips the answer once",
+      color: inside ? "#fb923c" : "#cbd5e1",
+    },
+    {
+      text: crossings.length % 2 === 1 ? "odd -> inside" : "even -> outside",
       color: inside ? "#fdba74" : "#cbd5e1",
     },
   ]);
@@ -2416,15 +2523,20 @@ function rectPolyChecks(scene: PolyScene) {
 
 function buildRectToPolygonScene(scene: PolyScene): SceneData {
   const { rx, ry, rw, rh, vertsInRect, cornersInPoly, edgeCrossings, hit, primaryCheck, primaryLabel } = rectPolyChecks(scene);
+  const primaryStep =
+    primaryCheck === 1 ? "1 · polygon vertex in rect" :
+      primaryCheck === 2 ? "2 · rect corner in polygon" :
+        primaryCheck === 3 ? "3 · polygon edge crosses rect edge" :
+          "no winning step";
   return {
     call: `rectToPolygon(${fmt(rx)}, ${fmt(ry)}, ${fmt(rw)}, ${fmt(rh)}, vertices) = ${hit}`,
     hint:
       "Drag the rectangle — or grab the polygon. The demo follows the real function's order: first look for a polygon vertex inside the rect, then a rect corner inside the polygon, then edge crossings. The first live reason is the one that wins.",
     readouts: [
-      { label: "1 · verts in rect", value: String(vertsInRect.length), tone: vertsInRect.length ? "live" : undefined },
-      { label: "2 · corners in poly", value: String(cornersInPoly.length), tone: cornersInPoly.length ? "live" : undefined },
-      { label: "3 · edge crossings", value: String(edgeCrossings.length), tone: edgeCrossings.length ? "live" : undefined },
-      { label: "winning check", value: primaryCheck ? `${primaryCheck} → ${primaryLabel}` : primaryLabel, tone: hit ? "live" : undefined },
+      { label: "1 · vertex in rect", value: vertsInRect.length ? `yes (${vertsInRect.length})` : "no", tone: primaryCheck === 1 ? "live" : undefined },
+      { label: "2 · corner in poly", value: cornersInPoly.length ? `yes (${cornersInPoly.length})` : "no", tone: primaryCheck === 2 ? "live" : undefined },
+      { label: "3 · edge crossing", value: edgeCrossings.length ? `yes (${edgeCrossings.length})` : "no", tone: primaryCheck === 3 ? "live" : undefined },
+      { label: "winning step", value: primaryCheck ? `${primaryStep}` : primaryLabel, tone: hit ? "live" : undefined },
       { label: "state", value: hit ? "overlapping!" : "separated", tone: hit ? "live" : undefined },
     ],
   };
@@ -2437,7 +2549,12 @@ function drawRectToPolygonScene(
   scene: PolyScene,
 ) {
   const { poly1 } = scene;
-  const { rx, ry, rw, rh, vertsInRect, cornersInPoly, edgeCrossings, hit, primaryCheck, primaryLabel } = rectPolyChecks(scene);
+  const { rx, ry, rw, rh, corners, vertsInRect, cornersInPoly, edgeCrossings, hit, primaryCheck, primaryLabel } = rectPolyChecks(scene);
+  const primaryColor =
+    primaryCheck === 1 ? "#fde68a" :
+      primaryCheck === 2 ? "#86efac" :
+        primaryCheck === 3 ? "#f97316" :
+          "#cbd5e1";
 
   drawBackdrop(ctx, width, height);
   drawPolygonShape(
@@ -2448,27 +2565,31 @@ function drawRectToPolygonScene(
   );
   drawAabbRect(ctx, rx, ry, rw, rh, hit ? "#fb7185" : "#a78bfa");
 
+  corners.forEach((corner) => {
+    drawCenter(ctx, corner, "rgba(226, 232, 240, 0.45)", 3);
+  });
+
   // Check 1 — polygon vertices that fall inside the rect
   vertsInRect.forEach((v, index) => {
-    drawCenter(ctx, v, primaryCheck === 1 ? "#fde68a" : "rgba(253, 230, 138, 0.55)", primaryCheck === 1 ? 6 : 4);
+    drawCenter(ctx, v, primaryCheck === 1 ? "#fde68a" : "rgba(253, 230, 138, 0.35)", primaryCheck === 1 ? 6 : 3);
     if (primaryCheck === 1) labelSegment(ctx, v.x, v.y - 14, `v${index + 1}`, "#fde68a");
   });
   // Check 2 — rect corners that fall inside the polygon
   cornersInPoly.forEach((c, index) => {
-    drawCenter(ctx, c, primaryCheck === 2 ? "#86efac" : "rgba(134, 239, 172, 0.55)", primaryCheck === 2 ? 6 : 4);
+    drawCenter(ctx, c, primaryCheck === 2 ? "#86efac" : "rgba(134, 239, 172, 0.35)", primaryCheck === 2 ? 6 : 3);
     if (primaryCheck === 2) labelSegment(ctx, c.x, c.y - 14, `c${index + 1}`, "#86efac");
   });
   // Check 3 — edge crossings
   edgeCrossings.forEach((c, index) => {
-    drawCenter(ctx, c, primaryCheck === 3 ? "#f97316" : "rgba(249, 115, 22, 0.6)", primaryCheck === 3 ? 5 : 4);
+    drawCenter(ctx, c, primaryCheck === 3 ? "#f97316" : "rgba(249, 115, 22, 0.35)", primaryCheck === 3 ? 5 : 3);
     if (primaryCheck === 3) labelSegment(ctx, c.x, c.y - 14, `x${index + 1}`, "#f97316");
   });
 
   labelSegment(ctx, scene.point.x, scene.point.y, "rect", hit ? "#fb7185" : "#a78bfa");
 
   drawHeaderBox(ctx, [
-    { text: `inside ${vertsInRect.length} · corners ${cornersInPoly.length} · cross ${edgeCrossings.length}`, color: "#e2e8f0" },
-    { text: primaryCheck ? `winning check: ${primaryLabel}` : primaryLabel, color: hit ? "#c4b5fd" : "#cbd5e1" },
+    { text: `1 vertex ${vertsInRect.length} · 2 corner ${cornersInPoly.length} · 3 cross ${edgeCrossings.length}`, color: "#e2e8f0" },
+    { text: primaryCheck ? `first winner: ${primaryLabel}` : primaryLabel, color: hit ? primaryColor : "#cbd5e1" },
     { text: hit ? "overlapping!" : "separated", color: hit ? "#fdba74" : "#cbd5e1" },
   ]);
   if (hit) drawStatusPill(ctx, width - 156, 18, "overlapping!");
@@ -2488,10 +2609,10 @@ function buildPolygonLineScene(scene: PolyScene): SceneData {
   return {
     call: `polygonLine({ vertices }, { startPoint, endPoint }) = ${hit}`,
     hint:
-      "Drag the segment endpoints — or grab the polygon. The real function walks the polygon edges in order and returns on the first `lineLine` hit, so this demo highlights that winning edge first.",
+      "Drag the segment endpoints — or grab the polygon. The real function walks the polygon edges in order and returns on the first `lineLine` hit. It does not test for a segment that sits fully inside the polygon without crossing an edge.",
     readouts: [
       { label: "edges tested", value: String(edges.length) },
-      { label: "edges crossed", value: String(crossedEdges.length) },
+      { label: "edges crossed", value: crossedEdges.length ? `yes (${crossedEdges.length})` : "no" },
       { label: "winning edge", value: firstHit ? `edge ${firstHit.index + 1}` : "none", tone: hit ? "live" : undefined },
       { label: "state", value: hit ? "crossing!" : "no crossing", tone: hit ? "live" : undefined },
     ],
@@ -2551,7 +2672,7 @@ function drawPolygonLineScene(
   drawHeaderBox(ctx, [
     { text: `tests ${edges.length} polygon edges`, color: "#e2e8f0" },
     { text: firstHit ? `first hit: edge ${firstHit.index + 1}` : "first hit: none", color: hit ? "#c4b5fd" : "#cbd5e1" },
-    { text: `crossing: ${hit}`, color: hit ? "#fdba74" : "#cbd5e1" },
+    { text: hit ? "only edge crossings count here" : "contained-without-crossing still returns false", color: hit ? "#fdba74" : "#cbd5e1" },
   ]);
   if (hit) drawStatusPill(ctx, width - 156, 18, "crossing!");
 }
@@ -2575,8 +2696,8 @@ function buildPolygonCircleScene(scene: PolyScene): SceneData {
       "Drag the circle — or grab the polygon. The real function checks edges first with `lineCircle`, then falls back to the circle center being inside the polygon. The winning reason is surfaced live here.",
     readouts: [
       { label: "nearest edge distance", value: `${fmt(nearest.dist)} vs radius ${fmt(circle.radius)}` },
-      { label: "edges touched", value: String(touching) },
-      { label: "center inside polygon", value: String(centerInside) },
+      { label: "edges touched", value: touching ? `yes (${touching})` : "no", tone: touching ? "live" : undefined },
+      { label: "center inside polygon", value: centerInside ? "yes" : "no", tone: !touching && centerInside ? "live" : undefined },
       { label: "winning reason", value: primaryReason, tone: hit ? "live" : undefined },
       { label: "state", value: hit ? "touching!" : "clear", tone: hit ? "live" : undefined },
     ],
@@ -2644,16 +2765,19 @@ function drawPolygonCircleScene(
     `d = ${fmt(nearest.dist)}`,
     touchedEdges.length > 0 ? "#fdba74" : centerInside ? "#fb923c" : "rgba(255,255,255,0.85)",
   );
+  if (centerInside && touchedEdges.length === 0) {
+    labelSegment(ctx, circle.x + 26, circle.y - 12, "center inside", "#fb923c");
+  }
 
   drawHeaderBox(ctx, [
-    { text: `nearest edge d = ${fmt(nearest.dist)}`, color: "#e2e8f0" },
+    { text: `nearest edge d = ${fmt(nearest.dist)} vs r = ${fmt(circle.radius)}`, color: "#e2e8f0" },
     {
       text:
         touchedEdges.length > 0
-          ? `radius ${fmt(circle.radius)} reaches an edge`
+          ? `edge touch wins before the inside fallback`
           : centerInside
-            ? "center is inside, so this still counts"
-            : `radius = ${fmt(circle.radius)}`,
+            ? "no edge touch, but center-inside still counts"
+            : "no edge touch and center stays outside",
       color: hit ? "#fb923c" : "#cbd5e1",
     },
     { text: `winning reason: ${primaryReason}`, color: hit ? "#c4b5fd" : "#cbd5e1" },
@@ -2676,6 +2800,11 @@ function buildPolygonPolygonScene(
   const v1in2 = poly1.filter((v) => polygonPoint({ vertices: poly2 }, v)).length;
   const v2in1 = poly2.filter((v) => polygonPoint({ vertices: poly1 }, v)).length;
   const edgeOnlyMiss = fnName === "polygonToPolygon" && !hit && crossings > 0;
+  const primaryReason =
+    crossings > 0 ? "edge crossing found first" :
+      v1in2 > 0 ? "poly1 corner inside poly2" :
+        v2in1 > 0 ? "poly2 corner inside poly1" :
+          "no overlap evidence";
 
   if (fnName === "polygonToPolygon") {
     return {
@@ -2695,10 +2824,12 @@ function buildPolygonPolygonScene(
   return {
     call: `polygonPolygon({ vertices: poly1 }, { vertices: poly2 }) = ${hit}`,
     hint:
-      "Drag either polygon. Every edge of poly1 is run against poly2 with the polygonLine test, plus a containment check — so this catches the edge-only crossings the lighter polygonToPolygon can miss.",
+      "Drag either polygon. This fuller test has a real order: edge crossings win first, then containment catches the cases with no crossed edges. The scene surfaces that first winning reason live.",
     readouts: [
-      { label: "edge crossings", value: String(crossings) },
-      { label: "poly2 corners inside poly1", value: String(v2in1) },
+      { label: "edge crossings", value: crossings ? `yes (${crossings})` : "no", tone: crossings ? "live" : undefined },
+      { label: "poly1 corners in poly2", value: v1in2 ? `yes (${v1in2})` : "no", tone: !crossings && v1in2 ? "live" : undefined },
+      { label: "poly2 corners in poly1", value: v2in1 ? `yes (${v2in1})` : "no", tone: !crossings && !v1in2 && v2in1 ? "live" : undefined },
+      { label: "winning reason", value: primaryReason, tone: hit ? "live" : undefined },
       { label: "state", value: hit ? "overlapping!" : "separated", tone: hit ? "live" : undefined },
     ],
   };
@@ -2720,6 +2851,11 @@ function drawPolygonPolygonScene(
   const contained1 = poly1.filter((v) => polygonPoint({ vertices: poly2 }, v));
   const contained2 = poly2.filter((v) => polygonPoint({ vertices: poly1 }, v));
   const edgeOnlyMiss = fnName === "polygonToPolygon" && !hit && crossings.length > 0;
+  const primaryReason =
+    crossings.length > 0 ? "edge crossing found first" :
+      contained1.length > 0 ? "poly1 corner inside poly2" :
+        contained2.length > 0 ? "poly2 corner inside poly1" :
+          "no overlap evidence";
 
   drawBackdrop(ctx, width, height);
   drawPolygonShape(
@@ -2737,18 +2873,21 @@ function drawPolygonPolygonScene(
 
   // Highlight contained corners (the only thing polygonToPolygon looks at).
   contained1.forEach((v, index) => {
-    drawCenter(ctx, v, "#fde68a", 6);
-    if (fnName === "polygonToPolygon") labelSegment(ctx, v.x, v.y - 14, `p1:${index + 1}`, "#fde68a");
+    const isPrimary = fnName === "polygonPolygon" && crossings.length === 0;
+    drawCenter(ctx, v, isPrimary ? "#fde68a" : "rgba(253, 230, 138, 0.6)", isPrimary ? 6 : 5);
+    if (fnName === "polygonToPolygon" || isPrimary) labelSegment(ctx, v.x, v.y - 14, `p1:${index + 1}`, "#fde68a");
   });
   contained2.forEach((v, index) => {
-    drawCenter(ctx, v, "#fde68a", 6);
-    if (fnName === "polygonToPolygon") labelSegment(ctx, v.x, v.y - 14, `p2:${index + 1}`, "#fde68a");
+    const isPrimary = fnName === "polygonPolygon" && crossings.length === 0 && contained1.length === 0;
+    drawCenter(ctx, v, isPrimary ? "#fde68a" : "rgba(253, 230, 138, 0.6)", isPrimary ? 6 : 5);
+    if (fnName === "polygonToPolygon" || isPrimary) labelSegment(ctx, v.x, v.y - 14, `p2:${index + 1}`, "#fde68a");
   });
 
   // Mark edge crossings (what polygonPolygon adds on top).
   crossings.forEach((c, index) => {
-    drawCenter(ctx, c, edgeOnlyMiss ? "#f97316" : "#fb923c", edgeOnlyMiss ? 6 : 5);
-    if (edgeOnlyMiss) labelSegment(ctx, c.x, c.y - 14, `x${index + 1}`, "#f97316");
+    const isPrimary = fnName === "polygonPolygon" || edgeOnlyMiss;
+    drawCenter(ctx, c, edgeOnlyMiss ? "#f97316" : isPrimary ? "#fb923c" : "rgba(251, 146, 60, 0.6)", isPrimary ? 6 : 5);
+    if (edgeOnlyMiss || fnName === "polygonPolygon") labelSegment(ctx, c.x, c.y - 14, `x${index + 1}`, edgeOnlyMiss ? "#f97316" : "#fb923c");
   });
 
   labelSegment(ctx, polyCentroid(poly1).x, polyCentroid(poly1).y, "poly1", hit ? "#f97316" : "#818cf8");
@@ -2764,7 +2903,10 @@ function drawPolygonPolygonScene(
         text: edgeOnlyMiss ? "edges cross, but this function misses that case" : hit ? "a corner landed inside, so this one succeeds" : "no corners landed inside",
         color: edgeOnlyMiss ? "#f97316" : hit ? "#fdba74" : "#cbd5e1",
       }]
-      : []),
+      : [{
+        text: `winning reason: ${primaryReason}`,
+        color: hit ? (crossings.length > 0 ? "#fb923c" : "#fde68a") : "#cbd5e1",
+      }]),
     { text: hit ? "overlapping!" : "separated", color: hit ? "#fdba74" : "#cbd5e1" },
   ]);
   if (hit) drawStatusPill(ctx, width - 156, 18, "overlapping!");
