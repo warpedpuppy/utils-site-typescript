@@ -21,7 +21,7 @@ function Examples() {
   const [key, setKey] = useState<string>("");
   const [innerKey, setInnerKey] = useState<string>("");
   const [className, setClassName] = useState<any>(["", ""]);
-  const [open, setOpen] = useState<number>(10);
+  const [open, setOpen] = useState<number>(-1);
 
   const { getKeyAndInnerKeyFromLocation } = ExamplesUtils();
   const { createChecklist } = CreateChecklists();

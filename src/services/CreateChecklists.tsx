@@ -1,7 +1,7 @@
 import { ReactNode, useCallback } from "react";
 import animationManifest from "../animationManifest";
 import { Nullable } from "../types/types";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import CheckListCheckbox from "./CheckListCheckbox";
 import CheckListDT from "./CheckListDT";
 import "./CreateChecklists.scss";
@@ -29,7 +29,11 @@ function CreateChecklists() {
         );
         let tempArray: ReactNode[] = [];
         Object.entries(innerArray[1]).forEach((innerInnerArray) => {
-          const { t, l } = innerInnerArray[1];
+          const { t, l, f } = innerInnerArray[1];
+          const docsTarget = f.keyFunction?.name ?? "";
+          const docsHref = docsTarget
+            ? `/api?tab=documentation&fn=${encodeURIComponent(docsTarget)}`
+            : "";
 
           if (innerInnerArray[1].include !== false)
             tempArray.push(
@@ -37,11 +41,6 @@ function CreateChecklists() {
                 key={`createjson-dd-${l}`}
                 className="individual-checklist-item"
               >
-                <CheckListCheckbox
-                  objectProperty={innerInnerArray[0]}
-                  idAttribute={`${l}`}
-                />
-
                 {clickHandler !== null ? (
                   <div
                     className={
@@ -49,19 +48,34 @@ function CreateChecklists() {
                         ? "checklist-div active"
                         : "checklist-div"
                     }
-                    onClick={() =>
-                      clickHandler(
-                        `/examples/${l}`,
-                        innerArray[0],
-                        innerInnerArray[0]
-                      )
-                    }
                   >
-                    <div className="hover-anim"></div>
-                    <div className="link-name">{t}</div>
+                    <Link className="example-checklist-link" to={`/examples/${l}`}>
+                      <div className="hover-anim"></div>
+                      <div className="link-name">{t}</div>
+                    </Link>
+                    <div className="example-checklist-actions">
+                      {docsHref && (
+                        <Link className="checklist-mini-link" to={docsHref}>
+                          docs
+                        </Link>
+                      )}
+                      <Link
+                        className="checklist-mini-link"
+                        to={`/examples/${l}`}
+                        state={{ openCode: true }}
+                      >
+                        full function
+                      </Link>
+                    </div>
                   </div>
                 ) : (
-                  <label htmlFor={`${l}`}>{t}</label>
+                  <>
+                    <CheckListCheckbox
+                      objectProperty={innerInnerArray[0]}
+                      idAttribute={`${l}`}
+                    />
+                    <label htmlFor={`${l}`}>{t}</label>
+                  </>
                 )}
               </div>
             );
@@ -75,7 +89,7 @@ function CreateChecklists() {
             index={index}
             test={(i: number) => {
               if (setOpen) setOpen(i);
-              if (clickHandler && i !== 10 && firstEntry) {
+              if (clickHandler && i !== -1 && firstEntry) {
                 const [itemKey, itemVal] = firstEntry as [string, any];
                 clickHandler(`/examples/${itemVal.l}`, innerArray[0], itemKey);
               }

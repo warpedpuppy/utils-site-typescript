@@ -27,7 +27,7 @@ class PrettyRing extends Template {
       background: "#000000",
       count: 1000,
       density: 1,
-      interactive: true,
+      interactive: false,
       layers: 1,
       seed: 11,
       speed: 1,

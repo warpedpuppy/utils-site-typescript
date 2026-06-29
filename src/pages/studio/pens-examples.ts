@@ -70,7 +70,6 @@ import {
   wrapAngle,
 } from "@utilspalooza/core/AngleInterpolation";
 import { drawRainbowBall } from "../../core-animations/BallBounce";
-import { drawBallBall } from "../../core-animations/BallBall";
 import { drawLerp } from "../../core-animations/Lerp";
 import { drawEasing } from "../../core-animations/Easing";
 import { drawQuadraticBezier } from "../../core-animations/QuadraticBezier";
@@ -218,47 +217,6 @@ function draw() {
     drawRainbowBall(ctx, ball);
   }
 
-  requestAnimationFrame(draw);
-}
-
-draw();`;
-
-// ── Balls Bouncing Against Each Other ────────────────────────────────────────
-const BALLS_BOUNCING_HTML = `<canvas id="canvas"></canvas>`;
-const BALLS_BOUNCING_JS = `${ballToBallBounce.keyFunction.toString()}
-const ballToBallBouncePhysics = ballToBallBounce;
-
-${drawBallBall.toString()}
-
-// ─── canvas setup ────────────────────────────────────────────────────────────
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
-window.addEventListener('resize', resize);
-resize();
-
-// ─── state ───────────────────────────────────────────────────────────────────
-function spawnBalls() {
-  let n = Math.max(5, Math.floor(canvas.width * canvas.height / 20000));
-  return Array.from({ length: n }, (_, i) => {
-    let radius = Math.random() * 40 + 10;
-    return {
-      x: Math.random() * (canvas.width - 2 * radius) + radius,
-      y: Math.random() * (canvas.height - 2 * radius) + radius,
-      radius,
-      vx: 1,
-      vy: 1,
-      h: (i % 6) * 60,
-      s: 70,
-      l: 55,
-    };
-  });
-}
-
-let balls = spawnBalls();
-
-function draw() {
-  drawBallBall(ctx, balls, canvas.width, canvas.height, ballToBallBouncePhysics);
   requestAnimationFrame(draw);
 }
 
@@ -2074,22 +2032,6 @@ export const EXAMPLE_PENS: ExamplePen[] = [
       html: BALL_BOUNCE_HTML,
       css: FULLSCREEN_CSS,
       js: BALL_BOUNCE_JS,
-      editors: "001",
-    },
-  },
-  {
-    group: "Animations",
-    key: "balls-bouncing-against-each-other",
-    label: "Balls Bouncing Against Each Other",
-    blurb:
-      "Multiple balls collide with each other and the walls, using spring forces.",
-    payload: {
-      title: "Balls Bouncing Against Each Other",
-      description:
-        "Watch multiple balls bounce off each other using spring-based collision.",
-      html: BALLS_BOUNCING_HTML,
-      css: FULLSCREEN_CSS,
-      js: BALLS_BOUNCING_JS,
       editors: "001",
     },
   },

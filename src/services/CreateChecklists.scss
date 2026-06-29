@@ -2,7 +2,7 @@
   background: var(--bg-surface);
   border-right: 1px solid var(--border);
 
-  .checklist-category {
+    .checklist-category {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -38,7 +38,6 @@
       font-size: 0;
       overflow: hidden;
       transition: none;
-      input { display: none; }
     }
 
     &.open {
@@ -56,13 +55,9 @@
         max-height: 600px;
         font-size: 1rem;
         transition: max-height 0.5s ease;
-        input { display: inline-block; }
 
         .individual-checklist-item {
-          display: flex;
-          align-items: center;
           background: var(--bg-surface);
-          cursor: pointer;
           border-bottom: 1px solid var(--border);
           transition: background 0.12s;
 
@@ -70,26 +65,54 @@
             background: var(--bg-elevated);
           }
 
-          input {
-            display: block;
-            margin: 0 0.4rem 0 0.9rem;
-            accent-color: var(--accent);
-          }
-
           .checklist-div {
             width: 100%;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.2rem;
+            padding: 0.45rem 0.75rem 0.5rem 0.9rem;
 
             &.active .link-name {
               color: var(--brand-orange-soft);
             }
 
+            .example-checklist-link {
+              display: block;
+              width: 100%;
+            }
+
             .link-name {
-              padding: 0.45rem 0.75rem 0.45rem 0.4rem;
               font-size: 0.85rem;
               font-weight: 500;
               color: var(--text-muted);
               transition: color 0.12s;
+            }
+
+            .example-checklist-actions {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 0.45rem;
+            }
+
+            .checklist-mini-link {
+              display: inline-flex;
+              align-items: center;
+              padding: 0.16rem 0.45rem;
+              border: 1px solid var(--border);
+              border-radius: 999px;
+              font-family: "Space Mono", monospace;
+              font-size: 0.68rem;
+              line-height: 1.2;
+              color: var(--text-muted);
+              transition: border-color 0.12s, color 0.12s, background 0.12s;
+
+              &:hover {
+                color: var(--text);
+                border-color: var(--brand-orange-soft);
+                background: var(--brand-orange-dim);
+              }
             }
 
             .hover-anim { display: none; }

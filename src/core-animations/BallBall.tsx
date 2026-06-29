@@ -73,6 +73,7 @@ export { drawBallBall };
 export default class BallsBouncingAgainstEachOther extends AnimationBaseClass {
   static t = "balls bouncing against each other";
   static l = "balls-bouncing-against-each-other";
+  static include = false;
   static f = ballToBallBounceFormula;
   title = "balls bouncing against each other";
   animationObject = ballToBallBounceFormula;
