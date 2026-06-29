@@ -16,7 +16,7 @@ function CheckListDT({
     <div
       className={`checklist-category ${open === index ? "open" : ""}`}
       onClick={() => {
-        if (test) test(open === index ? 10 : index);
+        if (test) test(open === index ? -1 : index);
       }}
       key={`createjson-dt-${innerText}`}
     >

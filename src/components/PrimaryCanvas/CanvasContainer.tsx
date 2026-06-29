@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import PrimaryCanvasHeader from "./PrimaryCanvasHeader";
 import Modal from "../modal/Modal";
 function CanvasContainer({
@@ -15,6 +16,8 @@ function CanvasContainer({
     functionString: "",
   });
   const [instanceOfClass, setInstanceOfClass] = useState<any>();
+  const location = useLocation();
+  const lastAutoOpenedLocationKeyRef = useRef<string | null>(null);
   useEffect(() => {
     if (!instance) {
       setInstanceOfClass(undefined);
@@ -26,6 +29,16 @@ function CanvasContainer({
     setAnimationObject(i?.animationObject);
     return () => i?.stop();
   }, [instance]);
+
+  useEffect(() => {
+    const wantsCodeOpen = Boolean(
+      (location.state as { openCode?: boolean } | null)?.openCode
+    );
+    if (!wantsCodeOpen || !animationObject.functionString) return;
+    if (lastAutoOpenedLocationKeyRef.current === location.key) return;
+    lastAutoOpenedLocationKeyRef.current = location.key;
+    setShowModal(true);
+  }, [animationObject.functionString, location.key, location.state]);
 
   function showEquationHandler() {
     setShowModal(true);

@@ -120,10 +120,29 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
   const beamCount = Math.max(12, Math.floor((options.beamCount ?? 220) * density));
   const glow = makeGlow(18, color);
   const beam = makeBeam(420, 12, color);
-  let dots: Array<{ sx: number; sy: number; dx: number; dy: number; alpha: number; speed: number; scale: number }> = [];
-  let beams: Array<{ rotation: number; value: number; diff: number; speed: number; alpha: number }> = [];
+  let dots: Array<{
+    sx: number;
+    sy: number;
+    dx: number;
+    dy: number;
+    alpha: number;
+    speed: number;
+    scale: number;
+    phaseX: number;
+    phaseY: number;
+  }> = [];
+  let beams: Array<{
+    rotation: number;
+    value: number;
+    diff: number;
+    speed: number;
+    alpha: number;
+    phase: number;
+  }> = [];
   let clock = 0;
   let rotation = 0;
+  let parallaxX = 0;
+  let parallaxY = 0;
 
   const rebuild = () => {
     const spread = Math.max(runtime.width, runtime.height) * 0.8;
@@ -138,6 +157,8 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
         alpha: 0.08 + runtime.random() * 0.28,
         speed: 0.00025 + runtime.random() * 0.0012,
         scale: 0.2 + runtime.random() * 1.4,
+        phaseX: runtime.random() * TAU,
+        phaseY: runtime.random() * TAU,
       };
     });
     beams = Array.from({ length: beamCount }, (_, i) => ({
@@ -146,6 +167,7 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
       diff: 0.35 + runtime.random() * 1.15,
       speed: 0.0002 + runtime.random() * 0.0009,
       alpha: 0.025 + runtime.random() * 0.035,
+      phase: runtime.random() * TAU,
     }));
   };
 
@@ -158,14 +180,23 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
     ctx.fillRect(0, 0, width, height);
     ctx.globalCompositeOperation = 'lighter';
 
-    const px = options.interactive && runtime.pointer.active ? (runtime.pointer.x - width / 2) * 0.035 : 0;
-    const py = options.interactive && runtime.pointer.active ? (runtime.pointer.y - height / 2) * 0.035 : 0;
+    const targetParallaxX =
+      options.interactive && runtime.pointer.active
+        ? (runtime.pointer.x - width / 2) * 0.016
+        : 0;
+    const targetParallaxY =
+      options.interactive && runtime.pointer.active
+        ? (runtime.pointer.y - height / 2) * 0.016
+        : 0;
+    const easing = 1 - Math.pow(0.985, delta / 16.6667);
+    parallaxX += (targetParallaxX - parallaxX) * easing;
+    parallaxY += (targetParallaxY - parallaxY) * easing;
 
     ctx.save();
-    ctx.translate(width / 2 + px, height / 2 + py);
+    ctx.translate(width / 2 + parallaxX, height / 2 + parallaxY);
     for (const dot of dots) {
-      const x = cosWave(dot.sx, dot.dx, dot.speed, clock);
-      const y = cosWave(dot.sy, dot.dy, dot.speed * 0.85, clock);
+      const x = dot.sx + Math.cos(clock * dot.speed + dot.phaseX) * dot.dx;
+      const y = dot.sy + Math.cos(clock * dot.speed * 0.85 + dot.phaseY) * dot.dy;
       const size = 18 * dot.scale;
       ctx.globalAlpha = dot.alpha;
       ctx.drawImage(glow, x - size / 2, y - size / 2, size, size);
@@ -173,7 +204,10 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
 
     ctx.rotate(rotation);
     for (const line of beams) {
-      const sx = Math.max(0.05, cosWave(line.value, line.diff, line.speed, clock));
+      const sx = Math.max(
+        0.05,
+        line.value + Math.cos(clock * line.speed + line.phase) * line.diff
+      );
       ctx.save();
       ctx.rotate(line.rotation);
       ctx.globalAlpha = line.alpha;
@@ -193,8 +227,15 @@ export function mountPrettyRing(target: Target, options: PrettyRingOptions = {})
   const layers = Math.max(1, Math.floor(options.layers ?? 3));
   const count = Math.max(80, Math.floor((options.count ?? 720) * density));
   const wobble = options.wobble ?? 42;
-  const glows = palette.map((color) => makeGlow(18, color));
-  let dots: Array<{ angle: number; layer: number; variance: number; speed: number; scale: number; glow: HTMLCanvasElement }> = [];
+  const glows = palette.map((color) => makeGlow(12, color));
+  let dots: Array<{
+    angle: number;
+    layer: number;
+    variance: number;
+    speed: number;
+    scale: number;
+    glow: HTMLCanvasElement;
+  }> = [];
   let clock = 0;
   let rotation = 0;
 
@@ -204,7 +245,7 @@ export function mountPrettyRing(target: Target, options: PrettyRingOptions = {})
       layer: i % layers,
       variance: 6 + runtime.random() * wobble,
       speed: 0.00015 + runtime.random() * 0.0017,
-      scale: 0.35 + runtime.random() * 1.25,
+      scale: 0.55 + runtime.random() * 0.55,
       glow: glows[i % glows.length],
     }));
   };
@@ -234,7 +275,7 @@ export function mountPrettyRing(target: Target, options: PrettyRingOptions = {})
       const y0 = Math.sin(dot.angle) * radius;
       const x = dot.layer % 2 === 0 ? cosWave(x0, dot.variance, dot.speed, clock) : x0;
       const y = dot.layer % 2 === 1 ? cosWave(y0, dot.variance, dot.speed, clock) : y0;
-      const size = 18 * dot.scale;
+      const size = 10 + 4 * dot.scale;
       ctx.drawImage(dot.glow, x - size / 2, y - size / 2, size, size);
     }
     ctx.restore();

@@ -90,6 +90,7 @@ const animationManifest: AnimationManifest = {
     BallsBouncingAgainstEachOther: {
       t: "balls bouncing against each other",
       l: "balls-bouncing-against-each-other",
+      include: false,
       f: ballToBallBounceFormula,
       load: () => import("./core-animations/BallBall"),
     },
