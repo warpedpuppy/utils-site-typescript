@@ -24,7 +24,7 @@ function Home() {
         <div id="home-page--text-container_inner">
           <h2>utilspalooza</h2>
           <p>Readable animation math for canvas, creative coding, and visual experiments.</p>
-          <div className="home-install-strip">npm i @utilspalooza/core</div>
+          <div className="home-install-strip">planned package: @utilspalooza/core</div>
           <div className="home-actions">
             <a href="/examples">Browse examples</a>
             <a className="home-secondary-link" href="/api">View API</a>

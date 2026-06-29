@@ -412,9 +412,9 @@ function Overview({ onPick }: { onPick: (name: string, conceptId: string) => voi
         <div className="api-docs__section-head">
           <h2>From primitives to finished effects</h2>
           <p>
-            The same math, composed into drop-in canvas pieces. Each one creates a
-            canvas, runs its own loop, and hands back a lifecycle handle — proof of
-            what the building blocks above add up to.
+            The same math, composed into drop-in canvas pieces. This is the
+            planned follow-on package surface: each effect creates a canvas,
+            runs its own loop, and hands back a lifecycle handle.
           </p>
         </div>
         <pre className="api-docs__wide-code"><code>{`import { mountGlitter } from "@utilspalooza/effects";
@@ -705,7 +705,7 @@ function ApiDocs() {
           Every animation on this site comes apart into small, nameable pieces of
           math — a lerp, an easing curve, a vector reflection. This is that toolbox:
           pure functions in <code>@utilspalooza/core</code>, the same primitives
-          composed into finished canvas effects in <code>@utilspalooza/effects</code>.
+          eventually composed into finished canvas effects in <code>@utilspalooza/effects</code>.
           Read it to understand the idea, then take the code.
         </p>
       </section>

@@ -1,6 +1,6 @@
 {
   "name": "@utilspalooza/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Readable TypeScript math helpers for creative coding, canvas animation, and visual experiments.",
   "license": "MIT",
   "type": "module",

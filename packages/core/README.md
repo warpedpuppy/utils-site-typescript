@@ -159,7 +159,7 @@ global:
 Pin a version for production:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@utilspalooza/core@0.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@utilspalooza/core@0.1.0"></script>
 ```
 
 unpkg serves the same browser bundle:

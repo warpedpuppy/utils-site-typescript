@@ -3,7 +3,7 @@
 This directory owns `/studio` and the CodePen payloads generated for the Studio
 gallery.
 
-Current resume snapshot: `.claude/handoffs/2026-06-27-api-trig-studio-handoff.md`
+Current resume snapshot: `.claude/old/2026-06-27-api-trig-studio-handoff.md`
 
 Tracked remaining-items checklist:
 `.claude/STUDIO-CANONICALIZATION-CHECKLIST.md`
@@ -60,5 +60,5 @@ npm run build
 ```
 
 Ignored local notes may also exist at
-`.claude/handoffs/2026-06-26-studio-pen-sync-checklist.md`, but this README is
+`.claude/old/2026-06-26-studio-pen-sync-checklist.md`, but this README is
 the tracked handoff for future agents.
