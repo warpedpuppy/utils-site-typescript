@@ -121,15 +121,15 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
   const glow = makeGlow(18, color);
   const beam = makeBeam(420, 12, color);
   let dots: Array<{
-    sx: number;
-    sy: number;
-    dx: number;
-    dy: number;
+    angle: number;
+    radius: number;
+    radialAmplitude: number;
+    angleAmplitude: number;
     alpha: number;
     speed: number;
     scale: number;
-    phaseX: number;
-    phaseY: number;
+    radialPhase: number;
+    anglePhase: number;
   }> = [];
   let beams: Array<{
     rotation: number;
@@ -147,18 +147,17 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
   const rebuild = () => {
     const spread = Math.max(runtime.width, runtime.height) * 0.8;
     dots = Array.from({ length: dotCount }, () => {
-      const sx = signed(runtime.random()) * runtime.random() * spread;
-      const sy = signed(runtime.random()) * runtime.random() * spread;
       return {
-        sx,
-        sy,
-        dx: Math.abs(sx * (0.45 + runtime.random() * 0.4)),
-        dy: Math.abs(sy * (0.45 + runtime.random() * 0.4)),
+        angle: runtime.random() * TAU,
+        radius: Math.sqrt(runtime.random()) * spread,
+        radialAmplitude: 16 + runtime.random() * spread * 0.16,
+        angleAmplitude: (runtime.random() - 0.5) * 0.42,
         alpha: 0.08 + runtime.random() * 0.28,
         speed: 0.00025 + runtime.random() * 0.0012,
         scale: 0.2 + runtime.random() * 1.4,
-        phaseX: runtime.random() * TAU,
-        phaseY: runtime.random() * TAU,
+        // Start half the field moving outward and half inward.
+        radialPhase: runtime.random() > 0.5 ? 0 : Math.PI,
+        anglePhase: runtime.random() * TAU,
       };
     });
     beams = Array.from({ length: beamCount }, (_, i) => ({
@@ -195,8 +194,12 @@ export function mountGlitter(target: Target, options: GlitterOptions = {}): Effe
     ctx.save();
     ctx.translate(width / 2 + parallaxX, height / 2 + parallaxY);
     for (const dot of dots) {
-      const x = dot.sx + Math.cos(clock * dot.speed + dot.phaseX) * dot.dx;
-      const y = dot.sy + Math.cos(clock * dot.speed * 0.85 + dot.phaseY) * dot.dy;
+      const radius =
+        dot.radius + Math.sin(clock * dot.speed + dot.radialPhase) * dot.radialAmplitude;
+      const angle =
+        dot.angle + Math.cos(clock * dot.speed * 0.35 + dot.anglePhase) * dot.angleAmplitude;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
       const size = 18 * dot.scale;
       ctx.globalAlpha = dot.alpha;
       ctx.drawImage(glow, x - size / 2, y - size / 2, size, size);
@@ -227,7 +230,7 @@ export function mountPrettyRing(target: Target, options: PrettyRingOptions = {})
   const layers = Math.max(1, Math.floor(options.layers ?? 3));
   const count = Math.max(80, Math.floor((options.count ?? 720) * density));
   const wobble = options.wobble ?? 42;
-  const glows = palette.map((color) => makeGlow(12, color));
+  const glows = palette.map((color) => makeCrispGlow(10, color));
   let dots: Array<{
     angle: number;
     layer: number;
@@ -275,7 +278,7 @@ export function mountPrettyRing(target: Target, options: PrettyRingOptions = {})
       const y0 = Math.sin(dot.angle) * radius;
       const x = dot.layer % 2 === 0 ? cosWave(x0, dot.variance, dot.speed, clock) : x0;
       const y = dot.layer % 2 === 1 ? cosWave(y0, dot.variance, dot.speed, clock) : y0;
-      const size = 10 + 4 * dot.scale;
+      const size = 7 + 2.5 * dot.scale;
       ctx.drawImage(dot.glow, x - size / 2, y - size / 2, size, size);
     }
     ctx.restore();
@@ -583,6 +586,23 @@ function makeGlow(diameter: number, [r, g, b]: RGBTuple): HTMLCanvasElement {
   return c;
 }
 
+function makeCrispGlow(diameter: number, [r, g, b]: RGBTuple): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = c.height = diameter;
+  const x = c.getContext('2d');
+  if (!x) return c;
+  const rad = diameter / 2;
+  const grad = x.createRadialGradient(rad, rad, 0, rad, rad, rad);
+  grad.addColorStop(0, `rgba(${r},${g},${b},1)`);
+  grad.addColorStop(0.2, `rgba(${r},${g},${b},0.98)`);
+  grad.addColorStop(0.52, `rgba(${r},${g},${b},0.42)`);
+  grad.addColorStop(0.82, `rgba(${r},${g},${b},0.08)`);
+  grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  x.fillStyle = grad;
+  x.fillRect(0, 0, diameter, diameter);
+  return c;
+}
+
 function makeBeam(w: number, h: number, [r, g, b]: RGBTuple): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = w;
@@ -607,10 +627,6 @@ function seededRandom(seed?: number): () => number {
     r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
     return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
   };
-}
-
-function signed(value: number): number {
-  return value > 0.5 ? 1 : -1;
 }
 
 function rgb([r, g, b]: RGBTuple): string {

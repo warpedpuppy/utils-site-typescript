@@ -26,8 +26,9 @@ function About() {
         <p>
           Head to <strong>Copy Code</strong> and check off the functions you
           need. The site assembles clean, typed snippets on the fly — ready to
-          copy into a project, use with npm imports, or download as a standalone
-          TypeScript or JavaScript file when that is still the easiest path.
+          copy into a project today, or download as a standalone TypeScript or
+          JavaScript file while the public package release is still being
+          finalized.
         </p>
 
         <h2>How to use it</h2>

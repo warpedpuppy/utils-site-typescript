@@ -49,19 +49,22 @@ function mountGlitter(target, options = {}) {
   let beams = [];
   let clock = 0;
   let rotation = 0;
+  let parallaxX = 0;
+  let parallaxY = 0;
   const rebuild = () => {
     const spread = Math.max(runtime.width, runtime.height) * 0.8;
     dots = Array.from({ length: dotCount }, () => {
-      const sx = signed(runtime.random()) * runtime.random() * spread;
-      const sy = signed(runtime.random()) * runtime.random() * spread;
       return {
-        sx,
-        sy,
-        dx: Math.abs(sx * (0.45 + runtime.random() * 0.4)),
-        dy: Math.abs(sy * (0.45 + runtime.random() * 0.4)),
+        angle: runtime.random() * TAU,
+        radius: Math.sqrt(runtime.random()) * spread,
+        radialAmplitude: 16 + runtime.random() * spread * 0.16,
+        angleAmplitude: (runtime.random() - 0.5) * 0.42,
         alpha: 0.08 + runtime.random() * 0.28,
         speed: 25e-5 + runtime.random() * 12e-4,
-        scale: 0.2 + runtime.random() * 1.4
+        scale: 0.2 + runtime.random() * 1.4,
+        // Start half the field moving outward and half inward.
+        radialPhase: runtime.random() > 0.5 ? 0 : Math.PI,
+        anglePhase: runtime.random() * TAU
       };
     });
     beams = Array.from({ length: beamCount }, (_, i) => ({
@@ -69,7 +72,8 @@ function mountGlitter(target, options = {}) {
       value: 0.25 + runtime.random() * 0.8,
       diff: 0.35 + runtime.random() * 1.15,
       speed: 2e-4 + runtime.random() * 9e-4,
-      alpha: 0.025 + runtime.random() * 0.035
+      alpha: 0.025 + runtime.random() * 0.035,
+      phase: runtime.random() * TAU
     }));
   };
   rebuild();
@@ -79,20 +83,28 @@ function mountGlitter(target, options = {}) {
     ctx.fillStyle = options.background ?? "#170425";
     ctx.fillRect(0, 0, width, height);
     ctx.globalCompositeOperation = "lighter";
-    const px = options.interactive && runtime.pointer.active ? (runtime.pointer.x - width / 2) * 0.035 : 0;
-    const py = options.interactive && runtime.pointer.active ? (runtime.pointer.y - height / 2) * 0.035 : 0;
+    const targetParallaxX = options.interactive && runtime.pointer.active ? (runtime.pointer.x - width / 2) * 0.016 : 0;
+    const targetParallaxY = options.interactive && runtime.pointer.active ? (runtime.pointer.y - height / 2) * 0.016 : 0;
+    const easing = 1 - Math.pow(0.985, delta / 16.6667);
+    parallaxX += (targetParallaxX - parallaxX) * easing;
+    parallaxY += (targetParallaxY - parallaxY) * easing;
     ctx.save();
-    ctx.translate(width / 2 + px, height / 2 + py);
+    ctx.translate(width / 2 + parallaxX, height / 2 + parallaxY);
     for (const dot of dots) {
-      const x = cosWave(dot.sx, dot.dx, dot.speed, clock);
-      const y = cosWave(dot.sy, dot.dy, dot.speed * 0.85, clock);
+      const radius = dot.radius + Math.sin(clock * dot.speed + dot.radialPhase) * dot.radialAmplitude;
+      const angle = dot.angle + Math.cos(clock * dot.speed * 0.35 + dot.anglePhase) * dot.angleAmplitude;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
       const size = 18 * dot.scale;
       ctx.globalAlpha = dot.alpha;
       ctx.drawImage(glow, x - size / 2, y - size / 2, size, size);
     }
     ctx.rotate(rotation);
     for (const line of beams) {
-      const sx = Math.max(0.05, cosWave(line.value, line.diff, line.speed, clock));
+      const sx = Math.max(
+        0.05,
+        line.value + Math.cos(clock * line.speed + line.phase) * line.diff
+      );
       ctx.save();
       ctx.rotate(line.rotation);
       ctx.globalAlpha = line.alpha;
@@ -111,7 +123,7 @@ function mountPrettyRing(target, options = {}) {
   const layers = Math.max(1, Math.floor(options.layers ?? 3));
   const count = Math.max(80, Math.floor((options.count ?? 720) * density));
   const wobble = options.wobble ?? 42;
-  const glows = palette.map((color) => makeGlow(18, color));
+  const glows = palette.map((color) => makeCrispGlow(10, color));
   let dots = [];
   let clock = 0;
   let rotation = 0;
@@ -121,7 +133,7 @@ function mountPrettyRing(target, options = {}) {
       layer: i % layers,
       variance: 6 + runtime.random() * wobble,
       speed: 15e-5 + runtime.random() * 17e-4,
-      scale: 0.35 + runtime.random() * 1.25,
+      scale: 0.55 + runtime.random() * 0.55,
       glow: glows[i % glows.length]
     }));
   };
@@ -145,7 +157,7 @@ function mountPrettyRing(target, options = {}) {
       const y0 = Math.sin(dot.angle) * radius;
       const x = dot.layer % 2 === 0 ? cosWave(x0, dot.variance, dot.speed, clock) : x0;
       const y = dot.layer % 2 === 1 ? cosWave(y0, dot.variance, dot.speed, clock) : y0;
-      const size = 18 * dot.scale;
+      const size = 7 + 2.5 * dot.scale;
       ctx.drawImage(dot.glow, x - size / 2, y - size / 2, size, size);
     }
     ctx.restore();
@@ -400,6 +412,22 @@ function makeGlow(diameter, [r, g, b]) {
   x.fillRect(0, 0, diameter, diameter);
   return c;
 }
+function makeCrispGlow(diameter, [r, g, b]) {
+  const c = document.createElement("canvas");
+  c.width = c.height = diameter;
+  const x = c.getContext("2d");
+  if (!x) return c;
+  const rad = diameter / 2;
+  const grad = x.createRadialGradient(rad, rad, 0, rad, rad, rad);
+  grad.addColorStop(0, `rgba(${r},${g},${b},1)`);
+  grad.addColorStop(0.2, `rgba(${r},${g},${b},0.98)`);
+  grad.addColorStop(0.52, `rgba(${r},${g},${b},0.42)`);
+  grad.addColorStop(0.82, `rgba(${r},${g},${b},0.08)`);
+  grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  x.fillStyle = grad;
+  x.fillRect(0, 0, diameter, diameter);
+  return c;
+}
 function makeBeam(w, h, [r, g, b]) {
   const c = document.createElement("canvas");
   c.width = w;
@@ -423,9 +451,6 @@ function seededRandom(seed) {
     r ^= r + Math.imul(r ^ r >>> 7, 61 | r);
     return ((r ^ r >>> 14) >>> 0) / 4294967296;
   };
-}
-function signed(value) {
-  return value > 0.5 ? 1 : -1;
 }
 function rgb([r, g, b]) {
   return `rgb(${r},${g},${b})`;

@@ -78,7 +78,9 @@ function CreateJSON() {
           <p>Recipes</p>
           <h1>Copy the exact code you need.</h1>
           <span>
-            Choose formulas, copy typed snippets, or download a standalone file when installing `@utilspalooza/core` is not the easiest path.
+            Choose formulas, copy typed snippets, or download a standalone file
+            when you want the code directly instead of waiting on the package
+            release path.
           </span>
         </header>
         {selectionCount > 0 && (

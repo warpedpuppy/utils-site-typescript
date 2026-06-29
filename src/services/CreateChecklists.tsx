@@ -88,8 +88,9 @@ function CreateChecklists() {
             open={open}
             index={index}
             test={(i: number) => {
-              if (setOpen) setOpen(i);
-              if (clickHandler && i !== -1 && firstEntry) {
+              const nextOpen = open === i ? -1 : i;
+              if (setOpen) setOpen(nextOpen);
+              if (clickHandler && nextOpen !== -1 && firstEntry) {
                 const [itemKey, itemVal] = firstEntry as [string, any];
                 clickHandler(`/examples/${itemVal.l}`, innerArray[0], itemKey);
               }
