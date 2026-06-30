@@ -20,7 +20,7 @@ function CreateJSONTabs({
         className={tabBody === 0 ? "active-tab" : ""}
         onClick={() => onClickHandler(0)}
       >
-        choose recipes
+        choose functions
       </div>
       <div
         className={tabBody === 1 ? "active-tab" : ""}

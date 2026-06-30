@@ -4,6 +4,7 @@ import OuterShell from "./pages/OuterShell";
 
 const Home = lazy(() => import("./pages/home/Home"));
 const About = lazy(() => import("./pages/about/About"));
+const Quickstart = lazy(() => import("./pages/quickstart/Quickstart"));
 const Examples = lazy(() => import("./pages/examples/Examples"));
 const CreateJSON = lazy(() => import("./pages/createJSON/CreateJSON"));
 const Studio = lazy(() => import("./pages/studio/Studio"));
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
             element: routeElement(<CreateJSON />),
           },
         ],
+      },
+      {
+        path: "quickstart",
+        element: routeElement(<Quickstart />),
       },
       {
         path: "about",

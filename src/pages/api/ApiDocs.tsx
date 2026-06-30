@@ -696,6 +696,8 @@ function ApiDocs() {
           content="Reference the Utilspalooza core math helpers, legacy imports, and easy canvas effects API."
         />
         <link rel="canonical" href="https://utilspalooza.com/api" />
+        <meta property="og:url" content="https://utilspalooza.com/api" />
+        <meta property="og:title" content="API Docs — Utilspalooza" />
       </Helmet>
 
       <section className="api-docs__intro">

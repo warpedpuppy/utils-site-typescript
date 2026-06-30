@@ -67,20 +67,20 @@ function CreateJSON() {
   return (
     <div id="create-json">
       <Helmet>
-        <title>Copy Code Recipes — Utilspalooza</title>
-        <meta name="description" content="Select canvas animation formulas and copy ready-to-use TypeScript, JavaScript, imports, interfaces, or standalone code recipes." />
+        <title>Copy a Function (à la carte) — Utilspalooza</title>
+        <meta name="description" content="Pick canvas animation functions à la carte and copy ready-to-use TypeScript or JavaScript — imports, interfaces, or a standalone file. No install, no library." />
         <link rel="canonical" href="https://utilspalooza.com/create-json" />
         <meta property="og:url" content="https://utilspalooza.com/create-json" />
-        <meta property="og:title" content="Copy Code Recipes — Utilspalooza" />
+        <meta property="og:title" content="Copy a Function (à la carte) — Utilspalooza" />
       </Helmet>
       <div id="create-json-container">
         <header className="copy-code-header">
-          <p>Recipes</p>
+          <p>à la carte</p>
           <h1>Copy the exact code you need.</h1>
           <span>
-            Choose formulas, copy typed snippets, or download a standalone file
-            when you want the code directly instead of waiting on the package
-            release path.
+            Pick the functions you want and copy them as typed TypeScript or
+            plain JS — or download just those as a standalone file. No install,
+            no library, just the code.
           </span>
         </header>
         {selectionCount > 0 && (

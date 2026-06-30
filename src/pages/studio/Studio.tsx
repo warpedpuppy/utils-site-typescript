@@ -118,6 +118,8 @@ function Studio() {
           content="Practical micro-projects showing how to use canvas animations in real code."
         />
         <link rel="canonical" href="https://utilspalooza.com/studio" />
+        <meta property="og:url" content="https://utilspalooza.com/studio" />
+        <meta property="og:title" content="Build With It — Utilspalooza" />
       </Helmet>
 
       {!current ? (
