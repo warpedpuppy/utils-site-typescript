@@ -29,8 +29,9 @@ function NavBar() {
         <span></span>
       </div>
       <div id="nav-links" className={collapsed ? "collapsed" : ""}>
+        <NavLink to="/quickstart">start here</NavLink>
         <NavLink to="/examples">examples</NavLink>
-        <NavLink to="/create-json">recipes</NavLink>
+        <NavLink to="/create-json">à la carte</NavLink>
         <NavLink to="/api">api</NavLink>
         <NavLink to="/studio">studio</NavLink>
         <NavLink to="/about">about</NavLink>

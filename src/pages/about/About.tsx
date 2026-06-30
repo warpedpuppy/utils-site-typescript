@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import "./About.scss";
 
 function About() {
@@ -22,13 +23,20 @@ function About() {
           does before you commit it to your codebase.
         </p>
 
-        <h2>Copy code recipes</h2>
+        <h2>Grab one function, à la carte</h2>
         <p>
-          Head to <strong>Copy Code</strong> and check off the functions you
+          Head to <strong>à la carte</strong> and check off the functions you
           need. The site assembles clean, typed snippets on the fly — ready to
           copy into a project today, or download as a standalone TypeScript or
-          JavaScript file while the public package release is still being
-          finalized.
+          JavaScript file. No install, no library, just the code.
+        </p>
+
+        <h2>New to canvas?</h2>
+        <p>
+          If you've never wired up a canvas animation before, don't start by
+          reading — start by running.{" "}
+          <Link to="/quickstart">Start from the smallest possible file</Link>: one
+          HTML page that bounces a ball, with nothing hidden and no build step.
         </p>
 
         <h2>How to use it</h2>
@@ -36,7 +44,7 @@ function About() {
           Browse the example library on the left. Click any animation to see
           the live canvas demo and inspect the underlying code. When you find
           functions you want to keep, tick the checkbox next to the name —
-          they'll be bundled into your copyable recipe automatically.
+          they'll be bundled into a ready-to-copy snippet automatically.
         </p>
 
         <h2>Who made this</h2>
