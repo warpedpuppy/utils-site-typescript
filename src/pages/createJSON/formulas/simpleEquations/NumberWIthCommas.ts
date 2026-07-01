@@ -1,9 +1,9 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { NumberWithCommas as NumberWithCommasFn } from "../../../../core-functions/NumberWithCommas";
-import NumberWithCommasSource from "../../../../core-functions/NumberWithCommas.ts?raw";
+import { numberWithCommas as NumberWithCommasFn } from "@utilspalooza/core/NumberWithCommas";
+import NumberWithCommasSource from "@utilspalooza/core/NumberWithCommas.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
-export const NumberWithCommas: CollisionDetectionObject = {
+export const numberWithCommas: CollisionDetectionObject = {
   keyFunction: NumberWithCommasFn,
   dependencies: [],
   functionString: extractFunctionString(NumberWithCommasSource),

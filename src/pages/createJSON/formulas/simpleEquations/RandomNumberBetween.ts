@@ -1,9 +1,9 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { RandomNumberBetween as RandomNumberBetweenFn } from "../../../../core-functions/RandomNumberBetween";
-import RandomNumberBetweenSource from "../../../../core-functions/RandomNumberBetween.ts?raw";
+import { randomNumberBetween as RandomNumberBetweenFn } from "@utilspalooza/core/RandomNumberBetween";
+import RandomNumberBetweenSource from "@utilspalooza/core/RandomNumberBetween.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
-export const RandomNumberBetween: CollisionDetectionObject = {
+export const randomNumberBetween: CollisionDetectionObject = {
   keyFunction: RandomNumberBetweenFn,
   dependencies: [],
   functionString: extractFunctionString(RandomNumberBetweenSource),

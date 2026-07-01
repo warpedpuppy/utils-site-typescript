@@ -5,28 +5,75 @@
   flex: 1;
 
   &--header {
-    padding: 0.75rem 1rem;
+    min-height: 44px;
+    padding: 0.4rem 0.75rem;
     display: flex;
-    position: absolute;
-    flex-direction: column;
-    top: 0;
-    right: 0;
-    z-index: 500;
-    justify-content: flex-start;
-    align-items: flex-end;
-    gap: 8px;
+    position: relative;
+    z-index: 20;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13, 15, 26, 0.82);
+    backdrop-filter: blur(14px);
+
+    .primary-canvas-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .primary-canvas-back-link {
+      flex: 0 0 auto;
+      padding: 0.32rem 0.65rem;
+      font-family: "Space Mono", monospace;
+      font-size: 0.72rem;
+      line-height: 1.1;
+      color: var(--brand-orange-soft);
+      border: 1px solid rgba(255, 140, 50, 0.3);
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+      &:hover {
+        color: var(--text);
+        border-color: var(--brand-orange-soft);
+        background: rgba(255, 140, 50, 0.08);
+      }
+    }
+
+    button {
+      flex: 0 0 auto;
+      min-width: max-content;
+      padding: 0.35rem 0.7rem;
+      font-family: "Space Mono", monospace;
+      font-size: 0.76rem;
+      line-height: 1.1;
+    }
 
     &_extra_html {
-      text-align: right;
+      min-width: 0;
+      max-width: min(720px, 72vw);
+      overflow: hidden;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      line-height: 1.25;
+      text-align: left;
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
+      align-items: center;
+
+      > * {
+        max-width: 100%;
+      }
     }
   }
 
   &--content {
     width: 100%;
     background: var(--bg);
-    height: calc(100vh - var(--menu-height));
+    height: calc(100vh - var(--menu-height) - 44px);
     position: relative;
 
     /* Title overlay */
@@ -44,8 +91,8 @@
         font-weight: 700;
         letter-spacing: 0.04em;
         text-transform: uppercase;
-        color: var(--accent);
-        text-shadow: 0 0 20px var(--accent-glow);
+        color: var(--brand-orange-soft);
+        text-shadow: 0 0 20px var(--brand-orange-glow);
       }
       p {
         margin: 0.25rem 0;
@@ -60,13 +107,28 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(100vh - var(--menu-height));
+      height: calc(100vh - var(--menu-height) - 44px);
 
       canvas {
         width: 100%;
         height: 100%;
         display: block;
       }
+    }
+
+    /* Loading overlay lives here (a sibling of the canvas container), not
+       inside it — the canvas container is owned imperatively by the animation
+       class, so React must not render children into it. */
+    .primary-canvas-loading {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+      font-family: "Space Mono", monospace;
+      font-size: 0.85rem;
+      pointer-events: none;
     }
   }
 }

@@ -1,6 +1,6 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { distribute } from "../core-functions/DistributeAroundCircle";
+import { distributeAroundCircle } from "@utilspalooza/core/DistributeAroundCircle";
 import { DistributeAroundCircle as distributeFormula } from "../pages/createJSON/formulas/animation/DistributeAroundCircle";
 
 function cosWave(startValue: number, differential: number, speed: number): number {
@@ -12,7 +12,12 @@ function drawDistributeAroundCircle(
   ctx: any,
   canvasWidth: any,
   canvasHeight: any,
-  totalItems: number
+  totalItems: number,
+  distributeAroundCircleFn: (
+    centerPoint: Point,
+    radius: number,
+    totalItems: number
+  ) => Point[]
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
@@ -32,7 +37,7 @@ function drawDistributeAroundCircle(
   ctx.arc(halfWidth, halfHeight, radius, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let points = distribute(
+  let points = distributeAroundCircleFn(
     { x: halfWidth, y: halfHeight },
     radius,
     totalItems
@@ -109,7 +114,8 @@ export default class DistributePointsAroundACircle extends AnimationBaseClass {
       this.ctx,
       this.canvasWidth,
       this.canvasHeight,
-      this.totalItems
+      this.totalItems,
+      distributeAroundCircle
     );
     this.raf(this.draw);
   };

@@ -1,0 +1,2654 @@
+[
+  {
+    "name": "lerpAngle",
+    "kind": "function",
+    "module": "AngleInterpolation",
+    "signature": "(a: number, b: number, t: number) => number",
+    "description": "Interpolate between two angles along the shortest arc (no spinning the long way around).\n\nThe angle-aware cousin of {@link lerp } — use it to smoothly rotate something\ntoward a target heading without sudden flips at the 0/360° boundary.",
+    "params": [
+      {
+        "name": "a",
+        "text": "Start angle in radians, returned when `t` is 0."
+      },
+      {
+        "name": "b",
+        "text": "Target angle in radians, returned when `t` is 1."
+      },
+      {
+        "name": "t",
+        "text": "Interpolation factor, 0–1."
+      }
+    ],
+    "returns": "The interpolated angle in radians.",
+    "example": "lerpAngle(0, Math.PI / 2, 0.5); // => Math.PI / 4"
+  },
+  {
+    "name": "shortestAngleBetween",
+    "kind": "function",
+    "module": "AngleInterpolation",
+    "signature": "(a: number, b: number) => number",
+    "description": "The smallest signed angle to rotate from `a` to `b`, taking the short way around.\n\nSolves the classic \"360° seam\" problem: rotating from 350° to 10° should be\n`+20°`, not `-340°`. Positive results turn counter-clockwise.",
+    "params": [
+      {
+        "name": "a",
+        "text": "Start angle in radians."
+      },
+      {
+        "name": "b",
+        "text": "Target angle in radians."
+      }
+    ],
+    "returns": "The shortest signed delta in `(-π, π]`.",
+    "example": "shortestAngleBetween(0, Math.PI / 2); // => Math.PI / 2"
+  },
+  {
+    "name": "wrapAngle",
+    "kind": "function",
+    "module": "AngleInterpolation",
+    "signature": "(radians: number) => number",
+    "description": "Normalize an angle to the range `(-π, π]`.\n\nCollapses any angle (including ones that have wound past a full turn) to its\ncanonical equivalent, so `3π` and `π` are treated as the same direction.",
+    "params": [
+      {
+        "name": "radians",
+        "text": "The angle to normalize, in radians."
+      }
+    ],
+    "returns": "The equivalent angle in `(-π, π]`.",
+    "example": "wrapAngle(3 * Math.PI); // => ~3.14159 (π)"
+  },
+  {
+    "name": "criticalDamping",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(stiffness: number, mass?: number) => number",
+    "description": "The damping coefficient that makes {@link springValue} *critically* damped — the\nfastest approach to the target with no overshoot — for a given `stiffness` and `mass`.\n\nCritical damping is `c = 2·√(k·m)`. Pass less to {@link springValue}'s `damping` for\nbounce (underdamped), more for a sluggish crawl (overdamped). With the default\nstiffness of 170 this is `≈ 26`, which is why 26 is the default damping.",
+    "params": [],
+    "returns": "",
+    "example": "criticalDamping(170); // => ~26.08"
+  },
+  {
+    "name": "delay",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(elapsedMs: number, delayMs: number, durationMs: number) => number",
+    "description": "Delay a progress value by `delayMs`, returning 0 until the delay has elapsed.",
+    "params": [],
+    "returns": "",
+    "example": "delay(300, 200, 500); // => 0.2 (100ms into a 500ms tween)"
+  },
+  {
+    "name": "EasingFunction",
+    "kind": "type",
+    "module": "Animate",
+    "signature": "EasingFunction",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "loop",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(elapsedMs: number, durationMs: number) => number",
+    "description": "Map elapsed time into a repeating 0..1 progress value.",
+    "params": [],
+    "returns": "",
+    "example": "loop(750, 500); // => 0.5 (250ms into the second cycle)"
+  },
+  {
+    "name": "SpringOptions",
+    "kind": "type",
+    "module": "Animate",
+    "signature": "SpringOptions",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "SpringState",
+    "kind": "type",
+    "module": "Animate",
+    "signature": "SpringState",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "springValue",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(state: SpringState, target: number, { stiffness, damping, mass, deltaSeconds, }?: SpringOptions) => SpringState",
+    "description": "Advance a damped spring one fixed simulation step.",
+    "params": [],
+    "returns": "",
+    "example": "let s = { value: 0, velocity: 0 };\ns = springValue(s, 100); // => state nudged toward 100; call each frame"
+  },
+  {
+    "name": "stagger",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(index: number, elapsedMs: number, durationMs: number, staggerMs: number) => number",
+    "description": "Return the delayed progress for an item in a staggered list.",
+    "params": [],
+    "returns": "",
+    "example": "stagger(2, 600, 500, 200); // => 0.4 (item 2 starts 400ms in)"
+  },
+  {
+    "name": "ticker",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(callback: (frame: TickerFrame) => void) => TickerHandle",
+    "description": "Run a callback every animation frame and return a small cancellation handle.",
+    "params": [],
+    "returns": "",
+    "example": "const handle = ticker(({ elapsed }) => draw(elapsed));\n// later: handle.cancel();"
+  },
+  {
+    "name": "TickerFrame",
+    "kind": "type",
+    "module": "Animate",
+    "signature": "TickerFrame",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "TickerHandle",
+    "kind": "type",
+    "module": "Animate",
+    "signature": "TickerHandle",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "tweenFrame",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "<T extends Record<string, number>>(spec: TweenObjectSpec<T>, elapsedMs: number, durationMs: number, easingOrOptions?: EasingFunction | TweenValueOptions) => T",
+    "description": "Alias for tweenObject when you want to sample animation state one frame at a time.",
+    "params": [],
+    "returns": "",
+    "example": "tweenFrame({ x: { from: 0, to: 10 } }, 500, 500); // => { x: 10 }"
+  },
+  {
+    "name": "tweenObject",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "<T extends Record<string, number>>(spec: TweenObjectSpec<T>, elapsedMs: number, durationMs: number, easingOrOptions?: EasingFunction | TweenValueOptions) => T",
+    "description": "Return every numeric property of an object tween at a specific elapsed time.",
+    "params": [],
+    "returns": "",
+    "example": "tweenObject({ x: { from: 0, to: 10 } }, 250, 500); // => { x: 5 }"
+  },
+  {
+    "name": "TweenObjectSpec",
+    "kind": "type",
+    "module": "Animate",
+    "signature": "TweenObjectSpec",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "tweenValue",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(from: number, to: number, elapsedMs: number, durationMs: number, easingOrOptions?: EasingFunction | TweenValueOptions) => number",
+    "description": "Return the value of a scalar tween at a specific elapsed time.",
+    "params": [],
+    "returns": "",
+    "example": "tweenValue(0, 100, 250, 500); // => 50 (halfway through, linear)"
+  },
+  {
+    "name": "TweenValueOptions",
+    "kind": "type",
+    "module": "Animate",
+    "signature": "TweenValueOptions",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "yoyo",
+    "kind": "function",
+    "module": "Animate",
+    "signature": "(elapsedMs: number, durationMs: number) => number",
+    "description": "Map elapsed time into a reversing 0..1..0 progress value.",
+    "params": [],
+    "returns": "",
+    "example": "yoyo(500, 500); // => 1 (at the turnaround peak)"
+  },
+  {
+    "name": "ballBounce",
+    "kind": "function",
+    "module": "BallBounce",
+    "signature": "(ball: Ball, stage: Container, restitution?: number) => void",
+    "description": "Advance a ball one frame under gravity, bouncing it off the container walls.\n\nA simple Euler-integration physics step: applies gravity to vertical velocity,\nmoves the ball, then reflects and damps its velocity (restitution + friction)\nwhenever it hits a wall. **Mutates `ball`** in place.",
+    "params": [
+      {
+        "name": "ball",
+        "text": "The ball to advance (its `x`, `y`, `vx`, `vy` are mutated)."
+      },
+      {
+        "name": "stage",
+        "text": "The bounding container (`width`/`height`) the ball bounces inside."
+      },
+      {
+        "name": "restitution",
+        "text": "Bounciness: fraction of speed kept on each bounce (0–1).\n`1` is a perfectly elastic, never-tiring bounce; lower values lose energy faster.\nDefaults to `0.72`."
+      }
+    ],
+    "returns": "Nothing — `ball` is updated in place.",
+    "example": "ballBounce(ball, { x: 0, y: 0, width: 800, height: 600 });      // default bounce\nballBounce(ball, stage, 0.95);                                   // extra bouncy"
+  },
+  {
+    "name": "ballToBallBounce",
+    "kind": "function",
+    "module": "BallToBallBounce",
+    "signature": "(ball1: Ball, ball2: Ball, spring?: number) => void",
+    "description": "Push two overlapping balls apart with a spring-like force (soft collision response).\n\nWhen the balls overlap, applies an equal-and-opposite force proportional to the\noverlap, easing them apart rather than resolving the collision instantly.\n**Mutates both balls'** velocities in place.",
+    "params": [
+      {
+        "name": "ball1",
+        "text": "First ball (its `vx`/`vy` are mutated)."
+      },
+      {
+        "name": "ball2",
+        "text": "Second ball (its `vx`/`vy` are mutated)."
+      },
+      {
+        "name": "spring",
+        "text": "Stiffness of the separating force, 0–1. Defaults to `0.05`."
+      }
+    ],
+    "returns": "Nothing — both balls' velocities are updated in place.",
+    "example": "ballToBallBounce(a, b); // call for each pair, once per frame"
+  },
+  {
+    "name": "bezierPoint",
+    "kind": "function",
+    "module": "BezierCurve",
+    "signature": "(p0: Point, p1: Point, p2: Point, p3: Point, t: number) => Point",
+    "description": "Find the point at parameter `t` along a cubic Bézier curve.\n\nImplemented via de Casteljau's algorithm — repeated linear interpolation between\nthe control points, which is the geometric definition of a Bézier curve.",
+    "params": [
+      {
+        "name": "p0",
+        "text": "Start anchor point (returned at `t = 0`)."
+      },
+      {
+        "name": "p1",
+        "text": "First control handle."
+      },
+      {
+        "name": "p2",
+        "text": "Second control handle."
+      },
+      {
+        "name": "p3",
+        "text": "End anchor point (returned at `t = 1`)."
+      },
+      {
+        "name": "t",
+        "text": "Position along the curve, 0–1."
+      }
+    ],
+    "returns": "The `{ x, y }` point on the curve at `t`.",
+    "example": "bezierPoint({x:0,y:0}, {x:0,y:50}, {x:50,y:50}, {x:50,y:0}, 0.5);"
+  },
+  {
+    "name": "Boid",
+    "kind": "type",
+    "module": "Boids",
+    "signature": "Boid",
+    "description": "One agent in the flock: where it is and where it is heading.",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "BoidsOptions",
+    "kind": "type",
+    "module": "Boids",
+    "signature": "BoidsOptions",
+    "description": "Tunable weights and radii for {@link boidsStep}.",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "boidsStep",
+    "kind": "function",
+    "module": "Boids",
+    "signature": "(boids: Boid[], options?: Partial<BoidsOptions>, bounds?: FlockBounds) => void",
+    "description": "Advance a flock by one tick, in place, using Craig Reynolds' three boids rules.\n\nAccelerations are computed for every boid first (reading the *old* state), then\napplied — so the result is independent of array order and fully deterministic for\nthe same inputs (no RNG, no clock). Neighbor search is the naive O(n²) all-pairs\nscan: clear and correct, but for thousands of boids swap in a spatial grid.",
+    "params": [
+      {
+        "name": "boids",
+        "text": "The flock; each boid's `position` and `velocity` are mutated."
+      },
+      {
+        "name": "options",
+        "text": "Weights/radii; merged over {@link DEFAULT_BOIDS_OPTIONS}."
+      },
+      {
+        "name": "bounds",
+        "text": "Optional toroidal wrap so the flock never flies off-screen."
+      }
+    ],
+    "returns": "Nothing; `boids` is updated in place.",
+    "example": "const flock = [{ position: { x: 0, y: 0 }, velocity: { x: 0, y: 0 } },\n               { position: { x: 10, y: 0 }, velocity: { x: 0, y: 0 } }];\nboidsStep(flock, { cohesionWeight: 1, alignmentWeight: 0, separationWeight: 0 });\n// the two boids now steer toward each other"
+  },
+  {
+    "name": "DEFAULT_BOIDS_OPTIONS",
+    "kind": "const",
+    "module": "Boids",
+    "signature": "BoidsOptions",
+    "description": "Sensible starting values; spread-override any field you like.",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "Flock",
+    "kind": "const",
+    "module": "Boids",
+    "signature": "typeof Flock",
+    "description": "An instantiable flock that owns its agents and advances them with {@link boidsStep}.\n\nPure of any framework — it never touches a canvas, the DOM, or the clock — so it\nruns identically in a browser, in Node, or in a test. Build one, call `step()` once\nper frame (optionally passing a wandering target), then read `boids` to draw them.",
+    "params": [],
+    "returns": "",
+    "example": "const flock = new Flock(200, { width: 800, height: 600 });\n// each animation frame:\nflock.step();\nfor (const b of flock.boids) drawTriangle(ctx, b.position, b.velocity);"
+  },
+  {
+    "name": "FlockBounds",
+    "kind": "type",
+    "module": "Boids",
+    "signature": "FlockBounds",
+    "description": "Toroidal bounds — boids that leave one edge re-enter the opposite one.",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "centerOnParent",
+    "kind": "function",
+    "module": "CenterOnParent",
+    "signature": "(item: Container, parent: Container) => Point",
+    "description": "Compute the top-left position that centers one box inside another.",
+    "params": [
+      {
+        "name": "item",
+        "text": "The child box being centered (its `width`/`height` are used)."
+      },
+      {
+        "name": "parent",
+        "text": "The container box to center within."
+      }
+    ],
+    "returns": "The `{ x, y }` top-left coordinate that centers `item` in `parent`.",
+    "example": "centerOnParent({ width: 20, height: 10 }, { width: 100, height: 50 }); // => { x: 40, y: 20 }"
+  },
+  {
+    "name": "circleFromThreePoints",
+    "kind": "function",
+    "module": "CircleFromThreePoints",
+    "signature": "(point1: Point, point2: Point, point3: Point) => { radius: number; center: Point; }",
+    "description": "Find the unique circle (the circumcircle) passing through three points.",
+    "params": [
+      {
+        "name": "point1",
+        "text": "First point on the circle."
+      },
+      {
+        "name": "point2",
+        "text": "Second point on the circle."
+      },
+      {
+        "name": "point3",
+        "text": "Third point on the circle."
+      }
+    ],
+    "returns": "The circle's `radius` and `center` `{ x, y }`. (Degenerate for collinear points.)",
+    "example": "circleFromThreePoints({ x: 5, y: 0 }, { x: 0, y: 5 }, { x: -5, y: 0 });\n// => { radius: 5, center: { x: 0, y: 0 } }"
+  },
+  {
+    "name": "circleToCircle",
+    "kind": "function",
+    "module": "CircleToCircle",
+    "signature": "(x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) => boolean",
+    "description": "Test whether two circles overlap (or touch).",
+    "params": [
+      {
+        "name": "x1",
+        "text": "First circle center x."
+      },
+      {
+        "name": "y1",
+        "text": "First circle center y."
+      },
+      {
+        "name": "r1",
+        "text": "First circle radius."
+      },
+      {
+        "name": "x2",
+        "text": "Second circle center x."
+      },
+      {
+        "name": "y2",
+        "text": "Second circle center y."
+      },
+      {
+        "name": "r2",
+        "text": "Second circle radius."
+      }
+    ],
+    "returns": "`true` if the distance between centers is `<= r1 + r2`.",
+    "example": "circleToCircle(0, 0, 5, 6, 0, 5); // => true"
+  },
+  {
+    "name": "circleToRect",
+    "kind": "function",
+    "module": "CircleToRect",
+    "signature": "(cx: number, cy: number, cr: number, rx: number, ry: number, rw: number, rh: number) => boolean",
+    "description": "Test whether a circle overlaps an axis-aligned rectangle.\n\nWorks by clamping the circle's center to the rectangle to find the closest\npoint on the rect, then checking if that point is within the radius.",
+    "params": [
+      {
+        "name": "cx",
+        "text": "Circle center x."
+      },
+      {
+        "name": "cy",
+        "text": "Circle center y."
+      },
+      {
+        "name": "cr",
+        "text": "Circle radius."
+      },
+      {
+        "name": "rx",
+        "text": "Rectangle left edge."
+      },
+      {
+        "name": "ry",
+        "text": "Rectangle top edge."
+      },
+      {
+        "name": "rw",
+        "text": "Rectangle width."
+      },
+      {
+        "name": "rh",
+        "text": "Rectangle height."
+      }
+    ],
+    "returns": "`true` if the circle and rectangle overlap or touch.",
+    "example": "circleToRect(3, 0, 5, 0, 0, 10, 10); // => true"
+  },
+  {
+    "name": "clamp",
+    "kind": "function",
+    "module": "Clamp",
+    "signature": "(value: number, min: number, max: number) => number",
+    "description": "Constrain a value to a range, so it never goes below `min` or above `max`.",
+    "params": [
+      {
+        "name": "value",
+        "text": "The value to constrain."
+      },
+      {
+        "name": "min",
+        "text": "Lower bound."
+      },
+      {
+        "name": "max",
+        "text": "Upper bound."
+      }
+    ],
+    "returns": "`value` limited to the range `[min, max]`.",
+    "example": "clamp(15, 0, 10); // => 10\nclamp(-3, 0, 10); // => 0"
+  },
+  {
+    "name": "circleCircle",
+    "kind": "function",
+    "module": "CollisionObjectAPI/CircleCircle",
+    "signature": "(circle1: Circle, circle2: Circle) => boolean",
+    "description": "Test whether two circles overlap (object-argument form of `circleToCircle`).",
+    "params": [
+      {
+        "name": "circle1",
+        "text": "First circle (`x`, `y`, `radius`)."
+      },
+      {
+        "name": "circle2",
+        "text": "Second circle (`x`, `y`, `radius`)."
+      }
+    ],
+    "returns": "`true` if the circles touch or overlap, including exact tangency.",
+    "example": "circleCircle({ x: 0, y: 0, radius: 5 }, { x: 6, y: 0, radius: 5 }); // => true"
+  },
+  {
+    "name": "lineCircle",
+    "kind": "function",
+    "module": "CollisionObjectAPI/LineCircle",
+    "signature": "(line: Line, circle: Circle) => boolean",
+    "description": "Test whether a line segment intersects a circle (object-argument form of `lineToCircle`).\n\nProjects the circle's center onto the segment, clamps that projection to the\nsegment bounds, and checks whether the closest point lies within the radius.\nThis also handles degenerate zero-length segments safely.",
+    "params": [
+      {
+        "name": "line",
+        "text": "The line segment (`startPoint`, `endPoint`)."
+      },
+      {
+        "name": "circle",
+        "text": "The circle (`x`, `y`, `radius`)."
+      }
+    ],
+    "returns": "`true` if the segment touches or crosses the circle.",
+    "example": "lineCircle({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0, radius: 2 }); // => true"
+  },
+  {
+    "name": "lineLine",
+    "kind": "function",
+    "module": "CollisionObjectAPI/LineLine",
+    "signature": "(line1: Line, line2: Line) => { readonly hit: false; intersectionX?: undefined; intersectionY?: undefined; } | { hit: boolean; intersectionX: number; intersectionY: number; } | { hit: boolean; intersectionX?: undefined; intersectionY?: undefined; }",
+    "description": "Test whether two line segments cross, and report where (object-argument form).\n\nUnlike the boolean `lineToLine`, this returns the intersection coordinates when\nthe segments meet — useful for drawing a marker at the crossing.\n\nParallel or collinear segments return `{ hit: false }` in this implementation.",
+    "params": [
+      {
+        "name": "line1",
+        "text": "First segment (`startPoint`, `endPoint`)."
+      },
+      {
+        "name": "line2",
+        "text": "Second segment (`startPoint`, `endPoint`)."
+      }
+    ],
+    "returns": "`{ hit: true, intersectionX, intersectionY }` if they cross, else `{ hit: false }`.",
+    "example": "const r = lineLine(a, b);\nif (r.hit) drawDot(r.intersectionX, r.intersectionY);"
+  },
+  {
+    "name": "linePoint",
+    "kind": "function",
+    "module": "CollisionObjectAPI/LinePoint",
+    "signature": "(line: Line, point: Point) => boolean",
+    "description": "Test whether a point lies on a line segment (object-argument form).\n\nProjects the point onto the segment, clamps that projection to the segment\nbounds, and checks whether the nearest point lands within a built-in `0.1`\nunit tolerance.",
+    "params": [
+      {
+        "name": "line",
+        "text": "The line segment (`startPoint`, `endPoint`)."
+      },
+      {
+        "name": "point",
+        "text": "The point to test."
+      }
+    ],
+    "returns": "`true` if the point sits on the segment within the built-in `0.1` tolerance.",
+    "example": "linePoint({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0 }); // => true"
+  },
+  {
+    "name": "pointCircle",
+    "kind": "function",
+    "module": "CollisionObjectAPI/PointCircle",
+    "signature": "(point: Point, circle: Circle) => boolean",
+    "description": "Test whether a point falls inside or on a circle (object-argument form of `pointToCircle`).",
+    "params": [
+      {
+        "name": "point",
+        "text": "The point to test."
+      },
+      {
+        "name": "circle",
+        "text": "The circle (`x`, `y`, `radius`)."
+      }
+    ],
+    "returns": "`true` if the point is within `radius` of the circle center.",
+    "example": "pointCircle({ x: 1, y: 1 }, { x: 0, y: 0, radius: 5 }); // => true"
+  },
+  {
+    "name": "polygonCircle",
+    "kind": "function",
+    "module": "CollisionObjectAPI/PolygonCircle",
+    "signature": "(polygon: Polygon, circle: Circle) => boolean",
+    "description": "Test whether a circle overlaps a polygon.\n\nWalks each polygon edge and tests it against the circle. If no edge touches\nthe circle, it then checks whether the circle's center sits inside the polygon,\nwhich catches the fully-contained case.",
+    "params": [
+      {
+        "name": "polygon",
+        "text": "The polygon (`vertices`)."
+      },
+      {
+        "name": "circle",
+        "text": "The circle (`x`, `y`, `radius`)."
+      }
+    ],
+    "returns": "`true` if the circle touches an edge or sits inside the polygon.",
+    "example": "polygonCircle({ vertices: square }, { x: 5, y: 5, radius: 2 }); // => true"
+  },
+  {
+    "name": "polygonLine",
+    "kind": "function",
+    "module": "CollisionObjectAPI/PolygonLine",
+    "signature": "(polygon: Polygon, line: Line) => boolean",
+    "description": "Test whether a line segment crosses any edge of a polygon.\n\nWalks each polygon edge and runs a segment-vs-segment intersection test\nagainst `line`.\n\nThis checks edge crossings only. A line segment fully contained inside the\npolygon, with no boundary intersection, returns `false`.",
+    "params": [
+      {
+        "name": "polygon",
+        "text": "The polygon (`vertices`)."
+      },
+      {
+        "name": "line",
+        "text": "The line segment (`startPoint`, `endPoint`)."
+      }
+    ],
+    "returns": "`true` if the line crosses a polygon edge.",
+    "example": "polygonLine({ vertices: square }, { startPoint: { x: -5, y: 5 }, endPoint: { x: 15, y: 5 } }); // => true"
+  },
+  {
+    "name": "polygonPoint",
+    "kind": "function",
+    "module": "CollisionObjectAPI/PolygonPoint",
+    "signature": "(polygon: Polygon, point: Point) => boolean",
+    "description": "Test whether a point is inside a polygon (ray-casting / even-odd rule).\n\nCasts a horizontal ray from the point and counts how many polygon edges it\ncrosses — an odd count means the point is inside. Works for both convex and\nconcave polygons.\n\nBoundary points are not special-cased. A point on an edge or vertex follows\nthe raw parity result from the ray test, so edge cases may differ depending\non which boundary segment is hit.",
+    "params": [
+      {
+        "name": "polygon",
+        "text": "The polygon (`vertices`)."
+      },
+      {
+        "name": "point",
+        "text": "The point to test."
+      }
+    ],
+    "returns": "`true` if the point is inside the polygon.",
+    "example": "polygonPoint({ vertices: square }, { x: 5, y: 5 }); // => true"
+  },
+  {
+    "name": "polygonPolygon",
+    "kind": "function",
+    "module": "CollisionObjectAPI/PolygonPolygon",
+    "signature": "(polygon1: Polygon, polygon2: Polygon) => boolean",
+    "description": "Test whether two polygons overlap (object-argument form).\n\nWalks each edge of the first polygon and tests it against the second. If no\nedges cross, it then checks both containment directions by testing a sample\nvertex from each polygon against the other polygon.",
+    "params": [
+      {
+        "name": "polygon1",
+        "text": "First polygon (`vertices`)."
+      },
+      {
+        "name": "polygon2",
+        "text": "Second polygon (`vertices`)."
+      }
+    ],
+    "returns": "`true` if the polygons intersect or one contains the other.",
+    "example": "polygonPolygon({ vertices: squareA }, { vertices: squareB }); // => true when overlapping"
+  },
+  {
+    "name": "colorFamily",
+    "kind": "function",
+    "module": "Color",
+    "signature": "(family: HueFamily, count: number) => RGB[]",
+    "description": "Build an ordered palette of colors that all belong to one named hue family.\n\nThe spiritual successor to a \"give me a random blue\" helper: instead of one\nrandom color, you get an evenly-spread *range* within the family (all blues,\nall greens, …). Hue marches across the family's band while lightness arcs up\ntoward the middle of the ramp, so the set reads as a coherent, lively palette\nrather than a flat gradient. Deterministic — same args, same palette.",
+    "params": [
+      {
+        "name": "family",
+        "text": "One of {@link HUE_FAMILIES} (`\"blue\"`, `\"yellow\"`, `\"all\"`, …)."
+      },
+      {
+        "name": "count",
+        "text": "How many swatches to produce (>= 1)."
+      }
+    ],
+    "returns": "An array of {@link RGB} colors, ordered across the family's hue range.",
+    "example": "colorFamily(\"blue\", 5);   // five blues, light→deep→light across the band\ncolorFamily(\"all\", 12);   // a full evenly-spaced rainbow"
+  },
+  {
+    "name": "HSL",
+    "kind": "type",
+    "module": "Color",
+    "signature": "HSL",
+    "description": "An HSL color: hue 0–360°, saturation and lightness 0–100%.",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "hslToRgb",
+    "kind": "function",
+    "module": "Color",
+    "signature": "({ h, s, l }: HSL) => RGB",
+    "description": "Convert an HSL color back to RGB.\n\nInverse of {@link rgbToHsl}. Hue wraps, so values outside 0–360 are accepted.",
+    "params": [
+      {
+        "name": "hsl",
+        "text": "`h` in degrees (wraps), `s`/`l` 0–100."
+      }
+    ],
+    "returns": "Channels rounded to integers 0–255.",
+    "example": "hslToRgb({ h: 120, s: 100, l: 50 }); // => { r: 0, g: 255, b: 0 }"
+  },
+  {
+    "name": "HUE_FAMILIES",
+    "kind": "const",
+    "module": "Color",
+    "signature": "Record<HueFamily, [number, number]>",
+    "description": "Hue ranges (degrees) for each named family. `red` uses a negative start so it\nstraddles the 0°/360° seam cleanly — {@link hslToRgb} wraps the hue for you.",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "HueFamily",
+    "kind": "type",
+    "module": "Color",
+    "signature": "HueFamily",
+    "description": "Named hue families and the wheel angle range (in degrees) each spans.",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "lerpColor",
+    "kind": "function",
+    "module": "Color",
+    "signature": "(a: RGB, b: RGB, t: number) => RGB",
+    "description": "Interpolate two colors in RGB space — a straight per-channel {@link lerp}.\n\nThis is the obvious approach, and it has a famous pitfall: blending two vivid\ncomplementary colors (e.g. blue↔yellow) passes through a muddy gray at the\nmidpoint, because the midpoint of opposite channels is ~middle-gray. Compare\nwith {@link lerpColorHsl}.",
+    "params": [
+      {
+        "name": "a",
+        "text": "Start color, returned at `t = 0`."
+      },
+      {
+        "name": "b",
+        "text": "End color, returned at `t = 1`."
+      },
+      {
+        "name": "t",
+        "text": "Interpolation factor, 0–1."
+      }
+    ],
+    "returns": "The blended color (channels may be fractional).",
+    "example": "lerpColor({ r: 0, g: 0, b: 255 }, { r: 255, g: 255, b: 0 }, 0.5); // => { r: 127.5, g: 127.5, b: 127.5 } (gray!)"
+  },
+  {
+    "name": "lerpColorHsl",
+    "kind": "function",
+    "module": "Color",
+    "signature": "(a: RGB, b: RGB, t: number) => RGB",
+    "description": "Interpolate two colors through HSL space, rotating hue the short way around.\n\nBecause hue, saturation, and lightness move independently, the blend stays\nvivid instead of collapsing to gray — the colors travel *around* the wheel\nrather than *through* its desaturated center. This is the perceptually nicer\ndefault for gradients. Contrast with {@link lerpColor}.",
+    "params": [
+      {
+        "name": "a",
+        "text": "Start color, returned at `t = 0`."
+      },
+      {
+        "name": "b",
+        "text": "End color, returned at `t = 1`."
+      },
+      {
+        "name": "t",
+        "text": "Interpolation factor, 0–1."
+      }
+    ],
+    "returns": "The blended color, channels rounded to 0–255.",
+    "example": "lerpColorHsl({ r: 0, g: 0, b: 255 }, { r: 255, g: 255, b: 0 }, 0.5); // a vivid mid-hue, not gray"
+  },
+  {
+    "name": "RGB",
+    "kind": "type",
+    "module": "Color",
+    "signature": "RGB",
+    "description": "An RGB color. Channels are 0–255 (may be fractional mid-interpolation).",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "rgbToCss",
+    "kind": "function",
+    "module": "Color",
+    "signature": "({ r, g, b }: RGB) => string",
+    "description": "Format an RGB color as a CSS `rgb()` string, rounding channels to integers.",
+    "params": [
+      {
+        "name": "rgb",
+        "text": "Channels 0–255 (fractional values are rounded)."
+      }
+    ],
+    "returns": "e.g. `\"rgb(255, 128, 0)\"`.",
+    "example": "rgbToCss({ r: 255, g: 127.5, b: 0 }); // => \"rgb(255, 128, 0)\""
+  },
+  {
+    "name": "rgbToHsl",
+    "kind": "function",
+    "module": "Color",
+    "signature": "({ r, g, b }: RGB) => HSL",
+    "description": "Convert an RGB color to HSL.\n\nHue is the angle on the color wheel; saturation is how vivid (vs. gray) the\ncolor is; lightness is how close to black/white. Separating these is what lets\nyou interpolate colors without dragging them through gray — see {@link lerpColorHsl}.",
+    "params": [
+      {
+        "name": "rgb",
+        "text": "Channels 0–255."
+      }
+    ],
+    "returns": "`{ h, s, l }` with `h` 0–360 and `s`/`l` 0–100.",
+    "example": "rgbToHsl({ r: 255, g: 0, b: 0 }); // => { h: 0, s: 100, l: 50 }"
+  },
+  {
+    "name": "deCasteljau",
+    "kind": "function",
+    "module": "DeCasteljau",
+    "signature": "(points: Point[], t: number) => { point: Point; levels: Point[][]; }",
+    "description": "Evaluate any-degree Bézier curve at parameter `t` using de Casteljau's algorithm.\n\nDe Casteljau works by repeatedly lerping between adjacent control points until\na single point remains. At each level of reduction you get the intermediate\n\"construction\" points that make the algorithm visual — pass the returned `levels`\narray to your canvas code to draw the animated hull the way a textbook would.\nWorks for quadratic (3 pts), cubic (4 pts), quartic (5 pts), or any degree.",
+    "params": [
+      {
+        "name": "points",
+        "text": "The ordered control points defining the curve (any length >= 2)."
+      },
+      {
+        "name": "t",
+        "text": "Position along the curve, 0–1 (0 = start, 1 = end)."
+      }
+    ],
+    "returns": "An object `{ point, levels }` where `point` is the `{ x, y }` on the\ncurve at `t`, and `levels` is an array of point arrays — `levels[0]` is the\noriginal control polygon, each subsequent level is the next reduction step,\nand the last level contains only `point`.",
+    "example": "deCasteljau([{x:0,y:0},{x:0,y:50},{x:50,y:50},{x:50,y:0}], 0.5).point;"
+  },
+  {
+    "name": "degToRad",
+    "kind": "function",
+    "module": "DegToRad",
+    "signature": "(degree: number) => number",
+    "description": "Convert an angle from degrees to radians.",
+    "params": [
+      {
+        "name": "degree",
+        "text": "Angle in degrees."
+      }
+    ],
+    "returns": "The equivalent angle in radians.",
+    "example": "degToRad(180); // => 3.141592653589793"
+  },
+  {
+    "name": "dft",
+    "kind": "function",
+    "module": "DFT",
+    "signature": "(pts: Point[]) => { freq: number; amp: number; phase: number; }[]",
+    "description": "Discrete Fourier Transform of a list of 2D points (treated as complex numbers).\n\nDecomposes a path into a sum of rotating circles (epicycles) — the math behind\n\"draw anything with spinning vectors\" animations. Each output entry is one\ncircle: its frequency, radius (`amp`), and starting angle (`phase`). Results are\nsorted by amplitude so the most significant circles come first.",
+    "params": [
+      {
+        "name": "pts",
+        "text": "The input path as an array of points (`x` = real, `y` = imaginary)."
+      }
+    ],
+    "returns": "One `{ freq, amp, phase }` per input sample, sorted by descending `amp`.",
+    "example": "const circles = dft(pathPoints); // feed into an epicycle drawer"
+  },
+  {
+    "name": "distance",
+    "kind": "function",
+    "module": "Distance",
+    "signature": "(p1: Point, p2: Point) => number",
+    "description": "Euclidean (straight-line) distance between two points.",
+    "params": [
+      {
+        "name": "p1",
+        "text": "First point."
+      },
+      {
+        "name": "p2",
+        "text": "Second point."
+      }
+    ],
+    "returns": "The distance between `p1` and `p2`.",
+    "example": "distance({ x: 0, y: 0 }, { x: 3, y: 4 }); // => 5"
+  },
+  {
+    "name": "distributeAroundCircle",
+    "kind": "function",
+    "module": "DistributeAroundCircle",
+    "signature": "(circleCenter: Point, radius: number, totalItems: number) => Point[]",
+    "description": "Evenly space N points around a circle (e.g. for a radial menu or clock face).",
+    "params": [
+      {
+        "name": "circleCenter",
+        "text": "Center of the circle."
+      },
+      {
+        "name": "radius",
+        "text": "Radius of the circle."
+      },
+      {
+        "name": "totalItems",
+        "text": "How many points to distribute. The first sits at angle 0 (3 o'clock)."
+      }
+    ],
+    "returns": "An array of `totalItems` points spread evenly around the circle.",
+    "example": "distributeAroundCircle({ x: 0, y: 0 }, 10, 4); // => 4 points at 3, 6, 9, 12 o'clock"
+  },
+  {
+    "name": "easeIn",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quadratic ease-in — starts slow, accelerates toward the end.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0–1."
+      }
+    ],
+    "returns": "The eased value (`t²`), 0 at `t=0` and 1 at `t=1`.",
+    "example": "easeIn(0.5); // => 0.25"
+  },
+  {
+    "name": "easeInCubic",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Cubic ease-in.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInCubic(0.5); // => 0.125"
+  },
+  {
+    "name": "easeInOut",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quadratic ease-in-out — accelerates then decelerates, symmetric about `t=0.5`.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0–1."
+      }
+    ],
+    "returns": "The eased value, 0 at `t=0` and 1 at `t=1`.",
+    "example": "easeInOut(0.5); // => 0.5"
+  },
+  {
+    "name": "easeInOutCubic",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Cubic ease-in-out.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInOutCubic(0.5); // => 0.5"
+  },
+  {
+    "name": "easeInOutQuad",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quadratic ease-in-out. Legacy alias from the vanilla JS utilities.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInOutQuad(0.5); // => 0.5"
+  },
+  {
+    "name": "easeInOutQuart",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quartic ease-in-out.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInOutQuart(0.5); // => 0.5"
+  },
+  {
+    "name": "easeInOutQuint",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quintic ease-in-out.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInOutQuint(0.5); // => 0.5"
+  },
+  {
+    "name": "easeInQuad",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quadratic ease-in. Legacy alias from the vanilla JS utilities.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInQuad(0.5); // => 0.25"
+  },
+  {
+    "name": "easeInQuart",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quartic ease-in.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInQuart(0.5); // => 0.0625"
+  },
+  {
+    "name": "easeInQuint",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quintic ease-in.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeInQuint(0.5); // => 0.03125"
+  },
+  {
+    "name": "easeOut",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quadratic ease-out — starts fast, decelerates toward the end.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0–1."
+      }
+    ],
+    "returns": "The eased value, 0 at `t=0` and 1 at `t=1`.",
+    "example": "easeOut(0.5); // => 0.75"
+  },
+  {
+    "name": "easeOutBounce",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Bounce ease-out using Robert Penner's common piecewise curve.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeOutBounce(1); // => 1 (lands exactly on the target)"
+  },
+  {
+    "name": "easeOutCubic",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Cubic ease-out.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeOutCubic(0.5); // => 0.875"
+  },
+  {
+    "name": "easeOutElastic",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Elastic ease-out with a short overshoot.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeOutElastic(1); // => 1 (settles on the target after overshooting)"
+  },
+  {
+    "name": "easeOutQuad",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quadratic ease-out. Legacy alias from the vanilla JS utilities.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeOutQuad(0.5); // => 0.75"
+  },
+  {
+    "name": "easeOutQuart",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quartic ease-out.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeOutQuart(0.5); // => 0.9375"
+  },
+  {
+    "name": "easeOutQuint",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Quintic ease-out.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0-1."
+      }
+    ],
+    "returns": "The eased value.",
+    "example": "easeOutQuint(0.5); // => 0.96875"
+  },
+  {
+    "name": "linear",
+    "kind": "function",
+    "module": "Easing",
+    "signature": "(t: number) => number",
+    "description": "Linear easing — constant speed; the identity curve.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Normalized time, 0–1."
+      }
+    ],
+    "returns": "The eased value, equal to `t`.",
+    "example": "linear(0.5); // => 0.5"
+  },
+  {
+    "name": "equilateralTriangle",
+    "kind": "function",
+    "module": "EquilateralTriangle",
+    "signature": "(radius: number, centerPoint: Point, angle: number) => { point1: Point; point2: Point; point3: Point; }",
+    "description": "Compute the three vertices of an equilateral triangle inscribed in a circle.",
+    "params": [
+      {
+        "name": "radius",
+        "text": "Distance from the center to each vertex (the circumradius)."
+      },
+      {
+        "name": "centerPoint",
+        "text": "Center of the triangle."
+      },
+      {
+        "name": "angle",
+        "text": "Rotation in radians; `point1` sits at this angle, the others 120° apart."
+      }
+    ],
+    "returns": "The three corners as `{ point1, point2, point3 }`.",
+    "example": "equilateralTriangle(5, { x: 0, y: 0 }, 0); // point1 at { x: 5, y: 0 }"
+  },
+  {
+    "name": "findPointAroundCircle",
+    "kind": "function",
+    "module": "FindPointAroundCircle",
+    "signature": "(circleCenter: Point, radius: number, percentageAroundCircle: number) => Point",
+    "description": "Find the point a given percentage of the way around a circle.",
+    "params": [
+      {
+        "name": "circleCenter",
+        "text": "Center of the circle."
+      },
+      {
+        "name": "radius",
+        "text": "Radius of the circle."
+      },
+      {
+        "name": "percentageAroundCircle",
+        "text": "Position around the circle, `0`–`100`. 0 is at 3 o'clock; 25 is at 6 o'clock."
+      }
+    ],
+    "returns": "The `{ x, y }` point on the circle at that percentage.",
+    "example": "findPointAroundCircle({ x: 0, y: 0 }, 10, 25); // => { x: 0, y: 10 }"
+  },
+  {
+    "name": "gameOfLifeStep",
+    "kind": "function",
+    "module": "GameOfLife",
+    "signature": "(grid: ArrayLike<number>, cols: number, rows: number) => Uint8Array",
+    "description": "Compute the next generation of Conway's Game of Life.\n\nApplies the classic rules to every cell — a live cell survives with 2 or 3 live\nneighbours, a dead cell is born with exactly 3 — using a toroidal (wrap-around)\ngrid so the edges connect. Returns a new grid rather than mutating the input.",
+    "params": [
+      {
+        "name": "grid",
+        "text": "The current generation as a flat row-major array of `0`/`1` (length `cols * rows`)."
+      },
+      {
+        "name": "cols",
+        "text": "Number of columns."
+      },
+      {
+        "name": "rows",
+        "text": "Number of rows."
+      }
+    ],
+    "returns": "A new `Uint8Array` holding the next generation.",
+    "example": "grid = gameOfLifeStep(grid, cols, rows); // advance one tick"
+  },
+  {
+    "name": "getPointOnLine",
+    "kind": "function",
+    "module": "GetPointOnLine",
+    "signature": "(p1: Point, p2: Point, t: number) => Point",
+    "description": "Find a point partway along the straight line between two points (lerp in 2D).",
+    "params": [
+      {
+        "name": "p1",
+        "text": "Start point, returned when `t` is 0."
+      },
+      {
+        "name": "p2",
+        "text": "End point, returned when `t` is 1."
+      },
+      {
+        "name": "t",
+        "text": "Fraction along the line; `0.5` is the midpoint."
+      }
+    ],
+    "returns": "The interpolated `{ x, y }` point.",
+    "example": "getPointOnLine({ x: 0, y: 0 }, { x: 10, y: 20 }, 0.5); // => { x: 5, y: 10 }"
+  },
+  {
+    "name": "getRandomColors",
+    "kind": "function",
+    "module": "GetRandomColors",
+    "signature": "(str?: string) => { H: number; S: number; L: number; }",
+    "description": "Pick a random HSL color, optionally biased toward a named hue family.\n\nReturns hue/saturation/lightness components (not a CSS string) so the caller can\nformat them. Picking the hue from a restricted range keeps random colors within\na recognizable family (e.g. all blues).",
+    "params": [
+      {
+        "name": "str",
+        "text": "A color family to stay within: `\"red\"`, `\"orange\"`, `\"yellow\"`,\n`\"green\"`, or `\"blue\"`. Anything else (default `\"all\"`) spans the full wheel."
+      }
+    ],
+    "returns": "`{ H, S, L }` — hue (0–360), saturation (50–100), lightness (25–75).",
+    "example": "const { H, S, L } = getRandomColors(\"blue\");\nconst css = `hsl(${H}, ${S}%, ${L}%)`;"
+  },
+  {
+    "name": "getRotation",
+    "kind": "function",
+    "module": "GetRotation",
+    "signature": "(currentPoint: Point, destinationPoint: Point) => number",
+    "description": "Get the angle (in radians) pointing from one point toward another.\n\nHandy for rotating a sprite so it \"faces\" a target. Uses `Math.atan2`, so the\nresult is in the range `-π`…`π`, measured clockwise from the positive x-axis.",
+    "params": [
+      {
+        "name": "currentPoint",
+        "text": "The point doing the looking."
+      },
+      {
+        "name": "destinationPoint",
+        "text": "The point being looked at."
+      }
+    ],
+    "returns": "The heading angle in radians.",
+    "example": "getRotation({ x: 0, y: 0 }, { x: 0, y: 1 }); // => Math.PI / 2"
+  },
+  {
+    "name": "getTriangleData",
+    "kind": "function",
+    "module": "GetTriangleData",
+    "signature": "(p1: Point, p2: Point) => { dx: number; dy: number; distance: number; }",
+    "description": "Get the horizontal/vertical deltas and distance between two points.",
+    "params": [
+      {
+        "name": "p1",
+        "text": "First point."
+      },
+      {
+        "name": "p2",
+        "text": "Second point."
+      }
+    ],
+    "returns": "`{ dx, dy, distance }` — the run, the rise, and the hypotenuse.",
+    "example": "getTriangleData({ x: 0, y: 0 }, { x: 3, y: 4 }); // => { dx: 3, dy: 4, distance: 5 }"
+  },
+  {
+    "name": "triangleDataFromLine",
+    "kind": "function",
+    "module": "GetTriangleData",
+    "signature": "(startPoint: Point, endPoint: Point) => { angleInDegrees: number; remainingAngle: number; hypotenuse: number; adjacent: number; opposite: number; }",
+    "description": "Solve the right triangle formed by a line and its horizontal/vertical legs.\n\nTreats the line as the hypotenuse and derives the side lengths and angles via\nbasic SOH-CAH-TOA trigonometry.",
+    "params": [
+      {
+        "name": "startPoint",
+        "text": "One end of the line."
+      },
+      {
+        "name": "endPoint",
+        "text": "The other end of the line."
+      }
+    ],
+    "returns": "`{ angleInDegrees, remainingAngle, hypotenuse, adjacent, opposite }`.",
+    "example": "triangleDataFromLine({ x: 0, y: 0 }, { x: 4, y: 3 });\n// => { angleInDegrees: 36, remainingAngle: 54, hypotenuse: 5, adjacent: 4, opposite: 3 }"
+  },
+  {
+    "name": "grStep",
+    "kind": "function",
+    "module": "GRStep",
+    "signature": "(orbiter: { x: number; y: number; vx: number; vy: number; }, sun: { x: number; y: number; mass: number; }, grStrength: number) => void",
+    "description": "Advance an orbiting body one frame under gravity with a general-relativity correction.\n\nLike Newtonian gravity but with an extra `1 + grStrength/r²` term that strengthens\nthe pull at close range — this is what makes orbits *precess* (the famous anomaly\nin Mercury's orbit). **Mutates `orbiter`** in place.",
+    "params": [
+      {
+        "name": "orbiter",
+        "text": "The orbiting body (its `x`, `y`, `vx`, `vy` are mutated)."
+      },
+      {
+        "name": "sun",
+        "text": "The central mass being orbited."
+      },
+      {
+        "name": "grStrength",
+        "text": "Strength of the relativistic correction; `0` reduces to Newtonian gravity."
+      }
+    ],
+    "returns": "Nothing — `orbiter` is updated in place.",
+    "example": "grStep(planet, sun, 800); // call once per frame to see the orbit precess"
+  },
+  {
+    "name": "inverseLerp",
+    "kind": "function",
+    "module": "InverseLerp",
+    "signature": "(a: number, b: number, value: number) => number",
+    "description": "The inverse of {@link lerp }: find the fraction `t` that produces `value` between `a` and `b`.\n\nAnswers \"how far along am I?\" — e.g. turning a current value into a 0–1 progress.",
+    "params": [
+      {
+        "name": "a",
+        "text": "Range start (where the result is 0)."
+      },
+      {
+        "name": "b",
+        "text": "Range end (where the result is 1)."
+      },
+      {
+        "name": "value",
+        "text": "The value to locate within the range."
+      }
+    ],
+    "returns": "The fraction `t` such that `lerp(a, b, t) === value`. Returns `0` if `a === b`.",
+    "example": "inverseLerp(0, 100, 25); // => 0.25\ninverseLerp(20, 40, 30); // => 0.5"
+  },
+  {
+    "name": "lensDeflection",
+    "kind": "function",
+    "module": "LensDeflection",
+    "signature": "(x: number, y0: number, lx: number, ly: number, mass: number) => number",
+    "description": "Approximate how far a light ray is bent as it passes a massive object (gravitational lensing).\n\nA simplified model of Einstein's light-bending: the deflection grows with the\nlens `mass` and falls off with distance from it (the impact parameter `b`),\nwhich is why objects behind a galaxy appear warped into arcs.",
+    "params": [
+      {
+        "name": "x",
+        "text": "The ray's current horizontal position."
+      },
+      {
+        "name": "y0",
+        "text": "The ray's undeflected vertical position."
+      },
+      {
+        "name": "lx",
+        "text": "Lens (mass) center x."
+      },
+      {
+        "name": "ly",
+        "text": "Lens (mass) center y."
+      },
+      {
+        "name": "mass",
+        "text": "Mass of the lensing object; larger bends light more."
+      }
+    ],
+    "returns": "The vertical deflection to apply at this `x` (0 when far from the lens).",
+    "example": "const dy = lensDeflection(rayX, rayY, lensX, lensY, 2000);"
+  },
+  {
+    "name": "lerp",
+    "kind": "function",
+    "module": "Lerp",
+    "signature": "(a: number, b: number, t: number) => number",
+    "description": "Linearly interpolate between two numbers.",
+    "params": [
+      {
+        "name": "a",
+        "text": "Start value, returned when `t` is 0."
+      },
+      {
+        "name": "b",
+        "text": "End value, returned when `t` is 1."
+      },
+      {
+        "name": "t",
+        "text": "Interpolation factor. 0–1 stays within the range; values outside extrapolate."
+      }
+    ],
+    "returns": "The interpolated value `a + (b - a) * t`.",
+    "example": "lerp(0, 100, 0.5); // => 50"
+  },
+  {
+    "name": "lineLength",
+    "kind": "function",
+    "module": "LineLength",
+    "signature": "(line: Line) => number",
+    "description": "Get the length of a line segment.",
+    "params": [
+      {
+        "name": "line",
+        "text": "A line with `startPoint` and `endPoint`."
+      }
+    ],
+    "returns": "The straight-line distance between the two endpoints.",
+    "example": "lineLength({ startPoint: { x: 0, y: 0 }, endPoint: { x: 3, y: 4 } }); // => 5"
+  },
+  {
+    "name": "lineToCircle",
+    "kind": "function",
+    "module": "LineToCircle",
+    "signature": "(x1: number, y1: number, x2: number, y2: number, cx: number, cy: number, cr: number) => boolean",
+    "description": "Test whether a line segment intersects a circle.\n\nFinds the closest point on the segment to the circle's center and checks\nwhether it lies within the radius. This also handles degenerate zero-length\nsegments safely.",
+    "params": [
+      {
+        "name": "x1",
+        "text": "Segment start x."
+      },
+      {
+        "name": "y1",
+        "text": "Segment start y."
+      },
+      {
+        "name": "x2",
+        "text": "Segment end x."
+      },
+      {
+        "name": "y2",
+        "text": "Segment end y."
+      },
+      {
+        "name": "cx",
+        "text": "Circle center x."
+      },
+      {
+        "name": "cy",
+        "text": "Circle center y."
+      },
+      {
+        "name": "cr",
+        "text": "Circle radius."
+      }
+    ],
+    "returns": "`true` if the segment touches or crosses the circle.",
+    "example": "lineToCircle(0, 0, 10, 0, 5, 0, 2); // => true"
+  },
+  {
+    "name": "lineToLine",
+    "kind": "function",
+    "module": "LineToLine",
+    "signature": "(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) => boolean",
+    "description": "Test whether two line segments cross.\n\nParallel or collinear segments return `false` in this implementation.",
+    "params": [
+      {
+        "name": "x1",
+        "text": "First segment start x."
+      },
+      {
+        "name": "y1",
+        "text": "First segment start y."
+      },
+      {
+        "name": "x2",
+        "text": "First segment end x."
+      },
+      {
+        "name": "y2",
+        "text": "First segment end y."
+      },
+      {
+        "name": "x3",
+        "text": "Second segment start x."
+      },
+      {
+        "name": "y3",
+        "text": "Second segment start y."
+      },
+      {
+        "name": "x4",
+        "text": "Second segment end x."
+      },
+      {
+        "name": "y4",
+        "text": "Second segment end y."
+      }
+    ],
+    "returns": "`true` if the two segments intersect (parallel segments return `false`).",
+    "example": "lineToLine(0, 0, 10, 10, 0, 10, 10, 0); // => true (an X)"
+  },
+  {
+    "name": "lineToPoint",
+    "kind": "function",
+    "module": "LineToPoint",
+    "signature": "(x1: number, y1: number, x2: number, y2: number, px: number, py: number, threshold: number) => boolean",
+    "description": "Test whether a point lies on a line segment, within a tolerance.",
+    "params": [
+      {
+        "name": "x1",
+        "text": "Segment start x."
+      },
+      {
+        "name": "y1",
+        "text": "Segment start y."
+      },
+      {
+        "name": "x2",
+        "text": "Segment end x."
+      },
+      {
+        "name": "y2",
+        "text": "Segment end y."
+      },
+      {
+        "name": "px",
+        "text": "Point x."
+      },
+      {
+        "name": "py",
+        "text": "Point y."
+      },
+      {
+        "name": "threshold",
+        "text": "How close (in units) the point must be to count as \"on the line\"."
+      }
+    ],
+    "returns": "`true` if the point is within `threshold` of the segment.",
+    "example": "lineToPoint(0, 0, 10, 0, 5, 0, 0.5); // => true"
+  },
+  {
+    "name": "lineToRect",
+    "kind": "function",
+    "module": "LineToRect",
+    "signature": "(x1: number, y1: number, x2: number, y2: number, rx: number, ry: number, rw: number, rh: number) => boolean",
+    "description": "Test whether a line segment crosses any edge of an axis-aligned rectangle.\n\nNote: this checks the four edges only — a segment lying entirely *inside* the\nrectangle is not reported as a hit.",
+    "params": [
+      {
+        "name": "x1",
+        "text": "Segment start x."
+      },
+      {
+        "name": "y1",
+        "text": "Segment start y."
+      },
+      {
+        "name": "x2",
+        "text": "Segment end x."
+      },
+      {
+        "name": "y2",
+        "text": "Segment end y."
+      },
+      {
+        "name": "rx",
+        "text": "Rectangle left edge."
+      },
+      {
+        "name": "ry",
+        "text": "Rectangle top edge."
+      },
+      {
+        "name": "rw",
+        "text": "Rectangle width."
+      },
+      {
+        "name": "rh",
+        "text": "Rectangle height."
+      }
+    ],
+    "returns": "`true` if the segment crosses a rectangle edge.",
+    "example": "lineToRect(-5, 5, 15, 5, 0, 0, 10, 10); // => true"
+  },
+  {
+    "name": "mapRange",
+    "kind": "function",
+    "module": "MapRange",
+    "signature": "(value: number, inMin: number, inMax: number, outMin: number, outMax: number) => number",
+    "description": "Re-map a number from one range into another (also known as \"remap\").\n\nLinear and unclamped: a value outside the input range maps proportionally\noutside the output range. Pair with {@link clamp } if you need it bounded.",
+    "params": [
+      {
+        "name": "value",
+        "text": "The input value."
+      },
+      {
+        "name": "inMin",
+        "text": "Start of the input range."
+      },
+      {
+        "name": "inMax",
+        "text": "End of the input range."
+      },
+      {
+        "name": "outMin",
+        "text": "Start of the output range."
+      },
+      {
+        "name": "outMax",
+        "text": "End of the output range."
+      }
+    ],
+    "returns": "`value` rescaled from the input range to the output range.",
+    "example": "mapRange(5, 0, 10, 0, 100); // => 50\nmapRange(0.5, 0, 1, -180, 180); // => 0"
+  },
+  {
+    "name": "moveAlongLine",
+    "kind": "function",
+    "module": "MoveAlongLine",
+    "signature": "(origin: Point, destination: Point, ratio: number) => Point",
+    "description": "Find the point a given fraction of the way from one point to another.",
+    "params": [
+      {
+        "name": "origin",
+        "text": "Start point, returned when `ratio` is 0."
+      },
+      {
+        "name": "destination",
+        "text": "End point, returned when `ratio` is 1."
+      },
+      {
+        "name": "ratio",
+        "text": "Fraction of the way along; `0.5` is the midpoint."
+      }
+    ],
+    "returns": "The interpolated `{ x, y }` point.",
+    "example": "moveAlongLine({ x: 0, y: 0 }, { x: 10, y: 20 }, 0.5); // => { x: 5, y: 10 }"
+  },
+  {
+    "name": "moveToward",
+    "kind": "function",
+    "module": "MoveToward",
+    "signature": "(obj: Point, dest: Point, speed: number) => number",
+    "description": "Step a moving object toward a destination at a fixed speed, snapping on arrival.\n\n**Mutates `obj`** — its `x`/`y` are advanced by up to `speed` units toward `dest`.\nIf it's within one step, it lands exactly on `dest`.",
+    "params": [
+      {
+        "name": "obj",
+        "text": "The point to move (mutated in place)."
+      },
+      {
+        "name": "dest",
+        "text": "The target point."
+      },
+      {
+        "name": "speed",
+        "text": "Maximum distance to travel this call."
+      }
+    ],
+    "returns": "The heading angle (radians) from `obj` toward `dest`, for orienting the sprite.",
+    "example": "const ball = { x: 0, y: 0 };\nmoveToward(ball, { x: 10, y: 0 }, 2); // ball is now { x: 2, y: 0 }; returns 0"
+  },
+  {
+    "name": "numberWithCommas",
+    "kind": "function",
+    "module": "NumberWithCommas",
+    "signature": "(x: number) => string",
+    "description": "Format a number with comma thousands-separators.",
+    "params": [
+      {
+        "name": "x",
+        "text": "The number to format."
+      }
+    ],
+    "returns": "The number as a string with a comma every three digits.",
+    "example": "numberWithCommas(1234567); // => \"1,234,567\""
+  },
+  {
+    "name": "gravitationalStep",
+    "kind": "function",
+    "module": "OrbitalMotion",
+    "signature": "(orbiter: { x: number; y: number; vx: number; vy: number; }, body: { x: number; y: number; mass: number; }) => void",
+    "description": "Advance an orbiting body one frame under Newtonian gravity (inverse-square attraction).\n\nEach step pulls the orbiter toward the central body with a force proportional to\n`mass / r²`, then integrates velocity and position — enough to produce stable\norbits. **Mutates `orbiter`** in place.",
+    "params": [
+      {
+        "name": "orbiter",
+        "text": "The orbiting body (its `x`, `y`, `vx`, `vy` are mutated)."
+      },
+      {
+        "name": "body",
+        "text": "The central mass being orbited."
+      }
+    ],
+    "returns": "Nothing — `orbiter` is updated in place.",
+    "example": "gravitationalStep(planet, sun); // call once per frame"
+  },
+  {
+    "name": "pingPong",
+    "kind": "function",
+    "module": "PingPong",
+    "signature": "(t: number, length: number) => number",
+    "description": "Bounce a value back and forth between 0 and `length` as `t` increases.\n\nProduces a triangle wave: `0 → length → 0 → length …`. Perfect for seamless\nlooping motion (a sprite sliding to the edge and back without a visible jump).",
+    "params": [
+      {
+        "name": "t",
+        "text": "The input value, usually an ever-increasing time or counter."
+      },
+      {
+        "name": "length",
+        "text": "The peak of the bounce; output ranges over `[0, length]`."
+      }
+    ],
+    "returns": "The ping-ponged value in `[0, length]`. Returns `0` if `length <= 0`.",
+    "example": "pingPong(15, 10); // => 5  (past the peak, heading back down)\npingPong(20, 10); // => 0  (full cycle, back to start)"
+  },
+  {
+    "name": "pointToCircle",
+    "kind": "function",
+    "module": "PointToCircle",
+    "signature": "(px: number, py: number, cx: number, cy: number, radius: number) => boolean",
+    "description": "Test whether a point falls inside (or on the edge of) a circle.",
+    "params": [
+      {
+        "name": "px",
+        "text": "Point x."
+      },
+      {
+        "name": "py",
+        "text": "Point y."
+      },
+      {
+        "name": "cx",
+        "text": "Circle center x."
+      },
+      {
+        "name": "cy",
+        "text": "Circle center y."
+      },
+      {
+        "name": "radius",
+        "text": "Circle radius."
+      }
+    ],
+    "returns": "`true` if the point is within `radius` of the center.",
+    "example": "pointToCircle(1, 1, 0, 0, 5); // => true"
+  },
+  {
+    "name": "pointToPolygon",
+    "kind": "function",
+    "module": "PointToPolygon",
+    "signature": "(px: number, py: number, vertices: Point[]) => boolean",
+    "description": "Test whether a point falls inside a polygon (ray-casting / even-odd rule).\n\nCasts a horizontal ray from the point and counts how many polygon edges it\ncrosses — an odd count means the point is inside. Works for both convex and\nconcave polygons.",
+    "params": [
+      {
+        "name": "px",
+        "text": "Point x."
+      },
+      {
+        "name": "py",
+        "text": "Point y."
+      },
+      {
+        "name": "vertices",
+        "text": "The polygon vertices, in order."
+      }
+    ],
+    "returns": "`true` if the point lies inside the polygon.",
+    "example": "const square = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];\npointToPolygon(5, 5, square); // => true\npointToPolygon(20, 20, square); // => false"
+  },
+  {
+    "name": "pointToRect",
+    "kind": "function",
+    "module": "PointToRect",
+    "signature": "(px: number, py: number, rx: number, ry: number, rw: number, rh: number) => boolean",
+    "description": "Test whether a point falls inside (or on the edge of) an axis-aligned rectangle.",
+    "params": [
+      {
+        "name": "px",
+        "text": "Point x."
+      },
+      {
+        "name": "py",
+        "text": "Point y."
+      },
+      {
+        "name": "rx",
+        "text": "Rectangle left edge."
+      },
+      {
+        "name": "ry",
+        "text": "Rectangle top edge."
+      },
+      {
+        "name": "rw",
+        "text": "Rectangle width."
+      },
+      {
+        "name": "rh",
+        "text": "Rectangle height."
+      }
+    ],
+    "returns": "`true` if the point lies within the rectangle bounds, including edges.",
+    "example": "pointToRect(5, 5, 0, 0, 10, 10); // => true"
+  },
+  {
+    "name": "polygonToPolygon",
+    "kind": "function",
+    "module": "PolygonToPolygon",
+    "signature": "(poly1: Point[], poly2: Point[]) => boolean",
+    "description": "Test whether two polygons overlap, by checking if either has a vertex inside the other.\n\nUses ray-casting (the point-in-polygon test) on each polygon's vertices. This\ncatches most overlaps but can miss edge-only crossings where no vertex is contained.",
+    "params": [
+      {
+        "name": "poly1",
+        "text": "First polygon as an array of points."
+      },
+      {
+        "name": "poly2",
+        "text": "Second polygon as an array of points."
+      }
+    ],
+    "returns": "`true` if a vertex of either polygon lies inside the other.",
+    "example": "polygonToPolygon(squareA, squareB); // => true when they overlap"
+  },
+  {
+    "name": "quadraticBezier",
+    "kind": "function",
+    "module": "QuadraticBezier",
+    "signature": "(t: number, p0: Point, p1: Point, p2: Point) => Point",
+    "description": "Find the point at parameter `t` along a quadratic Bézier curve (one control point).\n\nUses the closed-form quadratic Bézier formula\n`(1-t)²·p0 + 2(1-t)t·p1 + t²·p2`.",
+    "params": [
+      {
+        "name": "t",
+        "text": "Position along the curve, 0–1."
+      },
+      {
+        "name": "p0",
+        "text": "Start anchor point (returned at `t = 0`)."
+      },
+      {
+        "name": "p1",
+        "text": "The single control handle that bends the curve."
+      },
+      {
+        "name": "p2",
+        "text": "End anchor point (returned at `t = 1`)."
+      }
+    ],
+    "returns": "The `{ x, y }` point on the curve at `t`.",
+    "example": "quadraticBezier(0.5, {x:0,y:0}, {x:50,y:100}, {x:100,y:0}); // => { x: 50, y: 50 }"
+  },
+  {
+    "name": "radToDeg",
+    "kind": "function",
+    "module": "RadToDeg",
+    "signature": "(radians: number) => number",
+    "description": "Convert an angle from radians to degrees.",
+    "params": [
+      {
+        "name": "radians",
+        "text": "Angle in radians."
+      }
+    ],
+    "returns": "The equivalent angle in degrees.",
+    "example": "radToDeg(Math.PI); // => 180"
+  },
+  {
+    "name": "randomIntegerBetween",
+    "kind": "function",
+    "module": "RandomIntegerBetween",
+    "signature": "(min: number, max: number) => number",
+    "description": "Pick a random integer in an inclusive range.",
+    "params": [
+      {
+        "name": "min",
+        "text": "Lowest possible value (inclusive)."
+      },
+      {
+        "name": "max",
+        "text": "Highest possible value (inclusive)."
+      }
+    ],
+    "returns": "A random integer `n` where `min <= n <= max`.",
+    "example": "randomIntegerBetween(1, 6); // => e.g. 4 (a six-sided die)"
+  },
+  {
+    "name": "randomNumberBetween",
+    "kind": "function",
+    "module": "RandomNumberBetween",
+    "signature": "(min: number, max: number) => number",
+    "description": "Pick a random floating-point number in a half-open range.",
+    "params": [
+      {
+        "name": "min",
+        "text": "Lower bound (inclusive)."
+      },
+      {
+        "name": "max",
+        "text": "Upper bound (exclusive)."
+      }
+    ],
+    "returns": "A random number `n` where `min <= n < max`.",
+    "example": "randomNumberBetween(0, 1); // => e.g. 0.2738"
+  },
+  {
+    "name": "createRect",
+    "kind": "function",
+    "module": "Rectangle",
+    "signature": "(width: number, height: number, angle?: number, options?: { rotate?: boolean; rotateSpeed?: number; clockwise?: boolean; time?: number; }) => { vertices: Point[]; }",
+    "description": "Compute the four corner vertices of a rectangle, centered on the origin.",
+    "params": [
+      {
+        "name": "width",
+        "text": "Rectangle width."
+      },
+      {
+        "name": "height",
+        "text": "Rectangle height."
+      },
+      {
+        "name": "angle",
+        "text": "Rotation in radians about the center. Defaults to `0`."
+      },
+      {
+        "name": "options",
+        "text": "Optional spin animation: `{ rotate, rotateSpeed, clockwise, time }`. When\n`rotate` is true the angle advances with `options.time` (ms, e.g. `performance.now()`),\nkeeping the function pure — pass the time in rather than reading the clock here."
+      }
+    ],
+    "returns": "`{ vertices }` — the four corners as points.",
+    "example": "createRect(10, 10).vertices.length; // => 4"
+  },
+  {
+    "name": "rectToPolygon",
+    "kind": "function",
+    "module": "RectToPolygon",
+    "signature": "(rx: number, ry: number, rw: number, rh: number, vertices: Point[]) => boolean",
+    "description": "Test whether an axis-aligned rectangle overlaps a polygon.\n\nCombines three checks so no overlap is missed:\n1. Any polygon vertex inside the rectangle.\n2. Any rectangle corner inside the polygon.\n3. Any polygon edge crossing any rectangle edge.\n\nThe vertex-only approach used by most simple implementations fails when one\nshape is entirely inside the other, or when edges cross without either shape's\nvertices being contained. All three checks together are complete.",
+    "params": [
+      {
+        "name": "rx",
+        "text": "Rectangle left edge."
+      },
+      {
+        "name": "ry",
+        "text": "Rectangle top edge."
+      },
+      {
+        "name": "rw",
+        "text": "Rectangle width."
+      },
+      {
+        "name": "rh",
+        "text": "Rectangle height."
+      },
+      {
+        "name": "vertices",
+        "text": "The polygon vertices, in order."
+      }
+    ],
+    "returns": "`true` if the rectangle and polygon overlap.",
+    "example": "const tri = [{ x: 5, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];\nrectToPolygon(3, 3, 8, 8, tri); // => true\nrectToPolygon(50, 50, 10, 10, tri); // => false"
+  },
+  {
+    "name": "rectToRect",
+    "kind": "function",
+    "module": "RectToRect",
+    "signature": "(x1: number, y1: number, w1: number, h1: number, x2: number, y2: number, w2: number, h2: number) => boolean",
+    "description": "Test whether two axis-aligned rectangles overlap (AABB collision).",
+    "params": [
+      {
+        "name": "x1",
+        "text": "First rect left edge."
+      },
+      {
+        "name": "y1",
+        "text": "First rect top edge."
+      },
+      {
+        "name": "w1",
+        "text": "First rect width."
+      },
+      {
+        "name": "h1",
+        "text": "First rect height."
+      },
+      {
+        "name": "x2",
+        "text": "Second rect left edge."
+      },
+      {
+        "name": "y2",
+        "text": "Second rect top edge."
+      },
+      {
+        "name": "w2",
+        "text": "Second rect width."
+      },
+      {
+        "name": "h2",
+        "text": "Second rect height."
+      }
+    ],
+    "returns": "`true` if the two rectangles have positive overlapping area.",
+    "example": "rectToRect(0, 0, 10, 10, 5, 5, 10, 10); // => true"
+  },
+  {
+    "name": "sineCurve",
+    "kind": "function",
+    "module": "SineCurve",
+    "signature": "(startingValue: number, differential: number, speed: number, time: number) => number",
+    "description": "Oscillate a value smoothly around a baseline using a sine wave.\n\nPure and deterministic: pass the current `time` (e.g. `performance.now()`) and the\nsame inputs always produce the same output — so it's easy to test and reproduce.",
+    "params": [
+      {
+        "name": "startingValue",
+        "text": "The baseline the result oscillates around."
+      },
+      {
+        "name": "differential",
+        "text": "The amplitude (how far above/below the baseline it swings)."
+      },
+      {
+        "name": "speed",
+        "text": "Oscillation speed multiplier applied to `time`."
+      },
+      {
+        "name": "time",
+        "text": "The current time in milliseconds (e.g. `performance.now()`)."
+      }
+    ],
+    "returns": "The oscillating value at the given moment.",
+    "example": "const y = sineCurve(200, 50, 0.002, performance.now()); // bob around y=200 by ±50"
+  },
+  {
+    "name": "sineWave",
+    "kind": "function",
+    "module": "SineWave",
+    "signature": "(x: number, centerY: number, amplitude: number, wavelength: number, phase: number) => number",
+    "description": "Sample the height of a sine wave at a horizontal position.\n\nThe standard wave equation: `centerY + amplitude · sin(2π·(x/wavelength + phase))`.\nAnimate by advancing `phase` over time to make the wave travel.",
+    "params": [
+      {
+        "name": "x",
+        "text": "Horizontal position to sample."
+      },
+      {
+        "name": "centerY",
+        "text": "The wave's rest (center) height."
+      },
+      {
+        "name": "amplitude",
+        "text": "Peak height above/below center."
+      },
+      {
+        "name": "wavelength",
+        "text": "Horizontal distance between successive peaks."
+      },
+      {
+        "name": "phase",
+        "text": "Phase offset in wavelengths; advance over time to animate."
+      }
+    ],
+    "returns": "The wave's y value at `x`.",
+    "example": "const y = sineWave(x, 200, 50, 120, time * 0.01);"
+  },
+  {
+    "name": "smootherstep",
+    "kind": "function",
+    "module": "Smoothstep",
+    "signature": "(edge0: number, edge1: number, x: number) => number",
+    "description": "Ken Perlin's smoother variant of {@link smoothstep}.\n\nUses a 5th-order curve so both the 1st *and* 2nd derivatives are zero at the\nedges — even less perceptible \"popping\" at the start and end of the transition.",
+    "params": [
+      {
+        "name": "edge0",
+        "text": "Lower edge; output is 0 at or below this."
+      },
+      {
+        "name": "edge1",
+        "text": "Upper edge; output is 1 at or above this."
+      },
+      {
+        "name": "x",
+        "text": "The value to interpolate."
+      }
+    ],
+    "returns": "A very smoothly eased value in `[0, 1]`.",
+    "example": "smootherstep(0, 10, 5); // => 0.5"
+  },
+  {
+    "name": "smoothstep",
+    "kind": "function",
+    "module": "Smoothstep",
+    "signature": "(edge0: number, edge1: number, x: number) => number",
+    "description": "Smooth Hermite interpolation between two edges — the classic GLSL `smoothstep`.\n\nReturns 0 below `edge0`, 1 above `edge1`, and an eased S-curve in between (flat\nat both ends), giving gentler transitions than a raw linear ramp.",
+    "params": [
+      {
+        "name": "edge0",
+        "text": "Lower edge; output is 0 at or below this."
+      },
+      {
+        "name": "edge1",
+        "text": "Upper edge; output is 1 at or above this."
+      },
+      {
+        "name": "x",
+        "text": "The value to interpolate."
+      }
+    ],
+    "returns": "A smoothly eased value in `[0, 1]`.",
+    "example": "smoothstep(0, 10, 5); // => 0.5\nsmoothstep(0, 10, -2); // => 0"
+  },
+  {
+    "name": "sphereLighting",
+    "kind": "function",
+    "module": "SphereLighting",
+    "signature": "(sphere: { x: number; y: number; radius: number; }, lightSource: Point, highlightReach?: number) => Point",
+    "description": "Find where the specular highlight sits on a 2D sphere, given a light source.\n\nPoints from the sphere's center toward the light and walks part of the way out\nalong the radius — a cheap way to fake a 3D-lit highlight on a flat circle.",
+    "params": [
+      {
+        "name": "sphere",
+        "text": "The sphere's center and radius."
+      },
+      {
+        "name": "lightSource",
+        "text": "Position of the light."
+      },
+      {
+        "name": "highlightReach",
+        "text": "How far toward the edge the highlight sits, 0–1. Defaults to `0.4`."
+      }
+    ],
+    "returns": "The `{ x, y }` position to draw the highlight.",
+    "example": "const hi = sphereLighting({ x: 100, y: 100, radius: 40 }, { x: 0, y: 0 });"
+  },
+  {
+    "name": "starVertices",
+    "kind": "function",
+    "module": "Star",
+    "signature": "(spikes: number, innerRadius: number, outerRadius: number, angle?: number, options?: { rotate?: boolean; rotateSpeed?: number; clockwise?: boolean; time?: number; }) => { vertices: Point[]; }",
+    "description": "Compute the vertices of a star polygon, alternating between an outer and inner radius.",
+    "params": [
+      {
+        "name": "spikes",
+        "text": "Number of points on the star."
+      },
+      {
+        "name": "innerRadius",
+        "text": "Radius of the inner (valley) vertices."
+      },
+      {
+        "name": "outerRadius",
+        "text": "Radius of the outer (tip) vertices."
+      },
+      {
+        "name": "angle",
+        "text": "Starting rotation in radians. Defaults to `0`."
+      },
+      {
+        "name": "options",
+        "text": "Optional spin animation: `{ rotate, rotateSpeed, clockwise, time }`. When\n`rotate` is true the angle advances with `options.time` (ms, e.g. `performance.now()`),\nkeeping the function pure — pass the time in rather than reading the clock here."
+      }
+    ],
+    "returns": "`{ vertices }` — `spikes * 2` points, alternating outer then inner.",
+    "example": "starVertices(5, 5, 10).vertices.length; // => 10"
+  },
+  {
+    "name": "Ball",
+    "kind": "type",
+    "module": "types",
+    "signature": "Ball",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "Circle",
+    "kind": "type",
+    "module": "types",
+    "signature": "Circle",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "Container",
+    "kind": "type",
+    "module": "types",
+    "signature": "Container",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "Line",
+    "kind": "type",
+    "module": "types",
+    "signature": "Line",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "Point",
+    "kind": "type",
+    "module": "types",
+    "signature": "Point",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "Polygon",
+    "kind": "type",
+    "module": "types",
+    "signature": "Polygon",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "ShapeInMotion",
+    "kind": "type",
+    "module": "types",
+    "signature": "ShapeInMotion",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "Vector",
+    "kind": "type",
+    "module": "types",
+    "signature": "Vector",
+    "description": "",
+    "params": [],
+    "returns": "",
+    "example": ""
+  },
+  {
+    "name": "unitCirclePoint",
+    "kind": "function",
+    "module": "UnitCirclePoint",
+    "signature": "(cx: number, cy: number, radius: number, time: number) => { x: number; y: number; cos: number; sin: number; }",
+    "description": "Get the point on a circle at a given angle, along with the raw cosine/sine.\n\nReturning `cos`/`sin` too saves the caller recomputing them (e.g. to orient\nsomething tangent to the circle).",
+    "params": [
+      {
+        "name": "cx",
+        "text": "Circle center x."
+      },
+      {
+        "name": "cy",
+        "text": "Circle center y."
+      },
+      {
+        "name": "radius",
+        "text": "Circle radius."
+      },
+      {
+        "name": "time",
+        "text": "Angle in radians (named `time` since it's usually driven by a clock)."
+      }
+    ],
+    "returns": "`{ x, y, cos, sin }` — the point and the trig components used to find it.",
+    "example": "unitCirclePoint(100, 100, 50, 0); // => { x: 150, y: 100, cos: 1, sin: 0 }"
+  },
+  {
+    "name": "vecAdd",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(a: Vector, b: Vector) => Vector",
+    "description": "Add two vectors component-wise.",
+    "params": [
+      {
+        "name": "a",
+        "text": "First vector."
+      },
+      {
+        "name": "b",
+        "text": "Second vector."
+      }
+    ],
+    "returns": "A new vector `{ x: a.x + b.x, y: a.y + b.y }`.",
+    "example": "vecAdd({ x: 1, y: 2 }, { x: 3, y: 4 }); // => { x: 4, y: 6 }"
+  },
+  {
+    "name": "vecAngle",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector) => number",
+    "description": "The angle of a vector in radians, measured counter-clockwise from the positive x-axis.",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector."
+      }
+    ],
+    "returns": "The angle in radians, in the range `-π`…`π` (via `Math.atan2`).",
+    "example": "vecAngle({ x: 0, y: 1 }); // => Math.PI / 2"
+  },
+  {
+    "name": "vecAngleBetween",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(a: Vector, b: Vector) => number",
+    "description": "The (unsigned) angle between two vectors.",
+    "params": [
+      {
+        "name": "a",
+        "text": "First vector."
+      },
+      {
+        "name": "b",
+        "text": "Second vector."
+      }
+    ],
+    "returns": "The angle in radians, in the range `0`…`π`. Returns `0` if either vector is zero-length.",
+    "example": "vecAngleBetween({ x: 1, y: 0 }, { x: 0, y: 1 }); // => Math.PI / 2"
+  },
+  {
+    "name": "vecCross",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(a: Vector, b: Vector) => number",
+    "description": "2D cross product — the z-component of the 3D cross, a single scalar.\n\nIts sign tells you the turn direction from `a` to `b` (positive = counter-clockwise),\nand its magnitude is the area of the parallelogram they span.",
+    "params": [
+      {
+        "name": "a",
+        "text": "First vector."
+      },
+      {
+        "name": "b",
+        "text": "Second vector."
+      }
+    ],
+    "returns": "The scalar `a.x * b.y - a.y * b.x`.",
+    "example": "vecCross({ x: 1, y: 0 }, { x: 0, y: 1 }); // => 1"
+  },
+  {
+    "name": "vecDot",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(a: Vector, b: Vector) => number",
+    "description": "Dot product of two vectors.\n\nA measure of how much the vectors point the same way: positive when roughly\naligned, zero when perpendicular, negative when opposed. The basis for projection.",
+    "params": [
+      {
+        "name": "a",
+        "text": "First vector."
+      },
+      {
+        "name": "b",
+        "text": "Second vector."
+      }
+    ],
+    "returns": "The scalar `a.x * b.x + a.y * b.y`.",
+    "example": "vecDot({ x: 1, y: 0 }, { x: 0, y: 1 }); // => 0 (perpendicular)"
+  },
+  {
+    "name": "vecLerp",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(a: Vector, b: Vector, t: number) => Vector",
+    "description": "Linearly interpolate between two vectors (lerp in 2D).",
+    "params": [
+      {
+        "name": "a",
+        "text": "Start vector, returned when `t` is 0."
+      },
+      {
+        "name": "b",
+        "text": "End vector, returned when `t` is 1."
+      },
+      {
+        "name": "t",
+        "text": "Interpolation factor; `0.5` is the midpoint."
+      }
+    ],
+    "returns": "A new vector partway between `a` and `b`.",
+    "example": "vecLerp({ x: 0, y: 0 }, { x: 10, y: 20 }, 0.5); // => { x: 5, y: 10 }"
+  },
+  {
+    "name": "vecLimit",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector, max: number) => Vector",
+    "description": "Clamp a vector's magnitude to at most `max`, preserving its direction.\n\nCommon for capping a velocity to a maximum speed.",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector to limit."
+      },
+      {
+        "name": "max",
+        "text": "The maximum allowed length."
+      }
+    ],
+    "returns": "A new vector no longer than `max` (a copy of `v` if it was already shorter).",
+    "example": "vecLimit({ x: 30, y: 40 }, 10); // => { x: 6, y: 8 } (was length 50, now length 10)"
+  },
+  {
+    "name": "vecMagnitude",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector) => number",
+    "description": "Length (magnitude) of a vector.",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector."
+      }
+    ],
+    "returns": "Its length, `√(x² + y²)`.",
+    "example": "vecMagnitude({ x: 3, y: 4 }); // => 5"
+  },
+  {
+    "name": "vecMagnitudeSquared",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector) => number",
+    "description": "Squared length of a vector — cheaper than {@link vecMagnitude} (skips the square root).\n\nUse this when you only need to *compare* lengths (e.g. \"which is closer?\"), since\ncomparing squared lengths gives the same answer without the costly `sqrt`.",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector."
+      }
+    ],
+    "returns": "`x² + y²`.",
+    "example": "vecMagnitudeSquared({ x: 3, y: 4 }); // => 25"
+  },
+  {
+    "name": "vecNormalize",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector) => Vector",
+    "description": "Normalize a vector to length 1, preserving its direction (a \"unit vector\").",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector to normalize."
+      }
+    ],
+    "returns": "A new unit vector, or `{ x: 0, y: 0 }` if `v` has zero length.",
+    "example": "vecNormalize({ x: 0, y: 5 }); // => { x: 0, y: 1 }"
+  },
+  {
+    "name": "vecPerpendicular",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector) => Vector",
+    "description": "A vector perpendicular to the given one (rotated 90° counter-clockwise).\n\nHandy for finding a surface normal from an edge.",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector."
+      }
+    ],
+    "returns": "A new vector `{ x: -v.y, y: v.x }`.",
+    "example": "vecPerpendicular({ x: 1, y: 0 }); // => { x: 0, y: 1 }"
+  },
+  {
+    "name": "vecReflect",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector, normal: Vector) => Vector",
+    "description": "Reflect a vector off a surface, like a ball bouncing off a wall.",
+    "params": [
+      {
+        "name": "v",
+        "text": "The incoming vector (e.g. a velocity)."
+      },
+      {
+        "name": "normal",
+        "text": "The surface normal. Should be a unit vector; normalize it first if unsure."
+      }
+    ],
+    "returns": "The reflected vector, `v - 2 (v · normal) normal`.",
+    "example": "vecReflect({ x: 1, y: -1 }, { x: 0, y: 1 }); // => { x: 1, y: 1 } (bounce off the floor)"
+  },
+  {
+    "name": "vecRotate",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector, radians: number) => Vector",
+    "description": "Rotate a vector by an angle (counter-clockwise in standard math coordinates).",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector to rotate."
+      },
+      {
+        "name": "radians",
+        "text": "The rotation angle in radians."
+      }
+    ],
+    "returns": "A new, rotated vector of the same length.",
+    "example": "vecRotate({ x: 1, y: 0 }, Math.PI / 2); // => { x: ~0, y: 1 }"
+  },
+  {
+    "name": "vecScale",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(v: Vector, s: number) => Vector",
+    "description": "Scale a vector by a scalar (stretch or shrink it, keeping direction unless negative).",
+    "params": [
+      {
+        "name": "v",
+        "text": "The vector to scale."
+      },
+      {
+        "name": "s",
+        "text": "The scalar multiplier."
+      }
+    ],
+    "returns": "A new vector `{ x: v.x * s, y: v.y * s }`.",
+    "example": "vecScale({ x: 3, y: 4 }, 2); // => { x: 6, y: 8 }"
+  },
+  {
+    "name": "vecSubtract",
+    "kind": "function",
+    "module": "Vec2",
+    "signature": "(a: Vector, b: Vector) => Vector",
+    "description": "Subtract vector `b` from `a` — the displacement pointing from `b` to `a`.",
+    "params": [
+      {
+        "name": "a",
+        "text": "The vector to subtract from."
+      },
+      {
+        "name": "b",
+        "text": "The vector being subtracted."
+      }
+    ],
+    "returns": "A new vector `{ x: a.x - b.x, y: a.y - b.y }`.",
+    "example": "vecSubtract({ x: 5, y: 5 }, { x: 1, y: 2 }); // => { x: 4, y: 3 }"
+  },
+  {
+    "name": "waveAmplitude",
+    "kind": "function",
+    "module": "WaveAmplitude",
+    "signature": "(x: number, y: number, sources: Point[], time: number, k: number, omega: number) => number",
+    "description": "Compute the combined wave height at a point from multiple ripple sources (interference).\n\nSums a traveling cosine wave radiating from each source and averages them, so\noverlapping waves reinforce (bright) or cancel (dark) — the two-slit interference\npattern. `k` is the spatial frequency (2π/wavelength), `omega` the temporal frequency.",
+    "params": [
+      {
+        "name": "x",
+        "text": "Sample point x."
+      },
+      {
+        "name": "y",
+        "text": "Sample point y."
+      },
+      {
+        "name": "sources",
+        "text": "The wave-emitting source points."
+      },
+      {
+        "name": "time",
+        "text": "Current time, advanced each frame to animate the waves."
+      },
+      {
+        "name": "k",
+        "text": "Wave number (spatial frequency)."
+      },
+      {
+        "name": "omega",
+        "text": "Angular frequency (temporal)."
+      }
+    ],
+    "returns": "The averaged wave amplitude at the point, roughly `-1`…`1`.",
+    "example": "const a = waveAmplitude(x, y, [s1, s2], time, 0.05, 0.1);"
+  },
+  {
+    "name": "wrap",
+    "kind": "function",
+    "module": "Wrap",
+    "signature": "(value: number, min: number, max: number) => number",
+    "description": "Wrap a value into the half-open range `[min, max)`, looping around at the ends.\n\nLike a modulo that respects an arbitrary lower bound — values that run off one\nend reappear at the other (think Asteroids-style screen wrap, or cyclic indices).",
+    "params": [
+      {
+        "name": "value",
+        "text": "The value to wrap."
+      },
+      {
+        "name": "min",
+        "text": "Lower bound (inclusive)."
+      },
+      {
+        "name": "max",
+        "text": "Upper bound (exclusive)."
+      }
+    ],
+    "returns": "`value` mapped into `[min, max)`. Returns `min` if the range is empty.",
+    "example": "wrap(11, 0, 10); // => 1\nwrap(-1, 0, 10); // => 9"
+  }
+]

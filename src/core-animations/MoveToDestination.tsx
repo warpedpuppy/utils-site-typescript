@@ -1,8 +1,8 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { MoveAlongLine } from "../core-functions/MoveAlongLine";
-import { MoveAlongLine as moveAlongLineFormula } from "../pages/createJSON/formulas/animation/MoveAlongLine";
-import { GetRotation } from "../core-functions/GetRotation";
+import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
+import { moveAlongLine as moveAlongLineFormula } from "../pages/createJSON/formulas/animation/MoveAlongLine";
+import { getRotation } from "@utilspalooza/core/GetRotation";
 
 function drawMoveToDestination(
   ctx: any,
@@ -17,7 +17,7 @@ function drawMoveToDestination(
   ctx.strokeStyle = "green";
   ctx.lineWidth = 10;
 
-  let newDotPoint = MoveAlongLine(dot, dotNew, ratio);
+  let newDotPoint = moveAlongLine(dot, dotNew, ratio);
   dot.x = newDotPoint.x;
   dot.y = newDotPoint.y;
 
@@ -25,11 +25,11 @@ function drawMoveToDestination(
   ctx.arc(dot.x, dot.y, 20, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let newPoint = MoveAlongLine(arrowPoint, dot, ratio);
+  let newPoint = moveAlongLine(arrowPoint, dot, ratio);
   arrowPoint.x = newPoint.x;
   arrowPoint.y = newPoint.y;
 
-  let angle = GetRotation(newPoint, dot);
+  let angle = getRotation(newPoint, dot);
 
   ctx.translate(newPoint.x, newPoint.y);
   ctx.rotate(angle);

@@ -1,12 +1,12 @@
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { LineLength } from "../../animation/LineLength";
-import { LinePoint as LinePointImported } from "../../../../../core-functions/CollisionObjectAPI/LinePoint";
-import LinePointSource from "../../../../../core-functions/CollisionObjectAPI/LinePoint.ts?raw";
+import { lineLength } from "../../animation/LineLength";
+import { linePoint as LinePointImported } from "@utilspalooza/core/CollisionObjectAPI/LinePoint";
+import LinePointSource from "@utilspalooza/core/CollisionObjectAPI/LinePoint.ts?raw";
 import { extractFunctionString } from "../../extractFunctionString";
 
-export const LinePoint: CollisionDetectionObject = {
+export const linePoint: CollisionDetectionObject = {
   keyFunction: LinePointImported,
-  dependencies: [LineLength.functionString],
+  dependencies: [lineLength.functionString],
   interfaces: ["Point", "Line"],
   functionString: extractFunctionString(LinePointSource),
 };

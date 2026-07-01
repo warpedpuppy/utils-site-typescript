@@ -1,0 +1,49 @@
+{
+  "name": "@utilspalooza/core",
+  "version": "0.1.0",
+  "description": "Readable TypeScript math helpers for creative coding, canvas animation, and visual experiments.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/warpedpuppy/utils-site-typescript.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://utilspalooza.com",
+  "bugs": "https://github.com/warpedpuppy/utils-site-typescript/issues",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.global.js",
+  "jsdelivr": "./dist/index.global.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./legacy": {
+      "types": "./dist/legacy.d.ts",
+      "import": "./dist/legacy.js",
+      "require": "./dist/legacy.cjs"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js",
+      "require": "./dist/*.cjs"
+    }
+  },
+  "files": ["dist"],
+  "sideEffects": false,
+  "scripts": {
+    "barrel": "node scripts/generate-barrel.mjs",
+    "docs": "node scripts/generate-api-docs.mjs",
+    "build": "npm run barrel && npm run docs && tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run barrel && npm run typecheck && npm run test --prefix ../.. && tsup"
+  },
+  "publishConfig": { "access": "public" },
+  "devDependencies": {
+    "tsup": "^8.0.0"
+  }
+}

@@ -10,6 +10,8 @@
 
 import { CodePenPayload } from "./codepen";
 import { AUDIO_VISUALIZER_PEN } from "./AudioVisualizerWireframe";
+import { drawFlowField } from "../../core-animations/FlowField";
+import { drawPhyllotaxis, phyllotaxisPoint } from "../../core-animations/Phyllotaxis";
 import { EXAMPLE_PENS } from "./pens-examples";
 
 // ── shared CSS used by the canvas-fills-the-page pens ────────────────────────
@@ -61,14 +63,9 @@ const PHYLLOTAXIS_HTML = `<canvas id="canvas"></canvas>
 
 const PHYLLOTAXIS_JS = `const GOLDEN_ANGLE = 137.50776405003785; // ← (2 − φ) × 360, the whole show
 
-// ─── the core algorithm — Vogel's model (1979) ──────────────────────────────
-// Seed n sits at angle n×φ and radius c×√n. That is the entire thing — the
-// double-spiral you see is a side-effect of the angle, not programmed in.
-function phyllotaxisPoint(n, angleDeg, scale) {
-  const theta = n * angleDeg * Math.PI / 180;  // ← the divergence angle goes here
-  const r = scale * Math.sqrt(n);              // √n keeps area-density constant
-  return [r * Math.cos(theta), r * Math.sin(theta)];
-}
+${phyllotaxisPoint.toString()}
+
+${drawPhyllotaxis.toString()}
 
 // ─── canvas setup (what the site's Template base class normally does) ─────────
 const canvas = document.getElementById('canvas');
@@ -84,7 +81,7 @@ resize();
 let angleDeg = GOLDEN_ANGLE;
 let numSeeds = 500;
 let colorMode = 'gradient';
-let rotation = 0;
+let rotationAngleDeg = 0;
 
 // snap-to-golden easing
 let snapFrom = angleDeg, snapTo = angleDeg, snapT = 1;
@@ -95,36 +92,22 @@ const computeScale = () =>
   Math.min(canvas.width, canvas.height) * 0.44 / Math.sqrt(numSeeds);
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.save();
-  ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.rotate(rotation * Math.PI / 180);
-
-  const scale = computeScale();
-  for (let n = 0; n < numSeeds; n++) {
-    const [x, y] = phyllotaxisPoint(n, angleDeg, scale);
-    let color;
-    if (colorMode === 'gradient') {
-      const t = n / Math.max(1, numSeeds - 1);
-      color = \`hsl(\${30 + t*200}, \${80 + t*15}%, \${45 + t*25}%)\`;
-    } else {
-      color = '#f0e6c8';
-    }
-    ctx.beginPath();
-    ctx.arc(x, y, 4, 0, 2 * Math.PI);
-    ctx.fillStyle = color;
-    ctx.fill();
-  }
-  ctx.restore();
+  drawPhyllotaxis(ctx, canvas.width, canvas.height, {
+    angleDeg,
+    numSeeds,
+    seedRadius: 4,
+    scale: computeScale(),
+    colorMode,
+    showSpirals: false,
+    rotationAngleDeg,
+  });
 }
 
 const angleSlider = document.getElementById('angle');
 const angleVal = document.getElementById('angle-val');
 
 function loop() {
-  rotation = (rotation + 0.05) % 360; // slow spin
+  rotationAngleDeg = (rotationAngleDeg + 0.05) % 360; // slow spin
 
   if (snapT < 1) { // animate the slider home to the golden angle
     snapT = Math.min(1, snapT + 1 / snapDuration);
@@ -205,11 +188,7 @@ function perlin2(x, y) {
   );
 }
 
-// ─── the seam: noise value → steering angle ─────────────────────────────────
-// Each particle reads this angle at its position and accelerates that way.
-function getFlowAngle(x, y, scale, z) {
-  return perlin2(x * scale, y * scale + z) * Math.PI * 4; // ← the field lives here
-}
+${drawFlowField.toString()}
 
 // ─── canvas setup (what the site's Template base class normally does) ─────────
 const canvas = document.getElementById('canvas');
@@ -229,10 +208,15 @@ let numParticles = 600;
 let speed = 2.5;
 let fieldScale = 0.003; // noise zoom
 let trailLength = 40;
-let zOffset = 0;        // animate the noise field over time
-const zSpeed = 0.0005;
-let perm = buildPermTable();
-let particles = [];
+const state = {
+  particles: [],
+  fieldScale,
+  speed,
+  trailLength,
+  zOffset: 0,
+  zSpeed: 0.0005,
+  perm: buildPermTable(),
+};
 
 function spawn() {
   return {
@@ -245,71 +229,26 @@ function spawn() {
   };
 }
 function resetParticles() {
-  particles = Array.from({ length: numParticles }, spawn);
-  perm = buildPermTable(); // fresh noise on reset
+  state.particles = Array.from({ length: numParticles }, spawn);
+  state.perm = buildPermTable(); // fresh noise on reset
   trailCtx.clearRect(0, 0, trail.width, trail.height);
 }
 resetParticles();
 
-function update() {
-  zOffset += zSpeed;
-  for (const p of particles) {
-    const angle = getFlowAngle(p.x, p.y, fieldScale, zOffset);
-    p.vx += Math.cos(angle) * 0.3;
-    p.vy += Math.sin(angle) * 0.3;
-
-    const mag = Math.hypot(p.vx, p.vy); // cap the speed
-    if (mag > speed) { p.vx = p.vx / mag * speed; p.vy = p.vy / mag * speed; }
-
-    p.history.push({ x: p.x, y: p.y });
-    if (p.history.length > trailLength) p.history.shift();
-
-    p.x += p.vx; p.y += p.vy;
-    if (p.x < 0) p.x = canvas.width;  if (p.x > canvas.width) p.x = 0;
-    if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
-
-    p.hue = (p.hue + 0.3) % 360;
-  }
+function loop() {
+  state.fieldScale = fieldScale;
+  state.speed = speed;
+  state.trailLength = trailLength;
+  drawFlowField(ctx, trailCtx, canvas.width, canvas.height, state);
+  requestAnimationFrame(loop);
 }
-
-function render() {
-  // fade the trail canvas a touch so old paths slowly dissolve
-  trailCtx.fillStyle = 'rgba(15, 15, 25, 0.04)';
-  trailCtx.fillRect(0, 0, trail.width, trail.height);
-
-  for (const p of particles) {
-    if (p.history.length < 2) continue;
-    trailCtx.beginPath();
-    trailCtx.moveTo(p.history[0].x, p.history[0].y);
-    for (let i = 1; i < p.history.length; i++) {
-      const alpha = (i / p.history.length) * p.alpha;
-      trailCtx.strokeStyle = \`hsla(\${p.hue}, 80%, 60%, \${alpha})\`;
-      trailCtx.lineWidth = 1.5;
-      trailCtx.lineTo(p.history[i].x, p.history[i].y);
-      trailCtx.stroke();
-      trailCtx.beginPath();
-      trailCtx.moveTo(p.history[i].x, p.history[i].y);
-    }
-  }
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(trail, 0, 0);
-  for (const p of particles) {
-    ctx.fillStyle = \`hsla(\${p.hue}, 90%, 75%, 0.9)\`;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 1.5, 0, 2 * Math.PI);
-    ctx.fill();
-  }
-}
-
-function loop() { update(); render(); requestAnimationFrame(loop); }
 
 // ─── controls ───────────────────────────────────────────────────────────────
 document.getElementById('reset').addEventListener('click', resetParticles);
 document.getElementById('particles').addEventListener('input', e => {
   numParticles = parseInt(e.target.value);
   document.getElementById('particles-val').textContent = numParticles;
-  particles = Array.from({ length: numParticles }, spawn);
+  state.particles = Array.from({ length: numParticles }, spawn);
 });
 document.getElementById('speed').addEventListener('input', e => {
   speed = parseFloat(e.target.value);

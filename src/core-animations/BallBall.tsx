@@ -1,7 +1,7 @@
 import { Ball } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { BallToBallBounce as ballToBallBouncePhysics } from "../core-functions/BallToBallBounce";
-import { BallToBallBounce as ballToBallBounceFormula } from "../pages/createJSON/formulas/animation/BallToBallBounce";
+import { ballToBallBounce as ballToBallBouncePhysics } from "@utilspalooza/core/BallToBallBounce";
+import { ballToBallBounce as ballToBallBounceFormula } from "../pages/createJSON/formulas/animation/BallToBallBounce";
 
 interface GradientBall extends Ball {
   h: number;
@@ -9,7 +9,13 @@ interface GradientBall extends Ball {
   l: number;
 }
 
-function drawBallBall(ctx: any, balls: any[], canvasWidth: any, canvasHeight: any): void {
+function drawBallBall(
+  ctx: any,
+  balls: any[],
+  canvasWidth: any,
+  canvasHeight: any,
+  bounceFn: (ball1: Ball, ball2: Ball) => void
+): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   const SPEED_LIMIT = 5;
 
@@ -35,7 +41,7 @@ function drawBallBall(ctx: any, balls: any[], canvasWidth: any, canvasHeight: an
     ctx.fill();
 
     balls.forEach((ball2) => {
-      ballToBallBouncePhysics(ball1, ball2);
+      bounceFn(ball1, ball2);
     });
 
     // Keep on screen
@@ -67,6 +73,7 @@ export { drawBallBall };
 export default class BallsBouncingAgainstEachOther extends AnimationBaseClass {
   static t = "balls bouncing against each other";
   static l = "balls-bouncing-against-each-other";
+  static include = false;
   static f = ballToBallBounceFormula;
   title = "balls bouncing against each other";
   animationObject = ballToBallBounceFormula;
@@ -128,7 +135,13 @@ export default class BallsBouncingAgainstEachOther extends AnimationBaseClass {
       };
     }
 
-    drawBallBall(this.ctx, this.balls, this.canvasWidth, this.canvasHeight);
+    drawBallBall(
+      this.ctx,
+      this.balls,
+      this.canvasWidth,
+      this.canvasHeight,
+      ballToBallBouncePhysics
+    );
     this.raf(this.draw);
   };
 

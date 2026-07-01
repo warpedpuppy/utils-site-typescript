@@ -1,48 +1,75 @@
 import { CodePenPayload } from "./codepen";
-import { BallBounce } from "../../pages/createJSON/formulas/animation/BallBounce";
-import { BallToBallBounce } from "../../pages/createJSON/formulas/animation/BallToBallBounce";
-import { Lerp } from "../../pages/createJSON/formulas/animation/Lerp";
+import { ballBounce } from "../../pages/createJSON/formulas/animation/BallBounce";
+import { ballToBallBounce } from "../../pages/createJSON/formulas/animation/BallToBallBounce";
+import { lerp } from "../../pages/createJSON/formulas/animation/Lerp";
 import {
   linear,
   easeIn,
   easeOut,
   easeInOut,
-} from "../../core-functions/Easing";
-import { QuadraticBezier } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
+} from "@utilspalooza/core/Easing";
+import { quadraticBezier } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
 import { DistributeAroundCircle } from "../../pages/createJSON/formulas/animation/DistributeAroundCircle";
-import { GetRotation } from "../../pages/createJSON/formulas/animation/GetRotation";
-import { gravitationalStep } from "../../core-functions/OrbitalMotion";
-import { moveToward } from "../../core-functions/MoveToward";
-import { SineCurve } from "../../core-functions/SineCurve";
-import { unitCirclePoint } from "../../core-functions/UnitCirclePoint";
-import { pointToCircle } from "../../core-functions/PointToCircle";
-import { pointToRect } from "../../core-functions/PointToRect";
-import { circleToCircle } from "../../core-functions/CircleToCircle";
-import { circleToRect } from "../../core-functions/CircleToRect";
-import { lineToCircle } from "../../core-functions/LineToCircle";
-import { lineToLine } from "../../core-functions/LineToLine";
-import { lineToPoint } from "../../core-functions/LineToPoint";
-import { lineToRect } from "../../core-functions/LineToRect";
-import { rectToRect } from "../../core-functions/RectToRect";
-import { polygonToPolygon } from "../../core-functions/PolygonToPolygon";
-import { getPointOnLine } from "../../core-functions/GetPointOnLine";
-import { getTriangleData } from "../../core-functions/GetTriangleData";
-import { DrawStar } from "../../core-functions/Star";
-import { CreateRect } from "../../core-functions/Rectangle";
-import { drawEquilateralTriangle } from "../../core-functions/DrawEquilateralTriangle";
-import { CircleFromThreePoints } from "../../core-functions/CircleFromThreePoints";
-import { distributeAroundCircle } from "../../core-functions/DistributeAroundCircleFlat";
-import { distance } from "../../core-functions/Distance";
-import { bezierPoint } from "../../core-functions/BezierCurve";
-import { dft } from "../../core-functions/DFT";
-import { step } from "../../core-functions/GameOfLife";
-import { waveAmplitude } from "../../core-functions/WaveAmplitude";
-import { lensDeflection } from "../../core-functions/LensDeflection";
-import { grStep } from "../../core-functions/GRStep";
-import { LineLength } from "../../core-functions/LineLength";
-import { MoveAlongLine } from "../../core-functions/MoveAlongLine";
-import { drawBallBounce } from "../../core-animations/BallBounce";
-import { drawBallBall } from "../../core-animations/BallBall";
+import { getRotation } from "../../pages/createJSON/formulas/animation/GetRotation";
+import { findPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
+import { sineCurve } from "@utilspalooza/core/SineCurve";
+import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
+import { pointToCircle } from "@utilspalooza/core/PointToCircle";
+import { circleToCircle } from "@utilspalooza/core/CircleToCircle";
+import { circleToRect } from "@utilspalooza/core/CircleToRect";
+import { lineToCircle } from "@utilspalooza/core/LineToCircle";
+import { lineToLine } from "@utilspalooza/core/LineToLine";
+import { lineToPoint } from "@utilspalooza/core/LineToPoint";
+import { lineLine as lineLineFn } from "@utilspalooza/core/CollisionObjectAPI/LineLine";
+import { polygonToPolygon } from "@utilspalooza/core/PolygonToPolygon";
+import { polygonLine as polygonLineFn } from "@utilspalooza/core/CollisionObjectAPI/PolygonLine";
+import { getPointOnLine } from "@utilspalooza/core/GetPointOnLine";
+import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
+import { starVertices } from "@utilspalooza/core/Star";
+import { drawEquilateralTriangle } from "./pen-snippets";
+import { drawEquilateralTriangle as drawEquilateralTriangleAnimation } from "../../core-animations/EquilateralTriangle";
+import { equilateralTriangle } from "@utilspalooza/core/EquilateralTriangle";
+import { circleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
+import { deCasteljau } from "@utilspalooza/core/DeCasteljau";
+import { drawBezierCurves } from "../../core-animations/BezierCurves";
+import { dft } from "@utilspalooza/core/DFT";
+import { heartPath, drawFourierEpicycles } from "../../core-animations/FourierEpicycles";
+import { gameOfLifeStep } from "@utilspalooza/core/GameOfLife";
+import { drawGameOfLife } from "../../core-animations/GameOfLife";
+import { drawWaveInterference } from "../../core-animations/WaveInterference";
+import { drawGravitationalLensing } from "../../core-animations/GravitationalLensing";
+import { newtonAccel, grAccel, drawOrbitalPrecession } from "../../core-animations/OrbitalPrecession";
+import { lineLength } from "@utilspalooza/core/LineLength";
+import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
+import { SphereLighting } from "../../pages/createJSON/formulas/animation/OrbitalMotion";
+import { radToDeg as radToDegFn } from "@utilspalooza/core/RadToDeg";
+import { drawCenterOnParent } from "../../core-animations/CenterOnParentAnimation";
+import { drawDegreesToRadians } from "../../core-animations/DegToRadAnimation";
+import { drawRadiansToDegrees } from "../../core-animations/Rad2DegAnimation";
+import { drawFormatNumberWithCommas } from "../../core-animations/NumberWithCommasAnimation";
+import { drawRandomIntegerBetween } from "../../core-animations/RandomIntegerAnimation";
+import { drawRandomNumberBetween } from "../../core-animations/RandomNumberAnimation";
+import { sierpinskiMidpoints, drawSierpinski } from "../../core-animations/Sierpinski";
+import { createKlimtSwirls, drawKlimt } from "../../core-animations/Klimt";
+import {
+  hslToRgb,
+  lerpColor as lerpColorFn,
+  lerpColorHsl,
+  rgbToCss,
+  rgbToHsl,
+} from "@utilspalooza/core/Color";
+import {
+  vecNormalize,
+  vecPerpendicular,
+  vecReflect,
+  vecRotate,
+} from "@utilspalooza/core/Vec2";
+import {
+  lerpAngle,
+  shortestAngleBetween,
+  wrapAngle,
+} from "@utilspalooza/core/AngleInterpolation";
+import { drawRainbowBall } from "../../core-animations/BallBounce";
 import { drawLerp } from "../../core-animations/Lerp";
 import { drawEasing } from "../../core-animations/Easing";
 import { drawQuadraticBezier } from "../../core-animations/QuadraticBezier";
@@ -51,7 +78,35 @@ import { drawMoveToDestination } from "../../core-animations/MoveToDestination";
 import { drawPointTowards } from "../../core-animations/PointTowards";
 import { drawSineCurve } from "../../core-animations/SineCurve";
 import { drawDeMystifySineCosine } from "../../core-animations/DeMystifySineCosine";
-import { drawPointToCircleFunctionString } from "../../core-animations/PointToCircle";
+import { springValue, criticalDamping } from "@utilspalooza/core/Animate";
+import { drawSpring } from "../../core-animations/Spring";
+import { drawColorLerp } from "../../core-animations/ColorLerp";
+import { drawColorFamily } from "../../core-animations/ColorFamilies";
+import { drawVectorReflect } from "../../core-animations/VectorReflect";
+import { drawVectorRotate } from "../../core-animations/VectorRotate";
+import { drawAngleLerp } from "../../core-animations/AngleLerp";
+import { drawBird } from "../../core-animations/Murmuration";
+import { drawOrbitalMotion } from "../../core-animations/OrbitalMotion";
+import { drawMoveItemAroundCircle } from "../../core-animations/MoveItemAroundCircle";
+import { drawGetPointOnLine } from "../../core-animations/GetPointOnLine";
+import { drawLineLength } from "../../core-animations/LineLength";
+import { drawPolygon } from "../../core-animations/Polygon";
+import { drawStar } from "../../core-animations/Star";
+import { drawCircleFromThreePoints } from "../../core-animations/CircleFromThreePoints";
+import { drawTriangleDataFromLine } from "../../core-animations/TriangleDataFromLine";
+import { drawCircleToCircle } from "../../core-animations/CircleToCircle";
+import { drawCircleField } from "../../core-animations/CircleField";
+import { pointCircle as pointCircleFn } from "@utilspalooza/core/CollisionObjectAPI/PointCircle";
+import { drawPointToCircle } from "../../core-animations/PointToCircle";
+import { drawLineToCircle } from "../../core-animations/LineToCircle";
+import { drawLineToLine } from "../../core-animations/LineToLine";
+import { drawLineToPoint } from "../../core-animations/LineToPoint";
+import { drawLineToRectangle } from "../../core-animations/LineToRect";
+import { drawPointToRectangle } from "../../core-animations/PointToRect";
+import { drawRectToRect } from "../../core-animations/RectToRect";
+import { drawCircleToRectangle } from "../../core-animations/CircleToRect";
+import { drawPolygonToPolygon } from "../../core-animations/PolygonToPolygonCollision";
+import { polygonPoint } from "../../pages/createJSON/formulas/collision-detection/PolygonCollision";
 
 export interface ExamplePen {
   group: string;
@@ -87,7 +142,9 @@ canvas { display: block; width: 100vw; height: 100vh; }
 
 // ── Ball Bounce ──────────────────────────────────────────────────────────────
 const BALL_BOUNCE_HTML = `<canvas id="canvas"></canvas>`;
-const BALL_BOUNCE_JS = `${BallBounce.keyFunction.toString()}
+const BALL_BOUNCE_JS = `${ballBounce.keyFunction.toString()}
+
+${drawRainbowBall.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -96,149 +153,69 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-// ─── state ───────────────────────────────────────────────────────────────────
-let ball = { x: 0, y: 0, radius: 18, vx: 5, vy: -10 };
+// ─── state: staggered rainbow stream from a fixed object pool ─────────────────
+const RESTITUTION = 0.88;  // bounciness (0–1): higher = springier
+const SPAWN_INTERVAL = 16; // frames between staggered entries
+const MAX_BALLS = 40;      // object-pool cap: never instantiate beyond this
+let balls = [], spawnCounter = 0, spawnIndex = 0;
 
-function init() {
-  ball.x = canvas.width * 0.25;
-  ball.y = canvas.height * 0.25;
-  ball.vx = 5;
-  ball.vy = -10;
+function resetBall(ball) {
+  const hue = (spawnIndex * 47) % 360;
+  const radius = 14 + Math.random() * 8;
+  ball.x = canvas.width * (0.08 + Math.random() * 0.84);
+  ball.y = radius + Math.random() * 20;
+  ball.vx = (Math.random() - 0.5) * 6;
+  ball.vy = 1 + Math.random() * 2;
+  ball.radius = radius;
+  ball.hue = hue;
+  ball.settled = false;
+  ball.restFrames = 0;
+  spawnIndex++;
 }
+
+function spawnOrRecycle() {
+  if (balls.length < MAX_BALLS) {
+    const ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 0, hue: 0, settled: false, restFrames: 0 };
+    resetBall(ball);
+    balls.push(ball);
+    return;
+  }
+  // At the cap: take one from the floor — the one that's rested longest.
+  let target = null;
+  for (const b of balls) {
+    if (b.settled && (target === null || b.restFrames > target.restFrames)) target = b;
+  }
+  if (target) resetBall(target);
+}
+
+ctx.fillStyle = 'rgb(10, 8, 20)';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+for (let i = 0; i < 4; i++) spawnOrRecycle();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
+  // Trails: fade the previous frame instead of clearing it.
+  ctx.fillStyle = 'rgba(10, 8, 20, 0.22)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  BallBounce(ball, { width: canvas.width, height: canvas.height });
+  if (++spawnCounter >= SPAWN_INTERVAL) { spawnCounter = 0; spawnOrRecycle(); }
 
-  // ── Shadow on the floor ────────────────────────────────────────────────
-  const maxDist = canvas.height - ball.radius;
-  const distFrac = Math.max(0, 1 - (canvas.height - ball.radius - ball.y) / maxDist);
-  const shadowAlpha = distFrac * 0.45;
-  const shadowRx = ball.radius * (0.7 + distFrac * 0.8);
-  const shadowRy = ball.radius * 0.22;
-
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,' + shadowAlpha + ')';
-  ctx.beginPath();
-  ctx.ellipse(
-    ball.x,
-    canvas.height - 3,
-    Math.max(shadowRx, 4),
-    Math.max(shadowRy, 2),
-    0, 0, Math.PI * 2
-  );
-  ctx.fill();
-  ctx.restore();
-
-  // ── Ball with radial gradient ──────────────────────────────────────────
-  const gr = ctx.createRadialGradient(
-    ball.x - ball.radius * 0.32,
-    ball.y - ball.radius * 0.32,
-    0,
-    ball.x,
-    ball.y,
-    ball.radius
-  );
-  gr.addColorStop(0, '#c7d2fe');
-  gr.addColorStop(0.55, '#818cf8');
-  gr.addColorStop(1, '#3730a3');
-
-  ctx.fillStyle = gr;
-  ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-  ctx.fill();
-
-  requestAnimationFrame(draw);
-}
-
-init();
-draw();`;
-
-// ── Balls Bouncing Against Each Other ────────────────────────────────────────
-const BALLS_BOUNCING_HTML = `<canvas id="canvas"></canvas>`;
-const BALLS_BOUNCING_JS = `${BallToBallBounce.keyFunction.toString()}
-
-// ─── canvas setup ────────────────────────────────────────────────────────────
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
-window.addEventListener('resize', resize);
-resize();
-
-// ─── state ───────────────────────────────────────────────────────────────────
-function spawnBalls() {
-  let n = Math.max(5, Math.floor(canvas.width * canvas.height / 20000));
-  return Array.from({ length: n }, (_, i) => {
-    let radius = Math.random() * 40 + 10;
-    return {
-      x: Math.random() * (canvas.width - 2 * radius) + radius,
-      y: Math.random() * (canvas.height - 2 * radius) + radius,
-      radius,
-      vx: 1,
-      vy: 1,
-      h: (i % 6) * 60,
-      s: 70,
-      l: 55,
-    };
-  });
-}
-
-let balls = spawnBalls();
-const SPEED_LIMIT = 5;
-
-function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  balls.forEach((ball1) => {
-    ball1.x += ball1.vx;
-    ball1.y += ball1.vy;
-
-    const gr = ctx.createRadialGradient(
-      ball1.x - ball1.radius * 0.32,
-      ball1.y - ball1.radius * 0.32,
-      0,
-      ball1.x,
-      ball1.y,
-      ball1.radius
-    );
-    gr.addColorStop(0, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + Math.min(95, ball1.l + 25) + '%)');
-    gr.addColorStop(0.55, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + ball1.l + '%)');
-    gr.addColorStop(1, 'hsl(' + ball1.h + ' ' + ball1.s + '% ' + Math.max(5, ball1.l - 25) + '%)');
-
-    ctx.fillStyle = gr;
-    ctx.beginPath();
-    ctx.arc(ball1.x, ball1.y, ball1.radius, 0, 2 * Math.PI);
-    ctx.fill();
-
-    balls.forEach((ball2) => {
-      BallToBallBounce(ball1, ball2);
-    });
-
-    // Keep on screen
-    if (ball1.y > canvas.height - ball1.radius) {
-      ball1.y = canvas.height - ball1.radius;
-      ball1.vy *= -1;
+  const stage = { width: canvas.width, height: canvas.height };
+  for (const ball of balls) {
+    if (!ball.settled) {
+      ballBounce(ball, stage, RESTITUTION);
+      const onFloor = ball.y >= stage.height - ball.radius - 0.5;
+      if (onFloor) ball.vx *= 0.9;
+      if (onFloor && Math.abs(ball.vy) < 1.4 && Math.abs(ball.vx) < 0.5) {
+        ball.settled = true;
+        ball.y = stage.height - ball.radius;
+        ball.vy = 0;
+        ball.vx = 0;
+      }
+    } else {
+      ball.restFrames++;
     }
-    if (ball1.y < ball1.radius) {
-      ball1.y = ball1.radius;
-      ball1.vy *= -1;
-    }
-    if (ball1.x > canvas.width - ball1.radius) {
-      ball1.x = canvas.width - ball1.radius;
-      ball1.vx *= -1;
-    }
-    if (ball1.x < ball1.radius) {
-      ball1.x = ball1.radius;
-      ball1.vx *= -1;
-    }
-
-    // Impose speed limit
-    if (ball1.vx > SPEED_LIMIT) ball1.vx = SPEED_LIMIT;
-    if (ball1.vy > SPEED_LIMIT) ball1.vy = SPEED_LIMIT;
-  });
+    drawRainbowBall(ctx, ball);
+  }
 
   requestAnimationFrame(draw);
 }
@@ -248,7 +225,13 @@ draw();`;
 // ── Orbital Motion ───────────────────────────────────────────────────────────
 const ORBITAL_MOTION_HTML = `<canvas id="canvas"></canvas>`;
 const ORBITAL_MOTION_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${gravitationalStep.toString()}
+${findPointAroundCircle.toString()}
+
+const SphereLighting = {
+  keyFunction: ${SphereLighting.keyFunction.toString()}
+};
+
+${drawOrbitalMotion.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -258,85 +241,35 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let orbiter = { x: 0, y: 0, vx: 0, vy: 0 };
-let sun = { x: 0, y: 0, mass: 100, radius: 60 };
-
-function init() {
-  sun.x = canvas.width / 2;
-  sun.y = canvas.height / 2;
-  orbiter.x = sun.x + 150;
-  orbiter.y = sun.y;
-  orbiter.vx = 0;
-  orbiter.vy = 5;
-}
+let pct = 0;
+let sunRadius = 60;
+let orbiterRadius = 22;
+let orbitRadius = 180;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  gravitationalStep(orbiter, sun);
-
-  // Faint orbit circle
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, 150, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Sun with radial gradient
-  const sunGr = ctx.createRadialGradient(sun.x, sun.y, 0, sun.x, sun.y, sun.radius);
-  sunGr.addColorStop(0, '#fff7a1');
-  sunGr.addColorStop(0.5, '#fde047');
-  sunGr.addColorStop(0.8, '#f97316');
-  sunGr.addColorStop(1, '#7c2d12');
-
-  ctx.fillStyle = sunGr;
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, sun.radius, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Sun corona glow ring
-  ctx.strokeStyle = 'rgba(253, 224, 71, 0.3)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, sun.radius + 12, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Orbiter with motion-aware lighting
-  const dx = orbiter.x - sun.x;
-  const dy = orbiter.y - sun.y;
-  const highlightX = orbiter.x - dx * 0.15;
-  const highlightY = orbiter.y - dy * 0.15;
-
-  const orbiterGr = ctx.createRadialGradient(
-    highlightX,
-    highlightY,
-    0,
-    orbiter.x,
-    orbiter.y,
-    22
+  drawOrbitalMotion(
+    ctx,
+    canvas.width,
+    canvas.height,
+    pct,
+    sunRadius,
+    orbiterRadius,
+    orbitRadius,
+    findPointAroundCircle,
+    SphereLighting.keyFunction
   );
-  orbiterGr.addColorStop(0, '#bfdbfe');
-  orbiterGr.addColorStop(0.5, '#3b82f6');
-  orbiterGr.addColorStop(1, '#1e1b4b');
-
-  ctx.fillStyle = orbiterGr;
-  ctx.beginPath();
-  ctx.arc(orbiter.x, orbiter.y, 22, 0, Math.PI * 2);
-  ctx.fill();
-
+  pct = (pct + 0.15) % 100;
   requestAnimationFrame(draw);
 }
 
-init();
 draw();`;
 
-// ── Lerp ─────────────────────────────────────────────────────────────────────
+// ── lerp ─────────────────────────────────────────────────────────────────────
 const LERP_HTML = `<canvas id="canvas"></canvas>
 <div id="controls">
   <label>speed <input type="range" id="speed" min="0.01" max="0.1" step="0.01" value="0.05"></label>
 </div>`;
-const LERP_JS = `${Lerp.keyFunction.toString()}
+const LERP_JS = `${lerp.keyFunction.toString()}
 
 ${drawLerp.toString()}
 
@@ -363,8 +296,8 @@ function draw() {
   target.x = canvas.width / 2 + Math.sin(Date.now() * 0.0005) * 150;
   target.y = canvas.height / 2 + Math.cos(Date.now() * 0.0003) * 100;
 
-  follower.x = Lerp(follower.x, target.x, lerpFactor);
-  follower.y = Lerp(follower.y, target.y, lerpFactor);
+  follower.x = lerp(follower.x, target.x, lerpFactor);
+  follower.y = lerp(follower.y, target.y, lerpFactor);
 
   drawLerp(ctx, target, follower, lerpFactor, canvas.width, canvas.height);
 
@@ -381,32 +314,35 @@ draw();`;
 // ── Easing Functions ────────────────────────────────────────────────────────
 const EASING_HTML = `<canvas id="canvas"></canvas>`;
 const EASING_JS = `// ─── easing functions ──────────────────────────────────────────────────────
-const linear = (t) => t;
-const easeInQuad = (t) => t * t;
-const easeOutQuad = (t) => 1 - (1 - t) * (1 - t);
-const easeInOutQuad = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-const easeOutElastic = (t) => {
-  const c5 = (2 * Math.PI) / 4.5;
-  return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c5) + 1;
-};
-const easeOutBounce = (t) => {
+function linear(t) { return t; }
+function easeInQuad(t) { return t * t; }
+function easeOutQuad(t) { return t * (2 - t); }
+function easeInOutQuad(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+function easeOutElastic(t) {
+  if (t === 0 || t === 1) return t;
+  const c4 = (2 * Math.PI) / 3;
+  return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+}
+function easeOutBounce(t) {
   const n1 = 7.5625, d1 = 2.75;
   if (t < 1 / d1) return n1 * t * t;
   else if (t < 2 / d1) return n1 * (t -= 1.5 / d1) * t + 0.75;
   else if (t < 2.5 / d1) return n1 * (t -= 2.25 / d1) * t + 0.9375;
   else return n1 * (t -= 2.625 / d1) * t + 0.984375;
-};
+}
 
 const PERIOD_MS = 2800;
 const PAUSE_MS = 500;
 const TRACKS = [
-  { name: 'linear', color: '#94a3b8', fn: linear },
-  { name: 'ease-in-quad', color: '#60a5fa', fn: easeInQuad },
-  { name: 'ease-out-quad', color: '#34d399', fn: easeOutQuad },
-  { name: 'ease-in-out-quad', color: '#a78bfa', fn: easeInOutQuad },
-  { name: 'ease-out-elastic', color: '#f472b6', fn: easeOutElastic },
-  { name: 'ease-out-bounce', color: '#fb923c', fn: easeOutBounce }
+  { name: 'linear', ease: linear, color: '#94a3b8' },
+  { name: 'ease-in-quad', ease: easeInQuad, color: '#60a5fa' },
+  { name: 'ease-out-quad', ease: easeOutQuad, color: '#34d399' },
+  { name: 'ease-in-out-quad', ease: easeInOutQuad, color: '#a78bfa' },
+  { name: 'ease-out-elastic', ease: easeOutElastic, color: '#f472b6' },
+  { name: 'ease-out-bounce', ease: easeOutBounce, color: '#fb923c' }
 ];
+
+${drawEasing.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -416,41 +352,7 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let elapsed = Date.now() % (PERIOD_MS + PAUSE_MS);
-  let t = elapsed < PERIOD_MS ? elapsed / PERIOD_MS : 1;
-
-  TRACKS.forEach((track, idx) => {
-    const trackY = (idx + 1) * (canvas.height / (TRACKS.length + 1));
-    const ballR = Math.max(4, canvas.height / (TRACKS.length + 1) * 0.3);
-    const eased = track.fn(t);
-    const x = canvas.width * 0.1 + eased * (canvas.width * 0.8);
-
-    // Draw glow ring
-    ctx.strokeStyle = track.color;
-    ctx.globalAlpha = 0.3;
-    ctx.lineWidth = ballR;
-    ctx.beginPath();
-    ctx.arc(x, trackY, ballR * 1.5, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // Draw ball
-    ctx.fillStyle = track.color;
-    ctx.beginPath();
-    ctx.arc(x, trackY, ballR, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Draw track name right-aligned
-    ctx.font = '11px monospace';
-    ctx.fillStyle = track.color;
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(track.name, canvas.width * 0.95, trackY);
-  });
-
+  drawEasing(ctx, canvas.width, canvas.height);
   requestAnimationFrame(draw);
 }
 
@@ -458,7 +360,9 @@ draw();`;
 
 // ── Quadratic Bézier ────────────────────────────────────────────────────────
 const QUADRATIC_BEZIER_HTML = `<canvas id="canvas"></canvas>`;
-const QUADRATIC_BEZIER_JS = `${QuadraticBezier.keyFunction.toString()}
+const QUADRATIC_BEZIER_JS = `${quadraticBezier.keyFunction.toString()}
+
+${drawQuadraticBezier.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -473,7 +377,7 @@ const HIT_SLOP = 6;
 let p0 = { x: canvas.width * 0.2, y: canvas.height * 0.7 };
 let p1 = { x: canvas.width * 0.5, y: canvas.height * 0.2 };
 let p2 = { x: canvas.width * 0.8, y: canvas.height * 0.7 };
-let draggingPoint = null;
+let dragTarget = null;
 
 function pointDistance(p1, p2) {
   const dx = p2.x - p1.x, dy = p2.y - p1.y;
@@ -481,60 +385,7 @@ function pointDistance(p1, p2) {
 }
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Dashed control polygon
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([5, 5]);
-  ctx.beginPath();
-  ctx.moveTo(p0.x, p0.y);
-  ctx.lineTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Draw Bézier curve (100 steps)
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  for (let i = 0; i <= 100; i++) {
-    const t = i / 100;
-    const pt = QuadraticBezier(t, p0, p1, p2);
-    if (i === 0) ctx.moveTo(pt.x, pt.y);
-    else ctx.lineTo(pt.x, pt.y);
-  }
-  ctx.stroke();
-
-  // Oscillating dot
-  const dotT = (Math.sin(Date.now() * 0.003) + 1) / 2;
-  const dotPt = QuadraticBezier(dotT, p0, p1, p2);
-  ctx.fillStyle = '#f97316';
-  ctx.beginPath();
-  ctx.arc(dotPt.x, dotPt.y, 7, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw control points
-  const points = [
-    { pt: p0, color: '#34d399', label: 'P0' },
-    { pt: p1, color: '#f472b6', label: 'P1' },
-    { pt: p2, color: '#34d399', label: 'P2' }
-  ];
-
-  points.forEach(({ pt, color, label }) => {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(pt.x, pt.y, HANDLE_RADIUS, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#0a0a0f';
-    ctx.font = 'bold 10px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, pt.x, pt.y);
-  });
-
+  drawQuadraticBezier(ctx, p0, p1, p2, dragTarget, quadraticBezier);
   requestAnimationFrame(draw);
 }
 
@@ -544,23 +395,24 @@ canvas.addEventListener('pointerdown', (e) => {
   const my = e.clientY - rect.top;
 
   if (pointDistance({ x: mx, y: my }, p0) < HANDLE_RADIUS + HIT_SLOP) {
-    draggingPoint = p0;
+    dragTarget = 'p0';
   } else if (pointDistance({ x: mx, y: my }, p1) < HANDLE_RADIUS + HIT_SLOP) {
-    draggingPoint = p1;
+    dragTarget = 'p1';
   } else if (pointDistance({ x: mx, y: my }, p2) < HANDLE_RADIUS + HIT_SLOP) {
-    draggingPoint = p2;
+    dragTarget = 'p2';
   }
 });
 
 canvas.addEventListener('pointermove', (e) => {
-  if (!draggingPoint) return;
+  if (!dragTarget) return;
   const rect = canvas.getBoundingClientRect();
-  draggingPoint.x = e.clientX - rect.left;
-  draggingPoint.y = e.clientY - rect.top;
+  const point = dragTarget === 'p0' ? p0 : dragTarget === 'p1' ? p1 : p2;
+  point.x = e.clientX - rect.left;
+  point.y = e.clientY - rect.top;
 });
 
 canvas.addEventListener('pointerup', () => {
-  draggingPoint = null;
+  dragTarget = null;
 });
 
 draw();`;
@@ -568,14 +420,11 @@ draw();`;
 // ── Find Points on a Circle ─────────────────────────────────────────────────
 const FIND_POINTS_CIRCLE_HTML = `<canvas id="canvas"></canvas>
 <div id="controls">
-  <label>points: <input type="range" id="points" min="5" max="100" step="5" value="20"></label>
+  <label>progress: <input type="range" id="progress" min="0" max="100" step="1" value="0"></label>
 </div>`;
-const FIND_POINTS_CIRCLE_JS = `${DistributeAroundCircle.keyFunction.toString()}
+const FIND_POINTS_CIRCLE_JS = `${findPointAroundCircle.toString()}
 
-// ─── cosWave helper ─────────────────────────────────────────────────────────
-function cosWave(s, d, sp) {
-  return s + Math.cos(Date.now() * sp) * d;
-}
+${drawMoveItemAroundCircle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -585,72 +434,34 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let numPoints = 20;
+let i = 0;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-
-  // Oscillating circle radius
-  let radius = cosWave(100, 100, 0.001);
-
-  // Draw circle
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Get points around circle
-  let points = DistributeAroundCircle({ x: cx, y: cy }, radius, numPoints);
-
-  // Draw lines from center to each point
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-  ctx.lineWidth = 1;
-  points.forEach((pt) => {
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(pt.x, pt.y);
-    ctx.stroke();
-  });
-
+  drawMoveItemAroundCircle(
+    ctx,
+    canvas.width / 2,
+    canvas.height / 2,
+    canvas.width,
+    canvas.height,
+    i,
+    findPointAroundCircle
+  );
+  i += 0.5;
+  if (i > 100) i = 0;
   requestAnimationFrame(draw);
 }
 
-document.getElementById('points').addEventListener('input', e => {
-  numPoints = parseInt(e.target.value);
+document.getElementById('progress').addEventListener('input', e => {
+  i = parseInt(e.target.value);
 });
 
 draw();`;
 
 // ── Move Object to Changing Point ───────────────────────────────────────────
 const MOVE_TO_DESTINATION_HTML = `<canvas id="canvas"></canvas>`;
-const MOVE_TO_DESTINATION_JS = `// ─── moveToward function ───────────────────────────────────────────────────
-function moveToward(obj, dest, speed) {
-  let dx = dest.x - obj.x, dy = dest.y - obj.y;
-  let dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist > speed) { obj.x += (dx / dist) * speed; obj.y += (dy / dist) * speed; }
-  else { obj.x = dest.x; obj.y = dest.y; }
-  return Math.atan2(dy, dx);
-}
-
-// ─── drawArrow helper ───────────────────────────────────────────────────────
-function drawArrow(ctx, x, y, angle, size, color) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(size, 0);
-  ctx.lineTo(-size, size * 0.6);
-  ctx.lineTo(-size * 0.3, 0);
-  ctx.lineTo(-size, -size * 0.6);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-}
+const MOVE_TO_DESTINATION_JS = `${moveAlongLine.toString()}
+${getRotation.keyFunction.toString()}
+${drawMoveToDestination.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -660,51 +471,42 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let obj = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
-let dest = { x: 0, y: 0 };
+let dot = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
+let dotNew = { x: canvas.width * 0.7, y: canvas.height * 0.5 };
+let arrowPoint = { x: canvas.width * 0.5 - 50, y: canvas.height * 0.5 - 25 };
+let ratio = 0;
+const img = new Image();
+
+function chooseDestination() {
+  ratio = 0;
+  dotNew = {
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height
+  };
+}
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  dest.x = canvas.width / 2 + Math.sin(Date.now() * 0.0005) * 150;
-  dest.y = canvas.height / 2 + Math.cos(Date.now() * 0.0003) * 100;
-
-  const angle = moveToward(obj, dest, 2);
-
-  // Draw moving target (green)
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(dest.x, dest.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw arrow pointing toward target
-  drawArrow(ctx, obj.x, obj.y, angle, 12, '#f97316');
-
+  drawMoveToDestination(ctx, canvas, dot, dotNew, arrowPoint, ratio, img);
+  ratio += 0.0001;
   requestAnimationFrame(draw);
 }
 
-draw();`;
+img.addEventListener('load', () => {
+  chooseDestination();
+  setInterval(chooseDestination, 2000);
+  draw();
+});
+img.src = '/bmps/arrow.png';`;
 
 // ── Point Object Towards Another ────────────────────────────────────────────
 const POINT_TOWARDS_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_TOWARDS_JS = `${GetRotation.keyFunction.toString()}
-
-// ─── drawArrow helper ───────────────────────────────────────────────────────
-function drawArrow(ctx, x, y, angle, size, color) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(angle);
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(size, 0);
-  ctx.lineTo(-size, size * 0.6);
-  ctx.lineTo(-size * 0.3, 0);
-  ctx.lineTo(-size, -size * 0.6);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
+const POINT_TOWARDS_JS = `${getRotation.keyFunction.toString()}
+function pointsAroundCircle(circleCenter, i, radius, numElements) {
+  const x = circleCenter.x + radius * Math.cos((2 * Math.PI * i) / numElements);
+  const y = circleCenter.y + radius * Math.sin((2 * Math.PI * i) / numElements);
+  return { x, y };
 }
+${drawPointTowards.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -714,57 +516,18 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let pointer = { x: canvas.width * 0.5, y: canvas.height * 0.5 };
-let target = { x: 0, y: 0 };
+let i = 0;
+const img = new Image();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Orbiting target
-  let t = Date.now() * 0.001;
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  for (let i = 0; i < 360; i += 6) {
-    const angle = i * Math.PI / 180;
-    target.x = cx + Math.cos(angle) * 200;
-    target.y = cy + Math.sin(angle) * 200;
-  }
-  target.x = cx + Math.cos(t) * 200;
-  target.y = cy + Math.sin(t) * 200;
-
-  // Draw circle
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 200, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Draw target point
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(target.x, target.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw crosshair at center
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(cx - 20, cy);
-  ctx.lineTo(cx + 20, cy);
-  ctx.moveTo(cx, cy - 20);
-  ctx.lineTo(cx, cy + 20);
-  ctx.stroke();
-
-  // Get rotation toward target
-  const angle = GetRotation(pointer, target);
-
-  // Draw arrow pointing toward target
-  drawArrow(ctx, pointer.x, pointer.y, angle, 12, '#f97316');
-
+  drawPointTowards(ctx, canvas.width, canvas.height, i, img);
+  i += 0.5;
+  if (i > 360) i = 0;
   requestAnimationFrame(draw);
 }
 
-draw();`;
+img.addEventListener('load', draw);
+img.src = '/bmps/arrow.png';`;
 
 // ── Sine Curve ──────────────────────────────────────────────────────────────
 const SINE_CURVE_HTML = `<canvas id="canvas"></canvas><div id="controls">
@@ -772,7 +535,9 @@ const SINE_CURVE_HTML = `<canvas id="canvas"></canvas><div id="controls">
   <label>differential: <input type="range" id="differential" min="0" max="200" value="200"></label>
   <label>speed: <input type="range" id="speed" min="0.0005" max="0.05" step="0.005" value="0.005"></label>
 </div>`;
-const SINE_CURVE_JS = `${SineCurve.toString()}
+const SINE_CURVE_JS = `${sineCurve.toString()}
+
+${drawSineCurve.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -787,36 +552,7 @@ let differential = 200;
 let speed = 0.005;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-
-  // Green axes
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, cy);
-  ctx.lineTo(canvas.width, cy);
-  ctx.moveTo(cx, 0);
-  ctx.lineTo(cx, canvas.height);
-  ctx.stroke();
-
-  // Green circle
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 200, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Small green circle oscillating on y-axis
-  let value = SineCurve(startValue, differential, speed);
-  let oscY = cy + value - 100;
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(cx, oscY, 20, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawSineCurve(ctx, canvas.width, canvas.height, startValue, differential, speed, sineCurve);
   requestAnimationFrame(draw);
 }
 
@@ -834,7 +570,11 @@ draw();`;
 
 // ── Demystify Sine & Cosine ────────────────────────────────────────────────
 const DEMYSTIFY_SINE_COSINE_HTML = `<canvas id="canvas"></canvas>`;
-const DEMYSTIFY_SINE_COSINE_JS = `${SineCurve.toString()}
+const DEMYSTIFY_SINE_COSINE_JS = `${unitCirclePoint.toString()}
+
+${radToDegFn.toString()}
+
+${drawDeMystifySineCosine.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -844,97 +584,14 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cy = canvas.height / 2;
-  let x1 = canvas.width / 3;    // 33% axis
-  let x2 = canvas.width * 2 / 3; // 66% axis
-  let centerX = canvas.width / 2; // horizontal axis
-  const RADIUS = 100;
-
-  // Draw axes (green)
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, cy);
-  ctx.lineTo(canvas.width, cy);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x1, 0);
-  ctx.lineTo(x1, canvas.height);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x2, 0);
-  ctx.lineTo(x2, canvas.height);
-  ctx.stroke();
-
-  // Draw circles
-  ctx.strokeStyle = '#34d399';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(x1, cy, RADIUS, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(x2, cy, RADIUS, 0, Math.PI * 2);
-  ctx.stroke();
-
-  // Spin points on circles
-  let t = Date.now() * 0.001;
-  let cos1 = Math.cos(t);
-  let sin1 = Math.sin(t);
-  let pt1x = x1 + cos1 * RADIUS;
-  let pt1y = cy + sin1 * RADIUS;
-
-  let cos2 = Math.cos(t);
-  let sin2 = Math.sin(t);
-  let pt2x = x2 + cos2 * RADIUS;
-  let pt2y = cy + sin2 * RADIUS;
-
-  // First circle: red sine line, green cosine line
-  ctx.strokeStyle = '#ef4444'; // red for sine
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(pt1x, pt1y);
-  ctx.lineTo(pt1x, cy);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#34d399'; // green for cosine
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(pt1x, pt1y);
-  ctx.lineTo(x1, pt1y);
-  ctx.stroke();
-
-  // Unit lines at origin
-  ctx.strokeStyle = '#34d399'; // green
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(x1, cy);
-  ctx.lineTo(x1 + RADIUS, cy);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#ef4444'; // red
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(x1, cy);
-  ctx.lineTo(x1, cy - RADIUS);
-  ctx.stroke();
-
-  // Spinning points
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(pt1x, pt1y, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#34d399';
-  ctx.beginPath();
-  ctx.arc(pt2x, pt2y, 5, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawDeMystifySineCosine(
+    ctx,
+    canvas.width,
+    canvas.height,
+    null,
+    unitCirclePoint,
+    radToDeg
+  );
   requestAnimationFrame(draw);
 }
 
@@ -945,8 +602,11 @@ draw();`;
 // ─────────────────────────────────────────────────────────────────────────────
 
 const POINT_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_CIRCLE_JS = `// ─── canonical draw function from core-animations ──────────────────────────
-${drawPointToCircleFunctionString}
+const POINT_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+${sineCurve.toString()}
+${pointCircleFn.toString()}
+
+${drawPointToCircle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -956,36 +616,57 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawPointToCircle(ctx, canvas.width, canvas.height, Date.now());
+  drawPointToCircle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    pointCircle
+  );
   requestAnimationFrame(draw);
 }
 
 draw();`;
 
 const POINT_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_RECT_JS = `// ─── ray-casting point-in-polygon test ────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
-  }
-  return inside;
+const POINT_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
+
+${polygonPoint.keyFunction.toString()}
+
+${lineLength.toString()}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const rotateQ = rotate ? options.time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
 }
 
-function buildRect(cx, cy, hw, hh, angle) {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return [
-    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
-    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
-    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
-    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
-  ];
-}
+${drawPointToRectangle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -994,43 +675,16 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  let angle = Date.now() * 0.001;
-  let rect = buildRect(cx, cy, 50, 50, angle);
-
-  let px = cx + Math.sin(Date.now() * 0.001) * 200;
-  let py = cy + Math.sin(Date.now() * 0.0008) * 150;
-
-  let hit = polyContainsPoint(rect, px, py);
-
-  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.moveTo(rect[0].x, rect[0].y);
-  for (let i = 1; i < rect.length; i++) {
-    ctx.lineTo(rect[i].x, rect[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = '#f97316';
-  ctx.beginPath();
-  ctx.arc(px, py, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (hit) drawCollisionText(cx);
+  drawPointToRectangle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonPoint,
+    createRect
+  );
 
   requestAnimationFrame(draw);
 }
@@ -1039,7 +693,11 @@ draw();`;
 
 const CIRCLE_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const CIRCLE_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+${sineCurve.toString()}
+
 ${circleToCircle.toString()}
+
+${drawCircleToCircle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1047,15 +705,6 @@ const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -1063,65 +712,159 @@ function draw() {
 
   let cx = canvas.width / 2, cy = canvas.height / 2;
   let c1x = cx, c1y = cy, c1r = 100;
-  let c2x = cx + Math.sin(Date.now() * 0.001) * 200;
-  let c2y = cy + Math.sin(Date.now() * 0.0008) * 150;
+  let c2x = sineCurve(cx, 200, 0.001, performance.now());
+  let c2y = sineCurve(cy, 200, 0.001, performance.now());
   let c2r = 100;
 
   let hit = circleToCircle(c1x, c1y, c1r, c2x, c2y, c2r);
-
-  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.arc(c1x, c1y, c1r, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.arc(c2x, c2y, c2r, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (hit) drawCollisionText(cx);
+  drawCircleToCircle(
+    ctx,
+    { x: c1x, y: c1y, radius: c1r },
+    { x: c2x, y: c2y, radius: c2r },
+    hit,
+    canvas.width,
+    performance.now()
+  );
 
   requestAnimationFrame(draw);
 }
 
 draw();`;
 
+const CIRCLE_FIELD_HTML = `<canvas id="canvas"></canvas>`;
+const CIRCLE_FIELD_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+${circleToCircle.toString()}
+
+${drawCircleField.toString()}
+
+// ─── canvas setup ────────────────────────────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; init(); }
+window.addEventListener('resize', resize);
+
+function init() {
+  const n = Math.max(14, Math.floor(canvas.width * canvas.height / 10000));
+  balls = Array.from({ length: n }, (_, i) => ({
+    x: 30 + Math.random() * (canvas.width - 60),
+    y: 30 + Math.random() * (canvas.height - 60),
+    r: 14 + Math.random() * 22,
+    vx: (Math.random() - 0.5) * 4,
+    vy: (Math.random() - 0.5) * 4,
+    hue: (i / n) * 360,
+    hit: 0,
+  }));
+}
+
+let balls = [];
+resize();
+
+function draw() {
+  drawCircleField(ctx, balls, canvas.width, canvas.height, circleToCircle);
+  requestAnimationFrame(draw);
+}
+
+draw();`;
+
 const CIRCLE_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const CIRCLE_RECT_JS = `// ─── polygon-circle overlap test ───────────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
-  }
-  return inside;
+const CIRCLE_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
+
+${pointCircleFn.toString()}
+
+function linePoint(line, point, buffer = 0.1) {
+  const d1 = Math.hypot(point.x - line.startPoint.x, point.y - line.startPoint.y);
+  const d2 = Math.hypot(point.x - line.endPoint.x, point.y - line.endPoint.y);
+  const lineLen = lineLength(line);
+  return d1 + d2 >= lineLen - buffer && d1 + d2 <= lineLen + buffer;
 }
 
-function buildRect(cx, cy, hw, hh, angle) {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return [
-    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
-    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
-    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
-    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
-  ];
-}
+${lineLength.toString()}
 
-function circleOverlapsPoly(cx, cy, cr, pts) {
-  if (polyContainsPoint(pts, cx, cy)) return true;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const x0 = pts[j].x, y0 = pts[j].y;
-    const x1 = pts[i].x, y1 = pts[i].y;
-    const dx = x1 - x0, dy = y1 - y0;
-    const t = Math.max(0, Math.min(1, ((cx - x0) * dx + (cy - y0) * dy) / (dx * dx + dy * dy)));
-    const px = x0 + t * dx, py = y0 + t * dy;
-    const dist = Math.sqrt((cx - px) * (cx - px) + (cy - py) * (cy - py));
-    if (dist < cr) return true;
-  }
+function lineCircle(line, circle) {
+  let inside1 = pointCircle(line.startPoint, circle);
+  let inside2 = pointCircle(line.endPoint, circle);
+  if (inside1 || inside2) return true;
+
+  let len = lineLength(line);
+  let dot =
+    ((circle.x - line.startPoint.x) * (line.endPoint.x - line.startPoint.x) +
+      (circle.y - line.startPoint.y) * (line.endPoint.y - line.startPoint.y)) /
+    Math.pow(len, 2);
+
+  let closestX =
+    line.startPoint.x + dot * (line.endPoint.x - line.startPoint.x);
+  let closestY =
+    line.startPoint.y + dot * (line.endPoint.y - line.startPoint.y);
+
+  let onSegment = linePoint(line, { x: closestX, y: closestY });
+  if (!onSegment) return false;
+
+  let tempLine = {
+    startPoint: { x: closestX, y: closestY },
+    endPoint: { x: circle.x, y: circle.y },
+  };
+  let distance = lineLength(tempLine);
+
+  if (distance <= circle.radius) return true;
   return false;
 }
+
+${polygonPoint.keyFunction.toString()}
+
+function polygonCircle(polygon, circle) {
+  let next = 0;
+  const { vertices } = polygon;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
+    let line = { startPoint, endPoint };
+    let collision = lineCircle(line, circle);
+    if (collision) return true;
+  }
+
+  let centerInside = polygonPoint(polygon, {
+    x: circle.x,
+    y: circle.y,
+  });
+  if (centerInside) return true;
+
+  return false;
+}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const rotateQ = rotate ? options.time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
+
+${drawCircleToRectangle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1130,42 +873,16 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let centerX = canvas.width / 2, centerY = canvas.height / 2;
-  let angle = Date.now() * 0.001;
-  let rect = buildRect(centerX + Math.sin(Date.now() * 0.0005) * 100, centerY, 50, 50, angle);
-
-  let cx = centerX, cy = centerY, cr = 100;
-
-  let hit = circleOverlapsPoly(cx, cy, cr, rect);
-
-  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.arc(cx, cy, cr, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.moveTo(rect[0].x, rect[0].y);
-  for (let i = 1; i < rect.length; i++) {
-    ctx.lineTo(rect[i].x, rect[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-
-  if (hit) drawCollisionText(centerX);
+  drawCircleToRectangle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonCircle,
+    createRect
+  );
 
   requestAnimationFrame(draw);
 }
@@ -1176,21 +893,14 @@ const LINE_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${lineToCircle.toString()}
 
+${drawLineToCircle.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -1212,22 +922,14 @@ function draw() {
   let y2 = lineCy - Math.sin(lineAngle) * lineLen;
 
   let hit = lineToCircle(x1, y1, x2, y2, cx, cy, cr);
-
-  // Draw static circle
-  ctx.fillStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.arc(cx, cy, cr, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Draw moving line
-  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  drawLineToCircle(
+    ctx,
+    { startPoint: { x: x1, y: y1 }, endPoint: { x: x2, y: y2 } },
+    { x: cx, y: cy, radius: cr },
+    hit,
+    canvas.width / 2,
+    performance.now()
+  );
 
   requestAnimationFrame(draw);
 }
@@ -1238,21 +940,14 @@ const LINE_LINE_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_LINE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${lineToLine.toString()}
 
+${drawLineToLine.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -1275,24 +970,14 @@ function draw() {
   let y3b = y3 - Math.sin(angle1) * len;
 
   let hit = lineToLine(x1, y1, x2, y2, x3a, y3a, x3b, y3b);
-
-  // Draw static line (cyan when hit)
-  ctx.strokeStyle = hit ? '#22d3ee' : 'rgba(255,255,255,0.85)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-
-  // Draw moving line (red when hit)
-  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x3a, y3a);
-  ctx.lineTo(x3b, y3b);
-  ctx.stroke();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  drawLineToLine(
+    ctx,
+    { startPoint: { x: x3a, y: y3a }, endPoint: { x: x3b, y: y3b } },
+    { startPoint: { x: x1, y: y1 }, endPoint: { x: x2, y: y2 } },
+    hit,
+    canvas.width / 2,
+    performance.now()
+  );
 
   requestAnimationFrame(draw);
 }
@@ -1303,21 +988,14 @@ const LINE_POINT_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_POINT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${lineToPoint.toString()}
 
+${drawLineToPoint.toString()}
+
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
@@ -1329,23 +1007,13 @@ function draw() {
   let px = centerX + Math.sin(Date.now() * 0.001) * 150;
   let py = centerY + Math.sin(Date.now() * 0.0008) * 150;
 
+  const line = {
+    startPoint: { x: x1, y: y1 },
+    endPoint: { x: x2, y: y2 },
+  };
+  const point = { x: px, y: py };
   let hit = lineToPoint(x1, y1, x2, y2, px, py, 20);
-
-  // Line changes color on hit
-  ctx.strokeStyle = hit ? '#ef4444' : 'rgba(255,255,255,0.85)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-
-  // Dot is always orange, never changes color
-  ctx.fillStyle = '#f97316';
-  ctx.beginPath();
-  ctx.arc(px, py, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  drawLineToPoint(ctx, line, point, 5, hit, canvas.width);
 
   requestAnimationFrame(draw);
 }
@@ -1354,7 +1022,56 @@ draw();`;
 
 const LINE_RECT_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_RECT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineToRect.toString()}
+${lineLineFn.toString()}
+
+function polygonLine(polygon, line) {
+  let next = 0;
+  const vertices = polygon.vertices;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+    const tempLine = {
+      startPoint: { x: vertices[current].x, y: vertices[current].y },
+      endPoint: { x: vertices[next].x, y: vertices[next].y },
+    };
+    if (lineLine(line, tempLine).hit) return true;
+  }
+  return false;
+}
+
+${lineLength.toString()}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const time = options.time ?? 0;
+  const rotateQ = rotate ? time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
+
+${drawLineToRectangle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1362,51 +1079,39 @@ const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
-
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
+let rotate1 = 0;
 
 function draw() {
   ctx.fillStyle = '#0a0a0f';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   let centerX = canvas.width / 2, centerY = canvas.height / 2;
+  const rect = createRect(100, 100, 0, {
+    rotate: true,
+    rotateSpeed: 2000,
+    time: performance.now(),
+  });
+  rect.vertices.forEach((vertex) => {
+    vertex.x += centerX;
+    vertex.y += centerY;
+  });
 
-  // Static rect at center
-  let rx = centerX - 50, ry = centerY - 50;
-  let rw = 100, rh = 100;
-
-  // Moving and rotating line
-  let angle = Date.now() * 0.003;
   let x1 = centerX + Math.sin(Date.now() * 0.0005) * 150;
   let y1 = centerY;
   const lineLen = 100;
-  let x2 = x1 + Math.cos(angle) * lineLen;
-  let y2 = y1 + Math.sin(angle) * lineLen;
-  let x3 = x1 - Math.cos(angle) * lineLen;
-  let y3 = y1 - Math.sin(angle) * lineLen;
+  let x2 = x1 + lineLen * Math.cos(2 * Math.PI * (rotate1 / 360));
+  let y2 = y1 + lineLen * Math.sin(2 * Math.PI * (rotate1 / 360));
+  let x3 = x1 - lineLen * Math.cos(2 * Math.PI * (rotate1 / 360));
+  let y3 = y1 - lineLen * Math.sin(2 * Math.PI * (rotate1 / 360));
+  rotate1++;
+  if (rotate1 > 360) rotate1 = 0;
 
-  let hit = lineToRect(x2, y2, x3, y3, rx, ry, rw, rh);
-
-  // Rect doesn't change color
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.fillRect(rx, ry, rw, rh);
-
-  // Line doesn't change color either
-  ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(x2, y2);
-  ctx.lineTo(x3, y3);
-  ctx.stroke();
-
-  if (hit) drawCollisionText(canvas.width / 2);
+  const line = {
+    startPoint: { x: x2, y: y2 },
+    endPoint: { x: x3, y: y3 },
+  };
+  let hit = polygonLine(rect, line);
+  drawLineToRectangle(ctx, rect, line, hit, canvas.width, performance.now());
 
   requestAnimationFrame(draw);
 }
@@ -1414,33 +1119,89 @@ function draw() {
 draw();`;
 
 const RECT_RECT_HTML = `<canvas id="canvas"></canvas>`;
-const RECT_RECT_JS = `// ─── polygon-polygon SAT test ──────────────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
+const RECT_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
+
+${lineLineFn.toString()}
+
+function polygonLine(polygon, line) {
+  let next = 0;
+  const { vertices } = polygon;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let x3 = vertices[current].x;
+    let y3 = vertices[current].y;
+    let x4 = vertices[next].x;
+    let y4 = vertices[next].y;
+
+    let tempLine = {
+      startPoint: { x: x3, y: y3 },
+      endPoint: { x: x4, y: y4 },
+    };
+    let hit = lineLine(line, tempLine).hit;
+    if (hit) return true;
   }
-  return inside;
-}
 
-function buildRect(cx, cy, hw, hh, angle) {
-  const cos = Math.cos(angle), sin = Math.sin(angle);
-  return [
-    { x: cx + (-hw) * cos - (-hh) * sin, y: cy + (-hw) * sin + (-hh) * cos },
-    { x: cx +   hw  * cos - (-hh) * sin, y: cy +   hw  * sin + (-hh) * cos },
-    { x: cx +   hw  * cos -   hh  * sin, y: cy +   hw  * sin +   hh  * cos },
-    { x: cx + (-hw) * cos -   hh  * sin, y: cy + (-hw) * sin +   hh  * cos },
-  ];
-}
-
-function polyPolyOverlap(p1, p2) {
-  for (let i = 0; i < p1.length; i++) if (polyContainsPoint(p2, p1[i].x, p1[i].y)) return true;
-  for (let i = 0; i < p2.length; i++) if (polyContainsPoint(p1, p2[i].x, p2[i].y)) return true;
   return false;
 }
+
+${polygonPoint.keyFunction.toString()}
+
+function polygonPolygon(polygon1, polygon2) {
+  let next = 0;
+  const { vertices } = polygon1;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
+    let line = { startPoint, endPoint };
+
+    let collision = polygonLine(polygon2, line);
+    if (collision) return true;
+
+    collision = polygonPoint(polygon1, polygon2.vertices[0]);
+    if (collision) return true;
+  }
+
+  return false;
+}
+
+${lineLength.toString()}
+
+${getRotation.keyFunction.toString()}
+
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const rotateQ = rotate ? options.time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
+
+${drawRectToRect.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1449,48 +1210,16 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
-
-function drawPoly(pts, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x, pts[0].y);
-  for (let i = 1; i < pts.length; i++) {
-    ctx.lineTo(pts[i].x, pts[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-
-  // Rect1: moving and rotating
-  let rect1x = cx + Math.sin(Date.now() * 0.0005) * 150;
-  let rect1y = cy;
-  let angle1 = Date.now() * 0.001;
-  let rect1 = buildRect(rect1x, rect1y, 50, 50, angle1);
-
-  // Rect2: at center, rotating
-  let angle2 = Date.now() * 0.0008;
-  let rect2 = buildRect(cx, cy, 50, 50, angle2);
-
-  let hit = polyPolyOverlap(rect1, rect2);
-
-  drawPoly(rect1, hit ? '#ef4444' : 'rgba(255,255,255,0.85)');
-  drawPoly(rect2, hit ? '#22d3ee' : 'rgba(255,255,255,0.85)');
-
-  if (hit) drawCollisionText(cx);
+  drawRectToRect(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonPolygon,
+    createRect
+  );
 
   requestAnimationFrame(draw);
 }
@@ -1498,38 +1227,60 @@ function draw() {
 draw();`;
 
 const POLYGON_POLYGON_HTML = `<canvas id="canvas"></canvas>`;
-const POLYGON_POLYGON_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${polygonToPolygon.toString()}
+const POLYGON_POLYGON_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
+${sineCurve.toString()}
 
-// ─── buildStar helper ──────────────────────────────────────────────────────
-function buildStar(cx, cy, spikes, outer, inner, angleOffset) {
-  const pts = [];
-  const step = Math.PI / spikes;
-  for (let i = 0; i < 2 * spikes; i++) {
-    const r = i % 2 === 0 ? outer : inner;
-    const a = i * step + (angleOffset || 0);
-    pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+${lineLineFn.toString()}
+
+function polygonLine(polygon, line) {
+  let next = 0;
+  const { vertices } = polygon;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let x3 = vertices[current].x;
+    let y3 = vertices[current].y;
+    let x4 = vertices[next].x;
+    let y4 = vertices[next].y;
+
+    let tempLine = {
+      startPoint: { x: x3, y: y3 },
+      endPoint: { x: x4, y: y4 },
+    };
+    let hit = lineLine(line, tempLine).hit;
+    if (hit) return true;
   }
-  return pts;
-}
 
-// ─── polyContainsPoint helper ──────────────────────────────────────────────
-function polyContainsPoint(pts, px, py) {
-  let inside = false;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
-    const xi = pts[i].x, yi = pts[i].y;
-    const xj = pts[j].x, yj = pts[j].y;
-    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi)
-      inside = !inside;
-  }
-  return inside;
-}
-
-function polyPolyOverlap(p1, p2) {
-  for (let i = 0; i < p1.length; i++) if (polyContainsPoint(p2, p1[i].x, p1[i].y)) return true;
-  for (let i = 0; i < p2.length; i++) if (polyContainsPoint(p1, p2[i].x, p2[i].y)) return true;
   return false;
 }
+
+${polygonPoint.keyFunction.toString()}
+
+function polygonPolygon(polygon1, polygon2) {
+  let next = 0;
+  const { vertices } = polygon1;
+  for (let current = 0; current < vertices.length; current++) {
+    next = current + 1;
+    if (next === vertices.length) next = 0;
+
+    let startPoint = vertices[current];
+    let endPoint = vertices[next];
+    let line = { startPoint, endPoint };
+
+    let collision = polygonLine(polygon2, line);
+    if (collision) return true;
+
+    collision = polygonPoint(polygon1, polygon2.vertices[0]);
+    if (collision) return true;
+  }
+
+  return false;
+}
+
+${starVertices.toString()}
+
+${drawPolygonToPolygon.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1538,64 +1289,746 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function drawCollisionText(x) {
-  ctx.font = "bold 24px 'Courier New',monospace";
-  ctx.textAlign = "center";
-  ctx.fillStyle = "rgba(255,0,100,0.55)"; ctx.fillText("[ COLLISION DETECTED ]", x+3, 43);
-  ctx.fillStyle = "rgba(0,255,255,0.55)";  ctx.fillText("[ COLLISION DETECTED ]", x-3, 37);
-  ctx.fillStyle = "#e0f7ff";               ctx.fillText("[ COLLISION DETECTED ]", x,   40);
-  ctx.textAlign = "left";
-}
-
-function drawPoly(points, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 1; i < points.length; i++) {
-    ctx.lineTo(points[i].x, points[i].y);
-  }
-  ctx.closePath();
-  ctx.fill();
-}
-
 function draw() {
-  ctx.fillStyle = '#1e1b4b';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  let t = Date.now() * 0.001;
-
-  // Large 9-spike star at center (yellow/cyan)
-  let star1 = buildStar(cx, cy, 9, 150, 25, 0);
-
-  // Small 5-spike star moving (orange/red)
-  let star2x = cx + Math.sin(t * 0.8) * 200;
-  let star2y = cy + Math.cos(t * 0.6) * 150;
-  let star2 = buildStar(star2x, star2y, 5, 50, 15, t);
-
-  let hit = polyPolyOverlap(star1, star2);
-
-  drawPoly(star1, hit ? '#22d3ee' : '#facc15');
-  drawPoly(star2, hit ? '#ef4444' : '#fb923c');
-
-  if (hit) drawCollisionText(cx);
+  drawPolygonToPolygon(
+    ctx,
+    canvas.width,
+    canvas.height,
+    performance.now(),
+    sineCurve,
+    polygonPolygon,
+    starVertices
+  );
 
   requestAnimationFrame(draw);
 }
 
 draw();`;
 
+// ── spring (damped harmonic motion) ──────────────────────────────────────────
+const SPRING_HTML = `<canvas id="canvas"></canvas>
+<div id="controls">
+  <label>stiffness <input type="range" id="stiffness" min="40" max="400" step="10" value="170"></label>
+</div>`;
+const SPRING_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
+${springValue.toString()}
+
+${criticalDamping.toString()}
+
+// ─── the drawing ────────────────────────────────────────────────────────────
+${drawSpring.toString()}
+
+// ─── canvas setup ────────────────────────────────────────────────────────────
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+// ─── state: three springs, same stiffness, different damping ─────────────────
+let stiffness = 170;
+let time = 0;
+let target = 0;
+let under = { value: canvas.width * 0.15, velocity: 0 };
+let critical = { value: canvas.width * 0.15, velocity: 0 };
+let over = { value: canvas.width * 0.15, velocity: 0 };
+
+function draw() {
+  const deltaSeconds = 1 / 60;
+  time += deltaSeconds;
+
+  const left = canvas.width * 0.3;
+  const right = canvas.width * 0.75;
+  target = Math.floor(time / 2.2) % 2 === 0 ? right : left;
+
+  const critDamp = criticalDamping(stiffness);
+  under = springValue(under, target, { stiffness, damping: critDamp * 0.25, deltaSeconds });
+  critical = springValue(critical, target, { stiffness, damping: critDamp, deltaSeconds });
+  over = springValue(over, target, { stiffness, damping: critDamp * 2.5, deltaSeconds });
+
+  const h = canvas.height;
+  drawSpring(ctx, canvas.width, h, target, [
+    { y: h * 0.3, pos: under.value, color: '#ef4444', label: 'underdamped — bounces' },
+    { y: h * 0.55, pos: critical.value, color: '#34d399', label: 'critically damped — no overshoot' },
+    { y: h * 0.8, pos: over.value, color: '#6366f1', label: 'overdamped — sluggish' },
+  ]);
+
+  requestAnimationFrame(draw);
+}
+
+document.getElementById('stiffness').addEventListener('input', e => {
+  stiffness = parseFloat(e.target.value);
+});
+
+draw();`;
+
+const SIMPLE_EQUATION_PENS: ExamplePen[] = [
+  {
+    group: "Simple Useful Equations",
+    key: "center-on-parent",
+    label: "Center on Parent",
+    blurb: "Compute the x/y offset that centers a child rectangle inside a parent.",
+    payload: {
+      title: "Center on Parent",
+      description: "Center a child box by subtracting its size from the parent size and halving the remainder.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawCenterOnParent.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function loop() {
+  drawCenterOnParent(ctx, canvas.width, canvas.height, performance.now() * 0.001);
+  requestAnimationFrame(loop);
+}
+loop();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "degrees-to-radians",
+    label: "Degrees to Radians",
+    blurb: "Convert familiar degree angles into the radians JavaScript trig functions expect.",
+    payload: {
+      title: "Degrees to Radians",
+      description: "JavaScript trig uses radians, so 180 degrees becomes PI radians.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>degrees <input id="deg" type="range" min="0" max="360" value="45"></label></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawDegreesToRadians.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('deg');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function loop() {
+  drawDegreesToRadians(ctx, canvas.width, canvas.height, Number(slider.value));
+  requestAnimationFrame(loop);
+}
+loop();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "radians-to-degrees",
+    label: "Radians to Degrees",
+    blurb: "Convert radian values back into readable degrees.",
+    payload: {
+      title: "Radians to Degrees",
+      description: "Radians are the natural unit for trig; degrees are often easier to read.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>radians <input id="rad" type="range" min="0" max="6.283" step="0.001" value="0.785"></label></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawRadiansToDegrees.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('rad');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function loop() {
+  drawRadiansToDegrees(ctx, canvas.width, canvas.height, Number(slider.value));
+  requestAnimationFrame(loop);
+}
+loop();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "format-number-with-commas",
+    label: "Format Number with Commas",
+    blurb: "Format large numbers into readable thousands groups.",
+    payload: {
+      title: "Format Number with Commas",
+      description: "A tiny formatting helper for making large values scan quickly.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawFormatNumberWithCommas.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function loop() {
+  drawFormatNumberWithCommas(ctx, canvas.width, canvas.height, performance.now());
+  requestAnimationFrame(loop);
+}
+loop();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "random-integer-between",
+    label: "Random Integer Between",
+    blurb: "Roll inclusive integer values inside a min/max range.",
+    payload: {
+      title: "Random Integer Between",
+      description: "Generate whole numbers with inclusive lower and upper bounds.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><button id="roll">roll</button></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawRandomIntegerBetween.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let values = [];
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function randomIntegerBetween(min, max) { max++; return Math.floor(Math.random() * (max - min) + min); }
+function roll() { values = Array.from({ length: 28 }, () => randomIntegerBetween(1, 6)); drawRandomIntegerBetween(ctx, canvas.width, canvas.height, values); }
+document.getElementById('roll').addEventListener('click', roll);
+roll();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Simple Useful Equations",
+    key: "random-number-between",
+    label: "Random Number Between",
+    blurb: "Generate floating-point random values inside a min/max range.",
+    payload: {
+      title: "Random Number Between",
+      description: "Generate decimal values greater than or equal to min and less than max.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawRandomNumberBetween.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let samples = [];
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+function randomNumberBetween(min, max) { return Math.random() * (max - min) + min; }
+ctx.fillStyle = '#0a0a0f';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+function loop() {
+  if (samples.length > 160) samples.shift();
+  samples.push(randomNumberBetween(20, canvas.width - 20));
+  drawRandomNumberBetween(ctx, canvas.width, canvas.height, samples);
+  requestAnimationFrame(loop);
+}
+loop();`,
+      editors: "001",
+    },
+  },
+];
+
+const COLOR_AND_VECTOR_PENS: ExamplePen[] = [
+  {
+    group: "Useful Little Things",
+    key: "color-lerp",
+    label: "Color Lerp (RGB vs HSL)",
+    blurb: "Compare straight RGB blending with hue-aware HSL blending.",
+    payload: {
+      title: "Color Lerp — RGB vs HSL",
+      description: "RGB interpolation can pass through gray; HSL interpolation travels around the color wheel.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `function lerp(a, b, t) { return a + (b - a) * t; }
+function rgbToHsl(rgb) {
+  const rn = rgb.r / 255;
+  const gn = rgb.g / 255;
+  const bn = rgb.b / 255;
+  const max = Math.max(rn, gn, bn);
+  const min = Math.min(rn, gn, bn);
+  const d = max - min;
+  let h = 0;
+  if (d !== 0) {
+    if (max === rn) h = ((gn - bn) / d) % 6;
+    else if (max === gn) h = (bn - rn) / d + 2;
+    else h = (rn - gn) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  const l = (max + min) / 2;
+  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+  return { h, s: s * 100, l: l * 100 };
+}
+function hslToRgb(hsl) {
+  const sn = hsl.s / 100;
+  const ln = hsl.l / 100;
+  const c = (1 - Math.abs(2 * ln - 1)) * sn;
+  const hp = ((((hsl.h % 360) + 360) % 360)) / 60;
+  const x = c * (1 - Math.abs((hp % 2) - 1));
+  let r1 = 0, g1 = 0, b1 = 0;
+  if (hp < 1) [r1, g1, b1] = [c, x, 0];
+  else if (hp < 2) [r1, g1, b1] = [x, c, 0];
+  else if (hp < 3) [r1, g1, b1] = [0, c, x];
+  else if (hp < 4) [r1, g1, b1] = [0, x, c];
+  else if (hp < 5) [r1, g1, b1] = [x, 0, c];
+  else [r1, g1, b1] = [c, 0, x];
+  const m = ln - c / 2;
+  return {
+    r: Math.round((r1 + m) * 255),
+    g: Math.round((g1 + m) * 255),
+    b: Math.round((b1 + m) * 255),
+  };
+}
+function lerpColor(a, b, t) {
+  return {
+    r: lerp(a.r, b.r, t),
+    g: lerp(a.g, b.g, t),
+    b: lerp(a.b, b.b, t),
+  };
+}
+function lerpColorHsl(a, b, t) {
+  const ha = rgbToHsl(a);
+  const hb = rgbToHsl(b);
+  const dh = ((((hb.h - ha.h) % 360) + 540) % 360) - 180;
+  return hslToRgb({
+    h: ha.h + dh * t,
+    s: lerp(ha.s, hb.s, t),
+    l: lerp(ha.l, hb.l, t),
+  });
+}
+function rgbToCss(rgb) {
+  return 'rgb(' + Math.round(rgb.r) + ', ' + Math.round(rgb.g) + ', ' + Math.round(rgb.b) + ')';
+}
+${drawColorLerp.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const a = { r: 37, g: 99, b: 235 };
+const b = { r: 250, g: 204, b: 21 };
+const rgbStops = [], hslStops = [];
+for (let i = 0; i < 64; i++) {
+  const t = i / 63;
+  rgbStops.push(rgbToCss(lerpColor(a, b, t)));
+  hslStops.push(rgbToCss(lerpColorHsl(a, b, t)));
+}
+function draw() {
+  const t = (Math.sin(performance.now() * 0.001) + 1) / 2;
+  drawColorLerp(ctx, rgbStops, hslStops, t, canvas.width, canvas.height);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Useful Little Things",
+    key: "color-families",
+    label: "Color Families",
+    blurb: "Generate ordered palettes from named slices of the hue wheel.",
+    payload: {
+      title: "Color Families",
+      description: "Pick a named hue family and generate a coherent palette from that slice of the color wheel.",
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>family <select id="family"><option>all</option><option>red</option><option>orange</option><option>yellow</option><option>green</option><option>cyan</option><option>blue</option><option>purple</option><option>pink</option></select></label></div>`,
+      css: FULLSCREEN_CSS,
+      js: `${hslToRgb.toString()}
+${rgbToCss.toString()}
+${drawColorFamily.toString()}
+
+const HUE_FAMILIES = { all: [0, 360], red: [-12, 18], orange: [18, 45], yellow: [45, 70], green: [80, 160], cyan: [160, 200], blue: [200, 250], purple: [255, 290], pink: [300, 345] };
+function colorFamily(family, count) {
+  const range = HUE_FAMILIES[family] || HUE_FAMILIES.all;
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const f = count <= 1 ? 0.5 : i / (count - 1);
+    const h = range[0] + f * (range[1] - range[0]);
+    out.push(hslToRgb({ h, s: 72, l: 50 + Math.sin(f * Math.PI) * 16 }));
+  }
+  return out;
+}
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const select = document.getElementById('family');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; draw(); }
+window.addEventListener('resize', resize);
+resize();
+select.addEventListener('change', draw);
+function draw() {
+  const family = select.value;
+  const colors = colorFamily(family, 36).map(rgbToCss);
+  drawColorFamily(ctx, colors, family, canvas.width, canvas.height, 90);
+}`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "vector-reflection",
+    label: "Vector Reflection",
+    blurb: "Reflect an incoming vector across a wall normal.",
+    payload: {
+      title: "Vector Reflection",
+      description: "A bounce is the incoming vector reflected across the surface normal.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${vecNormalize.toString()}
+${vecPerpendicular.toString()}
+${vecReflect.toString()}
+function drawArrow(ctx, fromX, fromY, toX, toY, color, label) {
+  const ang = Math.atan2(toY - fromY, toX - fromX);
+  const head = 11;
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(toX, toY);
+  ctx.lineTo(toX - head * Math.cos(ang - Math.PI / 6), toY - head * Math.sin(ang - Math.PI / 6));
+  ctx.lineTo(toX - head * Math.cos(ang + Math.PI / 6), toY - head * Math.sin(ang + Math.PI / 6));
+  ctx.closePath(); ctx.fill();
+  if (label) { ctx.font = 'bold 12px monospace'; ctx.fillText(label, toX + 8, toY - 8); }
+}
+${drawVectorReflect.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const incoming = vecNormalize({ x: 1, y: 0.55 });
+function draw() {
+  const wallAngle = performance.now() * 0.001;
+  const wallDir = { x: Math.cos(wallAngle), y: Math.sin(wallAngle) };
+  const normal = vecNormalize(vecPerpendicular(wallDir));
+  const reflected = vecReflect(incoming, normal);
+  drawVectorReflect(ctx, canvas.width / 2, canvas.height / 2, incoming, normal, reflected, wallDir, canvas.width, canvas.height);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "vector-rotation",
+    label: "Vector Rotation",
+    blurb: "Rotate a shape by passing every point through vecRotate.",
+    payload: {
+      title: "Vector Rotation",
+      description: "Rotation remixes each point's x and y with sine and cosine.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${vecRotate.toString()}
+${drawVectorRotate.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const basePoints = Array.from({ length: 9 }, (_, i) => {
+  const a = (Math.PI * 2 * i) / 9;
+  const r = i % 2 ? 82 : 150;
+  return { x: Math.cos(a) * r, y: Math.sin(a) * r };
+});
+function draw() {
+  drawVectorRotate(
+    ctx,
+    canvas.width / 2,
+    canvas.height / 2,
+    basePoints,
+    performance.now() * 0.001,
+    canvas.width,
+    canvas.height,
+    vecRotate
+  );
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "angle-lerp-shortest-turn",
+    label: "Angle Lerp",
+    blurb: "Show why angles need shortest-path interpolation instead of raw lerp.",
+    payload: {
+      title: "Angle Lerp — Shortest Turn",
+      description: "350 degrees to 10 degrees is a short hop, not an almost-full spin.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${wrapAngle.toString()}
+${shortestAngleBetween.toString()}
+${lerpAngle.toString()}
+function drawDial(ctx, cx, cy, r, angle, color, label) {
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = color; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r); ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = color; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center'; ctx.fillText(label, cx, cy + r + 28); ctx.textAlign = 'left';
+}
+${drawAngleLerp.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const startAngle = 350 * Math.PI / 180;
+const targetAngle = 10 * Math.PI / 180;
+function draw() {
+  const t = (Math.sin(performance.now() * 0.001) + 1) / 2;
+  const naive = startAngle + (targetAngle - startAngle) * t;
+  const smart = lerpAngle(startAngle, targetAngle, t);
+  drawAngleLerp(ctx, canvas.width, canvas.height, naive, smart, startAngle, targetAngle, t);
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Math & Physics",
+    key: "murmuration",
+    label: "Murmuration",
+    blurb: "A lightweight flocking sketch using the same bird renderer as the Examples animation.",
+    payload: {
+      title: "Murmuration",
+      description: "Many small triangles steer toward a wandering target, creating a flock-like smear.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${drawBird.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const birds = Array.from({ length: 180 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, vx: Math.random() * 2 - 1, vy: Math.random() * 2 - 1 }));
+function draw() {
+  const t = performance.now() * 0.00035;
+  const target = { x: canvas.width / 2 + Math.cos(t * 3.1) * canvas.width * 0.25, y: canvas.height / 2 + Math.sin(t * 2.7) * canvas.height * 0.25 };
+  ctx.fillStyle = 'rgba(10,10,18,0.18)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#d8e2ff';
+  for (const b of birds) {
+    b.vx += (target.x - b.x) * 0.00008 + (Math.random() - 0.5) * 0.05;
+    b.vy += (target.y - b.y) * 0.00008 + (Math.random() - 0.5) * 0.05;
+    const m = Math.hypot(b.vx, b.vy) || 1;
+    if (m > 3.4) { b.vx = b.vx / m * 3.4; b.vy = b.vy / m * 3.4; }
+    b.x = (b.x + b.vx + canvas.width) % canvas.width;
+    b.y = (b.y + b.vy + canvas.height) % canvas.height;
+    drawBird(ctx, b.x, b.y, Math.atan2(b.vy, b.vx), 4);
+  }
+  requestAnimationFrame(draw);
+}
+ctx.fillStyle = '#0a0a12';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+draw();`,
+      editors: "001",
+    },
+  },
+];
+
+const PRETTY_AND_FRACTAL_PENS: ExamplePen[] = [
+  {
+    group: "Math & Physics",
+    key: "sierpinski",
+    label: "Sierpinski Triangle",
+    blurb: "Recursively remove middle triangles to reveal a classic fractal.",
+    payload: {
+      title: "Sierpinski Triangle",
+      description: "Each triangle splits into three smaller triangles; repeat and the fractal appears.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${sierpinskiMidpoints.toString()}
+
+${drawSierpinski.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+const state = {
+  triangles: [{ radius: canvas.height / 4, phase: 0, ratio: 0, hasSpawned: false }],
+  rotation: 0
+};
+function loop() {
+  drawSierpinski(ctx, canvas.width, canvas.height, state);
+  requestAnimationFrame(loop);
+}
+loop();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "glitter",
+    label: "Glitter",
+    blurb: "A standalone glitter field inspired by the Examples effect.",
+    payload: {
+      title: "Glitter",
+      description: "A dense field of gold particles and rotating beams.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const dots = Array.from({ length: 650 }, () => ({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, s: Math.random() * 2.2 + 0.3, a: Math.random() * 0.35 + 0.08 }));
+function draw() {
+  const t = performance.now() * 0.001;
+  ctx.fillStyle = '#170425'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.save(); ctx.translate(canvas.width / 2, canvas.height / 2); ctx.globalCompositeOperation = 'lighter';
+  for (const d of dots) {
+    const x = d.x * canvas.width * 0.43 + Math.cos(t + d.y * 8) * 40;
+    const y = d.y * canvas.height * 0.43 + Math.sin(t * 0.8 + d.x * 8) * 40;
+    ctx.globalAlpha = d.a; ctx.fillStyle = '#ffee5c'; ctx.beginPath(); ctx.arc(x, y, d.s, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 0.045; ctx.strokeStyle = '#ffee5c'; ctx.lineWidth = 2;
+  for (let i = 0; i < 90; i++) { ctx.rotate(0.17); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(canvas.width * 0.45 * (0.4 + Math.sin(t + i) * 0.3), 0); ctx.stroke(); }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "pretty-ring",
+    label: "Pretty Ring",
+    blurb: "A layered glowing ring of orbiting particles.",
+    payload: {
+      title: "Pretty Ring",
+      description: "Layered particles orbit around the center with small wobbling offsets.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const colors = ['#446996', '#2d4264', '#0b482a', '#888136', '#633321'];
+function draw() {
+  const t = performance.now() * 0.0005;
+  ctx.fillStyle = '#02050b'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.save(); ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(t); ctx.globalCompositeOperation = 'lighter';
+  const base = Math.min(canvas.width, canvas.height) * 0.26;
+  for (let i = 0; i < 720; i++) {
+    const a = i / 720 * Math.PI * 2;
+    const layer = i % 3 - 1;
+    const r = base + layer * 28 + Math.sin(t * 8 + i) * 12;
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.globalAlpha = 0.55;
+    ctx.beginPath(); ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 2.4, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "sparklies",
+    label: "Sparklies",
+    blurb: "Small firework bursts with fading jewel-toned particles.",
+    payload: {
+      title: "Sparklies",
+      description: "A field of looping firework bursts.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+const bursts = Array.from({ length: 24 }, () => makeBurst());
+function makeBurst() { return { x: Math.random() * canvas.width, y: Math.random() * canvas.height, age: Math.random() * 120, life: 90 + Math.random() * 90, hue: Math.random() * 360 }; }
+function draw() {
+  ctx.fillStyle = 'rgba(2,3,9,0.28)'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < bursts.length; i++) {
+    const b = bursts[i]; b.age++;
+    const p = b.age / b.life;
+    if (p >= 1) { bursts[i] = makeBurst(); continue; }
+    for (let j = 0; j < 18; j++) {
+      const a = j / 18 * Math.PI * 2;
+      const d = p * 95;
+      ctx.globalAlpha = 1 - p;
+      ctx.fillStyle = 'hsl(' + (b.hue + j * 18) + ', 90%, 65%)';
+      ctx.beginPath(); ctx.arc(b.x + Math.cos(a) * d, b.y + Math.sin(a) * d, 2.2, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(draw);
+}
+draw();`,
+      editors: "001",
+    },
+  },
+  {
+    group: "Pretty Things",
+    key: "klimt",
+    label: "Klimt-Inspired Swirls",
+    blurb: "Gold-toned ornamental ribbons and mosaic-like marks.",
+    payload: {
+      title: "Klimt-Inspired Swirls",
+      description: "Curving gold ribbons with jewel accents, loosely inspired by Klimt ornament.",
+      html: `<canvas id="canvas"></canvas>`,
+      css: FULLSCREEN_CSS,
+      js: `${createKlimtSwirls.toString()}
+
+${drawKlimt.toString()}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+const swirls = createKlimtSwirls(canvas.width, canvas.height);
+function loop() {
+  drawKlimt(ctx, canvas.width, canvas.height, swirls);
+  requestAnimationFrame(loop);
+}
+loop();`,
+      editors: "001",
+    },
+  },
+];
+
 export const EXAMPLE_PENS: ExamplePen[] = [
+  ...SIMPLE_EQUATION_PENS,
+  ...COLOR_AND_VECTOR_PENS,
+  ...PRETTY_AND_FRACTAL_PENS,
+  {
+    group: "Math & Physics",
+    key: "spring-damped-harmonic",
+    label: "Spring (Damped Harmonic Motion)",
+    blurb:
+      "Three balls chase a target with the same stiffness but different damping — underdamped bounces, critically damped snaps, overdamped crawls.",
+    payload: {
+      title: "Spring — Damped Harmonic Motion",
+      description:
+        "A mass-on-a-spring (Hooke's law + damping). Same stiffness, three damping ratios: underdamped overshoots and bounces, critically damped is the fastest approach with no overshoot, overdamped is sluggish.",
+      html: SPRING_HTML,
+      css: FULLSCREEN_CSS,
+      js: SPRING_JS,
+      editors: "001",
+    },
+  },
   {
     group: "Animations",
     key: "ball-bounce",
     label: "Ball Bounce",
     blurb:
-      "A ball falls with gravity, bounces off walls and floor, losing energy on each impact.",
+      "Rainbow waves of balls fall with gravity, bounce and lose energy, then settle — with motion trails.",
     payload: {
       title: "Ball Bounce",
       description:
-        "A ball falls with gravity and bounces off walls with realistic energy loss.",
+        "A rainbow wave of balls falls with gravity and bounces with realistic energy loss; once they settle, a fresh wave drops in. Trails come from fading each frame.",
       html: BALL_BOUNCE_HTML,
       css: FULLSCREEN_CSS,
       js: BALL_BOUNCE_JS,
@@ -1604,23 +2037,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "balls-bouncing",
-    label: "Balls Bouncing Against Each Other",
-    blurb:
-      "Multiple balls collide with each other and the walls, using spring forces.",
-    payload: {
-      title: "Balls Bouncing Against Each Other",
-      description:
-        "Watch multiple balls bounce off each other using spring-based collision.",
-      html: BALLS_BOUNCING_HTML,
-      css: FULLSCREEN_CSS,
-      js: BALLS_BOUNCING_JS,
-      editors: "001",
-    },
-  },
-  {
-    group: "Animations",
-    key: "orbital-motion",
+    key: "ball-orbiting-a-sun",
     label: "Ball Orbiting a Sun",
     blurb:
       "A ball orbits a sun using gravitational attraction, drawn as a spiral.",
@@ -1636,12 +2053,12 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "lerp",
-    label: "Lerp (Smooth Follow)",
+    key: "lerp-smooth-follow",
+    label: "lerp (Smooth Follow)",
     blurb:
       "Linear interpolation: smoothly follow a target by always moving a fraction of the way there.",
     payload: {
-      title: "Lerp — Linear Interpolation",
+      title: "lerp — Linear Interpolation",
       description:
         "Smoothly follow a target using linear interpolation (a + (b-a)*t).",
       html: LERP_HTML,
@@ -1652,7 +2069,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "easing",
+    key: "easing-functions",
     label: "Easing Functions",
     blurb:
       "Compare different easing curves to smooth out motion in an animation.",
@@ -1668,7 +2085,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "quadratic-bezier",
+    key: "quadratic-bezier-curve",
     label: "Quadratic Bézier Curve",
     blurb:
       "A curve controlled by three points: two endpoints and one control point in between.",
@@ -1684,7 +2101,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "find-points-on-circle",
+    key: "find-points-on-a-circle",
     label: "Find Points on a Circle",
     blurb: "Distribute points evenly around a circle using trigonometry.",
     payload: {
@@ -1699,7 +2116,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "move-to-destination",
+    key: "move-to-changing-point",
     label: "Move Object to Changing Point",
     blurb:
       "Smoothly move toward a target that changes position, following at a fixed speed.",
@@ -1715,7 +2132,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "point-towards",
+    key: "point-object-towards-another",
     label: "Point Object Towards Another",
     blurb: "Rotate an arrow to always face a moving target using atan2.",
     payload: {
@@ -1744,14 +2161,14 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Animations",
-    key: "demystify-sine-cosine",
+    key: "demystify-sine-and-cosine",
     label: "Demystify Sine & Cosine",
     blurb:
-      "See sine and cosine visually: a point moves on a circle, and its x/y coordinates trace the curves.",
+      "A unit-circle triangle that shows cosine shrinking horizontally while sine grows vertically.",
     payload: {
       title: "Demystify Sine & Cosine",
       description:
-        "Visualize how sine and cosine come from a point moving on a circle.",
+        "See sine and cosine as adjacent and opposite over a shared radius in the top-right quarter of a circle.",
       html: DEMYSTIFY_SINE_COSINE_HTML,
       css: FULLSCREEN_CSS,
       js: DEMYSTIFY_SINE_COSINE_JS,
@@ -1760,7 +2177,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "point-to-circle",
+    key: "point-to-circle-collision",
     label: "Point to Circle",
     blurb: "Detect when a moving point enters a circle.",
     payload: {
@@ -1775,13 +2192,13 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "point-to-rect",
+    key: "point-to-rectangle-collision",
     label: "Point to Rectangle",
-    blurb: "Detect when a moving point enters an axis-aligned rectangle.",
+    blurb: "Detect when a moving point enters a rotating rectangle.",
     payload: {
       title: "Point to Rectangle",
       description:
-        "Axis-aligned rectangle collision: px in [rx, rx+w] and py in [ry, ry+h].",
+        "Point-in-polygon collision against a spinning rectangle.",
       html: POINT_RECT_HTML,
       css: FULLSCREEN_CSS,
       js: POINT_RECT_JS,
@@ -1790,7 +2207,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "circle-to-circle",
+    key: "circle-to-circle-collision",
     label: "Circle to Circle",
     blurb: "Detect when two circles collide using distance between centers.",
     payload: {
@@ -1804,7 +2221,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "circle-to-rect",
+    key: "circle-to-rectangle-collision",
     label: "Circle to Rectangle",
     blurb: "Detect when a circle collides with an axis-aligned rectangle.",
     payload: {
@@ -1819,7 +2236,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-circle",
+    key: "line-to-circle-collision",
     label: "Line to Circle",
     blurb: "Detect when a line segment comes close enough to a circle.",
     payload: {
@@ -1834,7 +2251,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-line",
+    key: "line-to-line-collision",
     label: "Line to Line",
     blurb:
       "Detect when two line segments intersect using parametric intersection.",
@@ -1850,7 +2267,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-point",
+    key: "line-to-point-collision",
     label: "Line to Point",
     blurb:
       "Detect when a point comes within a threshold distance of a line segment.",
@@ -1865,7 +2282,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "line-to-rect",
+    key: "line-to-rectangle-collision",
     label: "Line to Rectangle",
     blurb:
       "Detect when a line segment intersects any edge of an axis-aligned rectangle.",
@@ -1880,7 +2297,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "rect-to-rect",
+    key: "rectangle-to-rectangle-collision",
     label: "Rectangle to Rectangle",
     blurb:
       "Detect when two axis-aligned rectangles overlap using AABB (axis-aligned bounding box).",
@@ -1895,7 +2312,7 @@ export const EXAMPLE_PENS: ExamplePen[] = [
   },
   {
     group: "Collision Detection",
-    key: "polygon-to-polygon",
+    key: "polygon-to-polygon-collision",
     label: "Polygon to Polygon",
     blurb:
       "Detect when two arbitrary polygons collide using point-in-polygon and ray casting.",
@@ -1910,18 +2327,43 @@ export const EXAMPLE_PENS: ExamplePen[] = [
     },
   },
   {
+    group: "Collision Detection",
+    key: "circle-field",
+    label: "Circle Field (Collision at Scale)",
+    blurb:
+      "Many circles bouncing in a field — circleToCircle runs every pair every frame (the classic O(n²) approach).",
+    payload: {
+      title: "Circle Field",
+      description:
+        "O(n²) circleToCircle detection with elastic collision response across a whole field of circles.",
+      html: CIRCLE_FIELD_HTML,
+      css: FULLSCREEN_CSS,
+      js: CIRCLE_FIELD_JS,
+      editors: "001",
+    },
+  },
+  {
     group: "Useful Little Things",
-    key: "get-point-on-line",
+    key: "get-a-point-on-a-line",
     label: "Get a Point on a Line",
     blurb: "Find a point at a given percentage along a line segment.",
     payload: {
       title: "Get Point on Line",
       description:
         "Linearly interpolate between two points: p = p1 + t*(p2-p1).",
-      html: `<canvas id="canvas"></canvas><div id="controls"><label>t: <input type="range" id="t" min="0" max="100" step="1" value="50"></label></div>`,
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>t: <input type="range" id="t" min="-40" max="140" step="1" value="50"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${getPointOnLine.toString()}
+function getPointOnLine(startPoint, endPoint, percentage) {
+  let x = startPoint.x + percentage * (endPoint.x - startPoint.x);
+  let y = startPoint.y + percentage * (endPoint.y - startPoint.y);
+  return { x, y };
+}
+
+const T_MIN = -0.4;
+const T_MAX = 1.4;
+
+${drawGetPointOnLine.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1932,40 +2374,11 @@ resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
 let t = 0.5;
+let startPoint = {x: canvas.width * 0.2, y: canvas.height * 0.7};
+let endPoint = {x: canvas.width * 0.8, y: canvas.height * 0.3};
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let p1 = {x: canvas.width * 0.2, y: canvas.height * 0.5};
-  let p2 = {x: canvas.width * 0.8, y: canvas.height * 0.5};
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  let pt = getPointOnLine(p1, p2, t);
-
-  ctx.fillStyle = '#c7d2fe';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(pt.x, pt.y, 12, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.font = '12px monospace';
-  ctx.fillStyle = '#d8e2ff';
-  ctx.textAlign = 'left';
-  ctx.fillText('t: ' + t.toFixed(2), 20, 30);
-
+  drawGetPointOnLine(ctx, startPoint, endPoint, t, getPointOnLine);
   requestAnimationFrame(draw);
 }
 
@@ -1979,7 +2392,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "triangle-data",
+    key: "get-triangle-data-from-line",
     label: "Triangle Data from Line",
     blurb:
       "Create a right triangle from a line segment by finding the perpendicular point.",
@@ -1987,61 +2400,67 @@ draw();`,
       title: "Triangle Data from Line",
       description:
         "Given a line, construct a right triangle showing rise/run components.",
-      html: `<canvas id="canvas"></canvas>`,
+      html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${getTriangleData.toString()}
+${lineLength.toString()}
+
+// alias used inside calculateTriangleData
+const LineLengthFunc = lineLength;
+
+function calculateTriangleData(startPoint, endPoint) {
+  let hypotenuse = LineLengthFunc({ startPoint, endPoint });
+  let adjacent = LineLengthFunc({ startPoint, endPoint: { x: endPoint.x, y: startPoint.y } });
+  let opposite = LineLengthFunc({ startPoint: { x: endPoint.x, y: startPoint.y }, endPoint });
+  let oh = opposite / hypotenuse;
+  let angle1 = Math.asin(oh);
+  let angleInDegrees = Math.floor(angle1 * (180 / Math.PI));
+  let remainingAngle = 180 - angleInDegrees - 90;
+  return { angleInDegrees, remainingAngle, hypotenuse, adjacent, opposite };
+}
+
+function distanceBetweenPoints(startPoint, endPoint) {
+  let a = startPoint.x - endPoint.x;
+  let b = startPoint.y - endPoint.y;
+  return Math.sqrt(a * a + b * b);
+}
+
+${drawTriangleDataFromLine.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const infoDiv = document.getElementById('info');
+ctx.font = '14px monospace';
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
 
+// ─── state ───────────────────────────────────────────────────────────────────
+let startPoint = { x: canvas.width * 0.2, y: canvas.height * 0.7 };
+let endPoint = { x: canvas.width * 0.8, y: canvas.height * 0.3 };
+let dragging = false;
+
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let p1 = {x: canvas.width * 0.2, y: canvas.height * 0.7};
-  let p2 = {x: canvas.width * 0.8, y: canvas.height * 0.3};
-  let tri = getTriangleData(p1, p2);
-
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#a78bfa';
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p1.y);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#c4b5fd';
-  ctx.beginPath();
-  ctx.moveTo(p2.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.font = '12px monospace';
-  ctx.fillStyle = '#d8e2ff';
-  ctx.textAlign = 'left';
-  ctx.fillText('dx: ' + tri.dx.toFixed(0), 20, 30);
-  ctx.fillText('dy: ' + tri.dy.toFixed(0), 20, 50);
-  ctx.fillText('distance: ' + tri.distance.toFixed(0), 20, 70);
-
-  requestAnimationFrame(draw);
+  ctx.font = '14px monospace';
+  drawTriangleDataFromLine(ctx, startPoint, endPoint, infoDiv);
 }
+
+canvas.addEventListener('pointerdown', (e) => {
+  let { top, left } = canvas.getBoundingClientRect();
+  startPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  dragging = true;
+  draw();
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  let { top, left } = canvas.getBoundingClientRect();
+  endPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  draw();
+});
+
+canvas.addEventListener('pointerup', () => { dragging = false; });
 
 draw();`,
       editors: "001",
@@ -2059,7 +2478,9 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>points: <input type="range" id="points" min="3" max="12" step="1" value="5"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${DrawStar.toString()}
+${starVertices.toString()}
+
+${drawStar.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2082,18 +2503,8 @@ function draw() {
   ctx.translate(cx, cy);
   ctx.rotate(t);
 
-  let star = DrawStar(numPoints, 40, 100, 0);
-  ctx.beginPath();
-  ctx.moveTo(star.vertices[0].x, star.vertices[0].y);
-  for (let i = 1; i < star.vertices.length; i++) {
-    ctx.lineTo(star.vertices[i].x, star.vertices[i].y);
-  }
-  ctx.closePath();
-  ctx.fillStyle = '#818cf8';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  let star = starVertices(numPoints, 40, 100, 0);
+  drawStar(ctx, star, 0, 0);
 
   ctx.restore();
 
@@ -2119,7 +2530,38 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>rotation: <input type="range" id="rotation" min="0" max="360" step="1" value="0"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${CreateRect.toString()}
+${lineLength.toString()}
+${getRotation.keyFunction.toString()}
+function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
+  const vertices = [];
+  let x = width / 2;
+  let y = height / 2;
+  const center = { x: 0, y: 0 };
+  const dist = lineLength({ startPoint: center, endPoint: { x, y } });
+  const atan2 = getRotation(center, { x, y });
+  const rotate = options.rotate ?? false;
+  const rotateSpeed = options.rotateSpeed ?? 1000;
+  const clockwise = options.clockwise ?? true;
+  const time = options.time ?? 0;
+  const rotateQ = rotate ? time / rotateSpeed : 0;
+  const spinDirection = clockwise ? [-rotateQ, rotateQ] : [rotateQ, -rotateQ];
+  x = -dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  x = dist * Math.cos(atan2 + angle + spinDirection[0]);
+  y = -dist * Math.sin(atan2 + angle + spinDirection[0]);
+  vertices.push({ x, y });
+  x = -dist * Math.cos(atan2 - angle + spinDirection[1]);
+  y = -dist * Math.sin(atan2 - angle + spinDirection[1]);
+  vertices.push({ x, y });
+  return { vertices };
+}
+
+// ─── the drawing helper from the /examples animation ────────────────────────
+${drawPolygon.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2138,21 +2580,8 @@ function draw() {
   let cx = canvas.width / 2, cy = canvas.height / 2;
   let angle = rotation * Math.PI / 180;
 
-  let rect = CreateRect(200, 100, angle);
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.beginPath();
-  ctx.moveTo(rect.vertices[0].x, rect.vertices[0].y);
-  for (let i = 1; i < rect.vertices.length; i++) {
-    ctx.lineTo(rect.vertices[i].x, rect.vertices[i].y);
-  }
-  ctx.closePath();
-  ctx.fillStyle = '#818cf8';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.restore();
+  let rect = createRect(200, 100, angle);
+  drawPolygon(ctx, rect, cx, cy);
 
   requestAnimationFrame(draw);
 }
@@ -2167,17 +2596,19 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "equilateral-triangle",
+    key: "equilateral-trianlge-points",
     label: "Equilateral Triangle",
     blurb:
       "Draw an equilateral triangle by placing vertices at 120° intervals.",
     payload: {
       title: "Equilateral Triangle",
       description: "Three vertices at 120° intervals from the top.",
-      html: `<canvas id="canvas"></canvas>`,
+      html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"><h3>Click and drag to draw triangle</h3></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${drawEquilateralTriangle.toString()}
+${equilateralTriangle.toString()}
+
+${drawEquilateralTriangleAnimation.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2186,23 +2617,56 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
-function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+// ─── state ───────────────────────────────────────────────────────────────────
+let backgroundTris = [];
+let angle = 0;
+let startPoint = { x: canvas.width / 2, y: canvas.height / 2 + 50 };
+let endPoint = { x: canvas.width / 2, y: canvas.height / 2 - 50 };
+let dragging = false;
 
-  let cx = canvas.width / 2, cy = canvas.height / 2;
-  let t = Date.now() * 0.001;
-  let r = 80 + Math.sin(t) * 20;
-
-  drawEquilateralTriangle(cx, cy, r);
-  ctx.fillStyle = '#818cf8';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  requestAnimationFrame(draw);
+for (let i = 0; i < 10; i++) {
+  backgroundTris.push({
+    radius: Math.random() * 100 + 50,
+    centerPoint: { x: Math.random() * canvas.width, y: Math.random() * canvas.height },
+    angle: Math.random()
+  });
 }
+
+function getAngle(from, to) {
+  return Math.atan2(to.y - from.y, to.x - from.x);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  angle = getAngle(startPoint, endPoint);
+  drawEquilateralTriangle(
+    ctx,
+    backgroundTris,
+    angle,
+    startPoint,
+    endPoint,
+    canvas.width,
+    canvas.height,
+    equilateralTriangle
+  );
+}
+
+canvas.addEventListener('pointerdown', (e) => {
+  let { top, left } = canvas.getBoundingClientRect();
+  startPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  endPoint = { x: 0, y: 0 };
+  dragging = true;
+  draw();
+});
+
+canvas.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  let { top, left } = canvas.getBoundingClientRect();
+  endPoint = { x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) };
+  draw();
+});
+
+canvas.addEventListener('pointerup', () => { dragging = false; });
 
 draw();`,
       editors: "001",
@@ -2210,7 +2674,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "circle-from-three",
+    key: "circle-from-three-points",
     label: "Circle from Three Points",
     blurb:
       "Find the circumcircle that passes through three points using perpendicular bisectors.",
@@ -2221,7 +2685,12 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${CircleFromThreePoints.toString()}
+${circleFromThreePoints.toString()}
+
+// alias used inside drawCircleFromThreePoints
+const CircleFromThreePointsFunc = circleFromThreePoints;
+
+${drawCircleFromThreePoints.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2234,91 +2703,49 @@ resize();
 // ─── state ───────────────────────────────────────────────────────────────────
 let points = [];
 let circleQ = 0;
-let result = null;
-let drawingCircle = false;
+let text = ['<h3>Click screen three times to make three points.</h3>'];
 let interval = null;
 
-function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Show instruction
-  if (points.length === 0) {
-    infoDiv.innerHTML = '<h3>Click screen three times to make three points.</h3>';
-  } else {
-    infoDiv.innerHTML = '<p>Points clicked: ' + points.length + ' / 3</p>';
+function render() {
+  if (points.length === 3) {
+    let r = circleFromThreePoints(points[0], points[1], points[2]);
+    text[3] = '<p>radius: ' + Math.floor(r.radius) + ', center: { x: ' + Math.floor(r.center.x) + ', y: ' + Math.floor(r.center.y) + ' }</p>';
   }
-
-  // Draw the input points
-  points.forEach((point) => {
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#818cf8';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  });
-
-  // Draw the progressively-rendered circle if we have 3 points
-  if (result && points.length === 3) {
-    ctx.strokeStyle = 'green';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(result.center.x, result.center.y, result.radius, 0, circleQ);
-    ctx.stroke();
-
-    // Draw center point
-    ctx.fillStyle = '#a78bfa';
-    ctx.beginPath();
-    ctx.arc(result.center.x, result.center.y, 4, 0, 2 * Math.PI);
-    ctx.fill();
-
-    // Display radius and center data
-    infoDiv.innerHTML += '<p>radius: ' + Math.floor(result.radius) + ', center: { x: ' + Math.floor(result.center.x) + ', y: ' + Math.floor(result.center.y) + ' }</p>';
-  }
-
-  requestAnimationFrame(draw);
+  drawCircleFromThreePoints(ctx, points, text, circleQ, infoDiv);
 }
 
-function drawCircle() {
-  let degree = 1 * (Math.PI / 180);
-  circleQ += degree;
+function animateCircle() {
+  let degree = 5 * (Math.PI / 180);
+  circleQ = Math.min(circleQ + degree, Math.PI * 2);
+  render();
   if (circleQ < Math.PI * 2) {
-    interval = setTimeout(drawCircle, 10);
+    interval = setTimeout(animateCircle, 10);
   }
 }
 
-function pointerDownHandler(e) {
+canvas.addEventListener('pointerdown', (e) => {
   let { top, left } = canvas.getBoundingClientRect();
-
   if (points.length === 3) {
     points = [];
     circleQ = 0;
-    result = null;
-    drawingCircle = false;
+    text = ['<h3>Click screen three times to make three points.</h3>'];
     if (interval) clearTimeout(interval);
   }
-
-  points.push({
-    x: Math.floor(e.pageX - left),
-    y: Math.floor(e.pageY - top)
-  });
-
-  if (points.length === 3 && !drawingCircle) {
-    result = CircleFromThreePoints(points[0], points[1], points[2]);
-    drawingCircle = true;
-    circleQ = 0;
-    drawCircle();
+  points.push({ x: Math.floor(e.pageX - left), y: Math.floor(e.pageY - top) });
+  text[2] = '<p>' + points.map((p, i) => 'point ' + (i + 1) + ': { x:' + p.x + ', y:' + p.y + ' }').join(', ') + '</p>';
+  render();
+  if (points.length === 3) {
+    interval = setTimeout(animateCircle, 10);
   }
-}
+});
 
-canvas.addEventListener('pointerdown', pointerDownHandler);
-draw();`,
+render();`,
       editors: "001",
     },
   },
   {
     group: "Useful Little Things",
-    key: "distribute-around",
+    key: "distribute-around-circle",
     label: "Distribute Points Around Circle",
     blurb:
       "Evenly distribute points around a circle using uniform angle intervals.",
@@ -2328,15 +2755,24 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>points: <input type="range" id="points" min="3" max="100" step="5" value="20"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-// Return n points evenly distributed on a circle
-function distributeAroundCircle(center, radius, numPoints) {
-  let points = [];
-  for (let i = 0; i < numPoints; i++) {
-    let angle = (i / numPoints) * Math.PI * 2;
-    points.push({x: center.x + radius * Math.cos(angle), y: center.y + radius * Math.sin(angle)});
+function distributeAroundCircle(centerPoint, radius, totalItems) {
+  const points = [];
+  for (let i = 0; i < totalItems; i++) {
+    const angle = (Math.PI * 2 * i) / totalItems;
+    points.push({
+      x: centerPoint.x + radius * Math.cos(angle),
+      y: centerPoint.y + radius * Math.sin(angle),
+    });
   }
   return points;
 }
+
+function cosWave(startValue, differential, speed) {
+  const currentDate = new Date();
+  return startValue + Math.cos(currentDate.getTime() * speed) * differential;
+}
+
+${drawDistributeAroundCircle.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2348,52 +2784,14 @@ resize();
 // ─── state ───────────────────────────────────────────────────────────────────
 let totalItems = 20;
 
-// Cosine wave for animating radius
-function cosWave(startValue, differential, speed) {
-  const currentDate = new Date();
-  return startValue + Math.cos(currentDate.getTime() * speed) * differential;
-}
-
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let halfWidth = canvas.width / 2;
-  let halfHeight = canvas.height / 2;
-
-  // Animate the radius using cosine wave
-  let radius = cosWave(100, 100, 0.001);
-
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(halfWidth, 0);
-  ctx.lineTo(halfWidth, canvas.height);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(halfWidth, halfHeight, radius, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  let points = distributeAroundCircle(
-    { x: halfWidth, y: halfHeight },
-    radius,
-    totalItems
+  drawDistributeAroundCircle(
+    ctx,
+    canvas.width,
+    canvas.height,
+    totalItems,
+    distributeAroundCircle
   );
-
-  points.forEach((point) => {
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(halfWidth, halfHeight);
-    ctx.lineTo(point.x, point.y);
-    ctx.stroke();
-  });
-
   requestAnimationFrame(draw);
 }
 
@@ -2407,7 +2805,7 @@ draw();`,
   },
   {
     group: "Useful Little Things",
-    key: "distance-between",
+    key: "line-length",
     label: "Distance Between Two Points",
     blurb:
       "Calculate the straight-line distance between two points using the Pythagorean theorem.",
@@ -2417,7 +2815,17 @@ draw();`,
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${distance.toString()}
+${lineLength.toString()}
+const LineLengthFunc = lineLength;
+
+function getHypAngle(originPoint, destinationPoint) {
+  return Math.atan2(
+    destinationPoint.y - originPoint.y,
+    destinationPoint.x - originPoint.x
+  );
+}
+
+${drawLineLength.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2427,34 +2835,18 @@ window.addEventListener('resize', resize);
 resize();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   let t = Date.now() * 0.001;
-  let p1 = {x: canvas.width * 0.3, y: canvas.height / 2};
-  let p2 = {x: canvas.width * 0.7 + Math.sin(t) * 100, y: canvas.height / 2 + Math.cos(t) * 80};
+  let startPoint = {x: canvas.width * 0.3, y: canvas.height / 2};
+  let endPoint = {x: canvas.width * 0.7 + Math.sin(t) * 100, y: canvas.height / 2 + Math.cos(t) * 80};
 
-  let dist = distance(p1, p2);
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.stroke();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 10, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 10, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.font = 'bold 16px monospace';
-  ctx.fillStyle = '#d8e2ff';
-  ctx.textAlign = 'center';
-  ctx.fillText('distance: ' + dist.toFixed(0), canvas.width / 2, 40);
-
+  drawLineLength(
+    ctx,
+    startPoint,
+    endPoint,
+    canvas.width,
+    canvas.height,
+    lineLength
+  );
   requestAnimationFrame(draw);
 }
 
@@ -2473,8 +2865,11 @@ draw();`,
         "Cubic Bézier: recursively interpolate between control points.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${bezierPoint.toString()}
+      js: `// ─── core algorithm ──────────────────────────────────────────────────────────
+${deCasteljau.toString()}
+
+// ─── standalone draw ─────────────────────────────────────────────────────────
+${drawBezierCurves.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2483,49 +2878,22 @@ function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.cl
 window.addEventListener('resize', resize);
 resize();
 
+let t = 0;
+let dir = 1;
+
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let t = Date.now() * 0.001;
-  let p0 = {x: canvas.width * 0.1, y: canvas.height * 0.5};
-  let p1 = {x: canvas.width * 0.3, y: canvas.height * 0.2 + Math.sin(t) * 50};
-  let p2 = {x: canvas.width * 0.7, y: canvas.height * 0.8 + Math.cos(t) * 50};
-  let p3 = {x: canvas.width * 0.9, y: canvas.height * 0.5};
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(p0.x, p0.y);
-  ctx.lineTo(p1.x, p1.y);
-  ctx.lineTo(p2.x, p2.y);
-  ctx.lineTo(p3.x, p3.y);
-  ctx.stroke();
-
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i <= 1; i += 0.01) {
-    let pt = bezierPoint(p0, p1, p2, p3, i);
-    if (i === 0) ctx.moveTo(pt.x, pt.y);
-    else ctx.lineTo(pt.x, pt.y);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = '#c7d2fe';
-  ctx.beginPath();
-  ctx.arc(p0.x, p0.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p3.x, p3.y, 6, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#a78bfa';
-  ctx.beginPath();
-  ctx.arc(p1.x, p1.y, 5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.arc(p2.x, p2.y, 5, 0, Math.PI * 2);
-  ctx.fill();
-
+  const w = canvas.width;
+  const h = canvas.height;
+  const points = [
+    { x: w * 0.15, y: h * 0.8, color: '#e74c3c' },
+    { x: w * 0.35, y: h * 0.2, color: '#3498db' },
+    { x: w * 0.65, y: h * 0.2, color: '#2ecc71' },
+    { x: w * 0.85, y: h * 0.8, color: '#f39c12' },
+  ];
+  drawBezierCurves(ctx, points, t);
+  t += 0.005 * dir;
+  if (t >= 1) { t = 1; dir = -1; }
+  if (t <= 0) { t = 0; dir = 1; }
   requestAnimationFrame(draw);
 }
 
@@ -2548,19 +2916,9 @@ draw();`,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
 ${dft.toString()}
 
-function squarePoints() {
-  let pts = [];
-  for (let i = 0; i < 50; i++) {
-    let t = i / 50;
-    let x, y;
-    if (t < 0.25) { x = t*4; y = -1; }
-    else if (t < 0.5) { x = 1; y = (t-0.25)*4-1; }
-    else if (t < 0.75) { x = 1-(t-0.5)*4; y = 1; }
-    else { x = -1; y = 1-(t-0.75)*4; }
-    pts.push({x: x*50, y: y*50});
-  }
-  return pts;
-}
+${heartPath.toString()}
+
+${drawFourierEpicycles.toString()}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2570,53 +2928,15 @@ window.addEventListener('resize', resize);
 resize();
 
 // ─── state ───────────────────────────────────────────────────────────────────
-let epicycles = dft(squarePoints()).slice(0, 15);
+const numCircles = 64;
+let fourier = dft(heartPath(numCircles * 4)).slice(0, numCircles);
 let trail = [];
+let time = 0;
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let time = Date.now() * 0.001;
-  let x = canvas.width / 2, y = canvas.height / 2;
-
-  for (let epi of epicycles) {
-    let prevX = x, prevY = y;
-    let angle = time * epi.freq + epi.phase;
-    x += epi.amp * Math.cos(angle);
-    y += epi.amp * Math.sin(angle);
-
-    ctx.strokeStyle = 'rgba(150, 180, 255, 0.2)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(prevX, prevY, epi.amp, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(150, 180, 255, 0.3)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(prevX, prevY);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  }
-
-  trail.push({x, y});
-  if (trail.length > 500) trail.shift();
-
-  ctx.strokeStyle = '#818cf8';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  for (let i = 0; i < trail.length; i++) {
-    if (i === 0) ctx.moveTo(trail[i].x, trail[i].y);
-    else ctx.lineTo(trail[i].x, trail[i].y);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = '#a78bfa';
-  ctx.beginPath();
-  ctx.arc(x, y, 4, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawFourierEpicycles(ctx, fourier, time, trail);
+  time += 1;
+  if (time >= fourier.length) { time = 0; trail.length = 0; }
   requestAnimationFrame(draw);
 }
 
@@ -2636,51 +2956,44 @@ draw();`,
         "Four rules on a grid: 1. Underpop = death. 2. 2-3 neighbors = survive. 3. Overpop = death. 4. Exactly 3 neighbors = birth.",
       html: `<canvas id="canvas"></canvas><div id="controls"><button id="reset">Reset</button><button id="toggle">Pause/Play</button></div>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${step.toString()}
+      js: `${gameOfLifeStep.toString()}
+${drawGameOfLife.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+const CELL = 12;
+let cols, rows, grid, running = true, tickInterval;
+
+function resize() {
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+  cols = Math.floor(canvas.width / CELL);
+  rows = Math.floor(canvas.height / CELL);
+  grid = new Uint8Array(cols * rows);
+  randomize();
+}
 window.addEventListener('resize', resize);
-resize();
 
-// ─── state ───────────────────────────────────────────────────────────────────
-const cellSize = 8;
-let cols = Math.floor(canvas.width / cellSize);
-let rows = Math.floor(canvas.height / cellSize);
-let grid = new Uint8Array(cols * rows);
-let paused = false;
-
-function randomizeGrid() {
-  for (let i = 0; i < grid.length; i++) {
-    grid[i] = Math.random() > 0.7 ? 1 : 0;
-  }
+function randomize() {
+  for (let i = 0; i < grid.length; i++) grid[i] = Math.random() < 0.3 ? 1 : 0;
 }
 
+function tick() { grid = gameOfLifeStep(grid, cols, rows); }
+
 function draw() {
-  if (!paused) grid = step(grid, cols, rows);
-
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = '#818cf8';
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < cols; x++) {
-      if (grid[y * cols + x]) {
-        ctx.fillRect(x * cellSize, y * cellSize, cellSize - 1, cellSize - 1);
-      }
-    }
-  }
-
+  drawGameOfLife(ctx, grid, cols, rows);
   requestAnimationFrame(draw);
 }
 
-document.getElementById('reset').addEventListener('click', randomizeGrid);
-document.getElementById('toggle').addEventListener('click', () => { paused = !paused; });
+document.getElementById('reset').addEventListener('click', randomize);
+document.getElementById('toggle').addEventListener('click', () => {
+  running = !running;
+  if (running) tickInterval = setInterval(tick, 100);
+  else clearInterval(tickInterval);
+});
 
-randomizeGrid();
+resize();
+tickInterval = setInterval(tick, 100);
 draw();`,
       editors: "001",
     },
@@ -2697,47 +3010,33 @@ draw();`,
         "Multiple sources create ripples; where peaks meet = bright, where troughs meet = dark.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${waveAmplitude.toString()}
+      js: `${drawWaveInterference.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const off = document.createElement('canvas');
-const offCtx = off.getContext('2d');
+
 function resize() {
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
-  off.width = Math.ceil(canvas.width / 2);
-  off.height = Math.ceil(canvas.height / 2);
 }
-window.addEventListener('resize', resize);
+window.addEventListener('resize', () => { resize(); sources = makeSources(); });
 resize();
 
-function draw() {
-  let time = Date.now() * 0.001;
-  let sources = [
-    {x: canvas.width * 0.2, y: canvas.height * 0.3},
-    {x: canvas.width * 0.8, y: canvas.height * 0.3},
-    {x: canvas.width * 0.5, y: canvas.height * 0.8},
+function makeSources() {
+  return [
+    { x: canvas.width / 2 - 80, y: canvas.height / 2 },
+    { x: canvas.width / 2 + 80, y: canvas.height / 2 },
   ];
-  let idata = offCtx.createImageData(off.width, off.height);
-  let data = idata.data;
+}
 
-  for (let i = 0; i < data.length; i += 4) {
-    let px = (i / 4) % off.width;
-    let py = Math.floor((i / 4) / off.width);
-    let amp = waveAmplitude(px * 2, py * 2, sources, time, 0.02, 3);
-    let val = Math.floor(127.5 + amp * 127.5);
-    data[i] = val;
-    data[i+1] = val;
-    data[i+2] = val;
-    data[i+3] = 255;
-  }
+let sources = makeSources();
+const wavelength = 60;
+const speed = 1.5;
+let time = 0;
 
-  offCtx.putImageData(idata, 0, 0);
-  ctx.drawImage(off, 0, 0, canvas.width, canvas.height);
-
+function draw() {
+  drawWaveInterference(ctx, sources, wavelength, speed, time);
+  time += speed * 0.06;
   requestAnimationFrame(draw);
 }
 
@@ -2757,42 +3056,34 @@ draw();`,
         "Light rays pass near a massive object and are deflected by its gravity.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lensDeflection.toString()}
+      js: `${drawGravitationalLensing.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
 
+const mass = 120;
+const numRays = 50;
+let lensX = canvas.width * 0.45, lensY = canvas.height / 2;
+let homeX = lensX, homeY = lensY;
+let time = 0;
+
+const stars = Array.from({ length: 80 }, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  r: Math.random() * 1.4 + 0.3,
+  brightness: 0.3 + Math.random() * 0.7,
+}));
+
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  let lx = canvas.width / 2, ly = canvas.height / 2;
-  let mass = 50000;
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.4)';
-  ctx.lineWidth = 1;
-
-  for (let y0 = canvas.height * 0.1; y0 < canvas.height * 0.9; y0 += 30) {
-    ctx.beginPath();
-    for (let x = 0; x < canvas.width; x += 5) {
-      let deflection = lensDeflection(x, y0, lx, ly, mass);
-      let y = y0 + deflection;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-
-  ctx.fillStyle = '#fcd34d';
-  ctx.beginPath();
-  ctx.arc(lx, ly, 30, 0, Math.PI * 2);
-  ctx.fill();
-
+  const yb = homeY + canvas.height / 2 * 0.5 * Math.sin(time * 0.6);
+  const xb = homeX + canvas.width / 2 * 0.1 * Math.sin(time * 0.3);
+  lensY = Math.min(Math.max(yb, 12), canvas.height - 12);
+  lensX = Math.min(Math.max(xb, 12), canvas.width - 12);
+  drawGravitationalLensing(ctx, lensX, lensY, mass, numRays, time, stars);
+  time += 0.03;
   requestAnimationFrame(draw);
 }
 
@@ -2810,68 +3101,37 @@ draw();`,
       title: "Orbital Precession",
       description:
         "Einstein's correction to Newtonian gravity causes elliptical orbits to slowly rotate.",
-      html: `<canvas id="canvas"></canvas><div id="controls"><label>GR strength: <input type="range" id="gr" min="0" max="0.0001" step="0.00001" value="0.00001"></label></div>`,
+      html: `<canvas id="canvas"></canvas><div id="controls"><label>GR ε: <input type="range" id="gr" min="0" max="3000" step="50" value="800"></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${grStep.toString()}
+      js: `${newtonAccel.toString()}
+${grAccel.toString()}
+${drawOrbitalPrecession.toString()}
 
-// ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
 window.addEventListener('resize', resize);
 resize();
 
-// ─── state ───────────────────────────────────────────────────────────────────
-let orbiter = {x: 0, y: 0, vx: 0, vy: 0};
-let sun = {x: canvas.width / 2, y: canvas.height / 2, mass: 100};
-let grStrength = 0.00001;
-let trail = [];
+const R0 = 195, V0 = 1.04;
+let epsilon = 800;
+const stepsPerFrame = 4;
 
-function init() {
-  orbiter.x = sun.x + 150;
-  orbiter.y = sun.y;
-  orbiter.vx = 0;
-  orbiter.vy = 5;
-  trail = [];
+function makeBody() {
+  return { x: canvas.width / 2 + R0, y: canvas.height / 2, vx: 0, vy: -V0, trail: [] };
 }
+let newton = makeBody();
+let gr = makeBody();
 
 function draw() {
-  ctx.fillStyle = '#0a0a0f';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  grStep(orbiter, sun, grStrength);
-
-  trail.push({x: orbiter.x, y: orbiter.y});
-  if (trail.length > 1000) trail.shift();
-
-  ctx.strokeStyle = 'rgba(150, 180, 255, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  for (let i = 0; i < trail.length; i++) {
-    if (i === 0) ctx.moveTo(trail[i].x, trail[i].y);
-    else ctx.lineTo(trail[i].x, trail[i].y);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = '#fcd34d';
-  ctx.beginPath();
-  ctx.arc(sun.x, sun.y, 20, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = '#818cf8';
-  ctx.beginPath();
-  ctx.arc(orbiter.x, orbiter.y, 8, 0, Math.PI * 2);
-  ctx.fill();
-
+  drawOrbitalPrecession(ctx, newton, gr, epsilon, stepsPerFrame);
   requestAnimationFrame(draw);
 }
 
 document.getElementById('gr').addEventListener('input', e => {
-  grStrength = parseFloat(e.target.value);
+  epsilon = Number(e.target.value);
 });
 
-init();
 draw();`,
       editors: "001",
     },

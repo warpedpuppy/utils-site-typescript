@@ -1,9 +1,9 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { CircleFromThreePoints as CircleFromThreePointsFn } from "../../../../core-functions/CircleFromThreePoints";
-import CircleFromThreePointsSource from "../../../../core-functions/CircleFromThreePoints.ts?raw";
+import { circleFromThreePoints as CircleFromThreePointsFn } from "@utilspalooza/core/CircleFromThreePoints";
+import CircleFromThreePointsSource from "@utilspalooza/core/CircleFromThreePoints.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
-export const CircleFromThreePoints: CollisionDetectionObject = {
+export const circleFromThreePoints: CollisionDetectionObject = {
   keyFunction: CircleFromThreePointsFn,
   dependencies: [],
   interfaces: ["Point"],

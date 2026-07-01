@@ -47,30 +47,41 @@ function grad(hash: number, x: number, y: number): number {
   return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
 }
 
-let perm = buildPermTable();
-
-function perlin2(x: number, y: number): number {
+function perlin2(x: number, y: number, permTable: number[]): number {
   const X = Math.floor(x) & 255;
   const Y = Math.floor(y) & 255;
   x -= Math.floor(x);
   y -= Math.floor(y);
   const u = fade(x);
   const v = fade(y);
-  const a = perm[X] + Y;
-  const b = perm[X + 1] + Y;
+  const a = permTable[X] + Y;
+  const b = permTable[X + 1] + Y;
   return lerp(
-    lerp(grad(perm[a], x, y), grad(perm[b], x - 1, y), u),
-    lerp(grad(perm[a + 1], x, y - 1), grad(perm[b + 1], x - 1, y - 1), u),
+    lerp(grad(permTable[a], x, y), grad(permTable[b], x - 1, y), u),
+    lerp(
+      grad(permTable[a + 1], x, y - 1),
+      grad(permTable[b + 1], x - 1, y - 1),
+      u
+    ),
     v
   );
 }
 
-function getFlowAngle(x: number, y: number, scale: number, z: number): number {
-  return perlin2(x * scale, y * scale + z) * Math.PI * 4;
+function getFlowAngle(
+  x: number,
+  y: number,
+  scale: number,
+  z: number,
+  permTable: number[]
+): number {
+  return perlin2(x * scale, y * scale + z, permTable) * Math.PI * 4;
 }
 
+const flowFieldFormulaPerm = buildPermTable();
+
 const FlowFieldFormula: CollisionDetectionObject = {
-  keyFunction: getFlowAngle,
+  keyFunction: (x: number, y: number, scale: number, z: number) =>
+    getFlowAngle(x, y, scale, z, flowFieldFormulaPerm),
   dependencies: [],
   functionString: `function buildPermTable(): number[] {
   const p = Array.from({ length: 256 }, (_, i) => i);
@@ -98,6 +109,7 @@ function perlin2(x: number, y: number): number {
     v
   );
 }
+const perm = buildPermTable();
 function getFlowAngle(x: number, y: number, scale: number, z: number): number {
   return perlin2(x * scale, y * scale + z) * Math.PI * 4;
 }`,
@@ -111,6 +123,125 @@ interface Particle {
   hue: number;
   alpha: number;
   history: { x: number; y: number }[];
+}
+
+interface FlowFieldDrawState {
+  particles: Particle[];
+  fieldScale: number;
+  speed: number;
+  trailLength: number;
+  zOffset: number;
+  zSpeed: number;
+  perm: number[];
+}
+
+export function drawFlowField(
+  ctx: CanvasRenderingContext2D,
+  trailCtx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  state: FlowFieldDrawState
+) {
+  function getFlowAngleAtPoint(x: number, y: number): number {
+    function fadeLocal(t: number) {
+      return t * t * t * (t * (t * 6 - 15) + 10);
+    }
+
+    function lerpLocal(a: number, b: number, t: number) {
+      return a + t * (b - a);
+    }
+
+    function gradLocal(hash: number, px: number, py: number): number {
+      const h = hash & 3;
+      const u = h < 2 ? px : py;
+      const v = h < 2 ? py : px;
+      return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
+    }
+
+    let sampleX = x * state.fieldScale;
+    let sampleY = y * state.fieldScale + state.zOffset;
+    const X = Math.floor(sampleX) & 255;
+    const Y = Math.floor(sampleY) & 255;
+    sampleX -= Math.floor(sampleX);
+    sampleY -= Math.floor(sampleY);
+    const u = fadeLocal(sampleX);
+    const v = fadeLocal(sampleY);
+    const a = state.perm[X] + Y;
+    const b = state.perm[X + 1] + Y;
+
+    return (
+      lerpLocal(
+        lerpLocal(
+          gradLocal(state.perm[a], sampleX, sampleY),
+          gradLocal(state.perm[b], sampleX - 1, sampleY),
+          u
+        ),
+        lerpLocal(
+          gradLocal(state.perm[a + 1], sampleX, sampleY - 1),
+          gradLocal(state.perm[b + 1], sampleX - 1, sampleY - 1),
+          u
+        ),
+        v
+      ) *
+      Math.PI *
+      4
+    );
+  }
+
+  state.zOffset += state.zSpeed;
+
+  for (const p of state.particles) {
+    const angle = getFlowAngleAtPoint(p.x, p.y);
+    p.vx += Math.cos(angle) * 0.3;
+    p.vy += Math.sin(angle) * 0.3;
+
+    const mag = Math.hypot(p.vx, p.vy);
+    if (mag > state.speed) {
+      p.vx = (p.vx / mag) * state.speed;
+      p.vy = (p.vy / mag) * state.speed;
+    }
+
+    p.history.push({ x: p.x, y: p.y });
+    if (p.history.length > state.trailLength) p.history.shift();
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if (p.x < 0) p.x = width;
+    if (p.x > width) p.x = 0;
+    if (p.y < 0) p.y = height;
+    if (p.y > height) p.y = 0;
+
+    p.hue = (p.hue + 0.3) % 360;
+  }
+
+  trailCtx.fillStyle = "rgba(15, 15, 25, 0.04)";
+  trailCtx.fillRect(0, 0, width, height);
+
+  for (const p of state.particles) {
+    if (p.history.length < 2) continue;
+    trailCtx.beginPath();
+    trailCtx.moveTo(p.history[0].x, p.history[0].y);
+    for (let i = 1; i < p.history.length; i++) {
+      const alpha = (i / p.history.length) * p.alpha;
+      trailCtx.strokeStyle = `hsla(${p.hue},80%,60%,${alpha})`;
+      trailCtx.lineWidth = 1.5;
+      trailCtx.lineTo(p.history[i].x, p.history[i].y);
+      trailCtx.stroke();
+      trailCtx.beginPath();
+      trailCtx.moveTo(p.history[i].x, p.history[i].y);
+    }
+  }
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.drawImage(trailCtx.canvas, 0, 0);
+
+  for (const p of state.particles) {
+    ctx.fillStyle = `hsla(${p.hue},90%,75%,0.9)`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 1.5, 0, 2 * Math.PI);
+    ctx.fill();
+  }
 }
 
 class FlowField extends Template {
@@ -135,10 +266,11 @@ class FlowField extends Template {
   // Off-screen trail canvas for persistent blending
   trailCanvas: HTMLCanvasElement | null = null;
   trailCtx: CanvasRenderingContext2D | null = null;
+  perm: number[] = buildPermTable();
 
   keyFunction(x: number, y: number, scale: number, z: number): number {
     // Returns a Perlin noise angle (0–2π) for position (x,y)
-    return perlin2(x * scale, y * scale + z) * Math.PI * 4;
+    return getFlowAngle(x, y, scale, z, this.perm);
   }
 
   spawnParticle(): Particle {
@@ -157,7 +289,7 @@ class FlowField extends Template {
     this.particles = Array.from({ length: this.numParticles }, () =>
       this.spawnParticle()
     );
-    perm = buildPermTable(); // new noise on reset
+    this.perm = buildPermTable(); // new noise on reset
     if (this.trailCtx && this.trailCanvas) {
       this.trailCtx.clearRect(0, 0, this.trailCanvas.width, this.trailCanvas.height);
     }
@@ -263,82 +395,17 @@ class FlowField extends Template {
   }
 
   animate = () => {
-    this.update();
-    this.render();
+    if (this.ctx && this.trailCtx) {
+      drawFlowField(
+        this.ctx,
+        this.trailCtx,
+        this.canvasWidth,
+        this.canvasHeight,
+        this
+      );
+    }
     this.animId = requestAnimationFrame(this.animate);
   };
-
-  update() {
-    this.zOffset += this.zSpeed;
-
-    for (let i = 0; i < this.particles.length; i++) {
-      const p = this.particles[i];
-
-      // Get noise angle at particle position
-      const angle = this.keyFunction(p.x, p.y, this.fieldScale, this.zOffset);
-
-      p.vx += Math.cos(angle) * 0.3;
-      p.vy += Math.sin(angle) * 0.3;
-
-      // Dampen velocity and cap speed
-      const mag = Math.hypot(p.vx, p.vy);
-      if (mag > this.speed) {
-        p.vx = (p.vx / mag) * this.speed;
-        p.vy = (p.vy / mag) * this.speed;
-      }
-
-      p.history.push({ x: p.x, y: p.y });
-      if (p.history.length > this.trailLength) p.history.shift();
-
-      p.x += p.vx;
-      p.y += p.vy;
-
-      // Wrap around edges
-      if (p.x < 0) p.x = this.canvasWidth;
-      if (p.x > this.canvasWidth) p.x = 0;
-      if (p.y < 0) p.y = this.canvasHeight;
-      if (p.y > this.canvasHeight) p.y = 0;
-
-      // Slowly shift hue
-      p.hue = (p.hue + 0.3) % 360;
-    }
-  }
-
-  render() {
-    if (!this.ctx || !this.canvas || !this.trailCtx || !this.trailCanvas) return;
-
-    // Fade trail canvas slightly
-    this.trailCtx.fillStyle = "rgba(15, 15, 25, 0.04)";
-    this.trailCtx.fillRect(0, 0, this.trailCanvas.width, this.trailCanvas.height);
-
-    // Draw particle trails onto trail canvas
-    for (const p of this.particles) {
-      if (p.history.length < 2) continue;
-      this.trailCtx.beginPath();
-      this.trailCtx.moveTo(p.history[0].x, p.history[0].y);
-      for (let i = 1; i < p.history.length; i++) {
-        const alpha = (i / p.history.length) * p.alpha;
-        this.trailCtx.strokeStyle = `hsla(${p.hue},80%,60%,${alpha})`;
-        this.trailCtx.lineWidth = 1.5;
-        this.trailCtx.lineTo(p.history[i].x, p.history[i].y);
-        this.trailCtx.stroke();
-        this.trailCtx.beginPath();
-        this.trailCtx.moveTo(p.history[i].x, p.history[i].y);
-      }
-    }
-
-    // Blit trail canvas to main canvas
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.ctx.drawImage(this.trailCanvas, 0, 0);
-
-    // Draw particle heads
-    for (const p of this.particles) {
-      this.ctx.fillStyle = `hsla(${p.hue},90%,75%,0.9)`;
-      this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, 1.5, 0, 2 * Math.PI);
-      this.ctx.fill();
-    }
-  }
 
   resizeHandler = () => {
     if (!this.canvas || !this.cont) return;

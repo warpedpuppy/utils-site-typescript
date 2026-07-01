@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
 import { GenericObject } from "../types/types";
-import { EquilateralTriangle as EquilateralTriangleFunc } from "../core-functions/EquilateralTriangle";
-import { EquilateralTriangle as equilateralTriangleFormula } from "../pages/createJSON/formulas/animation/EquilateralTriangle";
+import { equilateralTriangle as EquilateralTriangleFunc } from "@utilspalooza/core/EquilateralTriangle";
+import { equilateralTriangle as equilateralTriangleFormula } from "../pages/createJSON/formulas/animation/EquilateralTriangle";
 import AnimationBaseClass from "./AnimationBaseClass";
 
 function drawEquilateralTriangle(
@@ -11,10 +11,15 @@ function drawEquilateralTriangle(
   startPoint: Point,
   endPoint: Point,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
+  equilateralTriangleFn: (
+    radius: number,
+    centerPoint: Point,
+    currentPoint: number
+  ) => { point1: Point; point2: Point; point3: Point }
 ): void {
   backgroundTris.forEach((tri: GenericObject) => {
-    let { point1, point2, point3 } = EquilateralTriangleFunc(
+    let { point1, point2, point3 } = equilateralTriangleFn(
       tri.radius,
       tri.centerPoint,
       angle || tri.angle
@@ -39,7 +44,7 @@ function drawEquilateralTriangle(
 
   let radius = Math.sqrt(a * a + b * b);
 
-  let { point1, point2, point3 } = EquilateralTriangleFunc(
+  let { point1, point2, point3 } = equilateralTriangleFn(
     radius,
     startPoint,
     angle
@@ -105,7 +110,8 @@ export default class EquilateralTriangleAnimation extends AnimationBaseClass {
       this.startPoint,
       this.endPoint,
       this.canvasWidth,
-      this.canvasHeight
+      this.canvasHeight,
+      EquilateralTriangleFunc
     );
   };
 

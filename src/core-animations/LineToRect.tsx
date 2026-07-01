@@ -1,9 +1,48 @@
-import { Line } from "../types/shapes";
+import { Line, Polygon } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { RectangleObject } from "../pages/createJSON/formulas/animation/Rectangle";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
 import { LinePolygon } from "../pages/createJSON/formulas/collision-detection/LineCollision";
 import { Point } from "../types/shapes";
+
+export function drawLineToRectangle(
+  ctx: CanvasRenderingContext2D,
+  polygon: Polygon,
+  line: Line,
+  hit: boolean,
+  canvasWidth: number,
+  time: number = performance.now()
+) {
+  const pulseLightness = 55 + 25 * Math.sin(time / 120);
+  const hitColor = `hsl(330, 95%, ${pulseLightness}%)`;
+
+  ctx.fillStyle = hit ? hitColor : "#ff9f1c";
+  ctx.beginPath();
+  polygon.vertices.forEach((vertex, i) => {
+    if (i === 0) ctx.moveTo(vertex.x, vertex.y);
+    else ctx.lineTo(vertex.x, vertex.y);
+  });
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = hit ? hitColor : "#818cf8";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(line.startPoint.x, line.startPoint.y);
+  ctx.lineTo(line.endPoint.x, line.endPoint.y);
+  ctx.stroke();
+
+  if (!hit) return;
+
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", canvasWidth / 2, 40);
+  ctx.restore();
+}
 
 class LineToRectangleCollision extends AnimationBaseClass {
   static t = "line to rectangle collision";
@@ -22,33 +61,23 @@ class LineToRectangleCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001, performance.now());
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001, performance.now());
     return { x, y };
   }
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    this.ctx.lineWidth = 3;
-    this.ctx.strokeStyle = "rgba(255,255,255,0.85)";
-
-    const hit = LinePolygon.keyFunction(this.rect, this.line);
-    this.ctx.fillStyle = hit ? "red" : "rgba(255,255,255,0.85)";
-
-    this.rect = RectangleObject.keyFunction(100, 100, 0, false);
-    this.ctx.beginPath();
-    this.rect.vertices.forEach((rect: Point, i: number) => {
+    this.rect = RectangleObject.keyFunction(100, 100, 0, {
+      rotate: true,
+      rotateSpeed: 2000,
+      time: performance.now(),
+    });
+    this.rect.vertices.forEach((rect: Point) => {
       rect.x += this.halfWidth;
       rect.y += this.halfHeight;
-      if (i === 0) {
-        this.ctx?.moveTo(rect.x, rect.y);
-      } else {
-        this.ctx?.lineTo(rect.x, rect.y);
-      }
     });
-    this.ctx.closePath();
-    this.ctx.fill();
 
     let { x, y } = this.makePointMove();
     let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
@@ -62,23 +91,14 @@ class LineToRectangleCollision extends AnimationBaseClass {
 
     this.line.startPoint = { x: x1, y: y1 };
     this.line.endPoint = { x: x2, y: y2 };
-
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.line.startPoint.x, this.line.startPoint.y);
-    this.ctx.lineTo(this.line.endPoint.x, this.line.endPoint.y);
-    this.ctx.stroke();
-
-    if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
-    }
+    const hit = LinePolygon.keyFunction(this.rect, this.line);
+    drawLineToRectangle(
+      this.ctx,
+      this.rect,
+      this.line,
+      hit,
+      this.canvasWidth
+    );
 
     this.raf(this.draw);
   };

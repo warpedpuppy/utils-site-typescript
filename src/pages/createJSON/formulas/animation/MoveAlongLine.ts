@@ -1,4 +1,4 @@
-// NOTE: MoveAlongLine and GetPointOnLine (usefulLittleThings/GetPointOnLine.ts)
+// NOTE: moveAlongLine and GetPointOnLine (usefulLittleThings/GetPointOnLine.ts)
 // are mathematically identical — both compute linear interpolation between two
 // points: x = start.x + t*(end.x - start.x).  They exist separately because
 // they serve different UI sections ("animations" vs "useful little things"), but
@@ -6,11 +6,11 @@
 // right place to start.
 
 import { CollisionDetectionObject } from "../../../../types/types";
-import { MoveAlongLine as MoveAlongLineFn } from "../../../../core-functions/MoveAlongLine";
-import MoveAlongLineSource from "../../../../core-functions/MoveAlongLine.ts?raw";
+import { moveAlongLine as MoveAlongLineFn } from "@utilspalooza/core/MoveAlongLine";
+import MoveAlongLineSource from "@utilspalooza/core/MoveAlongLine.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
-export const MoveAlongLine: CollisionDetectionObject = {
+export const moveAlongLine: CollisionDetectionObject = {
   keyFunction: MoveAlongLineFn,
   dependencies: [],
   interfaces: ["Point"],

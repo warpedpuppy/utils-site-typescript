@@ -1,9 +1,9 @@
-// NOTE: GetPointOnLine and MoveAlongLine are mathematically identical
+// NOTE: GetPointOnLine and moveAlongLine are mathematically identical
 // both compute linear interpolation between two points: x = start.x + t*(end.x - start.x).
 
 import { CollisionDetectionObject } from "../../../../types/types";
 import { Point } from "../../../../types/shapes";
-import { getPointOnLine } from "../../../../core-functions/GetPointOnLine";
+import { getPointOnLine } from "@utilspalooza/core/GetPointOnLine";
 
 export const GetPointOnLine: CollisionDetectionObject = {
   keyFunction: getPointOnLine,

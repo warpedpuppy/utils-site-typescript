@@ -11,12 +11,13 @@ function Modal({
   closeModal: Function;
 }) {
   const [activeTab, setActiveTab] = useState(0);
+  const functionName = animationObject.keyFunction?.name || "function";
 
   return (
     <div className="modal-container">
       <div className="modal-inner">
         <div className="modal-inner-header">
-          <span>active function, dependencies, and all interfaces: </span>
+          <span>{functionName} — full function, dependencies, and interfaces</span>
           <span className="close-modal" onClick={() => closeModal()}>
             x
           </span>

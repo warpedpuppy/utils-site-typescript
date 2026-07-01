@@ -1,144 +1,137 @@
-import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { FindPointAroundCircle } from "../core-functions/FindPointAroundCircle";
-import { FindPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
-import { SineCurve } from "../core-functions/SineCurve";
-
-function distanceBetweenPoints(startPoint: Point, endPoint: Point): number {
-  let a = startPoint.x - endPoint.x;
-  let b = startPoint.y - endPoint.y;
-  return Math.sqrt(a * a + b * b);
-}
+import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
+import { radToDeg } from "@utilspalooza/core/RadToDeg";
+import { unitCirclePoint as unitCirclePointFormula } from "../pages/createJSON/formulas/animation/UnitCirclePoint";
 
 function drawDeMystifySineCosine(
   ctx: any,
   canvasWidth: any,
   canvasHeight: any,
-  textDiv: HTMLElement | null
+  textDiv: HTMLElement | null,
+  unitCirclePointFn: (
+    centerX: number,
+    centerY: number,
+    radius: number,
+    currentPoint: number
+  ) => { x: number; y: number },
+  radToDegFn: (radians: number) => number
 ): void {
-  const halfHeight = canvasHeight / 2;
-  const halfWidth = canvasWidth / 2;
+  const now = performance.now() * 0.001;
+  const progress = (Math.sin(now) + 1) / 2;
+  const angle = progress * (Math.PI / 2);
+  const radius = Math.min(canvasWidth * 0.22, canvasHeight * 0.28, 130);
+  const centerX = canvasWidth * 0.28;
+  const centerY = canvasHeight * 0.62;
+  const point = unitCirclePointFn(centerX, centerY, radius, -angle);
+  const adjacent = point.x - centerX;
+  const opposite = centerY - point.y;
+  const degrees = radToDegFn(angle);
+  const ratioPanelX = canvasWidth * 0.58;
+  const ratioPanelWidth = canvasWidth * 0.28;
+  const ratioScale = ratioPanelWidth / radius;
+  const adjacentBarWidth = adjacent * ratioScale;
+  const oppositeBarWidth = opposite * ratioScale;
 
   ctx.font = "bold 18px Arial";
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+  ctx.strokeStyle = "rgba(255,255,255,0.18)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(centerX - radius - 28, centerY);
+  ctx.lineTo(centerX + radius + 28, centerY);
+  ctx.moveTo(centerX, centerY + 28);
+  ctx.lineTo(centerX, centerY - radius - 28);
+  ctx.stroke();
+
   ctx.strokeStyle = "rgba(255,255,255,0.35)";
   ctx.lineWidth = 2;
-
   ctx.beginPath();
-  ctx.moveTo(0, halfHeight);
-  ctx.lineTo(canvasWidth, halfHeight);
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
   ctx.stroke();
 
+  ctx.strokeStyle = "rgba(255,255,255,0.22)";
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(canvasWidth * 0.33, 0);
-  ctx.lineTo(canvasWidth * 0.33, canvasHeight);
+  ctx.moveTo(point.x, point.y);
+  ctx.lineTo(point.x, centerY);
   ctx.stroke();
 
-  ctx.strokeStyle = "red";
+  ctx.strokeStyle = "#7de8ff";
   ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.moveTo(canvasWidth * 0.33, halfHeight);
-  ctx.lineTo(canvasWidth * 0.33, halfHeight - 100);
+  ctx.moveTo(centerX, centerY);
+  ctx.lineTo(point.x, point.y);
   ctx.stroke();
 
-  ctx.strokeStyle = "rgba(255,255,255,0.35)";
+  ctx.strokeStyle = "#86efac";
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY);
+  ctx.lineTo(point.x, centerY);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#ff7a00";
+  ctx.beginPath();
+  ctx.moveTo(point.x, centerY);
+  ctx.lineTo(point.x, point.y);
+  ctx.stroke();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = "rgba(125,232,255,0.65)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(canvasWidth * 0.66, 0);
-  ctx.lineTo(canvasWidth * 0.66, canvasHeight);
+  ctx.arc(centerX, centerY, 28, -angle, 0);
   ctx.stroke();
 
-  ctx.strokeStyle = "green";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(canvasWidth * 0.66, halfHeight);
-  ctx.lineTo(canvasWidth * 0.66, halfHeight - 100);
-  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 18px Arial";
+  ctx.fillText(`${degrees.toFixed(0)}deg`, centerX + 18, centerY - 10);
+  ctx.font = "14px Arial";
+  ctx.fillStyle = "#86efac";
+  ctx.fillText("adjacent", centerX + adjacent / 2 - 24, centerY + 22);
+  ctx.fillStyle = "#ff7a00";
+  ctx.fillText("opposite", point.x + 10, centerY - opposite / 2);
+  ctx.fillStyle = "#7de8ff";
+  ctx.fillText("hypotenuse", centerX + adjacent / 2 - 30, centerY - opposite / 2 - 10);
 
-  ctx.strokeStyle = "rgba(255,255,255,0.35)";
-  ctx.lineWidth = 2;
+  ctx.fillStyle = "rgba(255,255,255,0.92)";
+  ctx.font = "bold 16px Arial";
+  ctx.fillText("cos(theta) = adjacent / hypotenuse", ratioPanelX, centerY - 78);
+  ctx.fillText("sin(theta) = opposite / hypotenuse", ratioPanelX, centerY + 8);
 
-  ctx.beginPath();
-  ctx.arc(canvasWidth * 0.33, halfHeight, 100, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(canvasWidth * 0.66, halfHeight, 100, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  let perc1 = SineCurve(62.5, 12.5, 0.001);
-  let point1 = FindPointAroundCircle(
-    {
-      x: canvasWidth * 0.33,
-      y: halfHeight,
-    },
-    100,
-    perc1
-  );
-
+  ctx.fillStyle = "#86efac";
+  ctx.fillRect(ratioPanelX, centerY - 58, adjacentBarWidth, 12);
   ctx.strokeStyle = "rgba(255,255,255,0.2)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(canvasWidth * 0.33, halfHeight);
-  ctx.lineTo(point1.x, point1.y);
-  ctx.stroke();
+  ctx.strokeRect(ratioPanelX, centerY - 58, radius * ratioScale, 12);
 
-  ctx.strokeStyle = "red";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(point1.x, point1.y);
-  ctx.lineTo(point1.x, halfHeight);
-  ctx.stroke();
-
-  let perc2 = SineCurve(-12.5, 12.5, 0.001);
-  let point2 = FindPointAroundCircle(
-    {
-      x: canvasWidth * 0.66,
-      y: halfHeight,
-    },
-    100,
-    perc2
-  );
-
-  let smallRedLineHeight = Math.floor(
-    distanceBetweenPoints(point1, {
-      x: point1.x,
-      y: halfHeight,
-    })
-  );
-
+  ctx.fillStyle = "#ff7a00";
+  ctx.fillRect(ratioPanelX, centerY + 28, oppositeBarWidth, 12);
   ctx.strokeStyle = "rgba(255,255,255,0.2)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(canvasWidth * 0.66, halfHeight);
-  ctx.lineTo(point2.x, point2.y);
-  ctx.stroke();
+  ctx.strokeRect(ratioPanelX, centerY + 28, radius * ratioScale, 12);
 
-  ctx.beginPath();
-  ctx.moveTo(point2.x, point2.y);
-  ctx.lineTo(point2.x, halfHeight);
-  ctx.stroke();
-
-  ctx.strokeStyle = "green";
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(canvasWidth * 0.66, halfHeight);
-  ctx.lineTo(point2.x, halfHeight);
-  ctx.stroke();
-
-  let smallGreenLineHeight = Math.floor(
-    distanceBetweenPoints(point2, {
-      x: point2.x,
-      y: halfHeight,
-    })
+  ctx.fillStyle = "#86efac";
+  ctx.fillText(
+    `${adjacent.toFixed(1)} / ${radius.toFixed(1)} = ${(adjacent / radius).toFixed(3)}`,
+    ratioPanelX,
+    centerY - 22
+  );
+  ctx.fillStyle = "#ff7a00";
+  ctx.fillText(
+    `${opposite.toFixed(1)} / ${radius.toFixed(1)} = ${(opposite / radius).toFixed(3)}`,
+    ratioPanelX,
+    centerY + 64
   );
 
-  if (textDiv)
+  if (textDiv) {
     textDiv.innerHTML = `
-     <p>The sine of angle 'A' is the relationship between the two red lines: ${smallRedLineHeight} / 100.</p><p>We can use sine to calculate the y value of the triangle's hypotenuse because it represents vertical proportion.</p>
-     <br />
-      <p>The cosine of angle 'B' is the relationship between the two green lines: ${smallGreenLineHeight} / 100.</p><p>We can use cosine to calculate the x value of the triangle/s hypotenuse because it represents horizontal proportion.</p>
+      <p>As the triangle swings through the top-right quarter of the circle, the horizontal leg is the <strong>adjacent</strong> side and the vertical leg is the <strong>opposite</strong> side.</p>
+      <p><strong>cos(theta)</strong> tells you how much of the radius survives horizontally. <strong>sin(theta)</strong> tells you how much of the radius survives vertically.</p>
+      <p>When the point nears the right edge, cosine is close to 1 and sine is close to 0. As the point climbs upward, cosine shrinks and sine grows.</p>
     `;
+  }
 }
 
 export { drawDeMystifySineCosine };
@@ -146,10 +139,9 @@ export { drawDeMystifySineCosine };
 export default class DeMystifySineCosine extends AnimationBaseClass {
   static t: string = "demystify sine and cosine";
   static l: string = "demystify-sine-and-cosine";
-  static f = findPointAroundCircleFormula;
-  static include: boolean = false;
+  static f = unitCirclePointFormula;
   title = "demystify sine and cosine";
-  animationObject = findPointAroundCircleFormula;
+  animationObject = unitCirclePointFormula;
   i: number = 0;
   startValue = 0;
   differential = 200;
@@ -167,7 +159,9 @@ export default class DeMystifySineCosine extends AnimationBaseClass {
       this.ctx,
       this.canvasWidth,
       this.canvasHeight,
-      this.textDiv
+      this.textDiv,
+      unitCirclePoint,
+      radToDeg
     );
     this.raf(this.draw);
   };

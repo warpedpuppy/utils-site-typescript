@@ -44,9 +44,9 @@ const projects = [
     key: "ParticleConstellation",
     title: ParticleConstellation.t,
     label: ParticleConstellation.l,
-    math: "Phyllotaxis + Lerp + Perlin",
+    math: "Phyllotaxis + lerp + Perlin",
     blurb:
-      "Particles glide from chaos into a golden-angle lattice via eased Lerp, then breathe through a Perlin drift field.",
+      "Particles glide from chaos into a golden-angle lattice via eased lerp, then breathe through a Perlin drift field.",
     ProjectClass: ParticleConstellation,
   },
   {
@@ -118,6 +118,8 @@ function Studio() {
           content="Practical micro-projects showing how to use canvas animations in real code."
         />
         <link rel="canonical" href="https://utilspalooza.com/studio" />
+        <meta property="og:url" content="https://utilspalooza.com/studio" />
+        <meta property="og:title" content="Build With It — Utilspalooza" />
       </Helmet>
 
       {!current ? (
@@ -181,7 +183,7 @@ function Studio() {
               </button>
             </form>
           </section>
-          {/* 
+
           <section className="gallery-section">
             <h2 className="gallery-section-label">Advanced</h2>
             <p className="gallery-section-sub">
@@ -208,7 +210,7 @@ function Studio() {
                 </button>
               ))}
             </div>
-          </section> */}
+          </section>
         </div>
       ) : (
         /* ─── Focused workspace ───────────────────────────────────────── */
