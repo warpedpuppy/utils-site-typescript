@@ -1,3 +1,9 @@
 [build]
   command = "npm run build"
   publish = "dist"
+
+# Netlify defaulted to Node 18, but vitest (a devDependency) requires Node >=20
+# and Yarn v1 aborts the whole install on a dependency engine mismatch. Pin a
+# compatible LTS so `yarn install` succeeds before the build runs.
+[build.environment]
+  NODE_VERSION = "20"
