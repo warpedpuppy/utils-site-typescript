@@ -39,6 +39,64 @@ function nextKlimtBrickPoint(previousX, previousY, previousRotation, brickHeight
     y: previousY - brickHeight * Math.cos(previousRotation)
   };
 }
+function tween(from, to, options = {}) {
+  const duration = options.duration ?? 400;
+  const easing = options.easing ?? ((t) => t);
+  const delay = Math.max(0, options.delay ?? 0);
+  const { onUpdate, onComplete } = options;
+  let rafId = 0;
+  let done = false;
+  let paused = false;
+  let startTime = performance.now() + delay;
+  let pausedElapsed = 0;
+  function emit(value) {
+    if (onUpdate) onUpdate(value);
+  }
+  function complete() {
+    if (done) return;
+    done = true;
+    cancelAnimationFrame(rafId);
+    emit(to);
+    if (onComplete) onComplete();
+  }
+  function tick(now) {
+    if (done || paused) return;
+    const elapsed = now - startTime;
+    if (elapsed < 0) {
+      rafId = requestAnimationFrame(tick);
+      return;
+    }
+    const t = duration <= 0 ? 1 : Math.min(1, elapsed / duration);
+    if (t >= 1) {
+      complete();
+      return;
+    }
+    emit(from + (to - from) * easing(t));
+    rafId = requestAnimationFrame(tick);
+  }
+  rafId = requestAnimationFrame(tick);
+  return {
+    cancel() {
+      done = true;
+      cancelAnimationFrame(rafId);
+    },
+    pause() {
+      if (done || paused) return;
+      paused = true;
+      cancelAnimationFrame(rafId);
+      pausedElapsed = performance.now() - startTime;
+    },
+    resume() {
+      if (done || !paused) return;
+      paused = false;
+      startTime = performance.now() - pausedElapsed;
+      rafId = requestAnimationFrame(tick);
+    },
+    finish() {
+      complete();
+    }
+  };
+}
 function mountGlitter(target, options = {}) {
   const runtime = createRuntime(target, options);
   const color = options.color ?? [255, 238, 92];
@@ -481,3 +539,4 @@ exports.mountPrettyRing = mountPrettyRing;
 exports.mountSparklies = mountSparklies;
 exports.nextKlimtBrickPoint = nextKlimtBrickPoint;
 exports.sparklyBeamPoint = sparklyBeamPoint;
+exports.tween = tween;
