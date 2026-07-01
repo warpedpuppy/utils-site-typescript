@@ -80,19 +80,12 @@ export interface AnimationManifest {
 }
 
 const animationManifest: AnimationManifest = {
-  animations: {
+  "motion & easing": {
     ballBounce: {
       t: "ball bounce",
       l: "ball-bounce",
       f: ballBounceFormula,
       load: () => import("./core-animations/BallBounce"),
-    },
-    BallsBouncingAgainstEachOther: {
-      t: "balls bouncing against each other",
-      l: "balls-bouncing-against-each-other",
-      include: false,
-      f: ballToBallBounceFormula,
-      load: () => import("./core-animations/BallBall"),
     },
     OrbitalMotionAnimation: {
       t: "ball orbiting a sun",
@@ -112,17 +105,11 @@ const animationManifest: AnimationManifest = {
       f: easingFormula,
       load: () => import("./core-animations/Easing"),
     },
-    QuadraticBezierAnimation: {
-      t: "quadratic bezier curve",
-      l: "quadratic-bezier-curve",
-      f: quadraticBezierFormula,
-      load: () => import("./core-animations/QuadraticBezier"),
-    },
-    MoveItemAroundCircle: {
-      t: "find points on a circle",
-      l: "find-points-on-a-circle",
-      f: findPointAroundCircleFormula,
-      load: () => import("./core-animations/MoveItemAroundCircle"),
+    SpringAnimation: {
+      t: "spring (damped harmonic motion)",
+      l: "spring-damped-harmonic",
+      f: SpringFormula,
+      load: () => import("./core-animations/Spring"),
     },
     MoveObjectToDestinationPoint: {
       t: "move object to changing point",
@@ -130,12 +117,20 @@ const animationManifest: AnimationManifest = {
       f: moveAlongLineFormula,
       load: () => import("./core-animations/MoveToDestination"),
     },
-    PointTowardsMovingPoint: {
-      t: "point object towards another",
-      l: "point-object-towards-another",
-      f: getRotationFormula,
-      load: () => import("./core-animations/PointTowards"),
+    QuadraticBezierAnimation: {
+      t: "quadratic bezier curve",
+      l: "quadratic-bezier-curve",
+      f: quadraticBezierFormula,
+      load: () => import("./core-animations/QuadraticBezier"),
     },
+    BezierCurves: {
+      t: "Bézier curves",
+      l: "bezier-curves",
+      f: BezierFormula,
+      load: () => import("./core-animations/BezierCurves"),
+    },
+  },
+  "trig, angles & vectors": {
     SineCurveAnimation: {
       t: "sine curve",
       l: "sine-curve",
@@ -147,6 +142,42 @@ const animationManifest: AnimationManifest = {
       l: "demystify-sine-and-cosine",
       f: unitCirclePointFormula,
       load: () => import("./core-animations/DeMystifySineCosine"),
+    },
+    MoveItemAroundCircle: {
+      t: "find points on a circle",
+      l: "find-points-on-a-circle",
+      f: findPointAroundCircleFormula,
+      load: () => import("./core-animations/MoveItemAroundCircle"),
+    },
+    PointTowardsMovingPoint: {
+      t: "point object towards another",
+      l: "point-object-towards-another",
+      f: getRotationFormula,
+      load: () => import("./core-animations/PointTowards"),
+    },
+    DistributePointsAroundACircle: {
+      t: "distribute around circle",
+      l: "distribute-around-circle",
+      f: distributeFormula,
+      load: () => import("./core-animations/DistributeAroundCircle"),
+    },
+    VectorReflectAnimation: {
+      t: "vector reflection (bounce)",
+      l: "vector-reflection",
+      f: VectorReflectFormula,
+      load: () => import("./core-animations/VectorReflect"),
+    },
+    VectorRotateAnimation: {
+      t: "vector rotation",
+      l: "vector-rotation",
+      f: VectorRotateFormula,
+      load: () => import("./core-animations/VectorRotate"),
+    },
+    AngleLerpAnimation: {
+      t: "angle interpolation (shortest turn)",
+      l: "angle-lerp-shortest-turn",
+      f: AngleLerpFormula,
+      load: () => import("./core-animations/AngleLerp"),
     },
   },
   "collision detection": {
@@ -216,111 +247,14 @@ const animationManifest: AnimationManifest = {
       f: circleCircle,
       load: () => import("./core-animations/CircleField"),
     },
-  },
-  "useful little things": {
-    ColorLerpAnimation: {
-      t: "color lerp (RGB vs HSL)",
-      l: "color-lerp",
-      f: lerpColorFormula,
-      load: () => import("./core-animations/ColorLerp"),
-    },
-    ColorFamiliesAnimation: {
-      t: "color families (pick a range by name)",
-      l: "color-families",
-      f: colorFamilyFormula,
-      load: () => import("./core-animations/ColorFamilies"),
-    },
-    GetHalfwayPointOfLine: {
-      t: "get a point on a line",
-      l: "get-a-point-on-a-line",
-      f: getPointOnLineFormula,
-      load: () => import("./core-animations/GetPointOnLine"),
-    },
-    triangleDataFromLine: {
-      t: "get triangle data from line",
-      l: "get-triangle-data-from-line",
-      f: triangleDataFromLineFormula,
-      load: () => import("./core-animations/TriangleDataFromLine"),
-    },
-    Star: {
-      t: "draw star",
-      l: "draw-star",
-      f: starFormula,
-      load: () => import("./core-animations/Star"),
-    },
-    Polygon: {
-      t: "draw rectangle (using trig, not rect())",
-      l: "draw-rectangle",
-      f: rectangleFormula,
-      load: () => import("./core-animations/Polygon"),
-    },
-    GetEquilateralTriangleVertices: {
-      t: "draw equilateral triangle (from radius and center point)",
-      l: "equilateral-trianlge-points",
-      f: equilateralTriangleFormula,
-      load: () => import("./core-animations/EquilateralTriangle"),
-    },
-    CircleFromThreePointsAnimation: {
-      t: "get circle from three points",
-      l: "circle-from-three-points",
-      f: circleFromThreePointsFormula,
-      load: () => import("./core-animations/CircleFromThreePoints"),
-    },
-    DistributePointsAroundACircle: {
-      t: "distribute around circle",
-      l: "distribute-around-circle",
-      f: distributeFormula,
-      load: () => import("./core-animations/DistributeAroundCircle"),
-    },
-    DistanceBetweenTwoPoints: {
-      t: "get line length",
-      l: "line-length",
-      f: lineLengthFormula,
-      load: () => import("./core-animations/LineLength"),
-    },
-    BezierCurves: {
-      t: "Bézier curves",
-      l: "bezier-curves",
-      f: BezierFormula,
-      load: () => import("./core-animations/BezierCurves"),
-    },
-  },
-  "simple useful equations": {
-    CenterOnParentAnimation: {
-      t: "center on parent",
-      l: "center-on-parent",
-      f: centerOnParent,
-      load: () => import("./core-animations/CenterOnParentAnimation"),
-    },
-    Deg2RadAnimation: {
-      t: "degrees to radians",
-      l: "degrees-to-radians",
-      f: degToRad,
-      load: () => import("./core-animations/DegToRadAnimation"),
-    },
-    NumberWithCommasAnimation: {
-      t: "format number with commas",
-      l: "format-number-with-commas",
-      f: numberWithCommas,
-      load: () => import("./core-animations/NumberWithCommasAnimation"),
-    },
-    Rad2DegAnimation: {
-      t: "radians to degrees",
-      l: "radians-to-degrees",
-      f: radToDeg,
-      load: () => import("./core-animations/Rad2DegAnimation"),
-    },
-    RandomIntegerAnimation: {
-      t: "random integer between",
-      l: "random-integer-between",
-      f: randomIntegerBetween,
-      load: () => import("./core-animations/RandomIntegerAnimation"),
-    },
-    RandomNumberAnimation: {
-      t: "random number between",
-      l: "random-number-between",
-      f: randomNumberBetween,
-      load: () => import("./core-animations/RandomNumberAnimation"),
+    // Hidden duplicate of the circle-field bounce (weaker two-ball version).
+    // Kept off the sidebar via include:false; CircleField above is the one to show.
+    BallsBouncingAgainstEachOther: {
+      t: "balls bouncing against each other",
+      l: "balls-bouncing-against-each-other",
+      include: false,
+      f: ballToBallBounceFormula,
+      load: () => import("./core-animations/BallBall"),
     },
   },
   "numbers in motion": {
@@ -371,39 +305,81 @@ const animationManifest: AnimationManifest = {
       load: () => import("./core-animations/Smoothstep"),
     },
   },
-  fourier: {
+  "geometry & shapes": {
+    GetHalfwayPointOfLine: {
+      t: "get a point on a line",
+      l: "get-a-point-on-a-line",
+      f: getPointOnLineFormula,
+      load: () => import("./core-animations/GetPointOnLine"),
+    },
+    DistanceBetweenTwoPoints: {
+      t: "get line length",
+      l: "line-length",
+      f: lineLengthFormula,
+      load: () => import("./core-animations/LineLength"),
+    },
+    triangleDataFromLine: {
+      t: "get triangle data from line",
+      l: "get-triangle-data-from-line",
+      f: triangleDataFromLineFormula,
+      load: () => import("./core-animations/TriangleDataFromLine"),
+    },
+    Star: {
+      t: "draw star",
+      l: "draw-star",
+      f: starFormula,
+      load: () => import("./core-animations/Star"),
+    },
+    Polygon: {
+      t: "draw rectangle (using trig, not rect())",
+      l: "draw-rectangle",
+      f: rectangleFormula,
+      load: () => import("./core-animations/Polygon"),
+    },
+    GetEquilateralTriangleVertices: {
+      t: "draw equilateral triangle (from radius and center point)",
+      l: "equilateral-trianlge-points",
+      f: equilateralTriangleFormula,
+      load: () => import("./core-animations/EquilateralTriangle"),
+    },
+    CircleFromThreePointsAnimation: {
+      t: "get circle from three points",
+      l: "circle-from-three-points",
+      f: circleFromThreePointsFormula,
+      load: () => import("./core-animations/CircleFromThreePoints"),
+    },
+    CenterOnParentAnimation: {
+      t: "center on parent",
+      l: "center-on-parent",
+      f: centerOnParent,
+      load: () => import("./core-animations/CenterOnParentAnimation"),
+    },
+  },
+  "generative showpieces": {
     FourierEpicycles: {
       t: "Fourier epicycles",
       l: "fourier-epicycles",
       f: FourierFormula,
       load: () => import("./core-animations/FourierEpicycles"),
     },
-  },
-  automata: {
     GameOfLife: {
       t: "Conway's Game of Life",
       l: "game-of-life",
       f: GameOfLifeFormula,
       load: () => import("./core-animations/GameOfLife"),
     },
-  },
-  noise: {
     FlowField: {
       t: "Perlin noise flow field",
       l: "flow-field",
       f: FlowFieldFormula,
       load: () => import("./core-animations/FlowField"),
     },
-  },
-  quantum: {
     WaveInterference: {
       t: "Wave interference",
       l: "wave-interference",
       f: WaveFormula,
       load: () => import("./core-animations/WaveInterference"),
     },
-  },
-  relativity: {
     GravitationalLensing: {
       t: "Gravitational lensing",
       l: "gravitational-lensing",
@@ -416,60 +392,24 @@ const animationManifest: AnimationManifest = {
       f: PrecessionFormula,
       load: () => import("./core-animations/OrbitalPrecession"),
     },
-  },
-  botany: {
     Phyllotaxis: {
       t: "Phyllotaxis (golden angle)",
       l: "phyllotaxis",
       f: PhyllotaxisFormula,
       load: () => import("./core-animations/Phyllotaxis"),
     },
-  },
-  vectors: {
-    VectorReflectAnimation: {
-      t: "vector reflection (bounce)",
-      l: "vector-reflection",
-      f: VectorReflectFormula,
-      load: () => import("./core-animations/VectorReflect"),
-    },
-    VectorRotateAnimation: {
-      t: "vector rotation",
-      l: "vector-rotation",
-      f: VectorRotateFormula,
-      load: () => import("./core-animations/VectorRotate"),
-    },
-    AngleLerpAnimation: {
-      t: "angle interpolation (shortest turn)",
-      l: "angle-lerp-shortest-turn",
-      f: AngleLerpFormula,
-      load: () => import("./core-animations/AngleLerp"),
-    },
-  },
-  physics: {
-    SpringAnimation: {
-      t: "spring (damped harmonic motion)",
-      l: "spring-damped-harmonic",
-      f: SpringFormula,
-      load: () => import("./core-animations/Spring"),
-    },
-  },
-  flocking: {
     Murmuration: {
       t: "Murmuration (flocking starlings)",
       l: "murmuration",
       f: BoidsObject,
       load: () => import("./core-animations/Murmuration"),
     },
-  },
-  fractals: {
     Sierpinski: {
       t: "Sierpinski Triangle",
       l: "sierpinski",
       f: SierpinskiFormula,
       load: () => import("./core-animations/Sierpinski"),
     },
-  },
-  "pretty things": {
     Glitter: {
       t: "Glitter",
       l: "glitter",
@@ -493,6 +433,50 @@ const animationManifest: AnimationManifest = {
       l: "klimt",
       f: KlimtFormula,
       load: () => import("./core-animations/Klimt"),
+    },
+  },
+  "handy helpers": {
+    Deg2RadAnimation: {
+      t: "degrees to radians",
+      l: "degrees-to-radians",
+      f: degToRad,
+      load: () => import("./core-animations/DegToRadAnimation"),
+    },
+    Rad2DegAnimation: {
+      t: "radians to degrees",
+      l: "radians-to-degrees",
+      f: radToDeg,
+      load: () => import("./core-animations/Rad2DegAnimation"),
+    },
+    NumberWithCommasAnimation: {
+      t: "format number with commas",
+      l: "format-number-with-commas",
+      f: numberWithCommas,
+      load: () => import("./core-animations/NumberWithCommasAnimation"),
+    },
+    RandomIntegerAnimation: {
+      t: "random integer between",
+      l: "random-integer-between",
+      f: randomIntegerBetween,
+      load: () => import("./core-animations/RandomIntegerAnimation"),
+    },
+    RandomNumberAnimation: {
+      t: "random number between",
+      l: "random-number-between",
+      f: randomNumberBetween,
+      load: () => import("./core-animations/RandomNumberAnimation"),
+    },
+    ColorLerpAnimation: {
+      t: "color lerp (RGB vs HSL)",
+      l: "color-lerp",
+      f: lerpColorFormula,
+      load: () => import("./core-animations/ColorLerp"),
+    },
+    ColorFamiliesAnimation: {
+      t: "color families (pick a range by name)",
+      l: "color-families",
+      f: colorFamilyFormula,
+      load: () => import("./core-animations/ColorFamilies"),
     },
   },
 };

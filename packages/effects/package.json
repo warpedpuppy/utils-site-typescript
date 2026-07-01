@@ -1,6 +1,8 @@
 {
   "name": "@utilspalooza/effects",
   "version": "0.0.0",
+  "private": true,
+  "//private": "Publish guard: effects is the follow-on package (the core release ships without it). Flip to false on effects' real launch day; core publishes independently and is unaffected by this flag.",
   "description": "Easy canvas background effects built from Utilspalooza creative-coding math.",
   "license": "MIT",
   "type": "module",
@@ -19,7 +21,7 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "tsup"
+    "prepublishOnly": "npm run typecheck && npm run test --prefix ../.. && tsup"
   },
   "publishConfig": { "access": "public" },
   "devDependencies": {

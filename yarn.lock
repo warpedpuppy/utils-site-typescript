@@ -318,7 +318,7 @@
     csstype "^3.0.2"
 
 "@utilspalooza/core@file:/Users/edwardwalther/Sites/utils-site-typescript/packages/core":
-  version "0.0.0"
+  version "0.1.0"
   resolved "file:packages/core"
 
 "@utilspalooza/effects@file:/Users/edwardwalther/Sites/utils-site-typescript/packages/effects":

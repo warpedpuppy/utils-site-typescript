@@ -19,10 +19,6 @@ function CreateChecklists() {
       let returnArray: ReactNode[] = [];
 
       let loopingObj = { ...animationManifest };
-      const isExampleChecklist = containerClass.includes("example");
-      if (isExampleChecklist) {
-        delete loopingObj["simple useful equations"];
-      }
       Object.entries(loopingObj).forEach((innerArray, index) => {
         const firstEntry = Object.entries(innerArray[1]).find(
           ([, v]: any) => v.include !== false

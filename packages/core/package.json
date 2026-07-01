@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "Readable TypeScript math helpers for creative coding, canvas animation, and visual experiments.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/warpedpuppy/utils-site-typescript.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://utilspalooza.com",
+  "bugs": "https://github.com/warpedpuppy/utils-site-typescript/issues",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -33,7 +40,7 @@
     "docs": "node scripts/generate-api-docs.mjs",
     "build": "npm run barrel && npm run docs && tsup",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run barrel && tsup"
+    "prepublishOnly": "npm run barrel && npm run typecheck && npm run test --prefix ../.. && tsup"
   },
   "publishConfig": { "access": "public" },
   "devDependencies": {

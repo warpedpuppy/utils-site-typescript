@@ -8,6 +8,7 @@ import InteractiveMiniDemo from "../../components/MiniDemo/InteractiveMiniDemo";
 import AnimateMiniDemo from "../../components/MiniDemo/AnimateMiniDemo";
 import ColorMiniDemo from "../../components/MiniDemo/ColorMiniDemo";
 import ConstructiveGeometryDemo from "../../components/MiniDemo/ConstructiveGeometryDemo";
+import CopyInstall from "../../components/CopyInstall/CopyInstall";
 import { INTERACTIVE_DEMOS } from "../../components/MiniDemo/interactiveDemos";
 import { ANIMATE_DEMOS } from "../../components/MiniDemo/animateDemos";
 import { COLOR_DEMOS } from "../../components/MiniDemo/colorDemos";
@@ -710,6 +711,7 @@ function ApiDocs() {
           eventually composed into finished canvas effects in <code>@utilspalooza/effects</code>.
           Read it to understand the idea, then take the code.
         </p>
+        <CopyInstall />
       </section>
 
       <nav className="api-docs__tabs" role="tablist">
