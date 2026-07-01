@@ -8,25 +8,27 @@ import CreateChecklists from "../../services/CreateChecklists";
 import { useNavigate } from "react-router-dom";
 import "./Examples.scss";
 import { useParams } from "react-router-dom";
-import SiteData from "../../SiteData";
+import animationManifest, {
+  AnimationManifestEntry,
+} from "../../animationManifest";
 
 function Examples() {
   const location = useLocation();
   const navigate = useNavigate();
   const { exampleName } = useParams();
-  const [activeObject, setActiveObject] = useState<Nullable<any>>(null);
+  const [activeObject, setActiveObject] =
+    useState<Nullable<AnimationManifestEntry>>(null);
   const [key, setKey] = useState<string>("");
   const [innerKey, setInnerKey] = useState<string>("");
   const [className, setClassName] = useState<any>(["", ""]);
-  const [open, setOpen] = useState<number>(10);
+  const [open, setOpen] = useState<number>(-1);
 
-  const { getKeyAndInnerKeyFromLocation, createClassReference } =
-    ExamplesUtils();
+  const { getKeyAndInnerKeyFromLocation } = ExamplesUtils();
   const { createChecklist } = CreateChecklists();
 
   useEffect(() => {
     if (!exampleName) {
-      navigate("/examples/ball-bounce");
+      navigate("/examples/ball-bounce", { replace: true });
     }
   }, [exampleName, navigate]);
 
@@ -55,12 +57,14 @@ function Examples() {
 
   useEffect(() => {
     if (!className[0]) return;
-    setActiveObject(className);
-  }, [className, createClassReference]);
+    const category = className[0] as keyof typeof animationManifest;
+    const itemKey = className[1] as string;
+    setActiveObject(animationManifest[category]?.[itemKey] ?? null);
+  }, [className]);
 
   useEffect(() => {
     const { returnKey, returnInnerKey } = getKeyAndInnerKeyFromLocation(
-      SiteData,
+      animationManifest,
       location.pathname
     );
     setKey(returnKey);
@@ -84,7 +88,7 @@ function Examples() {
         <meta property="og:title" content="Animation Examples — Utilspalooza" />
       </Helmet>
       {checklist}
-      <PrimaryCanvas activeObject={activeObject} siteData={SiteData} />
+      <PrimaryCanvas activeObject={activeObject} />
     </section>
   );
 }

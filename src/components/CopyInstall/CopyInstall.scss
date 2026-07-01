@@ -1,0 +1,37 @@
+.copy-install {
+  display: inline-flex;
+  align-items: stretch;
+  margin-top: 1.25rem;
+  border: 1px solid var(--border-bright);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+  font-family: "Space Mono", monospace;
+
+  &__command {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.86rem;
+    color: var(--text);
+  }
+
+  &__button {
+    padding: 0 0.9rem;
+    border: none;
+    border-left: 1px solid var(--border-bright);
+    background: rgba(9, 11, 19, 0.55);
+    color: var(--brand-orange-soft);
+    font-family: inherit;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: rgba(9, 11, 19, 0.85);
+    }
+  }
+}

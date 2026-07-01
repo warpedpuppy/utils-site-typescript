@@ -1,0 +1,166 @@
+.mini-demo {
+  margin: 0.75rem 0 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.06);
+
+  &__canvas {
+    display: block;
+    width: 100%;
+  }
+
+  // ── Interactive variant ────────────────────────────────────────────────────
+  &--interactive {
+    background: rgba(99, 102, 241, 0.08);
+  }
+
+  &--geometry {
+    background:
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 34%),
+      radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.08), transparent 34%),
+      rgba(99, 102, 241, 0.08);
+  }
+
+  &__call {
+    font-family: monospace;
+    font-size: 0.95rem;
+    margin: 0.15rem 0 0.5rem;
+    padding: 0.4rem 0.55rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    overflow-x: auto;
+    white-space: nowrap;
+
+    code {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  &__arg {
+    color: #c7d2fe;
+
+    &--input {
+      color: #f97316;
+      font-weight: 700;
+    }
+  }
+
+  &__result {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  &__controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.35rem 0.9rem;
+    margin-top: 0.5rem;
+  }
+
+  &__control {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.65);
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #6366f1;
+    }
+  }
+
+  &__control-name {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #c7d2fe;
+  }
+
+  &__control-tag {
+    font-size: 0.66rem;
+    padding: 0.02rem 0.32rem;
+    border-radius: 999px;
+    background: rgba(249, 115, 22, 0.18);
+    color: #f97316;
+  }
+
+  &__control-val {
+    color: rgba(255, 255, 255, 0.55);
+  }
+
+  &__resume {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-top: 0.15rem;
+    padding: 0.25rem 0.6rem;
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: #f97316;
+    background: rgba(249, 115, 22, 0.12);
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(249, 115, 22, 0.2);
+    }
+  }
+
+  &__geometry-readout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.35rem 0.9rem;
+    margin: 0.45rem 0 0.35rem;
+    font-family: monospace;
+
+    div {
+      display: grid;
+      gap: 0.12rem;
+      padding: 0.45rem 0.55rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    code {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.78rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  }
+
+  &__readout-label {
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__touching {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+
+    &.is-live {
+      color: #fb923c;
+    }
+  }
+
+  &__hint {
+    margin: 0.2rem 0 0.55rem !important;
+    font-size: 0.82rem !important;
+    color: rgba(255, 255, 255, 0.62) !important;
+
+    code {
+      color: #f8fafc;
+    }
+  }
+
+  &__canvas--draggable {
+    cursor: grab;
+    touch-action: none;
+  }
+}

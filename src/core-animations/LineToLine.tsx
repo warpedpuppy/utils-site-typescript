@@ -1,14 +1,50 @@
 import { Line } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { LineLine } from "../pages/createJSON/formulas/collision-detection/LineCollision";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { lineLine } from "../pages/createJSON/formulas/collision-detection/LineCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+
+export function drawLineToLine(
+  ctx: CanvasRenderingContext2D,
+  line1: Line,
+  line2: Line,
+  hit: boolean,
+  halfWidth: number,
+  time: number
+) {
+  const pulse = "hsl(330, 95%, " + (55 + 25 * Math.sin(time / 120)) + "%)";
+
+  ctx.lineWidth = 3;
+
+  ctx.strokeStyle = hit ? pulse : "#ff9f1c";
+  ctx.beginPath();
+  ctx.moveTo(line1.startPoint.x, line1.startPoint.y);
+  ctx.lineTo(line1.endPoint.x, line1.endPoint.y);
+  ctx.stroke();
+
+  ctx.strokeStyle = hit ? pulse : "#818cf8";
+  ctx.beginPath();
+  ctx.moveTo(line2.startPoint.x, line2.startPoint.y);
+  ctx.lineTo(line2.endPoint.x, line2.endPoint.y);
+  ctx.stroke();
+
+  if (!hit) return;
+
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", halfWidth, 40);
+  ctx.restore();
+}
 
 class LineToLineCollision extends AnimationBaseClass {
   static t = "line to line collision";
   static l = "line-to-line-collision";
-  static f = LineLine;
+  static f = lineLine;
   title = "line to line collision";
-  animationObject = LineLine;
+  animationObject = lineLine;
   line1: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: 0, y: 0 },
@@ -24,15 +60,13 @@ class LineToLineCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001, performance.now());
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001, performance.now());
     return { x, y };
   }
   draw = () => {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    this.ctx.lineWidth = 3;
 
     let { x, y } = this.makePointMove();
     let x1 = x + this.lineLength * Math.cos(2 * Math.PI * (this.rotate1 / 360));
@@ -47,31 +81,15 @@ class LineToLineCollision extends AnimationBaseClass {
     this.line2.startPoint = { x: this.halfWidth - 100, y: this.halfHeight };
     this.line2.endPoint = { x: this.halfWidth + 100, y: this.halfHeight };
 
-    const hit = LineLine.keyFunction(this.line1, this.line2).hit;
-
-    this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.line1.startPoint.x, this.line1.startPoint.y);
-    this.ctx.lineTo(this.line1.endPoint.x, this.line1.endPoint.y);
-    this.ctx.stroke();
-
-    this.ctx.strokeStyle = hit ? "#22d3ee" : "rgba(255,255,255,0.85)";
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.line2.startPoint.x, this.line2.startPoint.y);
-    this.ctx.lineTo(this.line2.endPoint.x, this.line2.endPoint.y);
-    this.ctx.stroke();
-
-    if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
-    }
+    const hit = lineLine.keyFunction(this.line1, this.line2).hit;
+    drawLineToLine(
+      this.ctx,
+      this.line1,
+      this.line2,
+      hit,
+      this.halfWidth,
+      performance.now()
+    );
 
     this.raf(this.draw);
   };

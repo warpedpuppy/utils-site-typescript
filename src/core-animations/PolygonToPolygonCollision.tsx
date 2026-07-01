@@ -1,92 +1,137 @@
 import AnimationBaseClass from "./AnimationBaseClass";
-import { PolygonPolygon } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
+import { polygonPolygon } from "../pages/createJSON/formulas/collision-detection/PolygonCollision";
 import { StarObject } from "../pages/createJSON/formulas/animation/Star";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
-import { Polygon, Point } from "../types/shapes";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+
+export function drawPolygonToPolygon(
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
+  time: number,
+  sineCurveFn: (
+    startingValue: number,
+    differential: number,
+    speed: number,
+    time: number
+  ) => number,
+  polygonPolygonFn: (
+    polygon1: { vertices: { x: number; y: number }[] },
+    polygon2: { vertices: { x: number; y: number }[] }
+  ) => boolean,
+  starFn: (
+    spikes: number,
+    innerRadius: number,
+    outerRadius: number,
+    angle?: number,
+    options?: {
+      rotate?: boolean;
+      rotateSpeed?: number;
+      clockwise?: boolean;
+      time?: number;
+    }
+  ) => { vertices: { x: number; y: number }[] }
+): void {
+  const halfWidth = canvasWidth / 2;
+  const halfHeight = canvasHeight / 2;
+
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+  ctx.fillStyle = "#1e1b4b";
+  ctx.rect(0, 0, canvasWidth, canvasHeight);
+  ctx.fill();
+
+  // small 5-spike moving star
+  const star1 = starFn(5, 50, 25, 0, { rotate: true, rotateSpeed: 2000, time });
+  // large 9-spike center star
+  const star2 = starFn(9, 150, 25, 0, { rotate: true, rotateSpeed: 2800, time });
+
+  const vertices1: { x: number; y: number }[] = [];
+  star2.vertices.forEach((pt) => {
+    vertices1.push({ x: halfWidth + pt.x, y: halfHeight + pt.y });
+  });
+
+  const x = sineCurveFn(halfWidth, 200, 0.001, time);
+  const y = sineCurveFn(halfHeight, 200, 0.001, time);
+
+  const vertices2: { x: number; y: number }[] = [];
+  star1.vertices.forEach((pt) => {
+    vertices2.push({ x: x + pt.x, y: y + pt.y });
+  });
+
+  const hit = polygonPolygonFn({ vertices: vertices1 }, { vertices: vertices2 });
+  const hitColor = "hsl(330, 95%, " + (55 + 25 * Math.sin(time / 120)) + "%)";
+
+  // large center star
+  ctx.fillStyle = hit ? hitColor : "#818cf8";
+  ctx.beginPath();
+  vertices1.forEach((pt, i) => {
+    if (i === 0) ctx.moveTo(pt.x, pt.y);
+    else ctx.lineTo(pt.x, pt.y);
+  });
+  ctx.closePath();
+  ctx.fill();
+
+  // small moving star
+  ctx.fillStyle = hit ? hitColor : "#ff9f1c";
+  ctx.beginPath();
+  vertices2.forEach((pt, i) => {
+    if (i === 0) ctx.moveTo(pt.x, pt.y);
+    else ctx.lineTo(pt.x, pt.y);
+  });
+  ctx.closePath();
+  ctx.fill();
+
+  if (hit) {
+    ctx.save();
+    ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+    ctx.textAlign = "center";
+    ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = "#cdd3ff";
+    ctx.fillText("collision detected", halfWidth, 40);
+    ctx.restore();
+  }
+}
+
 class PolygonToPolygonCollision extends AnimationBaseClass {
   static t = "polygon to polygon collision";
   static l = "polygon-to-polygon-collision";
-  static f = PolygonPolygon;
+  static f = polygonPolygon;
   title = "polygon to polygon collision";
-  star1: Polygon = StarObject.keyFunction(5, 50, 25, 0, {
-    rotate: true,
-    rotateSpeed: 2000,
-  });
-  star2: Polygon = StarObject.keyFunction(9, 150, 25, 0, {
-    rotate: true,
-    rotateSpeed: 2000,
-  });
-  animationObject = PolygonPolygon;
+  animationObject = polygonPolygon;
   init() {
     this.draw();
   }
-  makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
-    return { x, y };
-  }
   draw = () => {
     if (!this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    this.star1 = StarObject.keyFunction(5, 50, 25, 0, {
-      rotate: true,
-      rotateSpeed: 500,
-    });
-    this.star2 = StarObject.keyFunction(9, 150, 25, 0, {
-      rotate: true,
-      rotateSpeed: 2000,
-    });
-
-    this.ctx.fillStyle = "#1e1b4b";
-    this.ctx.rect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.ctx.fill();
-
-    let vertices1: Point[] = [];
-    this.star2.vertices.forEach((star) => {
-      vertices1.push({ x: this.halfWidth + star.x, y: this.halfHeight + star.y });
-    });
-
-    let { x, y } = this.makePointMove();
-    let vertices2: Point[] = [];
-    this.star1.vertices.forEach((star) => {
-      vertices2.push({ x: x + star.x, y: y + star.y });
-    });
-
-    const hit = PolygonPolygon.keyFunction({ vertices: vertices1 }, { vertices: vertices2 });
-
-    // large center star
-    this.ctx.fillStyle = hit ? "#22d3ee" : "#facc15";
-    this.ctx.beginPath();
-    vertices1.forEach((pt, i) => {
-      if (i === 0) this.ctx?.moveTo(pt.x, pt.y);
-      else this.ctx?.lineTo(pt.x, pt.y);
-    });
-    this.ctx.closePath();
-    this.ctx.fill();
-
-    // small moving star
-    this.ctx.fillStyle = hit ? "#ef4444" : "#fb923c";
-    this.ctx.beginPath();
-    vertices2.forEach((pt, i) => {
-      if (i === 0) this.ctx?.moveTo(pt.x, pt.y);
-      else this.ctx?.lineTo(pt.x, pt.y);
-    });
-    this.ctx.closePath();
-    this.ctx.fill();
-
-    if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
-    }
-
+    drawPolygonToPolygon(
+      this.ctx,
+      this.canvasWidth,
+      this.canvasHeight,
+      performance.now(),
+      sineCurve.keyFunction as (
+        startingValue: number,
+        differential: number,
+        speed: number,
+        time: number
+      ) => number,
+      polygonPolygon.keyFunction as (
+        polygon1: { vertices: { x: number; y: number }[] },
+        polygon2: { vertices: { x: number; y: number }[] }
+      ) => boolean,
+      StarObject.keyFunction as (
+        spikes: number,
+        innerRadius: number,
+        outerRadius: number,
+        angle?: number,
+        options?: {
+          rotate?: boolean;
+          rotateSpeed?: number;
+          clockwise?: boolean;
+          time?: number;
+        }
+      ) => { vertices: { x: number; y: number }[] }
+    );
     this.raf(this.draw);
   };
   pointerDownHandler(e: PointerEvent) {}

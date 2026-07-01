@@ -1,13 +1,49 @@
 import { Point, Line, Circle } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { LinePoint } from "../pages/createJSON/formulas/collision-detection/LineCollision";
-import { SineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+import { linePoint } from "../pages/createJSON/formulas/collision-detection/LineCollision";
+import { sineCurve } from "../pages/createJSON/formulas/animation/SineCurve";
+export function drawLineToPoint(
+  ctx: CanvasRenderingContext2D,
+  line: Line,
+  point: Point,
+  radius: number,
+  hit: boolean,
+  canvasWidth: number,
+  time: number = performance.now()
+) {
+  const pulseLightness = 55 + 25 * Math.sin(time / 120);
+  const hitColor = `hsl(330, 95%, ${pulseLightness}%)`;
+
+  ctx.strokeStyle = hit ? hitColor : "#ff9f1c";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(line.startPoint.x, line.startPoint.y);
+  ctx.lineTo(line.endPoint.x, line.endPoint.y);
+  ctx.stroke();
+
+  ctx.fillStyle = hit ? hitColor : "#818cf8";
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
+  ctx.fill();
+
+  if (!hit) return;
+
+  ctx.save();
+  ctx.font = "600 16px ui-monospace, 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.shadowColor = "rgba(129, 140, 248, 0.9)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#cdd3ff";
+  ctx.fillText("collision detected", canvasWidth / 2, 40);
+  ctx.restore();
+}
+
 class LineToPointCollision extends AnimationBaseClass {
   static t = "line to point collision";
   static l = "line-to-point-collision";
-  static f = LinePoint;
+  static f = linePoint;
   title = "line to point collision";
-  animationObject = LinePoint;
+  animationObject = linePoint;
   line: Line = {
     startPoint: { x: 0, y: 0 },
     endPoint: { x: this.canvasWidth, y: this.canvasHeight },
@@ -25,8 +61,8 @@ class LineToPointCollision extends AnimationBaseClass {
     this.draw();
   }
   makePointMove() {
-    let x = SineCurve.keyFunction(this.halfWidth, 200, 0.001);
-    let y = SineCurve.keyFunction(this.halfHeight, 200, 0.001);
+    let x = sineCurve.keyFunction(this.halfWidth, 200, 0.001, performance.now());
+    let y = sineCurve.keyFunction(this.halfHeight, 200, 0.001, performance.now());
     return { x, y };
   }
   draw = () => {
@@ -40,31 +76,16 @@ class LineToPointCollision extends AnimationBaseClass {
     this.line.startPoint = { x: this.halfWidth - 200, y: this.halfHeight };
     this.line.endPoint = { x: this.halfWidth + 200, y: this.halfHeight };
 
-    const hit = LinePoint.keyFunction(this.line, this.point);
+    const hit = linePoint.keyFunction(this.line, this.point);
 
-    this.ctx.strokeStyle = hit ? "#ef4444" : "rgba(255,255,255,0.85)";
-    this.ctx.lineWidth = 3;
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.halfWidth - 200, this.halfHeight);
-    this.ctx.lineTo(this.halfWidth + 200, this.halfHeight);
-    this.ctx.stroke();
-
-    this.ctx.fillStyle = "#f97316";
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, this.circle.radius, 0, 2 * Math.PI);
-    this.ctx.fill();
-
-    if (hit) {
-      this.ctx.font = "bold 26px 'Courier New', monospace";
-      this.ctx.textAlign = "center";
-      this.ctx.fillStyle = "rgba(255, 0, 100, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth + 3, 43);
-      this.ctx.fillStyle = "rgba(0, 255, 255, 0.55)";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth - 3, 37);
-      this.ctx.fillStyle = "#e0f7ff";
-      this.ctx.fillText("[ COLLISION DETECTED ]", this.halfWidth, 40);
-      this.ctx.textAlign = "left";
-    }
+    drawLineToPoint(
+      this.ctx,
+      this.line,
+      this.point,
+      this.circle.radius,
+      hit,
+      this.canvasWidth
+    );
 
     this.raf(this.draw);
   };

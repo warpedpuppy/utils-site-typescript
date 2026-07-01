@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { GetRotation } from "../core-functions/GetRotation";
-import { GetRotation as getRotationFormula } from "../pages/createJSON/formulas/animation/GetRotation";
+import { getRotation } from "@utilspalooza/core/GetRotation";
+import { getRotation as getRotationFormula } from "../pages/createJSON/formulas/animation/GetRotation";
 
 function pointsAroundCircle(
   circleCenter: Point,
@@ -58,7 +58,7 @@ function drawPointTowards(
   ctx.arc(point.x, point.y, 20, 0, 2 * Math.PI);
   ctx.stroke();
 
-  let angle = GetRotation(
+  let angle = getRotation(
     {
       x: halfWidth,
       y: halfHeight,

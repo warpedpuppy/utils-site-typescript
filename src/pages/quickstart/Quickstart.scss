@@ -1,0 +1,139 @@
+#quickstart-wrapper {
+  position: relative;
+  top: 50px;
+
+  &--inner {
+    margin: 0 auto;
+    max-width: 760px;
+    padding: 42px 24px 72px;
+    text-align: left;
+    color: var(--text);
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 0.75rem;
+    }
+
+    h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--brand-orange-soft);
+      margin: 2.35rem 0 0.65rem;
+    }
+
+    p {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--text-muted);
+      margin: 0 0 0.75rem;
+    }
+
+    code {
+      font-family: "Space Mono", monospace;
+      color: var(--text-code);
+      word-break: break-word;
+    }
+
+    a {
+      color: var(--brand-orange-soft);
+    }
+  }
+}
+
+.quickstart-codeblock {
+  position: relative;
+  margin: 0.5rem 0 1rem;
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--bg-elevated);
+    border-radius: 8px;
+    padding: 18px 20px;
+    overflow-x: auto;
+
+    code {
+      font-family: "Space Mono", monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre;
+    }
+  }
+}
+
+.quickstart-copy {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid transparent;
+
+  &:hover {
+    color: var(--text);
+    border-color: var(--brand-orange);
+    background: var(--brand-orange-dim);
+  }
+}
+
+.quickstart-pen {
+  display: flex;
+  justify-content: center;
+  margin: 0.5rem 0 1.5rem;
+
+  button {
+    font-family: inherit;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    background: var(--brand-orange);
+    border: 1px solid var(--brand-orange);
+
+    &:hover {
+      box-shadow: 0 0 0 3px var(--brand-orange-glow);
+    }
+  }
+}
+
+.quickstart-anatomy {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+  padding-left: 1.25rem;
+
+  li {
+    margin: 0 0 0.85rem;
+  }
+
+  strong {
+    color: var(--text);
+  }
+}
+
+.quickstart-install {
+  background: var(--code-bg);
+  border: 1px solid var(--bg-elevated);
+  border-radius: 8px;
+  padding: 14px 20px;
+  margin: 0.5rem 0 1rem;
+
+  code {
+    font-family: "Space Mono", monospace;
+    font-size: 0.85rem;
+    color: var(--text);
+  }
+}

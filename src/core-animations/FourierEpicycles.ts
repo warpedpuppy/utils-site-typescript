@@ -1,13 +1,6 @@
 import Template from "./animationTemplate";
 import { CollisionDetectionObject } from "../types/types";
-
-interface FreqComponent {
-  freq: number;
-  amp: number;
-  phase: number;
-  re: number;
-  im: number;
-}
+import { dft } from "@utilspalooza/core/DFT";
 
 const ELI5 = `🌀 Fourier Epicycles — What's going on?
 
@@ -42,7 +35,7 @@ function squarePath(n: number): { x: number; y: number }[] {
   return pts;
 }
 
-function heartPath(n: number): { x: number; y: number }[] {
+export function heartPath(n: number): { x: number; y: number }[] {
   const pts: { x: number; y: number }[] = [];
   for (let i = 0; i < n; i++) {
     const t = (i / n) * 2 * Math.PI;
@@ -60,22 +53,6 @@ function figure8Path(n: number): { x: number; y: number }[] {
     pts.push({ x: 150 * Math.sin(t), y: 100 * Math.sin(2 * t) });
   }
   return pts;
-}
-
-function dft(signal: { x: number; y: number }[]): FreqComponent[] {
-  const N = signal.length;
-  const result: FreqComponent[] = [];
-  for (let k = 0; k < N; k++) {
-    let re = 0, im = 0;
-    for (let n = 0; n < N; n++) {
-      const phi = (2 * Math.PI * k * n) / N;
-      re += signal[n].x * Math.cos(phi) + signal[n].y * Math.sin(phi);
-      im += -signal[n].x * Math.sin(phi) + signal[n].y * Math.cos(phi);
-    }
-    re /= N; im /= N;
-    result.push({ freq: k, amp: Math.sqrt(re * re + im * im), phase: Math.atan2(im, re), re, im });
-  }
-  return result.sort((a, b) => b.amp - a.amp);
 }
 
 const FourierFormula: CollisionDetectionObject = {
@@ -103,6 +80,70 @@ const FourierFormula: CollisionDetectionObject = {
 }`,
 };
 
+export function drawFourierEpicycles(
+  ctx: CanvasRenderingContext2D,
+  fourier: { freq: number; amp: number; phase: number }[],
+  time: number,
+  trail: { x: number; y: number }[]
+): void {
+  const W = ctx.canvas.width;
+  const H = ctx.canvas.height;
+
+  // Dark background with slight fade for trail ghosting
+  ctx.fillStyle = "rgba(15,15,26,0.3)";
+  ctx.fillRect(0, 0, W, H);
+
+  let x = ctx.canvas.width / 2;
+  let y = ctx.canvas.height / 2;
+  const t = time;
+
+  for (let i = 0; i < fourier.length; i++) {
+    const { freq, amp, phase } = fourier[i];
+    const prevX = x, prevY = y;
+    const angle = freq * t * ((2 * Math.PI) / fourier.length) + phase;
+    x += amp * Math.cos(angle);
+    y += amp * Math.sin(angle);
+
+    // Circle outlines — muted pink/rose
+    ctx.strokeStyle = "rgba(255,100,180,0.25)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(prevX, prevY, amp, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    // Spoke lines — brighter pink
+    ctx.strokeStyle = "rgba(255,120,200,0.7)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(prevX, prevY);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+
+  trail.unshift({ x, y });
+  const maxTrail = fourier.length * 4;
+  if (trail.length > maxTrail) trail.length = maxTrail;
+
+  // Traced path — hot pink / magenta
+  ctx.beginPath();
+  ctx.moveTo(trail[0].x, trail[0].y);
+  for (let i = 1; i < trail.length; i++) {
+    const alpha = 1 - i / trail.length;
+    ctx.strokeStyle = `rgba(255,60,180,${alpha})`;
+    ctx.lineWidth = 2.5;
+    ctx.lineTo(trail[i].x, trail[i].y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(trail[i].x, trail[i].y);
+  }
+
+  // Tip dot — bright white-pink
+  ctx.fillStyle = "rgba(255,220,240,1)";
+  ctx.beginPath();
+  ctx.arc(x, y, 4, 0, 2 * Math.PI);
+  ctx.fill();
+}
+
 class FourierEpicycles extends Template {
   static t = "Fourier epicycles";
   static l = "fourier-epicycles";
@@ -111,7 +152,7 @@ class FourierEpicycles extends Template {
 
   animationObject = FourierFormula;
 
-  fourier: FreqComponent[] = [];
+  fourier: { freq: number; amp: number; phase: number }[] = [];
   trail: { x: number; y: number }[] = [];
   time: number = 0;
   numCircles: number = 64;
@@ -202,64 +243,7 @@ class FourierEpicycles extends Template {
 
   drawFrame() {
     if (!this.ctx || !this.canvas) return;
-    const ctx = this.ctx;
-    const W = this.canvasWidth;
-    const H = this.canvasHeight;
-
-    // Dark background with slight fade for trail ghosting
-    ctx.fillStyle = "rgba(15,15,26,0.3)";
-    ctx.fillRect(0, 0, W, H);
-
-    let x = this.halfWidth;
-    let y = this.halfHeight;
-    const t = this.time;
-
-    for (let i = 0; i < this.fourier.length; i++) {
-      const { freq, amp, phase } = this.fourier[i];
-      const prevX = x, prevY = y;
-      const angle = freq * t * ((2 * Math.PI) / this.fourier.length) + phase;
-      x += amp * Math.cos(angle);
-      y += amp * Math.sin(angle);
-
-      // Circle outlines — muted pink/rose
-      ctx.strokeStyle = "rgba(255,100,180,0.25)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(prevX, prevY, amp, 0, 2 * Math.PI);
-      ctx.stroke();
-
-      // Spoke lines — brighter pink
-      ctx.strokeStyle = "rgba(255,120,200,0.7)";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(prevX, prevY);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-    }
-
-    this.trail.unshift({ x, y });
-    const maxTrail = this.fourier.length * 4;
-    if (this.trail.length > maxTrail) this.trail.length = maxTrail;
-
-    // Traced path — hot pink / magenta
-    ctx.beginPath();
-    ctx.moveTo(this.trail[0].x, this.trail[0].y);
-    for (let i = 1; i < this.trail.length; i++) {
-      const alpha = 1 - i / this.trail.length;
-      ctx.strokeStyle = `rgba(255,60,180,${alpha})`;
-      ctx.lineWidth = 2.5;
-      ctx.lineTo(this.trail[i].x, this.trail[i].y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(this.trail[i].x, this.trail[i].y);
-    }
-
-    // Tip dot — bright white-pink
-    ctx.fillStyle = "rgba(255,220,240,1)";
-    ctx.beginPath();
-    ctx.arc(x, y, 4, 0, 2 * Math.PI);
-    ctx.fill();
-
+    drawFourierEpicycles(this.ctx, this.fourier, this.time, this.trail);
     this.time += 1;
     if (this.time >= this.fourier.length) { this.time = 0; this.trail = []; }
   }

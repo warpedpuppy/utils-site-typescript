@@ -25,7 +25,7 @@ function ExamplesUtils() {
     },
     []
   );
-  function createClassReference(f: Function) {
+  const createClassReference = useCallback((f: Function) => {
     // had to nest the class in an object because it was instantiating it when it was placed in a useState variable
     let classRef: any = f;
     function create(ctor: {
@@ -37,7 +37,7 @@ function ExamplesUtils() {
       return obj;
     }
     return create(classRef);
-  }
+  }, []);
 
   return { getKeyAndInnerKeyFromLocation, createClassReference };
 }

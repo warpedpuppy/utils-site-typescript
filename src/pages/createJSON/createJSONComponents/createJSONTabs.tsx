@@ -26,7 +26,7 @@ function CreateJSONTabs({
         className={tabBody === 1 ? "active-tab" : ""}
         onClick={() => onClickHandler(1)}
       >
-        view/copy functions
+        copy code
       </div>
       {hasInterfaces && (
         <div

@@ -11,13 +11,19 @@
     "noFallthroughCasesInSwitch": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "paths": {
+      "@utilspalooza/core": ["./packages/core/src/index.ts"],
+      "@utilspalooza/core/*": ["./packages/core/src/*"],
+      "@utilspalooza/effects": ["./packages/effects/src/index.ts"],
+      "@utilspalooza/effects/*": ["./packages/effects/src/*"]
+    },
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "useDefineForClassFields": true
   },
-  "include": ["src"],
+  "include": ["src", "packages/core/src", "packages/effects/src"],
   "exclude": ["**/*.test.ts", "**/*.test.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

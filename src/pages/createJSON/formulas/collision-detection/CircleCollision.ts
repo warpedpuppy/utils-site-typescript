@@ -1,6 +1,6 @@
-import { CircleCircle } from "./functions/CircleCircle";
-import { PolygonCircle as CirclePolygon } from "./PolygonCollision";
-import { PointCircle as CirclePoint } from "./PointCollision";
-import { LineCircle as CircleLine } from "./LineCollision";
+import { circleCircle } from "./functions/CircleCircle";
+import { polygonCircle as CirclePolygon } from "./PolygonCollision";
+import { pointCircle as CirclePoint } from "./PointCollision";
+import { lineCircle as CircleLine } from "./LineCollision";
 
-export { CircleCircle, CirclePolygon, CirclePoint, CircleLine };
+export { circleCircle, CirclePolygon, CirclePoint, CircleLine };

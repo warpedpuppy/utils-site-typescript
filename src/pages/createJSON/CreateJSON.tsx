@@ -7,7 +7,7 @@ import JSONContent from "./createJSONComponents/JSONContent";
 
 import CreateChecklists from "../../services/CreateChecklists";
 import { InterfaceMap } from "../../types/shapes";
-import SiteData from "../../SiteData";
+import animationManifest from "../../animationManifest";
 import { downloadTsExport, downloadJsExport, INTERFACE_ORDER } from "./createJSONUtils/createJSONUtils";
 
 function getSelectionCount(): number {
@@ -18,7 +18,7 @@ function getSelectionCount(): number {
 function getSelectedInterfaceNames(): string[] {
   const selected = (localStorage.getItem("functions") ?? "").split(",").filter(Boolean);
   const names = new Set<string>();
-  Object.values(SiteData).forEach((objects) => {
+  Object.values(animationManifest).forEach((objects) => {
     Object.entries(objects).forEach(([key, value]) => {
       if (selected.includes(key)) {
         (value.f.interfaces ?? []).forEach((iface: string) => {
@@ -67,21 +67,30 @@ function CreateJSON() {
   return (
     <div id="create-json">
       <Helmet>
-        <title>Build Your Utils File — Utilspalooza</title>
-        <meta name="description" content="Select the canvas animation formulas you need and download a ready-to-use TypeScript or JavaScript file. No build step, no dependencies." />
+        <title>Copy a Function (à la carte) — Utilspalooza</title>
+        <meta name="description" content="Pick canvas animation functions à la carte and copy ready-to-use TypeScript or JavaScript — imports, interfaces, or a standalone file. No install, no library." />
         <link rel="canonical" href="https://utilspalooza.com/create-json" />
         <meta property="og:url" content="https://utilspalooza.com/create-json" />
-        <meta property="og:title" content="Build Your Utils File — Utilspalooza" />
+        <meta property="og:title" content="Copy a Function (à la carte) — Utilspalooza" />
       </Helmet>
       <div id="create-json-container">
+        <header className="copy-code-header">
+          <p>à la carte</p>
+          <h1>Copy the exact code you need.</h1>
+          <span>
+            Pick the functions you want and copy them as typed TypeScript or
+            plain JS — or download just those as a standalone file. No install,
+            no library, just the code.
+          </span>
+        </header>
         {selectionCount > 0 && (
           <div id="download-bar">
             <span id="download-bar-count">{selectionCount} formula{selectionCount !== 1 ? "s" : ""} selected</span>
             <button className="btn btn-primary" onClick={downloadTsExport}>
-              download .ts file
+              download .ts
             </button>
             <button className="btn btn-secondary" onClick={downloadJsExport}>
-              download .js file
+              download .js
             </button>
           </div>
         )}
@@ -94,7 +103,7 @@ function CreateJSON() {
             className="btn btn-primary"
             onClick={() => copyToClipboard(".functions-pre")}
           >
-            copy to clipboard
+            copy functions
           </button>
           <JSONContent />
         </div>
@@ -104,7 +113,7 @@ function CreateJSON() {
               className="btn btn-primary"
               onClick={() => copyToClipboard(".shapes-pre")}
             >
-              copy interfaces to clipboard
+              copy interfaces
             </button>
             <pre className="shapes-pre">
               {selectedInterfaces.map((name) => `export ${InterfaceMap[name]}`).join("\n\n")}

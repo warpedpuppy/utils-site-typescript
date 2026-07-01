@@ -8,6 +8,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
   text = [];
   interval: any = undefined;
   dot: Point = { x: 0, y: 0 };
+  dotOrigin: Point = { x: 0, y: 0 };
   dotNew: Point = { x: 0, y: 0 };
   arrowPoint: Point = { x: 0, y: 0 };
   img = new Image();
@@ -24,32 +25,37 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     let b = startPoint.y - endPoint.y;
     return Math.sqrt(a * a + b * b);
   }
-  createNewDestinationPoint(quadrant: number) {
+  // Pick a destination anywhere in the current window. We cycle through the four
+  // quadrants so the dot keeps visiting every corner, and each quadrant spans its
+  // full half of the canvas (minus a margin so the circle never clips the edge).
+  // Reading canvasWidth/canvasHeight live means the reachable area re-expands on
+  // resize instead of staying cramped in the center.
+  createNewDestinationPoint(quadrant: number): Point {
+    const margin = 60;
+    const left = margin;
+    const right = Math.max(margin, this.canvasWidth - margin);
+    const top = margin;
+    const bottom = Math.max(margin, this.canvasHeight - margin);
+    const midX = this.halfWidth;
+    const midY = this.halfHeight;
+    const randIn = (min: number, max: number) =>
+      min + Math.random() * (max - min);
+
     if (quadrant === 0) {
-      return {
-        x: Math.random() * (this.halfWidth / 2),
-        y: Math.random() * (this.halfHeight / 2),
-      };
+      return { x: randIn(left, midX), y: randIn(top, midY) };
     } else if (quadrant === 1) {
-      return {
-        x: Math.random() * this.halfWidth + this.halfWidth,
-        y: Math.random() * (this.halfHeight / 2),
-      };
+      return { x: randIn(midX, right), y: randIn(top, midY) };
     } else if (quadrant === 2) {
-      return {
-        x: Math.random() * (this.halfWidth / 2),
-        y: Math.random() * this.halfHeight + this.halfHeight,
-      };
+      return { x: randIn(left, midX), y: randIn(midY, bottom) };
     } else if (quadrant === 3) {
-      return {
-        x: Math.random() * this.halfWidth + this.halfWidth,
-        y: Math.random() * this.halfHeight + this.halfHeight,
-      };
+      return { x: randIn(midX, right), y: randIn(midY, bottom) };
     }
-    return {
-      x: Math.random() * this.halfWidth,
-      y: Math.random() * this.halfHeight,
-    };
+    return { x: randIn(left, right), y: randIn(top, bottom) };
+  }
+
+  // smoothstep — eases the dot in and out of each destination sweep.
+  easeInOut(t: number): number {
+    return t * t * (3 - 2 * t);
   }
   init() {
     if (this.textDiv) {
@@ -83,7 +89,9 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
   }
   drawDot = () => {
     this.ratio = 0;
-
+    // The dot's current spot becomes the start of the next sweep, so it travels
+    // cleanly from where it is to the new destination.
+    this.dotOrigin = { x: this.dot.x, y: this.dot.y };
     this.dotNew = this.createNewDestinationPoint(this.quadrantCounter);
 
     if (this.quadrantCounter < 3) {
@@ -98,13 +106,31 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     this.ctx.strokeStyle = "green";
     this.ctx.lineWidth = 10;
 
-    let newDotPoint = this.keyFunction(this.dot, this.dotNew, this.ratio);
-    this.dot = newDotPoint;
+    // Advance this sweep toward its destination and reach it fully (ratio → 1)
+    // within the 2s interval, so the dot actually visits the far corners instead
+    // of drifting only partway back toward the center.
+    this.ratio = Math.min(this.ratio + 0.01, 1);
+    this.dot = this.keyFunction(
+      this.dotOrigin,
+      this.dotNew,
+      this.easeInOut(this.ratio)
+    );
     this.ctx.beginPath();
     this.ctx.arc(this.dot.x, this.dot.y, 20, 0, 2 * Math.PI);
     this.ctx.stroke();
 
-    let newPoint = this.keyFunction(this.arrowPoint, this.dot, this.ratio);
+    // The arrow chases a point one tip-length (half the sprite) short of the dot,
+    // so it settles with its TIP resting on the dot's center, not its body. It
+    // trails with a constant follow factor for the chasing lag.
+    const tipOffset = 50;
+    const dx = this.dot.x - this.arrowPoint.x;
+    const dy = this.dot.y - this.arrowPoint.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const target: Point = {
+      x: this.dot.x - (tipOffset * dx) / dist,
+      y: this.dot.y - (tipOffset * dy) / dist,
+    };
+    let newPoint = this.keyFunction(this.arrowPoint, target, 0.04);
 
     this.arrowPoint = newPoint;
 
@@ -127,7 +153,6 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     );
 
     this.ctx.resetTransform();
-    this.ratio += 0.0001;
 
     this.ctx.strokeStyle = "rgba(255,255,255,0.35)";
     this.ctx.lineWidth = 0.5;

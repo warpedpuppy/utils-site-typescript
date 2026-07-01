@@ -1,9 +1,9 @@
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { LineLine as LineLineImported } from "../../../../../core-functions/CollisionObjectAPI/LineLine";
-import LineLineSource from "../../../../../core-functions/CollisionObjectAPI/LineLine.ts?raw";
+import { lineLine as LineLineImported } from "@utilspalooza/core/CollisionObjectAPI/LineLine";
+import LineLineSource from "@utilspalooza/core/CollisionObjectAPI/LineLine.ts?raw";
 import { extractFunctionString } from "../../extractFunctionString";
 
-export const LineLine: CollisionDetectionObject = {
+export const lineLine: CollisionDetectionObject = {
   keyFunction: LineLineImported,
   dependencies: [],
   interfaces: ["Line"],

@@ -13,7 +13,7 @@ import {
 // ─── Particle Constellation ──────────────────────────────────────────────────
 // Composition piece: three of the site's primitives working together.
 //   • Phyllotaxis  → each particle's *target* (golden-angle lattice)
-//   • Lerp + ease  → particles glide from a random start to that target
+//   • lerp + ease  → particles glide from a random start to that target
 //   • Perlin noise → a living drift offset so the formed shape keeps breathing
 // The "aha" is that none of these is new — the magic is in combining them.
 
@@ -21,7 +21,7 @@ const GOLDEN_ANGLE = 137.50776405003785;
 
 const DESIGN_NOTES = `
 <h4>Three primitives, one effect</h4>
-<p>Nothing here is a new algorithm. The constellation is <em>Phyllotaxis</em> (where each dot belongs), <em>Lerp + easing</em> (how it travels there), and <em>Perlin noise</em> (why it never sits perfectly still) layered on top of each other.</p>
+<p>Nothing here is a new algorithm. The constellation is <em>Phyllotaxis</em> (where each dot belongs), <em>lerp + easing</em> (how it travels there), and <em>Perlin noise</em> (why it never sits perfectly still) layered on top of each other.</p>
 
 <h4>Why ease the arrival?</h4>
 <p>A raw <code>lerp(start, target, t)</code> with linear <code>t</code> looks robotic. Running <code>t</code> through a cubic ease (<code>easeInOut</code>) makes every dot accelerate out of chaos and settle gently into the lattice — the difference between "snapping" and "arriving".</p>
@@ -144,7 +144,7 @@ document.getElementById('drift').oninput = e => drift = +e.target.value;`;
 const PEN: CodePenPayload = {
   title: "Particle Constellation",
   description:
-    "Phyllotaxis + eased Lerp + Perlin noise composed together: particles glide from chaos into a golden-angle lattice, then breathe via a coherent noise field.",
+    "Phyllotaxis + eased lerp + Perlin noise composed together: particles glide from chaos into a golden-angle lattice, then breathe via a coherent noise field.",
   html: PEN_HTML,
   css: PEN_CSS,
   js: PEN_JS,

@@ -1,7 +1,7 @@
 import { GenericObject } from "../types/types";
 import AnimationBaseClass from "./AnimationBaseClass";
-import { CircleFromThreePoints as CircleFromThreePointsFunc } from "../core-functions/CircleFromThreePoints";
-import { CircleFromThreePoints as circleFromThreePointsFormula } from "../pages/createJSON/formulas/animation/CircleFromThreePoints";
+import { circleFromThreePoints as CircleFromThreePointsFunc } from "@utilspalooza/core/CircleFromThreePoints";
+import { circleFromThreePoints as circleFromThreePointsFormula } from "../pages/createJSON/formulas/animation/CircleFromThreePoints";
 
 function drawCircleFromThreePoints(
   ctx: any,
@@ -88,11 +88,11 @@ export default class CircleFromThreePointsAnimation extends AnimationBaseClass {
   };
 
   drawCircle = () => {
-    let degree = 1 * (Math.PI / 180);
-    this.circleQ += degree;
+    let degree = 5 * (Math.PI / 180);
+    this.circleQ = Math.min(this.circleQ + degree, Math.PI * 2);
+    this.draw();
     if (this.circleQ < Math.PI * 2) {
       this.interval = setTimeout(this.drawCircle, 10);
-      this.draw();
     }
   };
 

@@ -1,10 +1,18 @@
+import { lazy, Suspense, type ReactNode } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import OuterShell from "./pages/OuterShell";
-import Home from "./pages/home/Home";
-import About from "./pages/about/About";
-import Examples from "./pages/examples/Examples";
-import CreateJSON from "./pages/createJSON/CreateJSON";
-import Studio from "./pages/studio/Studio";
+
+const Home = lazy(() => import("./pages/home/Home"));
+const About = lazy(() => import("./pages/about/About"));
+const Quickstart = lazy(() => import("./pages/quickstart/Quickstart"));
+const Examples = lazy(() => import("./pages/examples/Examples"));
+const CreateJSON = lazy(() => import("./pages/createJSON/CreateJSON"));
+const Studio = lazy(() => import("./pages/studio/Studio"));
+const ApiDocs = lazy(() => import("./pages/api/ApiDocs"));
+
+function routeElement(element: ReactNode) {
+  return <Suspense fallback={null}>{element}</Suspense>;
+}
 
 const router = createBrowserRouter([
   {
@@ -12,40 +20,48 @@ const router = createBrowserRouter([
     element: <OuterShell />,
     errorElement: <div>something went wrong</div>,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: routeElement(<Home />) },
       {
         path: "examples",
-        element: <Examples />,
+        element: routeElement(<Examples />),
         children: [
           {
             path: ":exampleName",
-            element: <Examples />,
+            element: routeElement(<Examples />),
           },
         ],
       },
       {
         path: "studio",
-        element: <Studio />,
+        element: routeElement(<Studio />),
         children: [
           {
             path: ":projectName",
-            element: <Studio />,
+            element: routeElement(<Studio />),
           },
         ],
       },
       {
         path: "create-json",
-        element: <CreateJSON />,
+        element: routeElement(<CreateJSON />),
         children: [
           {
             path: ":tab",
-            element: <CreateJSON />,
+            element: routeElement(<CreateJSON />),
           },
         ],
       },
       {
+        path: "quickstart",
+        element: routeElement(<Quickstart />),
+      },
+      {
         path: "about",
-        element: <About />,
+        element: routeElement(<About />),
+      },
+      {
+        path: "api",
+        element: routeElement(<ApiDocs />),
       },
     ],
   },

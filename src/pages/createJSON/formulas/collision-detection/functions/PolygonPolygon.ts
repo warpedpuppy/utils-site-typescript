@@ -1,17 +1,17 @@
-import { PolygonPoint } from "./PolygonPoint";
-import { PolygonLine } from "./PolygonLine";
-import { LineLine } from "./LineLine";
+import { polygonPoint } from "./PolygonPoint";
+import { polygonLine } from "./PolygonLine";
+import { lineLine } from "./LineLine";
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { PolygonPolygon as PolygonPolygonImported } from "../../../../../core-functions/CollisionObjectAPI/PolygonPolygon";
-import PolygonPolygonSource from "../../../../../core-functions/CollisionObjectAPI/PolygonPolygon.ts?raw";
+import { polygonPolygon as PolygonPolygonImported } from "@utilspalooza/core/CollisionObjectAPI/PolygonPolygon";
+import PolygonPolygonSource from "@utilspalooza/core/CollisionObjectAPI/PolygonPolygon.ts?raw";
 import { extractFunctionString } from "../../extractFunctionString";
 
-export const PolygonPolygon: CollisionDetectionObject = {
+export const polygonPolygon: CollisionDetectionObject = {
   keyFunction: PolygonPolygonImported,
   dependencies: [
-    PolygonPoint.functionString,
-    PolygonLine.functionString,
-    LineLine.functionString,
+    polygonPoint.functionString,
+    polygonLine.functionString,
+    lineLine.functionString,
   ],
   interfaces: ["Polygon"],
   functionString: extractFunctionString(PolygonPolygonSource),

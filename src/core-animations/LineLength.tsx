@@ -1,7 +1,7 @@
 import { Point } from "../types/shapes";
 import { Nullable } from "../types/types";
-import { LineLength as LineLengthFunc } from "../core-functions/LineLength";
-import { LineLength as lineLengthFormula } from "../pages/createJSON/formulas/animation/LineLength";
+import { lineLength as LineLengthFunc } from "@utilspalooza/core/LineLength";
+import { lineLength as lineLengthFormula } from "../pages/createJSON/formulas/animation/LineLength";
 import AnimationBaseClass from "./AnimationBaseClass";
 
 function drawLineLength(
@@ -9,7 +9,8 @@ function drawLineLength(
   startPoint: Point,
   endPoint: Point,
   canvasWidth: number,
-  canvasHeight: number
+  canvasHeight: number,
+  lineLengthFn: (line: { startPoint: Point; endPoint: Point }) => number
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
   ctx.font = "bold 12px Verdana";
@@ -20,7 +21,7 @@ function drawLineLength(
   ctx.lineWidth = 1;
   ctx.moveTo(startPoint.x, startPoint.y);
   ctx.lineTo(endPoint.x, startPoint.y);
-  let adjacent = LineLengthFunc({
+  let adjacent = lineLengthFn({
     startPoint: { x: startPoint.x, y: startPoint.y },
     endPoint: { x: endPoint.x, y: startPoint.y },
   });
@@ -35,7 +36,7 @@ function drawLineLength(
   // OPPOSITE
   ctx.moveTo(endPoint.x, startPoint.y);
   ctx.lineTo(endPoint.x, endPoint.y);
-  let opposite = LineLengthFunc({
+  let opposite = lineLengthFn({
     startPoint: { x: endPoint.x, y: startPoint.y },
     endPoint: { x: endPoint.x, y: endPoint.y },
   });
@@ -50,7 +51,7 @@ function drawLineLength(
 
   // HYPOTENUSE
   let hypotenuse = Math.floor(
-    LineLengthFunc({
+    lineLengthFn({
       startPoint: startPoint,
       endPoint: endPoint,
     })
@@ -102,7 +103,10 @@ export default class LineLengthAnimation extends AnimationBaseClass {
 
   init() {
     if (this.textDiv)
-      this.textDiv.innerHTML = `<h3>Click and drag on the screen to draw line.</h3>`;
+      this.textDiv.innerHTML = `
+        <p>Every pixel on screen has an <em>(x, y)</em> address on the Cartesian grid, so two of the three sides of this triangle are free: the <strong>horizontal</strong> distance is just the difference in the x's, and the <strong>vertical</strong> distance is the difference in the y's. You can practically read them off the grid.</p>
+        <p>Those two sides meet at a right angle, which leaves the slanted line — the <strong>hypotenuse</strong> — as the only unknown. And the hypotenuse of a right triangle is exactly what Pythagoras solved: <strong>a&sup2; + b&sup2; = c&sup2;</strong>. Square the horizontal, square the vertical, add them, take the square root. That's the length of any line.</p>
+        <h3>Click and drag on the screen to draw a line.</h3>`;
     this.startPoint = { x: this.halfWidth - 100, y: this.halfHeight + 100 };
     this.endPoint = { x: this.halfWidth + 100, y: this.halfHeight - 100 };
     this.draw();
@@ -115,7 +119,8 @@ export default class LineLengthAnimation extends AnimationBaseClass {
       this.startPoint,
       this.endPoint,
       this.canvasWidth,
-      this.canvasHeight
+      this.canvasHeight,
+      LineLengthFunc
     );
     this.raf(this.draw);
   };

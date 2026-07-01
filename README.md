@@ -1,240 +1,185 @@
 # Utilspalooza
 
-**[ [utilspalooza.com](https://utilspalooza.com) ]** &middot; **[ [TypeScript 5.x](https://typescriptlang.org) ]** &middot; **[ [Vite](https://vitejs.dev) ]**
+Readable animation math for canvas, creative coding, and visual experiments.
 
-> The naked math behind canvas animations — handcrafted from first principles.
+Utilspalooza is both:
 
-An interactive visual laboratory for developers who want to see *how* the math works. Raw HTML5 Canvas, no external physics engines, strict TypeScript.
+- a Vite/React site with live Canvas 2D demos
+- a small npm workspace for reusable TypeScript packages
 
----
+The site teaches the math visually. The packages expose the reusable pieces.
 
-## ✏️ Adding a New Animation
+## Packages
 
-Every animation in this site has exactly three canonical files. Never write the same math in two places.
+### `@utilspalooza/core`
 
-> **The iron rule:** if a function exists in `core-functions/`, import it. Never copy-paste it.
+Pure, framework-agnostic math helpers. No React, no canvas, no DOM, no animation
+loop ownership.
 
----
+Use this for interpolation, easing, vectors, geometry, collision detection,
+small physics helpers, boids, and tiny animation sampling helpers.
 
-### Step 1 — Write the pure math (`src/core-functions/`)
+```ts
+import { lerp, easeOutCubic, circleToCircle } from "@utilspalooza/core";
 
-Just the equation. No canvas, no React, no browser APIs.
-
-```typescript
-// Named export. Concrete types. Self-contained — no imports from the rest of the site.
-export function myFunction(x: number, y: number): number {
-  return Math.sqrt(x * x + y * y);
-}
+const t = easeOutCubic(0.5);
+const x = lerp(0, 300, t);
+const hit = circleToCircle(0, 0, 10, 15, 0, 10);
 ```
 
-- **Named export** (not `export default`) — the function name must survive `.toString()` for CodePen embedding.
-- **Concrete TypeScript types** — use `Point`, `Circle`, `Line` etc. from `../types/shapes`, not `any`.
-- **No site imports** — this file should work pasted into any JS project.
+Legacy migration helpers are deliberately isolated:
 
----
-
-### Step 2 — Write the animation (`src/core-animations/`)
-
-One file, two jobs: a standalone `drawX()` function for CodePen, and a default class for the Examples page.
-
-```typescript
-import AnimationBaseClass from "./AnimationBaseClass";
-import { myFunction } from "../core-functions/MyFunction";
-import { MyFormula } from "../pages/createJSON/formulas/animation/MyFormula";
-
-// Job 1: standalone draw function for CodePen (.toString() embeds this as plain JS)
-// Must be self-contained — no references to module-level imports inside the function body.
-export function drawMyAnimation(ctx: any, canvasWidth: any, canvasHeight: any): void {
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-  // draw using myFunction(...)
-}
-
-const ELI5 = `🔵 My Animation — One-Line Takeaway
-
-The sentence a user can repeat to a colleague: "This shows that ..."
-
-HOW IT WORKS:
-  The algorithm in plain English.
-
-WHY THIS WORKS:
-  The non-obvious insight.
-
-CONTROLS
-  • Slider name — what it does`;
-
-// Job 2: animation class for the Examples page
-export default class MyAnimationClass extends AnimationBaseClass {
-  static t = "my animation title";   // human-readable title
-  static l = "my-animation-title";   // URL slug (kebab-case)
-  static f = MyFormula;
-  title = "my animation title";
-  animationObject = MyFormula;
-
-  init() {
-    if (this.textDiv) this.textDiv.innerHTML = ELI5.replace(/\n/g, "<br>");
-    this.draw();
-  }
-
-  draw = () => {
-    if (!this.canvas || !this.ctx) return;
-    drawMyAnimation(this.ctx, this.canvasWidth, this.canvasHeight);
-    this.raf(this.draw);
-  };
-
-  pointerDownHandler(_e: PointerEvent) {}
-  pointerMoveHandler(_e: PointerEvent) {}
-  pointerUpHandler(_e: PointerEvent) {}
-}
+```ts
+import { centerOnStage, legacyCosWave } from "@utilspalooza/core/legacy";
 ```
 
----
+### `@utilspalooza/effects`
 
-### Step 3 — Write the formula wrapper (`src/pages/createJSON/formulas/animation/`)
+Drop-in Canvas 2D background effects. These create or use a canvas, run an
+animation loop, listen for resize/pointer events, and return lifecycle handles.
 
-A thin shim so the "Create Utils File" page can expose your function. The `?raw` import (Vite feature) reads the source file as a string at build time — the displayed and downloaded code always matches the real source automatically.
+```ts
+import { mountGlitter } from "@utilspalooza/effects";
 
-```typescript
-import { CollisionDetectionObject } from "../../../../types/types";
-import { myFunction } from "../../../../core-functions/MyFunction";
-import MyFunctionSource from "../../../../core-functions/MyFunction.ts?raw";
-import { extractFunctionString } from "../extractFunctionString";
+const effect = mountGlitter("#hero", {
+  density: 0.8,
+  interactive: true,
+  seed: 23,
+});
 
-export const MyFormula: CollisionDetectionObject = {
-  keyFunction: myFunction,
-  dependencies: [],
-  interfaces: [],    // e.g. ["Point"] if your function takes a Point
-  functionString: extractFunctionString(MyFunctionSource),
-};
+effect.destroy();
 ```
 
----
+Available effects:
 
-### Step 4 — Register in `src/SiteData.ts`
+- `mountGlitter`
+- `mountPrettyRing`
+- `mountSparklies`
+- `mountKlimt`
 
-```typescript
-import MyAnimationClass from "./core-animations/MyAnimation";
+## Site
 
-const SiteData: PrimaryObject = {
-  animations: {
-    // ... existing ...
-    MyAnimationClass,  // position here = order in the sidebar
-  },
-};
-```
+The site is the proof layer:
 
-Your animation now appears on the `/examples` page.
+- `/examples` — live demos that show what the math does
+- `/recipes` route is currently implemented at `/create-json` — choose formulas and copy/download standalone snippets when npm is not the right path
+- `/api` — package API reference
+- `/studio` — larger build-with-it projects and CodePen-style examples
+- `/about` — project context
 
----
-
-### Step 5 — Add a CodePen entry (`src/pages/studio/pens-examples.ts`)
-
-```typescript
-import { drawMyAnimation } from "../../core-animations/MyAnimation";
-
-// In EXAMPLE_PENS array:
-{
-  group: "animations",
-  key: "my-animation-title",
-  label: "My Animation Title",
-  blurb: "One sentence: what does it show?",
-  payload: {
-    title: "My Animation Title",
-    js: buildCodePenJS(drawMyAnimation.toString()),
-    css: FULLSCREEN_CSS,
-    html: CANVAS_HTML,
-  },
-},
-```
-
-`drawMyAnimation.toString()` produces vanilla JS because there's no TypeScript syntax or imports in the function body.
-
----
-
-## 🗂️ Adding a New Category
-
-Add a key to `src/SiteData.ts`:
-
-```typescript
-const SiteData: PrimaryObject = {
-  // ... existing ...
-  topology: {
-    MyNewAnimation,
-  },
-};
-```
-
-That's it. The category header appears in the sidebar automatically. No routing changes, no config files. Use the same string as `group` in any CodePen entries for that category.
-
----
-
-## ✅ Checklist
-
-```
-[ ] src/core-functions/MyFunction.ts          — pure math, named export, concrete types
-[ ] src/core-animations/MyAnimation.ts        — drawX() + default class + ELI5 string
-[ ] src/pages/createJSON/formulas/animation/  — formula wrapper via ?raw + extractFunctionString
-[ ] src/SiteData.ts                           — import + register under the right category
-[ ] src/pages/studio/pens-examples.ts         — CodePen entry using drawX.toString()
-[ ] npm run build                             — zero TypeScript errors
-```
-
----
-
-## 🏗️ Architecture
+## Architecture
 
 ```text
+packages/
+├── core/                 pure math package: @utilspalooza/core
+│   ├── src/              one named-export module per function
+│   ├── src/index.ts      generated public barrel
+│   ├── src/legacy.ts     explicit legacy subpath
+│   └── dist/             tsup output
+└── effects/              drop-in canvas effects: @utilspalooza/effects
+    ├── src/index.ts      effect mount functions
+    └── dist/             tsup output
+
 src/
-├── core-functions/     ← The math. One file per function. No canvas, no React.
-├── core-animations/    ← One file per animation. Source for both Examples page and CodePen.
-│   ├── AnimationBaseClass.tsx
-│   └── animationTemplate.tsx
+├── core-animations/      website demo classes
 ├── pages/
-│   ├── examples/       ← /examples page
-│   ├── studio/         ← /studio page (Build With It + CodePen pens)
-│   └── createJSON/
-│       └── formulas/   ← Wrappers that expose functions to "Create Utils File"
-├── SiteData.ts         ← The governing document (see below)
-└── types/              ← Shared TypeScript interfaces
+│   ├── examples/         examples page
+│   ├── createJSON/       copy-code/recipes page
+│   ├── api/              API docs page
+│   ├── studio/           studio projects
+│   └── about/            about page
+├── components/
+├── SiteData.ts           examples table of contents
+└── types/
 ```
 
-### The governing document
+## Iron Rules
 
-`src/SiteData.ts` is the entire table of contents. It's a TypeScript object — not JSON, not XML. The keys are category names; the values are objects of animation classes. Whatever is in here appears in the `/examples` sidebar, in that order, with those category headers.
+1. Pure math lives in `packages/core/src/`.
+2. Website animations live in `src/core-animations/`.
+3. Canvas effects that mount and run themselves live in `packages/effects/src/`.
+4. Do not copy the same formula into multiple places. Import it from the canonical package.
+5. Root `@utilspalooza/core` stays curated. Legacy stays behind `@utilspalooza/core/legacy`.
 
-```typescript
-const SiteData = {
-  "animations": { BallBounce, LerpAnimation, ... },
-  "collision detection": { PointToCircleCollision, ... },
-  "fourier": { FourierEpicycles },
-  // new key here → new category in sidebar, automatically
-};
+## Adding A Core Function
+
+1. Add a named export in `packages/core/src/`.
+2. Add tests in `packages/core/src/core.test.ts`.
+3. Run the barrel generator:
+
+```sh
+npm run barrel --workspace @utilspalooza/core
 ```
 
----
+4. If the function should appear on the Copy Code page, add a wrapper in
+   `src/pages/createJSON/formulas/`.
+5. Register a teaching demo in `src/core-animations/` and `src/SiteData.ts` if the
+   function needs a visual explanation.
 
-## 💻 Running Locally
+## Adding A Demo Animation
 
-```bash
-git clone https://github.com/warpedpuppy/utils-site-typescript
-cd utils-site-typescript
+Animation classes live in `src/core-animations/` and are registered in
+`src/SiteData.ts`.
+
+Each class should:
+
+- draw into the provided canvas
+- use package math instead of retyping formulas
+- include a useful plain-English explanation
+- cleanly stop its animation loop
+
+## Adding A Drop-In Effect
+
+Effects live in `packages/effects/src/index.ts` unless they grow large enough to split
+into separate modules.
+
+Every effect should accept a target and options, then return:
+
+```ts
+{
+  pause();
+  resume();
+  resize();
+  destroy();
+}
+```
+
+## Local Development
+
+```sh
 npm install
 npm run dev
 ```
 
----
+Build the site:
 
-## 🤝 Contributing
+```sh
+npm run build
+```
 
-Follow the five-step checklist. One hard constraint: **one canonical source per function**. If you find yourself writing the same equation in two files, stop — put it in `core-functions/` and import from there.
+Build packages:
 
----
+```sh
+npm run build --workspace @utilspalooza/core
+npm run build --workspace @utilspalooza/effects
+```
 
-## 📄 License
+Run core tests:
 
-MIT. See `LICENSE`.
+```sh
+npm test -- packages/core/src/core.test.ts
+```
 
-## 🤖 A Note on AI & Engineering Integrity
+## Publishing
 
-The core mathematics, formulas, and rendering logic were handcrafted from first principles. AI tools have played a growing role over time, and I believe in being transparent about that.
+Do not publish from casual repo work. Before publishing:
 
-**Any code that originated with AI is explicitly identified** — both in source file comments and in the "AI Made" section of the examples page. The older animations (collision detection, trig utilities) are entirely hand-written. The newer sections (Fourier epicycles, Game of Life, Perlin flow fields, Bézier curves) were AI-generated and are labeled accordingly.
+- update package versions deliberately
+- run package builds
+- run tests
+- inspect `npm pack --dry-run`
+- confirm README/API docs match the exported package surface
+
+## License
+
+MIT.

@@ -1,6 +1,6 @@
 import { CollisionDetectionObject } from "../../../../types/types";
-import { distribute as distributeFn } from "../../../../core-functions/DistributeAroundCircle";
-import DistributeAroundCircleSource from "../../../../core-functions/DistributeAroundCircle.ts?raw";
+import { distributeAroundCircle as distributeFn } from "@utilspalooza/core/DistributeAroundCircle";
+import DistributeAroundCircleSource from "@utilspalooza/core/DistributeAroundCircle.ts?raw";
 import { extractFunctionString } from "../extractFunctionString";
 
 export const DistributeAroundCircle: CollisionDetectionObject = {

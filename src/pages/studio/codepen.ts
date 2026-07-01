@@ -17,6 +17,10 @@ export interface CodePenPayload {
   css: string;
   js: string;
   editors?: string;
+  // Semicolon-separated external script URLs CodePen loads before the JS pane
+  // runs. Used by the quickstart pen to pull @utilspalooza/core from the CDN so
+  // `Utilspalooza.ballBounce` is defined when the loop starts.
+  js_external?: string;
 }
 
 const CODEPEN_ENDPOINT = "https://codepen.io/pen/define";

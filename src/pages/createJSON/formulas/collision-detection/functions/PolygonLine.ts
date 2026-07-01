@@ -1,12 +1,12 @@
 import { CollisionDetectionObject } from "../../../../../types/types";
-import { LineLine } from "./LineLine";
-import { PolygonLine as PolygonLineImported } from "../../../../../core-functions/CollisionObjectAPI/PolygonLine";
-import PolygonLineSource from "../../../../../core-functions/CollisionObjectAPI/PolygonLine.ts?raw";
+import { lineLine } from "./LineLine";
+import { polygonLine as PolygonLineImported } from "@utilspalooza/core/CollisionObjectAPI/PolygonLine";
+import PolygonLineSource from "@utilspalooza/core/CollisionObjectAPI/PolygonLine.ts?raw";
 import { extractFunctionString } from "../../extractFunctionString";
 
-export const PolygonLine: CollisionDetectionObject = {
+export const polygonLine: CollisionDetectionObject = {
   keyFunction: PolygonLineImported,
-  dependencies: [LineLine.functionString],
+  dependencies: [lineLine.functionString],
   interfaces: ["Line", "Polygon"],
   functionString: extractFunctionString(PolygonLineSource),
 };

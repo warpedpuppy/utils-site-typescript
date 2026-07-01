@@ -1,4 +1,5 @@
 import Template from "./animationTemplate";
+import { gameOfLifeStep } from "@utilspalooza/core/GameOfLife";
 
 const ELI5 = `🧬 Conway's Game of Life — What's going on?
 
@@ -25,30 +26,8 @@ Click or drag on the grid to draw cells. Use the controls to run it.`;
 
 import { CollisionDetectionObject } from "../types/types";
 
-function nextGeneration(grid: Uint8Array, cols: number, rows: number): Uint8Array {
-  const next = new Uint8Array(grid.length);
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      let neighbors = 0;
-      for (let dr = -1; dr <= 1; dr++) {
-        for (let dc = -1; dc <= 1; dc++) {
-          if (dr === 0 && dc === 0) continue;
-          const r = (row + dr + rows) % rows;
-          const c = (col + dc + cols) % cols;
-          neighbors += grid[r * cols + c];
-        }
-      }
-      const alive = grid[row * cols + col];
-      next[row * cols + col] =
-        alive ? (neighbors === 2 || neighbors === 3 ? 1 : 0)
-              : (neighbors === 3 ? 1 : 0);
-    }
-  }
-  return next;
-}
-
 const GameOfLifeFormula: CollisionDetectionObject = {
-  keyFunction: nextGeneration,
+  keyFunction: gameOfLifeStep,
   dependencies: [],
   functionString: `function nextGeneration(grid: Uint8Array, cols: number, rows: number): Uint8Array {
   const next = new Uint8Array(grid.length);
@@ -73,7 +52,42 @@ const GameOfLifeFormula: CollisionDetectionObject = {
 }`,
 };
 
-const CELL = 12; // px per cell
+const CELL = 12;
+
+export function drawGameOfLife(
+  ctx: CanvasRenderingContext2D,
+  grid: Uint8Array,
+  cols: number,
+  rows: number
+): void {
+  const cell = 12;
+  ctx.fillStyle = "#0f0f1a";
+  ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  ctx.strokeStyle = "rgba(255,255,255,0.05)";
+  ctx.lineWidth = 0.5;
+  for (let c = 0; c <= cols; c++) {
+    ctx.beginPath();
+    ctx.moveTo(c * cell, 0);
+    ctx.lineTo(c * cell, rows * cell);
+    ctx.stroke();
+  }
+  for (let r = 0; r <= rows; r++) {
+    ctx.beginPath();
+    ctx.moveTo(0, r * cell);
+    ctx.lineTo(cols * cell, r * cell);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "#39ff14";
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r * cols + c]) {
+        ctx.fillRect(c * cell + 1, r * cell + 1, cell - 2, cell - 2);
+      }
+    }
+  }
+}
 
 // Preset patterns (relative cell coords)
 const PRESETS: Record<string, number[][]> = {
@@ -158,7 +172,7 @@ class GameOfLife extends Template {
   }
 
   tick() {
-    this.grid = nextGeneration(this.grid, this.cols, this.rows);
+    this.grid = gameOfLifeStep(this.grid, this.cols, this.rows);
     this.generation++;
     if (this.genSpan) this.genSpan.textContent = `gen: ${this.generation}`;
   }
@@ -277,37 +291,7 @@ class GameOfLife extends Template {
 
   drawGrid() {
     if (!this.ctx || !this.canvas) return;
-    const ctx = this.ctx;
-
-    // Dark background
-    ctx.fillStyle = "#0f0f1a";
-    ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-    // Grid lines (subtle on dark bg)
-    ctx.strokeStyle = "rgba(255,255,255,0.05)";
-    ctx.lineWidth = 0.5;
-    for (let c = 0; c <= this.cols; c++) {
-      ctx.beginPath();
-      ctx.moveTo(c * CELL, 0);
-      ctx.lineTo(c * CELL, this.rows * CELL);
-      ctx.stroke();
-    }
-    for (let r = 0; r <= this.rows; r++) {
-      ctx.beginPath();
-      ctx.moveTo(0, r * CELL);
-      ctx.lineTo(this.cols * CELL, r * CELL);
-      ctx.stroke();
-    }
-
-    // Cells — bright lime green on dark bg
-    ctx.fillStyle = "#39ff14";
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        if (this.grid[r * this.cols + c]) {
-          ctx.fillRect(c * CELL + 1, r * CELL + 1, CELL - 2, CELL - 2);
-        }
-      }
-    }
+    drawGameOfLife(this.ctx, this.grid, this.cols, this.rows);
   }
 
   getCellFromEvent(e: PointerEvent): [number, number] {
