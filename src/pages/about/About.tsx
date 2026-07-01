@@ -31,6 +31,16 @@ function About() {
           JavaScript file. No install, no library, just the code.
         </p>
 
+        <h2>Or take the whole toolbox</h2>
+        <p>
+          Want more than a snippet? The full set ships as a typed, published npm
+          package: <code>npm i @utilspalooza/core</code> — or drop it in from a
+          CDN with no build step at all. The{" "}
+          <Link to="/quickstart">quickstart</Link> shows the smallest working
+          file, and the <Link to="/api">API reference</Link> lists every function
+          with a live demo.
+        </p>
+
         <h2>New to canvas?</h2>
         <p>
           If you've never wired up a canvas animation before, don't start by

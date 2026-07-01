@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { buildCodePenForm } from "../studio/codepen";
+import CopyInstall from "../../components/CopyInstall/CopyInstall";
 import {
   QUICKSTART_PEN,
   QUICKSTART_SINGLE_FILE,
@@ -106,9 +107,9 @@ function Quickstart() {
           The CDN tag above is the zero-setup path. When you're working in a
           bundled project (Vite, Next, etc.), install it instead:
         </p>
-        <pre className="quickstart-install">
-          <code>npm i @utilspalooza/core</code>
-        </pre>
+        <div className="quickstart-install">
+          <CopyInstall />
+        </div>
         <p>
           …then <code>import {"{ ballBounce }"} from "@utilspalooza/core"</code>{" "}
           and use the exact same loop. Browse the{" "}
