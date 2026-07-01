@@ -38,13 +38,20 @@ class Rad2DegAnimation extends AnimationBaseClass {
   static f = radToDeg;
   title = "radians to degrees";
   animationObject: CollisionDetectionObject = radToDeg;
+  radians = 0;
   init() {
     this.draw();
   }
   draw = () => {
     if (!this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    // this.raf(this.draw);
+    drawRadiansToDegrees(
+      this.ctx,
+      this.canvasWidth,
+      this.canvasHeight,
+      this.radians
+    );
+    this.radians = (this.radians + 0.025) % (Math.PI * 2);
+    this.raf(this.draw);
   };
   keyFunction() {}
   pointerDownHandler(e: PointerEvent) {}

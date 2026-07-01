@@ -24,19 +24,34 @@ export function drawRandomIntegerBetween(
   });
 }
 
+function sampleRandomInteger(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 class RandomIntegerAnimation extends AnimationBaseClass {
   static t = "random integer between";
   static l = "random-integer-between";
   static f = randomIntegerBetween;
   title = "random integer between";
   animationObject: CollisionDetectionObject = randomIntegerBetween;
+  values = Array.from({ length: 21 }, () => sampleRandomInteger(1, 9));
+  frame = 0;
   init() {
     this.draw();
   }
   draw = () => {
     if (!this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    // this.raf(this.draw);
+    this.frame += 1;
+    if (this.frame % 18 === 0) {
+      this.values = this.values.map(() => sampleRandomInteger(1, 9));
+    }
+    drawRandomIntegerBetween(
+      this.ctx,
+      this.canvasWidth,
+      this.canvasHeight,
+      this.values
+    );
+    this.raf(this.draw);
   };
   keyFunction() {}
   pointerDownHandler(e: PointerEvent) {}
