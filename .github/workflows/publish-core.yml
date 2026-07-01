@@ -1,0 +1,62 @@
+name: Publish @utilspalooza/core
+
+# CI-ON-PUBLISH GATE (DEPLOY-AND-PUBLISH-CHECKLIST.md B3).
+# Nothing reaches npm unless typecheck + the full test suite + the core build
+# all pass first. Triggered by publishing a GitHub Release (preferred) or a
+# manual run from the Actions tab.
+#
+# Requirements before this can succeed:
+#   - Repo secret NPM_TOKEN = an npm "Automation" access token with publish rights
+#     to the @utilspalooza scope. (Settings → Secrets and variables → Actions.)
+#   - This workflow file must live on the DEFAULT branch (main) for the
+#     `release` / `workflow_dispatch` triggers to fire.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required for npm provenance
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: npm ci
+
+      # --- Gates: a failure here means nothing is published ---
+      - name: Typecheck core (tsc --noEmit)
+        run: npm run typecheck --workspace @utilspalooza/core
+
+      - name: Test suite
+        run: npm test
+
+      - name: Build core (barrel + docs + tsup)
+        run: npm run build --workspace @utilspalooza/core
+
+      # --- Safety: on a Release, the git tag must match the package version ---
+      - name: Verify release tag matches package version
+        if: github.event_name == 'release'
+        run: |
+          PKG_VERSION="v$(node -p "require('./packages/core/package.json').version")"
+          TAG="${GITHUB_REF_NAME}"
+          echo "package version = $PKG_VERSION | release tag = $TAG"
+          if [ "$PKG_VERSION" != "$TAG" ]; then
+            echo "::error::Release tag $TAG does not match @utilspalooza/core version $PKG_VERSION. Aborting publish."
+            exit 1
+          fi
+
+      - name: Publish to npm (public, with provenance)
+        run: npm publish --workspace @utilspalooza/core --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

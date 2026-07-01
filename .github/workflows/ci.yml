@@ -1,0 +1,36 @@
+name: CI
+
+# Continuous verification: typecheck + test suite + core build on every push/PR.
+# This is the safety net so red code never reaches a release.
+
+on:
+  push:
+    branches: [main, phase1-core-library]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck core (tsc --noEmit)
+        run: npm run typecheck --workspace @utilspalooza/core
+
+      - name: Typecheck site (tsc -b)
+        run: npx tsc -b
+
+      - name: Test suite
+        run: npm test
+
+      - name: Build core (barrel + docs + tsup)
+        run: npm run build --workspace @utilspalooza/core
