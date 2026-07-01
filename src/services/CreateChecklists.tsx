@@ -1,13 +1,14 @@
 import { ReactNode, useCallback } from "react";
 import animationManifest from "../animationManifest";
 import { Nullable } from "../types/types";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import CheckListCheckbox from "./CheckListCheckbox";
 import CheckListDT from "./CheckListDT";
 import "./CreateChecklists.scss";
 
 function CreateChecklists() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   let createChecklist = useCallback(
     (
@@ -44,12 +45,19 @@ function CreateChecklists() {
                         ? "checklist-div active"
                         : "checklist-div"
                     }
+                    onClick={() => navigate(`/examples/${l}`)}
                   >
                     <Link className="example-checklist-link" to={`/examples/${l}`}>
                       <div className="hover-anim"></div>
                       <div className="link-name">{t}</div>
                     </Link>
-                    <div className="example-checklist-actions">
+                    {/* Actions stop propagation so the box-wide click above can't
+                        clobber their own destinations (docs → /api, full function
+                        → carries openCode state). */}
+                    <div
+                      className="example-checklist-actions"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {docsHref && (
                         <Link className="checklist-mini-link" to={docsHref}>
                           docs
@@ -110,7 +118,7 @@ function CreateChecklists() {
         </div>
       );
     },
-    [location]
+    [location, navigate]
   );
 
   return { createChecklist };

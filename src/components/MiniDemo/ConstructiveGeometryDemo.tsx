@@ -997,7 +997,6 @@ function drawUnitCirclePointScene(
   drawVector(ctx, layout.center, point, "#818cf8", "r");
   drawComponentGuides(ctx, layout.center, point);
   drawCenter(ctx, layout.center, "#f8fafc", 5);
-  drawCenter(ctx, point, "#fb7185", 7);
   drawCenter(ctx, corner, "rgba(125, 211, 252, 0.8)", 4);
 
   ctx.strokeStyle = "rgba(255,255,255,0.18)";
@@ -1037,10 +1036,12 @@ function drawUnitCirclePointScene(
   drawCenter(ctx, { x: stripX, y: point.y }, "#f97316", 7);
 
   drawAngleArc(ctx, layout.center, point, 40, "rgba(249, 115, 22, 0.95)");
+  // Two lines only: a 3-line box reaches down into the circle's upper arc at the
+  // standard 248px height and covers the draggable point's travel. The "same
+  // angle on the sine strip" idea is already carried by the readouts + the strip.
   drawHeaderBox(ctx, [
     { text: `cos = ${fmt(point.cos)}`, color: "#86efac" },
     { text: `sin = ${fmt(point.sin)}`, color: "#fb923c" },
-    { text: `same angle already sits at ${fmt(cycleAngle)} rad on the sine strip`, color: "#c4b5fd" },
   ]);
 
   labelSegment(
@@ -1068,6 +1069,11 @@ function drawUnitCirclePointScene(
   labelSegment(ctx, stripLeft + 16, stripBottom + 18, "0", "rgba(226, 232, 240, 0.9)");
   labelSegment(ctx, stripLeft + stripWidth / 2, stripBottom + 18, "π", "rgba(226, 232, 240, 0.9)");
   labelSegment(ctx, stripRight - 16, stripBottom + 18, "2π", "rgba(226, 232, 240, 0.9)");
+
+  // Draw the draggable point LAST so the header box and labels can never occlude
+  // it. On short canvases the header box overlaps the circle's upper arc, and
+  // when the point was drawn early it hid behind the box and became ungrabbable.
+  drawCenter(ctx, point, "#fb7185", 7);
 }
 
 function drawSineWaveScene(
@@ -1212,7 +1218,6 @@ function drawSineCurveScene(
   drawVector(ctx, layout.center, point, "#818cf8", "r");
   drawComponentGuides(ctx, layout.center, point);
   drawCenter(ctx, layout.center, "#f8fafc", 5);
-  drawCenter(ctx, point, "#fb7185", 7);
   drawCenter(ctx, corner, "rgba(125, 211, 252, 0.8)", 4);
 
   ctx.strokeStyle = "rgba(255,255,255,0.18)";
@@ -1257,9 +1262,10 @@ function drawSineCurveScene(
   labelSegment(ctx, graphLeft + graphWidth / 2, graphBottom + 18, "π", "rgba(226, 232, 240, 0.9)");
   labelSegment(ctx, graphRight - 16, graphBottom + 18, "2π", "rgba(226, 232, 240, 0.9)");
 
+  // Two lines only (see unit-circle-point note): keep the input and the result;
+  // the "unwraps to X rad" restatement is already in the readouts + strip.
   drawHeaderBox(ctx, [
     { text: `sin(time) = ${fmt(point.sin)}`, color: "#fb923c" },
-    { text: `the same time unwraps to ${fmt(cycleAngle)} rad on the 0→2π strip`, color: "#c4b5fd" },
     { text: `baseline + sin(time) × amplitude = ${fmt(value)}`, color: "#e2e8f0" },
   ]);
 
@@ -1271,6 +1277,10 @@ function drawSineCurveScene(
     "rgba(249, 115, 22, 0.98)",
   );
   labelSegment(ctx, point.x + 26, point.y - 34, "circle height", "#fb923c");
+
+  // Draw the draggable point LAST so the header box and labels can never occlude
+  // it (same fix as the unit-circle-point scene — shared layout, shared bug).
+  drawCenter(ctx, point, "#fb7185", 7);
 }
 
 function drawWaveAmplitudeScene(
@@ -3540,9 +3550,14 @@ function getDragState(
   }
 
   if (kind === "unit-circle-point" || kind === "sine-curve") {
-    const current = handles.a;
-    if (Math.hypot(point.x - current.x, point.y - current.y) <= 14) {
-      return { kind: "handle", key: "a", dx: point.x - current.x, dy: point.y - current.y };
+    // The visible, draggable dot is drawn at the ON-CIRCLE point derived from the
+    // handle's angle — NOT at the raw handle (which starts inside the circle).
+    // Hit-test against that same drawn point so clicking the dot actually grabs it.
+    const layout = unitCircleLayout(width, height);
+    const angle = Math.atan2(handles.a.y - layout.center.y, handles.a.x - layout.center.x);
+    const dot = unitCirclePoint(layout.center.x, layout.center.y, layout.radius, angle);
+    if (Math.hypot(point.x - dot.x, point.y - dot.y) <= 16) {
+      return { kind: "handle", key: "a", dx: point.x - dot.x, dy: point.y - dot.y };
     }
     return null;
   }

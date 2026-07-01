@@ -124,16 +124,14 @@
   }
 }
 
+// Center the shared CopyInstall box and give it even breathing room between the
+// paragraphs above and below (the component only carries a top margin on its own).
 .quickstart-install {
-  background: var(--code-bg);
-  border: 1px solid var(--bg-elevated);
-  border-radius: 8px;
-  padding: 14px 20px;
-  margin: 0.5rem 0 1rem;
+  display: flex;
+  justify-content: center;
+  margin: 1.75rem 0;
 
-  code {
-    font-family: "Space Mono", monospace;
-    font-size: 0.85rem;
-    color: var(--text);
+  .copy-install {
+    margin-top: 0;
   }
 }
