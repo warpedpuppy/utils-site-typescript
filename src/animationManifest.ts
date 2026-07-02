@@ -1,5 +1,3 @@
-import { CollisionDetectionObject } from "./types/types";
-
 import { ballBounce as ballBounceFormula } from "./pages/createJSON/formulas/animation/BallBounce";
 import { ballToBallBounce as ballToBallBounceFormula } from "./pages/createJSON/formulas/animation/BallToBallBounce";
 import { BoidsObject } from "./pages/createJSON/formulas/animation/Boids";
@@ -67,17 +65,11 @@ import {
   WaveFormula,
 } from "./animationExtraFormulas";
 
-export interface AnimationManifestEntry {
-  t: string;
-  l: string;
-  include?: boolean;
-  f: CollisionDetectionObject;
-  load: () => Promise<{ default: new (canvasCont: string) => any }>;
-}
-
-export interface AnimationManifest {
-  [category: string]: Record<string, AnimationManifestEntry>;
-}
+export type {
+  AnimationManifestEntry,
+  AnimationManifest,
+} from "./registry/types";
+import type { AnimationManifest } from "./registry/types";
 
 const animationManifest: AnimationManifest = {
   "motion & easing": {
