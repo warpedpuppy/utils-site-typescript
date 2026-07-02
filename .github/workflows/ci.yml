@@ -23,6 +23,12 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Build core first so its dist/ (types + entry) exists before anything
+      # typechecks. core's own tests import it by its published name
+      # (@utilspalooza/core), which only resolves once dist is present.
+      - name: Build core (barrel + docs + tsup)
+        run: npm run build --workspace @utilspalooza/core
+
       - name: Typecheck core (tsc --noEmit)
         run: npm run typecheck --workspace @utilspalooza/core
 
@@ -31,6 +37,3 @@ jobs:
 
       - name: Test suite
         run: npm test
-
-      - name: Build core (barrel + docs + tsup)
-        run: npm run build --workspace @utilspalooza/core

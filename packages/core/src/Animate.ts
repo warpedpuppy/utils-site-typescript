@@ -42,7 +42,8 @@ export interface SpringState {
 const raf =
   typeof globalThis.requestAnimationFrame === 'function'
     ? globalThis.requestAnimationFrame.bind(globalThis)
-    : (callback: FrameRequestCallback) => globalThis.setTimeout(() => callback(Date.now()), 16);
+    : (callback: FrameRequestCallback): number =>
+        globalThis.setTimeout(() => callback(Date.now()), 16) as unknown as number;
 
 const caf =
   typeof globalThis.cancelAnimationFrame === 'function'

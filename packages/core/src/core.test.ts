@@ -1300,7 +1300,7 @@ describe("tiny animation helpers", () => {
   it("tweenValue samples scalar motion with easing and clamped progress", () => {
     expect(tweenValue(0, 100, 500, 1000)).toBe(50);
     expect(tweenValue(0, 100, 1500, 1000)).toBe(100);
-    expect(tweenValue(0, 100, 500, 1000, (t) => t * t)).toBe(25);
+    expect(tweenValue(0, 100, 500, 1000, (t: number) => t * t)).toBe(25);
   });
 
   it("tweenObject and tweenFrame sample object-shaped animation state", () => {
