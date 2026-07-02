@@ -1,0 +1,112 @@
+import { RegistryRecord } from "../types";
+
+import { ballBounce as ballBounceFormula } from "../../pages/createJSON/formulas/animation/BallBounce";
+import { SphereLighting } from "../../pages/createJSON/formulas/animation/OrbitalMotion";
+import { lerp as lerpFormula } from "../../pages/createJSON/formulas/animation/Lerp";
+import { Easing as easingFormula } from "../../pages/createJSON/formulas/animation/Easing";
+import { moveAlongLine as moveAlongLineFormula } from "../../pages/createJSON/formulas/animation/MoveAlongLine";
+import { quadraticBezier as quadraticBezierFormula } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
+import { BezierFormula, SpringFormula } from "../../animationExtraFormulas";
+
+export const MOTION_EASING: RegistryRecord[] = [
+  {
+    slug: "ball-bounce",
+    title: "ball bounce",
+    category: "motion & easing",
+    manifestKey: "ballBounce",
+    formula: ballBounceFormula,
+    load: () => import("../../core-animations/BallBounce"),
+    coreExports: ["ballBounce"],
+    pen: "canonical-vm-tested",
+  },
+  {
+    slug: "ball-orbiting-a-sun",
+    title: "ball orbiting a sun",
+    category: "motion & easing",
+    manifestKey: "OrbitalMotionAnimation",
+    formula: SphereLighting,
+    load: () => import("../../core-animations/OrbitalMotion"),
+    coreExports: ["sphereLighting", "findPointAroundCircle"],
+    pen: "canonical-vm-tested",
+  },
+  {
+    slug: "lerp-smooth-follow",
+    title: "lerp (smooth follow)",
+    category: "motion & easing",
+    manifestKey: "LerpAnimation",
+    formula: lerpFormula,
+    load: () => import("../../core-animations/Lerp"),
+    coreExports: ["lerp"],
+    pen: "canonical-vm-tested",
+  },
+  {
+    slug: "easing-functions",
+    title: "easing functions",
+    category: "motion & easing",
+    manifestKey: "EasingAnimation",
+    formula: easingFormula,
+    load: () => import("../../core-animations/Easing"),
+    // The easing gallery draws the whole Penner family live.
+    coreExports: [
+      "linear",
+      "easeIn",
+      "easeInQuad",
+      "easeInCubic",
+      "easeInQuart",
+      "easeInQuint",
+      "easeOut",
+      "easeOutQuad",
+      "easeOutCubic",
+      "easeOutQuart",
+      "easeOutQuint",
+      "easeInOut",
+      "easeInOutQuad",
+      "easeInOutCubic",
+      "easeInOutQuart",
+      "easeInOutQuint",
+      "easeOutBounce",
+      "easeOutElastic",
+    ],
+    pen: "canonical-vm-tested",
+  },
+  {
+    slug: "spring-damped-harmonic",
+    title: "spring (damped harmonic motion)",
+    category: "motion & easing",
+    manifestKey: "SpringAnimation",
+    formula: SpringFormula,
+    load: () => import("../../core-animations/Spring"),
+    coreExports: ["springValue", "criticalDamping"],
+    pen: "canonical-vm-tested",
+  },
+  {
+    slug: "move-to-changing-point",
+    title: "move object to changing point",
+    category: "motion & easing",
+    manifestKey: "MoveObjectToDestinationPoint",
+    formula: moveAlongLineFormula,
+    load: () => import("../../core-animations/MoveToDestination"),
+    coreExports: ["moveAlongLine", "getRotation"],
+    pen: "canonical-vm-tested",
+  },
+  {
+    slug: "quadratic-bezier-curve",
+    title: "quadratic bezier curve",
+    category: "motion & easing",
+    manifestKey: "QuadraticBezierAnimation",
+    formula: quadraticBezierFormula,
+    load: () => import("../../core-animations/QuadraticBezier"),
+    coreExports: ["quadraticBezier", "bezierPoint"],
+    pen: "canonical-vm-tested",
+  },
+  {
+    slug: "bezier-curves",
+    title: "Bézier curves",
+    category: "motion & easing",
+    manifestKey: "BezierCurves",
+    formula: BezierFormula,
+    load: () => import("../../core-animations/BezierCurves"),
+    coreExports: ["deCasteljau"],
+    pen: "canonical",
+  },
+];
