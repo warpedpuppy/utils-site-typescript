@@ -41,67 +41,21 @@ import {
 } from "@utilspalooza/core/Vec2";
 import type { Circle, Point, Vector } from "@utilspalooza/core";
 import type { ConstructiveGeometryDemoDef } from "./constructiveGeometryDemos";
+import type {
+  CirclePair,
+  PointPair,
+  HandlePair,
+  RailControls,
+  PolyScene,
+  DragState,
+  ReadoutRow,
+  SceneData,
+} from "./constructive-geometry/types";
 import "./MiniDemo.scss";
 
 interface ConstructiveGeometryDemoProps {
   demo: ConstructiveGeometryDemoDef;
   height?: number;
-}
-
-interface CirclePair {
-  circle1: Circle;
-  circle2: Circle;
-}
-
-interface PointPair {
-  point1: Point;
-  point2: Point;
-}
-
-interface HandlePair {
-  a: Point;
-  b: Point;
-}
-
-interface RailControls {
-  scale: number;
-  lerp: number;
-  limit: number;
-  phase: number;
-  waveTime: number;
-}
-
-// Polygon demos keep their own self-contained scene so they never disturb the
-// shared circle/point/handle defaults the vector & collision cuts rely on.
-interface PolyScene {
-  poly1: Point[];
-  poly2: Point[];
-  point: Point;
-  circle: Circle;
-  lineA: Point;
-  lineB: Point;
-}
-
-type DragState =
-  | { kind: "circle"; key: keyof CirclePair; dx: number; dy: number }
-  | { kind: "point"; key: keyof PointPair; dx: number; dy: number }
-  | { kind: "handle"; key: keyof HandlePair; dx: number; dy: number }
-  | { kind: "rail"; key: keyof RailControls; dx: number }
-  | { kind: "poly-point"; dx: number; dy: number }
-  | { kind: "poly-circle"; dx: number; dy: number }
-  | { kind: "poly-handle"; key: "lineA" | "lineB"; dx: number; dy: number }
-  | { kind: "poly-translate"; key: "poly1" | "poly2"; dx: number; dy: number };
-
-interface ReadoutRow {
-  label: string;
-  value: string;
-  tone?: "live";
-}
-
-interface SceneData {
-  call: string;
-  hint: string;
-  readouts: ReadoutRow[];
 }
 
 const PAD = 18;
