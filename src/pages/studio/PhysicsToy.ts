@@ -116,7 +116,7 @@ canvas.addEventListener('pointerdown', e => {
 reset.onclick = reset;
 g.oninput = e => G = +e.target.value;`;
 
-const PEN: CodePenPayload = {
+export const PHYSICS_TOY_PEN: CodePenPayload = {
   title: "Physics Toy",
   description:
     "Orbital gravity + wall bounce + elastic collision sharing one integration loop. Zero gravity = billiards; high gravity = a solar system. Click to add bodies.",
@@ -249,7 +249,7 @@ class PhysicsToy extends Template {
     hint.textContent = "click canvas to add a body";
     hint.style.opacity = "0.6";
     panel.appendChild(hint);
-    appendCodePenButton(panel, PEN);
+    appendCodePenButton(panel, PHYSICS_TOY_PEN);
     this.cont.appendChild(panel);
     this.panel = panel;
   }

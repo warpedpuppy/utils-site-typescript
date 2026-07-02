@@ -141,7 +141,7 @@ frame();
 document.getElementById('reassemble').onclick = reassemble;
 document.getElementById('drift').oninput = e => drift = +e.target.value;`;
 
-const PEN: CodePenPayload = {
+export const PARTICLE_CONSTELLATION_PEN: CodePenPayload = {
   title: "Particle Constellation",
   description:
     "Phyllotaxis + eased lerp + Perlin noise composed together: particles glide from chaos into a golden-angle lattice, then breathe via a coherent noise field.",
@@ -259,7 +259,7 @@ class ParticleConstellation extends Template {
         onChange: (v) => { this.count = v; this.reassemble(); },
       })
     );
-    appendCodePenButton(panel, PEN);
+    appendCodePenButton(panel, PARTICLE_CONSTELLATION_PEN);
     this.cont.appendChild(panel);
     this.panel = panel;
   }

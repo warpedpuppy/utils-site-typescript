@@ -160,7 +160,7 @@ preset.onclick = () => { shape = shape==='heart'?'star':'heart'; preset.textCont
 circles.oninput = e => circles = +e.target.value;
 speed.oninput = e => speed = +e.target.value;`;
 
-const PEN: CodePenPayload = {
+export const GENERATIVE_LOGO_TRACER_PEN: CodePenPayload = {
   title: "Generative Logo Tracer",
   description:
     "Author a shape as Bézier curves, sample it, run a DFT, and watch a chain of rotating circles (epicycles) redraw the outline. The 'circles' slider is band-limited Fourier in action.",
@@ -267,7 +267,7 @@ class GenerativeLogoTracer extends Template {
       label: "speed", min: 1, max: 40, value: this.speed, step: 1,
       onChange: (v) => (this.speed = v),
     }));
-    appendCodePenButton(panel, PEN);
+    appendCodePenButton(panel, GENERATIVE_LOGO_TRACER_PEN);
     this.cont.appendChild(panel);
     this.panel = panel;
   }

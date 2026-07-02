@@ -162,7 +162,7 @@ regen.onclick = () => { seed(); render(); };
 zoom.oninput = e => { window.zoom = zoom = +e.target.value; render(); };
 levels.oninput = e => { window.levels = levels = +e.target.value; render(); };`;
 
-const PEN: CodePenPayload = {
+export const ORGANIC_TERRAIN_MAP_PEN: CodePenPayload = {
   title: "Organic Terrain Map",
   description:
     "Fractal Perlin noise → hypsometric-tinted heightmap → marching-squares contour lines. The pipeline behind game terrain and generative cartography.",
@@ -267,7 +267,7 @@ class OrganicTerrainMap extends Template {
       onChange: (v) => { this.levels = v; this.render(); },
     }));
     panel.appendChild(makeButton("download SVG", () => this.downloadSVG()));
-    appendCodePenButton(panel, PEN);
+    appendCodePenButton(panel, ORGANIC_TERRAIN_MAP_PEN);
     this.cont.appendChild(panel);
     this.panel = panel;
   }

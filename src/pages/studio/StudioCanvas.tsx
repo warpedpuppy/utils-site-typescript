@@ -3,6 +3,7 @@ import "./StudioCanvas.scss";
 
 function StudioCanvas({ activeProject, siteData }: { activeProject: any; siteData: any }) {
   const [instanceOfClass, setInstanceOfClass] = useState<any>();
+  const [notesOpen, setNotesOpen] = useState(false);
 
   useEffect(() => {
     if (!activeProject) {
@@ -31,7 +32,14 @@ function StudioCanvas({ activeProject, siteData }: { activeProject: any; siteDat
   return (
     <div id="studio-canvas-section">
       <div id="studio-canvas-wrapper"></div>
-      <div id="studio-notes-panel">
+      <button
+        type="button"
+        className={`open-notes ${notesOpen ? "" : "visible"}`}
+        onClick={() => setNotesOpen(true)}
+      >
+        Design decisions
+      </button>
+      <div id="studio-notes-panel" className={notesOpen ? "" : "collapsed"}>
         <div className="notes-header">
           <div>
             <h3>Design Decisions</h3>
@@ -39,12 +47,9 @@ function StudioCanvas({ activeProject, siteData }: { activeProject: any; siteDat
           </div>
           <button
             className="close-notes"
-            onClick={() => {
-              const panel = document.getElementById('studio-notes-panel');
-              if (panel) panel.classList.toggle('collapsed');
-            }}
+            onClick={() => setNotesOpen(false)}
           >
-            ×
+            Hide
           </button>
         </div>
         <div id="studio-text-content"></div>

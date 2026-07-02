@@ -118,7 +118,7 @@ cell.oninput = e => { window.cell = cell = +e.target.value; render(); };
 hue.oninput = e => { window.baseHue = baseHue = +e.target.value; render(); };
 png.onclick = () => { const a=document.createElement('a'); a.download='wallpaper.png'; a.href=canvas.toDataURL(); a.click(); };`;
 
-const PEN: CodePenPayload = {
+export const GENERATIVE_WALLPAPER_PEN: CodePenPayload = {
   title: "Generative Wallpaper",
   description:
     "Seamlessly tileable pattern: Bézier petals per grid cell, varied by a Perlin field, colored with HSL math. Clipping each cell keeps the seams invisible. Download PNG and drop into a CSS background.",
@@ -225,7 +225,7 @@ class GenerativeWallpaper extends Template {
     });
     panel.appendChild(tileBtn);
     panel.appendChild(makeButton("download PNG", () => this.downloadPNG()));
-    appendCodePenButton(panel, PEN);
+    appendCodePenButton(panel, GENERATIVE_WALLPAPER_PEN);
     this.cont.appendChild(panel);
     this.panel = panel;
   }
