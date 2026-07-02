@@ -164,7 +164,7 @@ export function drawDualVectorResultScene(
   drawAxes(ctx, width, height, origin);
   drawVector(ctx, origin, handles.a, "#818cf8", "a");
   drawVector(ctx, origin, handles.b, "#fb7185", "b");
-  drawVector(ctx, origin, resultHandle, "#f97316", focus === "add" ? "a+b" : "a-b");
+  drawVector(ctx, origin, resultHandle, "#f97316", focus === "add" ? "a+b" : "a-b", false);
   drawOrigin(ctx, origin);
 
   drawHeaderBox(ctx, [{ text: `${focus === "add" ? "result" : "difference"} = ${formatVector(result)}`, color: "#e2e8f0" }]);
@@ -235,7 +235,7 @@ export function drawLerpScene(
   ctx.moveTo(aHandle.x, aHandle.y);
   ctx.lineTo(bHandle.x, bHandle.y);
   ctx.stroke();
-  drawVector(ctx, origin, lerpHandle, "#f97316", "lerp");
+  drawVector(ctx, origin, lerpHandle, "#f97316", "lerp", false);
   drawOrigin(ctx, origin);
   drawRail(ctx, width, height, "lerp", t, 0, 1);
   drawHeaderBox(ctx, [{ text: `t = ${fmt(t)}`, color: "#e2e8f0" }]);
@@ -255,7 +255,7 @@ export function drawLimitScene(
   drawAxes(ctx, width, height, origin);
   drawUnitCircle(ctx, origin, max);
   drawVector(ctx, origin, handle, "#818cf8", "v");
-  drawVector(ctx, origin, handleFromVector(origin, limited, 1), "#f97316", "limited");
+  drawVector(ctx, origin, handleFromVector(origin, limited, 1), "#f97316", "limited", false);
   drawOrigin(ctx, origin);
   drawRail(ctx, width, height, "limit", max, 20, 140);
   drawHeaderBox(ctx, [{ text: `max = ${fmt(max)}`, color: "#e2e8f0" }]);

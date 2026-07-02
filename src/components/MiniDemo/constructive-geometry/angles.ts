@@ -144,7 +144,7 @@ export function drawLerpAngleScene(
   drawVector(ctx, center, handles.b, "#fb7185", "b");
 
   // Lerped arm
-  drawVector(ctx, center, lerpedPt, "#f97316", `t=${fmt(t)}`);
+  drawVector(ctx, center, lerpedPt, "#f97316", `t=${fmt(t)}`, false);
 
   // t rail and header
   drawRail(ctx, width, height, "lerp", t, 0, 1);

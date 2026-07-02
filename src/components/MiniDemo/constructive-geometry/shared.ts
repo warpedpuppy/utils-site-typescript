@@ -273,6 +273,10 @@ export function drawVector(
   handle: Point,
   color: string,
   label: string,
+  // `interactive` (default true) draws the filled tip dot that signals a
+  // draggable handle. Pass false for computed-result vectors (a+b, scaled, the
+  // lerp output, …) so they don't masquerade as something you can grab.
+  interactive: boolean = true,
 ) {
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
@@ -295,7 +299,7 @@ export function drawVector(
   ctx.closePath();
   ctx.fill();
 
-  drawCenter(ctx, handle, color, 7);
+  if (interactive) drawCenter(ctx, handle, color, 7);
   labelSegment(ctx, handle.x + 16, handle.y - 10, label, color);
 }
 

@@ -152,10 +152,10 @@ export function drawSingleVectorScene(
   } else if (focus === "normalize") {
     drawHeaderBox(ctx, [{ text: `normalize(v) has length 1`, color: "#e2e8f0" }]);
     drawUnitCircle(ctx, origin, 64);
-    drawVector(ctx, origin, handleFromVector(origin, normalized, 64), "#fb7185", "unit");
+    drawVector(ctx, origin, handleFromVector(origin, normalized, 64), "#fb7185", "unit", false);
   } else if (focus === "perpendicular") {
     drawHeaderBox(ctx, [{ text: `perpendicular = 90° turn`, color: "#e2e8f0" }]);
-    drawVector(ctx, origin, handleFromVector(origin, perpendicular, 0.75), "#fb7185", "⊥");
+    drawVector(ctx, origin, handleFromVector(origin, perpendicular, 0.75), "#fb7185", "⊥", false);
     drawAngleArcBetween(ctx, origin, handle, handleFromVector(origin, perpendicular, 0.75), 42, "rgba(249, 115, 22, 0.95)");
   } else {
     drawHeaderBox(ctx, [{ text: `θ = ${fmt(radians)} rad = ${fmt(radToDeg(radians))}°`, color: "#e2e8f0" }]);
@@ -177,7 +177,7 @@ export function drawScaleScene(
   drawBackdrop(ctx, width, height);
   drawAxes(ctx, width, height, origin);
   drawVector(ctx, origin, handle, "#818cf8", "v");
-  drawVector(ctx, origin, handleFromVector(origin, scaled, 1), "#f97316", "scaled");
+  drawVector(ctx, origin, handleFromVector(origin, scaled, 1), "#f97316", "scaled", false);
   drawOrigin(ctx, origin);
   drawRail(ctx, width, height, "scale", scale, -2, 2);
   drawHeaderBox(ctx, [{ text: `scale = ${fmt(scale)}`, color: "#e2e8f0" }]);
