@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import SiteData from "../../SiteData";
 import { CODEPEN_GALLERY } from "./pens";
+import { ALL_RECORDS } from "../../registry";
 
 /**
  * Studio has two kinds of CodePens:
@@ -32,27 +33,26 @@ for (const category of Object.values(SiteData)) {
   }
 }
 
+// These lists are now DERIVED from the registry's per-record `pen` field,
+// replacing the hand-maintained Sets that used to live here (REGISTRY-
+// CONSOLIDATION-SPEC step 6). Studio-only projects (the Audio Visualizer) are
+// not animations and never enter the registry, so that stays a literal Set.
 const STUDIO_ONLY_KEYS = new Set(["audio-visualizer"]);
-const EFFECT_MOUNT_EXCEPTION_KEYS = new Set([
-  "glitter",
-  "pretty-ring",
-  "sparklies",
-]);
+const slugsWithPen = (...statuses: string[]): Set<string> =>
+  new Set(
+    ALL_RECORDS.filter((r) => statuses.includes(r.pen)).map((r) => r.slug)
+  );
+
+// Effects-backed pens (mounted via @utilspalooza/effects) are exempt from the
+// standalone draw-function identity check.
+const EFFECT_MOUNT_EXCEPTION_KEYS = slugsWithPen("effects-mount");
 
 // Docs-first scalar primitives (the "numbers in motion" group). These appear on
 // /examples via the shared scalar mini-demo but intentionally have NO CodePen
 // pen — the mini-demo is never a pen source (CLAUDE.md, "Docs are friendly,
 // visual, and ELI5"). They are therefore excluded from the pen-per-animation
 // quantity and missing-pen checks below.
-const MINI_DEMO_KEYS = new Set([
-  "ping-pong",
-  "lerp",
-  "inverse-lerp",
-  "map-range",
-  "clamp",
-  "wrap",
-  "smoothstep",
-]);
+const MINI_DEMO_KEYS = slugsWithPen("mini-demo-no-pen");
 
 // Animations expected to have a matching pen: everything on /examples except the
 // docs-first scalar mini-demos.
@@ -60,61 +60,10 @@ const pennedAnimations = exampleAnimations.filter(
   (a) => !MINI_DEMO_KEYS.has(a.slug)
 );
 
-const CANONICAL_DRAW_PEN_KEYS = new Set([
-  "angle-lerp-shortest-turn",
-  "ball-bounce",
-  "ball-orbiting-a-sun",
-  "balls-bouncing-against-each-other",
-  "circle-to-circle-collision",
-  "circle-to-rectangle-collision",
-  "color-families",
-  "color-lerp",
-  "distribute-around-circle",
-  "easing-functions",
-  "draw-rectangle",
-  "draw-star",
-  "find-points-on-a-circle",
-  "get-a-point-on-a-line",
-  "line-length",
-  "line-to-circle-collision",
-  "line-to-line-collision",
-  "line-to-point-collision",
-  "line-to-rectangle-collision",
-  "lerp-smooth-follow",
-  "move-to-changing-point",
-  "murmuration",
-  "point-object-towards-another",
-  "quadratic-bezier-curve",
-  "rectangle-to-rectangle-collision",
-  "sine-curve",
-  "spring-damped-harmonic",
-  "vector-reflection",
-  "vector-rotation",
-  "circle-from-three-points",
-  "equilateral-trianlge-points",
-  "get-triangle-data-from-line",
-  "point-to-rectangle-collision",
-  "point-to-circle-collision",
-  "polygon-to-polygon-collision",
-  "demystify-sine-and-cosine",
-  "bezier-curves",
-  "fourier-epicycles",
-  "game-of-life",
-  "wave-interference",
-  "gravitational-lensing",
-  "orbital-precession",
-  "center-on-parent",
-  "degrees-to-radians",
-  "radians-to-degrees",
-  "format-number-with-commas",
-  "random-integer-between",
-  "random-number-between",
-  "sierpinski",
-  "klimt",
-  "flow-field",
-  "phyllotaxis",
-  "circle-field",
-]);
+// Pens whose embedded draw function is identity-checked against the animation's
+// standalone drawX(): the VM-booted canonical pens plus the identity-only
+// canonical pens (bezier-curves, circle-field).
+const CANONICAL_DRAW_PEN_KEYS = slugsWithPen("canonical-vm-tested", "canonical");
 
 // ─── The Studio dropdown: example-derived pens only ─────────────────────────
 const examplePenKeys = CODEPEN_GALLERY

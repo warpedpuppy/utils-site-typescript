@@ -1,65 +1,18 @@
 import { describe, expect, it } from "vitest";
 import vm from "node:vm";
 import { CODEPEN_GALLERY } from "./pens";
+import { ALL_RECORDS } from "../../registry";
 
-// This is intentionally narrower than CANONICAL_DRAW_PEN_KEYS in the sync test.
-// It is a smoke-test allowlist for canonicalized pens whose serialized runtime
-// is currently known to boot cleanly under a bare VM stub. Some pens are still
-// canonical at the draw-function identity layer while carrying separate runtime
-// caveats documented in .claude/STUDIO-CANONICALIZATION-CHECKLIST.md.
-const CANONICAL_DRAW_PEN_KEYS = new Set([
-  "angle-lerp-shortest-turn",
-  "ball-bounce",
-  "ball-orbiting-a-sun",
-  "balls-bouncing-against-each-other",
-  "circle-to-circle-collision",
-  "circle-to-rectangle-collision",
-  "color-families",
-  "color-lerp",
-  "distribute-around-circle",
-  "easing-functions",
-  "draw-rectangle",
-  "draw-star",
-  "find-points-on-a-circle",
-  "get-a-point-on-a-line",
-  "line-length",
-  "line-to-circle-collision",
-  "line-to-line-collision",
-  "line-to-point-collision",
-  "line-to-rectangle-collision",
-  "lerp-smooth-follow",
-  "move-to-changing-point",
-  "murmuration",
-  "point-object-towards-another",
-  "point-to-circle-collision",
-  "point-to-rectangle-collision",
-  "quadratic-bezier-curve",
-  "rectangle-to-rectangle-collision",
-  "sine-curve",
-  "spring-damped-harmonic",
-  "vector-reflection",
-  "vector-rotation",
-  "circle-from-three-points",
-  "equilateral-trianlge-points",
-  "get-triangle-data-from-line",
-  "demystify-sine-and-cosine",
-  "polygon-to-polygon-collision",
-  "fourier-epicycles",
-  "game-of-life",
-  "wave-interference",
-  "gravitational-lensing",
-  "orbital-precession",
-  "center-on-parent",
-  "degrees-to-radians",
-  "radians-to-degrees",
-  "format-number-with-commas",
-  "random-integer-between",
-  "random-number-between",
-  "sierpinski",
-  "klimt",
-  "flow-field",
-  "phyllotaxis",
-]);
+// The VM-boot smoke-test allowlist, now DERIVED from the registry's `pen` field
+// (REGISTRY-CONSOLIDATION-SPEC step 6). This is intentionally narrower than the
+// sync test's identity set: it is exactly the pens whose serialized runtime is
+// known to boot cleanly under a bare VM stub — the "canonical-vm-tested" tier.
+// The "canonical" tier (identity-checked but not VM-booted) is deliberately
+// excluded, with runtime caveats documented in
+// .claude/STUDIO-CANONICALIZATION-CHECKLIST.md.
+const CANONICAL_DRAW_PEN_KEYS = new Set(
+  ALL_RECORDS.filter((r) => r.pen === "canonical-vm-tested").map((r) => r.slug)
+);
 
 function createCanvasContextStub() {
   const gradient = { addColorStop: () => {} };
