@@ -48,7 +48,9 @@ describe("pens-examples.ts consolidation", () => {
 // ─── Test 2: Collision animations are in core-animations ────────────────────
 
 describe("Collision detection animations — location verification", () => {
-  const manifest = readSrc("animationManifest.ts");
+  // The literal lazy-load thunks now live in the registry category file
+  // (animationManifest.ts is a shim that derives the manifest from the records).
+  const collisionRegistry = readSrc("registry/categories/collisionDetection.ts");
 
   const collisionAnimations = [
     "PointToCircle",
@@ -64,8 +66,8 @@ describe("Collision detection animations — location verification", () => {
   ];
 
   for (const anim of collisionAnimations) {
-    it(`${anim}: animationManifest lazy-loads from core-animations`, () => {
-      expect(manifest).toContain(`import("./core-animations/${anim}")`);
+    it(`${anim}: the registry lazy-loads it from core-animations`, () => {
+      expect(collisionRegistry).toContain(`import("../../core-animations/${anim}")`);
     });
   }
 });
