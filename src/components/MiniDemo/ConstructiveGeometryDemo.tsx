@@ -106,6 +106,8 @@ import {
   normalizeCycleAngle,
   normalizeCycleFraction,
 } from "./constructive-geometry/shared";
+import { buildCircleScene, drawCircleScene } from "./constructive-geometry/circle";
+import { buildDistanceScene, drawDistanceScene } from "./constructive-geometry/distance";
 import "./MiniDemo.scss";
 
 interface ConstructiveGeometryDemoProps {
@@ -556,45 +558,6 @@ export default function ConstructiveGeometryDemo({
   );
 }
 
-function buildCircleScene(demo: ConstructiveGeometryDemoDef, circles: CirclePair): SceneData {
-  const { circle1, circle2 } = circles;
-  const centerDistance = distance(circle1, circle2);
-  const triangle = getTriangleData(circle1, circle2);
-  const sumRadius = circle1.radius + circle2.radius;
-  const hit = demo.hitTest ? demo.hitTest(circle1, circle2) : false;
-
-  return {
-    call:
-      demo.kind === "circle-circle"
-        ? `${demo.fnName}(${formatCircleObject(circle1)}, ${formatCircleObject(circle2)}) = ${hit}`
-        : `${demo.fnName}(${fmt(circle1.x)}, ${fmt(circle1.y)}, ${fmt(circle1.radius)}, ${fmt(circle2.x)}, ${fmt(circle2.y)}, ${fmt(circle2.radius)}) = ${hit}`,
-    hint:
-      "Drag either circle. The right triangle shows how the center-to-center distance is derived, then the demo compares that distance against r1 + r2.",
-    readouts: [
-      { label: "dx", value: fmtSigned(triangle.dx) },
-      { label: "dy", value: fmtSigned(triangle.dy) },
-      { label: "distance", value: `√(${fmtAbs(triangle.dx)}² + ${fmtAbs(triangle.dy)}²) = ${fmt(centerDistance)}` },
-      { label: "compare", value: `${fmt(centerDistance)} ${centerDistance <= sumRadius ? "<=" : ">"} ${fmt(sumRadius)}` },
-      { label: "state", value: hit ? "touching!" : "not touching yet", tone: hit ? "live" : undefined },
-    ],
-  };
-}
-
-function buildDistanceScene(points: PointPair): SceneData {
-  const d = distance(points.point1, points.point2);
-  const triangle = getTriangleData(points.point1, points.point2);
-  return {
-    call: `distance(${formatPoint(points.point1)}, ${formatPoint(points.point2)}) = ${fmt(d)}`,
-    hint:
-      "Drag either point. This is the simplest constructive-geometry cut: the horizontal run and vertical rise are free, so the only mystery left is the hypotenuse.",
-    readouts: [
-      { label: "dx", value: fmtSigned(triangle.dx) },
-      { label: "dy", value: fmtSigned(triangle.dy) },
-      { label: "distance", value: `√(${fmtAbs(triangle.dx)}² + ${fmtAbs(triangle.dy)}²) = ${fmt(d)}` },
-    ],
-  };
-}
-
 function buildUnitCirclePointScene(width: number, height: number, handle: Point): SceneData {
   const layout = unitCircleLayout(width, height);
   const angle = Math.atan2(handle.y - layout.center.y, handle.x - layout.center.x);
@@ -902,75 +865,6 @@ function buildVecLimitScene(origin: Point, handle: Point, max: number): SceneDat
       { label: "limited", value: formatVector(result) },
     ],
   };
-}
-
-function drawCircleScene(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  circles: CirclePair,
-  hit: boolean,
-) {
-  const { circle1, circle2 } = circles;
-  const corner = { x: circle2.x, y: circle1.y };
-  const dx = circle2.x - circle1.x;
-  const dy = circle2.y - circle1.y;
-  const dist = distance(circle1, circle2);
-  const sumRadius = circle1.radius + circle2.radius;
-
-  drawBackdrop(ctx, width, height);
-
-  const circle1Color = hit ? "#f97316" : "#818cf8";
-  const circle2Color = hit ? "#fb7185" : "#a78bfa";
-
-  drawCircle(ctx, circle1, circle1Color, "r1");
-  drawCircle(ctx, circle2, circle2Color, "r2");
-  drawRightTriangle(ctx, circle1, circle2, corner, hit);
-  drawCenter(ctx, circle1, circle1Color);
-  drawCenter(ctx, circle2, circle2Color);
-  drawCenter(ctx, corner, "rgba(125, 211, 252, 0.8)", 4);
-
-  drawHeaderBox(ctx, [
-    { text: `distance = ${fmt(dist)}`, color: "#e2e8f0" },
-    { text: `compare against r1 + r2 = ${fmt(sumRadius)}`, color: hit ? "#fb923c" : "#cbd5e1" },
-  ]);
-
-  labelSegment(ctx, circle1.x + dx / 2, circle1.y - 12, `dx = ${fmtSigned(dx)}`, "rgba(96, 165, 250, 0.95)");
-  labelSegment(ctx, corner.x + 12, circle1.y + dy / 2, `dy = ${fmtSigned(dy)}`, "rgba(125, 211, 252, 0.95)");
-  labelSegment(
-    ctx,
-    circle1.x + dx / 2,
-    circle1.y + dy / 2 - 16,
-    `hyp = ${fmt(dist)}`,
-    hit ? "rgba(249, 115, 22, 0.98)" : "rgba(255, 255, 255, 0.95)",
-  );
-
-  if (hit) {
-    drawStatusPill(ctx, width - 156, 18, "touching!");
-  }
-}
-
-function drawDistanceScene(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  points: PointPair,
-) {
-  const { point1, point2 } = points;
-  const triangle = getTriangleData(point1, point2);
-  const d = distance(point1, point2);
-  const corner = { x: point2.x, y: point1.y };
-
-  drawBackdrop(ctx, width, height);
-  drawPoint(ctx, point1, "#818cf8", "p1");
-  drawPoint(ctx, point2, "#fb7185", "p2");
-  drawRightTriangle(ctx, point1, point2, corner, false);
-  drawCenter(ctx, corner, "rgba(125, 211, 252, 0.8)", 4);
-
-  drawHeaderBox(ctx, [{ text: `distance = ${fmt(d)}`, color: "#e2e8f0" }]);
-  labelSegment(ctx, point1.x + triangle.dx / 2, point1.y - 12, `dx = ${fmtSigned(triangle.dx)}`, "rgba(96, 165, 250, 0.95)");
-  labelSegment(ctx, corner.x + 12, point1.y + triangle.dy / 2, `dy = ${fmtSigned(triangle.dy)}`, "rgba(125, 211, 252, 0.95)");
-  labelSegment(ctx, point1.x + triangle.dx / 2, point1.y + triangle.dy / 2 - 16, `hyp = ${fmt(d)}`, "rgba(255, 255, 255, 0.95)");
 }
 
 function drawUnitCirclePointScene(
