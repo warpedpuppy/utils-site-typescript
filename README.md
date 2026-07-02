@@ -113,13 +113,19 @@ npm run barrel --workspace @utilspalooza/core
 
 4. If the function should appear on the Copy Code page, add a wrapper in
    `src/pages/createJSON/formulas/`.
-5. Register a teaching demo in `src/core-animations/` and `src/SiteData.ts` if the
-   function needs a visual explanation.
+5. If the function needs a visual explanation, add a teaching demo — a class in
+   `src/core-animations/` plus a `RegistryRecord` in the matching
+   `src/registry/categories/*.ts` file (see "Adding A Demo Animation").
 
 ## Adding A Demo Animation
 
-Animation classes live in `src/core-animations/` and are registered in
-`src/SiteData.ts`.
+Animation classes live in `src/core-animations/`. Each animation is registered
+once as a `RegistryRecord` in the matching `src/registry/categories/*.ts` file.
+That single record is the source of truth from which the `/examples` sidebar, the
+Copy Code list, and the manifest are all derived — `src/animationManifest.ts` and
+`src/SiteData.ts` are compatibility shims, so do not edit them directly. Drift
+tests in `src/registry/registry.test.ts` fail if a record is missing a pen, a
+`load()` that resolves, or a core export that no animation teaches.
 
 Each class should:
 
