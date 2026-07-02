@@ -61,7 +61,9 @@ export default function ConstructiveGeometryDemo({
     poly2: regularPolygon(348, 128, 54, 4, -Math.PI / 4),
     point: { x: 100, y: 150 },
     circle: { x: 108, y: 120, radius: 38 },
-    lineA: { x: 70, y: 72 },
+    // lineA starts below the header-box legend (which occupies roughly the top
+    // ~84px) so the polygon-line demo's segment doesn't open tucked under it.
+    lineA: { x: 70, y: 120 },
     lineB: { x: 360, y: 182 },
   }));
 
