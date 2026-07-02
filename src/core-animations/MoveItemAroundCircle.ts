@@ -2,6 +2,13 @@ import AnimationBaseClass from "./AnimationBaseClass";
 import { findPointAroundCircle as FindPointAroundCircleFunc } from "@utilspalooza/core/FindPointAroundCircle";
 import { findPointAroundCircle as findPointAroundCircleFormula } from "../pages/createJSON/formulas/animation/FindPointAroundCircle";
 
+const ELI5 = `<h3>Pick a point on a circle, or keep moving around it.</h3>
+<p><b>findPointAroundCircle</b> takes a center point, a radius, and a percentage
+around the circle, then returns the x/y position at that spot.</p>
+<p>Use one fixed percentage to find a particular point, like 25% for the bottom
+of the circle. To rotate an object, increase that percentage every frame and draw
+the object at the returned x/y point.</p>`;
+
 function drawMoveItemAroundCircle(
   ctx: any,
   halfWidth: any,
@@ -67,6 +74,7 @@ export default class MoveItemAroundCircleAnimation extends AnimationBaseClass {
   i: number = 0;
 
   init() {
+    if (this.textDiv) this.textDiv.innerHTML = ELI5;
     this.draw();
   }
 

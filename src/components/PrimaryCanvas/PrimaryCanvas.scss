@@ -99,6 +99,17 @@
         font-size: 0.8rem;
         color: var(--text-muted);
       }
+
+      a {
+        color: var(--brand-orange-soft);
+        pointer-events: auto;
+        text-decoration: underline;
+        text-underline-offset: 0.16em;
+
+        &:hover {
+          color: var(--text);
+        }
+      }
     }
 
     &--canvas-container {

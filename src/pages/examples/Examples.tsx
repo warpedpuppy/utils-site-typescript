@@ -69,6 +69,9 @@ function Examples() {
     );
     setKey(returnKey);
     setInnerKey(returnInnerKey);
+    if (returnKey) {
+      setOpen(Object.keys(animationManifest).indexOf(returnKey));
+    }
   }, [getKeyAndInnerKeyFromLocation, location]);
 
   useEffect(() => {

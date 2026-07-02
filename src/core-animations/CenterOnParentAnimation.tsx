@@ -40,8 +40,13 @@ class CenterOnParentAnimation extends AnimationBaseClass {
   }
   draw = () => {
     if (!this.ctx) return;
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    // this.raf(this.draw);
+    drawCenterOnParent(
+      this.ctx,
+      this.canvasWidth,
+      this.canvasHeight,
+      performance.now() * 0.001
+    );
+    this.raf(this.draw);
   };
   keyFunction() {}
   pointerDownHandler(e: PointerEvent) {}

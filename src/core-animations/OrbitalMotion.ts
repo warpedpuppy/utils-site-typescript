@@ -5,6 +5,13 @@ import { SphereLighting } from "../pages/createJSON/formulas/animation/OrbitalMo
 // SphereLighting calculates the highlight position on a sphere given the orbiter and light source positions
 // (Implementation moved to formulas/animation/OrbitalMotion.ts to satisfy CollisionDetectionObject interface)
 
+const ELI5 = `<h3>The orbit and the lighting are two different jobs.</h3>
+<p><b>sphereLighting</b> does not move the planet. It only finds where the bright
+spot should sit on the orbiting ball, based on the sun's position.</p>
+<p>The circular motion comes from
+<a href="/examples/find-points-on-a-circle"><b>findPointAroundCircle</b></a>,
+which returns the x/y point for the ball at each percentage around the orbit.</p>`;
+
 function drawOrbitalMotion(
   ctx: any,
   canvasWidth: any,
@@ -115,6 +122,7 @@ export default class OrbitalMotionAnimation extends AnimationBaseClass {
   orbitRadius: number = 180;
 
   init() {
+    if (this.textDiv) this.textDiv.innerHTML = ELI5;
     this.draw();
   }
 

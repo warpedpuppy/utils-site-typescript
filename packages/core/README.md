@@ -3,7 +3,7 @@
 Utilspalooza is a small TypeScript toolkit of readable math helpers for creative
 coding, canvas animation, and visual experiments.
 
-It is not a timeline engine and it is not trying to replace GSAP. The package is
+It is not a timeline engine and it is not trying to compete with GSAP. The package is
 for the small bits of motion math you reach for when making canvas toys,
 generative art, game-ish interactions, educational animations, or visual demos:
 interpolation, easing, vectors, geometry, collision checks, flocking, and tiny
