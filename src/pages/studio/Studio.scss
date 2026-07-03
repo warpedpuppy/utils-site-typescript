@@ -2,7 +2,7 @@
   position: fixed;
   top: var(--menu-height);
   width: 100%;
-  height: calc(100vh - var(--menu-height));
+  height: calc(100vh - var(--menu-height) - var(--footer-height));
   background: #0a0a0f;
   color: #e6dcc8;
 

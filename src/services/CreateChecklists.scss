@@ -132,7 +132,7 @@
     width: 33.33%;
     min-width: 220px;
     max-width: 300px;
-    height: calc(100vh - var(--menu-height));
+    height: calc(100vh - var(--menu-height) - var(--footer-height));
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;

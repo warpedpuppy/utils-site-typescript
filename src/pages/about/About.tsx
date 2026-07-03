@@ -23,9 +23,9 @@ function About() {
           does before you commit it to your codebase.
         </p>
 
-        <h2>Grab one function, à la carte</h2>
+        <h2>Grab one function's code</h2>
         <p>
-          Head to <strong>à la carte</strong> and check off the functions you
+          Head to <strong>Copy Code</strong> and check off the functions you
           need. The site assembles clean, typed snippets on the fly — ready to
           copy into a project today, or download as a standalone TypeScript or
           JavaScript file. No install, no library, just the code.

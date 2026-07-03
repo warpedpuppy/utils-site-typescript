@@ -1,6 +1,7 @@
 export type ModuleDocMode = "reference" | "guide";
 export type GuideKind = "system" | "concept";
 export type DocVisualKind = "mini-demo" | "example" | "none";
+export type EntryTabPanel = "intro" | "visual" | "reference";
 
 export interface ApiEntryLike {
   name: string;
@@ -21,6 +22,31 @@ export interface DocVisualConfig {
   kind: DocVisualKind;
   exampleSlug?: string;
   exampleLabel?: string;
+}
+
+export interface EntryTabConfig {
+  id: string;
+  label: string;
+  panel: EntryTabPanel;
+}
+
+export interface RelatedEntryConfig {
+  name: string;
+  reason: string;
+}
+
+export interface EntryDocConfig {
+  whatItIs?: string;
+  howToUse?: string;
+  related?: RelatedEntryConfig[];
+  tabs?: EntryTabConfig[];
+}
+
+export interface ApiEntryDocLike extends ApiEntryLike {
+  kind?: "function" | "const" | "type";
+  description?: string;
+  signature?: string;
+  example?: string;
 }
 
 export interface ConceptDefinition {
@@ -357,24 +383,627 @@ export const ENTRY_VISUALS: Partial<Record<string, DocVisualConfig>> = {
 };
 
 const ENTRY_USAGE_LEADS: Partial<Record<string, string>> = {
-  "Boids:Flock": "Start here if you want a ready-to-own flock object.",
-  "Boids:boidsStep": "Use this when you already own the boid array and just need one deterministic simulation tick.",
-  "Animate:ticker": "Use this only if you want the library to drive your frame loop callback.",
-  "Animate:tweenObject": "Best when several numeric properties need to move together from one elapsed time value.",
-  "Animate:tweenValue": "The simplest animation helper here: one number in, one number out.",
-  "Animate:springValue": "Use this for spring motion when easing curves feel too mechanical.",
-  "DegToRad:degToRad": "Use this at the edge where a human thinks in degrees but `Math.sin` and `Math.cos` still want radians.",
-  "RadToDeg:radToDeg": "Use this when the math is already in radians but the explanation, label, or UI should speak degrees.",
-  "Color:lerpColor": "The straight per-channel blend: simple, sometimes muddy.",
-  "Color:lerpColorHsl": "Usually the nicer visual blend: colors travel around the wheel instead of collapsing through gray.",
-  "Color:colorFamily": "Use this when you want a coherent palette, not one isolated color.",
-  "UnitCirclePoint:unitCirclePoint": "Start here for trig that actually teaches: one angle gives you the point, plus the raw cosine and sine components.",
-  "SineCurve:sineCurve": "The time-driven oscillation helper: feed it the same angle from the unit circle and you get the matching vertical sine position back.",
-  "SineWave:sineWave": "Use this when the oscillation lives across x-position instead of only over time.",
-  "WaveAmplitude:waveAmplitude": "Use this when several emitters overlap and you need the combined interference value at one sample point.",
-  "Vec2:vecNormalize": "One of the core motion primitives: keep direction, force length to 1.",
-  "Vec2:vecDot": "Use this to ask directional questions: same way, opposite way, or perpendicular?",
-  "Vec2:vecReflect": "The bounce helper: incoming vector plus surface normal gives you the outgoing direction.",
+  "Boids:Flock": "Use this when you want a whole flock of little movers that steer together.",
+  "Boids:boidsStep": "Use this when you already have the boids and just want to advance them by one frame.",
+  "Animate:ticker": "Use this when you want the library to call you every frame so you can update and draw.",
+  "Animate:tweenObject": "Use this when several things should move together, like x, y, scale, and opacity.",
+  "Animate:tweenValue": "Use this when one number should glide from one value to another.",
+  "Animate:springValue": "Use this when you want motion that feels bouncy instead of robotic.",
+  "DegToRad:degToRad": "Use this when you think in degrees, but `Math.sin` and `Math.cos` need radians.",
+  "RadToDeg:radToDeg": "Use this when the math gives you radians, but you want to show degrees to a human.",
+  "Color:lerpColor": "Use this when one color should fade into another.",
+  "Color:lerpColorHsl": "Use this when you want a color fade that usually looks nicer in the middle.",
+  "Color:colorFamily": "Use this when you want a little group of colors that feel like they belong together.",
+  "UnitCirclePoint:unitCirclePoint": "Use this when you want something to go around a circle or understand where sine and cosine come from.",
+  "SineCurve:sineCurve": "Use this when something should bob up and down over and over, like floating or breathing.",
+  "SineWave:sineWave": "Use this when lots of points should make a wavy line, like water, a rope, or a flag.",
+  "WaveAmplitude:waveAmplitude": "Use this when several waves are all pushing on the same point at once.",
+  "Vec2:vecNormalize": "Use this when you care about direction, but you want every step to have the same size.",
+  "Vec2:vecDot": "Use this when you want to know whether two things are pointing mostly the same way.",
+  "Vec2:vecReflect": "Use this when something hits a surface and needs to bounce away.",
+};
+
+const INTRO_TAB: EntryTabConfig = { id: "intro", label: "Start Here", panel: "intro" };
+const VISUAL_TAB: EntryTabConfig = { id: "visual", label: "See It Move", panel: "visual" };
+const REFERENCE_TAB: EntryTabConfig = { id: "reference", label: "Code & Details", panel: "reference" };
+
+// Reorder these arrays if you want the docs to lead with motion instead of prose.
+const DEFAULT_ENTRY_TABS: Record<DocVisualKind, EntryTabConfig[]> = {
+  none: [INTRO_TAB, REFERENCE_TAB],
+  "mini-demo": [INTRO_TAB, VISUAL_TAB, REFERENCE_TAB],
+  example: [INTRO_TAB, { ...VISUAL_TAB, label: "See Example" }, REFERENCE_TAB],
+};
+
+const ENTRY_DOCS: Partial<Record<string, EntryDocConfig>> = {
+  circleToCircle: {
+    whatItIs:
+      "This is the simple version of 'are these two circles touching?' You hand it two circle centers and two radii, and it gives you back `true` or `false`.",
+    howToUse:
+      "Use this when a moving circle should react the moment it bumps into another one. For example: make bubbles pop, balls bounce, or enemies hit each other.",
+    related: [
+      { name: "circleCircle", reason: "Same touch test, but it takes whole circle objects, which is usually easier to read." },
+    ],
+  },
+  circleCircle: {
+    whatItIs:
+      "This is the nicer-to-read version of 'are these two circles touching?' It does the same job as `circleToCircle`, but it takes full circle objects.",
+    howToUse:
+      "Use this when your animation already stores circles as objects and you want a clean collision check. Good for balls, ripples, bubbles, and anything round that can bump into something.",
+    related: [
+      { name: "circleToCircle", reason: "Same touch test, but written as a flat list of numbers." },
+    ],
+  },
+  pointToCircle: {
+    whatItIs:
+      "This answers a tiny question: is this point inside the circle or not?",
+    howToUse:
+      "Use this when you want to know whether the mouse, a particle, or a tiny object has entered a circular area.",
+    related: [
+      { name: "pointCircle", reason: "Same check, but with a point object and a circle object." },
+    ],
+  },
+  pointCircle: {
+    whatItIs:
+      "This is the object-shaped version of 'is this point inside the circle?'",
+    howToUse:
+      "Use this when your animation already keeps points and circles as objects. Great for mouse hover zones, radar ranges, or checking whether a spark landed inside a bubble.",
+    related: [
+      { name: "pointToCircle", reason: "Same check, but written as a flat list of numbers." },
+    ],
+  },
+  lineToLine: {
+    whatItIs:
+      "This tells you whether two line segments cross each other. Just yes or no.",
+    howToUse:
+      "Use this when two moving sticks, rays, or edges might cross and you only care whether they hit. For example: laser tripwires, sword slashes, or path blocking.",
+    related: [
+      { name: "lineLine", reason: "Same crossing check, but it also gives you the exact hit point." },
+    ],
+  },
+  lineLine: {
+    whatItIs:
+      "This is the fancier line-crossing helper. It not only tells you whether two segments hit, it also tells you where they hit.",
+    howToUse:
+      "Use this when you want to draw the exact crossing point or make something happen right at that spot, like a spark, marker, or snapped connection.",
+    related: [
+      { name: "lineToLine", reason: "Same crossing idea, but only gives back true or false." },
+    ],
+  },
+  polygonToPolygon: {
+    whatItIs:
+      "This answers 'are these two many-sided shapes overlapping?' using two raw lists of corner points.",
+    howToUse:
+      "Use this when your scene already has two polygon point lists and you want to know whether they now overlap. Good for irregular hit areas that are not just circles or rectangles.",
+    related: [
+      { name: "polygonPolygon", reason: "Same overlap check, but with object-shaped inputs that are easier to read." },
+    ],
+  },
+  polygonPolygon: {
+    whatItIs:
+      "This is the main 'do these two shapes overlap?' helper for polygons. It handles both edge crossings and one shape sitting inside the other.",
+    howToUse:
+      "Use this when your hit areas are odd shapes and you need a real overlap answer, not just a circle or rectangle guess. Think custom spaceships, hand-drawn islands, or weird buttons.",
+    related: [
+      { name: "polygonToPolygon", reason: "Same overlap check, but with two raw point arrays." },
+    ],
+  },
+  lineToCircle: {
+    whatItIs:
+      "This tells you whether a straight line segment touches or passes through a circle. Just yes or no.",
+    howToUse:
+      "Use this when a ray, laser, stick, or path might hit a round thing. For example: a laser beam crossing a shield, or checking whether a line of sight passes through a planet.",
+    related: [
+      { name: "lineCircle", reason: "Same hit test, but you hand it a line object and a circle object." },
+    ],
+  },
+  lineCircle: {
+    whatItIs:
+      "This is the object-shaped version of 'does this line touch this circle?' Same job as `lineToCircle`, but it takes a whole line object and a whole circle object.",
+    howToUse:
+      "Use this when your animation already stores lines and circles as objects and you want a clean, readable hit check.",
+    related: [
+      { name: "lineToCircle", reason: "Same hit test, but written as a flat list of numbers." },
+    ],
+  },
+  lineToPoint: {
+    whatItIs:
+      "This checks whether a point is sitting on a line segment. Because exact hits almost never happen with real numbers, you also give it a little wiggle room (a threshold).",
+    howToUse:
+      "Use this when you want to know if the mouse (or a dot) is hovering over a line, within a few pixels. Good for clickable lines, connectors, or wires.",
+    related: [
+      { name: "linePoint", reason: "Same on-the-line check with objects, using a built-in tolerance instead of one you pass in." },
+    ],
+  },
+  linePoint: {
+    whatItIs:
+      "This is the object-shaped version of 'is this point on this line?' It takes a line object and a point object.",
+    howToUse:
+      "Use this when your scene keeps lines and points as objects and you want a tidy on-the-line check without spelling out every coordinate.",
+    related: [
+      { name: "lineToPoint", reason: "Same check as flat numbers, where you set the tolerance yourself." },
+    ],
+  },
+  pointToPolygon: {
+    whatItIs:
+      "This answers 'is this point inside this many-sided shape?' You give it the point and the shape's list of corners.",
+    howToUse:
+      "Use this to know whether the mouse or a particle landed inside an odd, hand-drawn shape, not just a circle or a box. Great for map regions, custom hit areas, or weird buttons.",
+    related: [
+      { name: "polygonPoint", reason: "Same inside/outside test, but with a polygon object and a point object (arguments the other way round)." },
+    ],
+  },
+  polygonPoint: {
+    whatItIs:
+      "This is the object-shaped 'is this point inside the polygon?' test. Same idea as `pointToPolygon`, just with a polygon object and a point object.",
+    howToUse:
+      "Use this when your shapes are already stored as polygon objects and you want a clean containment check.",
+    related: [
+      { name: "pointToPolygon", reason: "Same test with a raw corner list, arguments in the other order." },
+    ],
+  },
+  circleToRect: {
+    whatItIs:
+      "This tells you whether a circle is overlapping a rectangle. Yes or no.",
+    howToUse:
+      "Use this when a round thing might bump a box: a ball hitting a paddle or wall, a bubble touching a panel, a coin landing on a platform.",
+    related: [
+      { name: "rectToRect", reason: "Box-vs-box overlap for when neither shape is round." },
+      { name: "circleCircle", reason: "Round-vs-round overlap for when neither shape is a box." },
+    ],
+  },
+  lineToRect: {
+    whatItIs:
+      "This checks whether a straight line segment crosses the edges of a rectangle.",
+    howToUse:
+      "Use this when a ray or path might cut through a box. For example: a line of sight blocked by a wall, or a laser clipping a panel.",
+    related: [
+      { name: "lineToCircle", reason: "Same idea, but the line is tested against a circle instead of a box." },
+    ],
+  },
+  pointToRect: {
+    whatItIs:
+      "This tells you whether a point is inside (or on the edge of) a rectangle.",
+    howToUse:
+      "Use this for hit testing a box: is the mouse over this button, did a particle enter this zone, is something inside this panel.",
+    related: [
+      { name: "pointToPolygon", reason: "Same inside test for odd shapes instead of a plain box." },
+    ],
+  },
+  rectToRect: {
+    whatItIs:
+      "This is the classic 'do these two boxes overlap?' check, using axis-aligned bounding boxes (AABB). Fast and simple.",
+    howToUse:
+      "Use this as a cheap first collision check between rectangular things: sprites, cards, platforms, UI panels.",
+    related: [
+      { name: "circleToRect", reason: "When one of the two shapes is a circle instead of a box." },
+      { name: "pointToRect", reason: "When you only need a single point tested against the box." },
+    ],
+  },
+  rectToPolygon: {
+    whatItIs:
+      "This checks whether a rectangle overlaps a many-sided shape.",
+    howToUse:
+      "Use this when a boxy thing might touch an irregular shape: a crate against a hand-drawn island, a panel over a custom region.",
+    related: [
+      { name: "polygonPolygon", reason: "Shape-vs-shape overlap when neither side is a plain box." },
+      { name: "rectToRect", reason: "Box-vs-box overlap when both shapes are rectangles." },
+    ],
+  },
+  polygonCircle: {
+    whatItIs:
+      "This tells you whether a circle overlaps a many-sided shape.",
+    howToUse:
+      "Use this when a round thing might touch an irregular shape: a ball entering a custom zone, a bubble drifting over a hand-drawn region.",
+    related: [
+      { name: "polygonPolygon", reason: "Shape-vs-shape overlap when neither side is round." },
+      { name: "circleCircle", reason: "Round-vs-round overlap when there is no polygon involved." },
+    ],
+  },
+  polygonLine: {
+    whatItIs:
+      "This tells you whether a line segment crosses any edge of a many-sided shape.",
+    howToUse:
+      "Use this when a ray or path might cut across an irregular shape: a line of sight through a custom wall, or a slash crossing a shape's outline.",
+    related: [
+      { name: "lineLine", reason: "Line-crossing-line when you only have one edge, and you also want the hit point." },
+      { name: "polygonPolygon", reason: "Full shape-vs-shape overlap instead of a single line." },
+    ],
+  },
+  lerpColor: {
+    whatItIs:
+      "This fades one color into another in the most direct way possible.",
+    howToUse:
+      "Use this when a background, particle, or shape should slowly change color over time. For example: sunrise skies, warning lights, or a health bar moving from green to red.",
+    related: [
+      { name: "lerpColorHsl", reason: "Another color fade that often looks nicer in the middle." },
+    ],
+  },
+  lerpColorHsl: {
+    whatItIs:
+      "This also fades one color into another, but it takes a prettier route around the color wheel.",
+    howToUse:
+      "Use this when a normal color fade looks muddy and you want something that feels more lively. Great for magical glows, playful gradients, and rainbow-ish transitions.",
+    related: [
+      { name: "lerpColor", reason: "The simpler, more literal color fade." },
+    ],
+  },
+  tweenValue: {
+    whatItIs:
+      "This is a helper for moving one number from here to there over time.",
+    howToUse:
+      "Use this when one thing should change smoothly, like x position, size, opacity, or rotation. If you can say 'I just need one value to glide,' this is a good pick.",
+    related: [
+      { name: "tweenObject", reason: "Same idea, but for several values at once." },
+    ],
+  },
+  tweenObject: {
+    whatItIs:
+      "This is the multi-part version of `tweenValue`. It moves several numbers together.",
+    howToUse:
+      "Use this when one animated thing has lots of moving parts, like x, y, scale, and opacity all changing together. Good for cards, popups, sprites, and UI bits.",
+    related: [
+      { name: "tweenValue", reason: "The smaller version when you only need one moving value." },
+    ],
+  },
+  degToRad: {
+    whatItIs:
+      "This changes degrees into radians.",
+    howToUse:
+      "Use this when you want to say 'turn 45 degrees' but the math function you are calling wants radians instead.",
+    related: [
+      { name: "radToDeg", reason: "The opposite conversion: radians back into degrees." },
+    ],
+  },
+  radToDeg: {
+    whatItIs:
+      "This changes radians back into degrees.",
+    howToUse:
+      "Use this when the math gives you a radian angle, but you want to show a friendly degree number like 90 or 180.",
+    related: [
+      { name: "degToRad", reason: "The opposite conversion: degrees into radians." },
+    ],
+  },
+  unitCirclePoint: {
+    whatItIs:
+      "This gives you a point on the edge of a circle from one angle. It is one of the simplest ways to make something go around and around.",
+    howToUse:
+      "Use this when a dot, planet, eye, or handle should travel around a center point. It is also the easiest place to see where sine and cosine come from.",
+  },
+  sineCurve: {
+    whatItIs:
+      "This makes a value go up, then down, then up again forever in a smooth loop.",
+    howToUse:
+      "Use this when something should bob, pulse, breathe, float, wobble, or gently drift over and over again.",
+  },
+  sineWave: {
+    whatItIs:
+      "This helps draw a whole wavy line instead of moving just one thing up and down.",
+    howToUse:
+      "Use this when you want many points to rise and fall in a repeating wave. Think water, a hanging rope, a flag, sound squiggles, or grass blowing in the wind.",
+  },
+  waveAmplitude: {
+    whatItIs:
+      "This tells you how strong the wave is at one spot after several waves all mix together.",
+    howToUse:
+      "Use this when lots of ripples or signals are meeting in one place and you want the final height there. Think overlapping pond ripples or layered sound-like motion.",
+  },
+  lerp: {
+    whatItIs:
+      "This is the classic move-from-A-to-B helper. Give it a start, an end, and a slider from 0 to 1.",
+    howToUse:
+      "Use this when one thing should travel between two values. For example: move a dot between two points, fade opacity from 0 to 1, or grow a shape from small to big.",
+  },
+  mapRange: {
+    whatItIs:
+      "This takes a number from one scale and converts it to another scale.",
+    howToUse:
+      "Use this when one input should control something else. For example: turn mouse position into rotation, turn scroll amount into opacity, or turn speed into size.",
+  },
+  distance: {
+    whatItIs:
+      "This tells you how far apart two points are.",
+    howToUse:
+      "Use this when something should react to closeness. For example: make a particle notice the mouse, trigger a hit when two things get near, or scale something based on distance.",
+  },
+  getRotation: {
+    whatItIs:
+      "This gives you the angle from one point to another.",
+    howToUse:
+      "Use this when one thing should point at another thing. For example: make an arrow face the mouse, a spaceship aim at a target, or eyes look at a moving dot.",
+  },
+  ballBounce: {
+    whatItIs:
+      "This helps a moving ball bounce off the edges instead of flying away forever.",
+    howToUse:
+      "Use this when you want the classic screensaver/game feel: a ball hits a wall, flips direction, and keeps going.",
+  },
+
+  // --- Numbers in motion (scalar primitives) ---
+  clamp: {
+    whatItIs:
+      "This keeps a number from wandering out of bounds. You give it a value, a lowest allowed, and a highest allowed, and it never lets the value cross either edge.",
+    howToUse:
+      "Use this to stop things from going too far: keep an object on screen, cap a volume at 100, or make sure a health bar never drops below 0 or above full.",
+    related: [
+      { name: "wrap", reason: "When you'd rather the value loop back around instead of stopping at the edge." },
+    ],
+  },
+  inverseLerp: {
+    whatItIs:
+      "This is the backwards version of `lerp`. Instead of 'give me the value at 30% of the way', it asks 'this value is what percent of the way between the start and the end?' The answer comes back as a slider from 0 to 1.",
+    howToUse:
+      "Use this to turn a real measurement into a 0-to-1 progress number: how full is the tank, how far along is the scroll, how close to the goal are we.",
+    related: [
+      { name: "lerp", reason: "The forward version: turn a 0-to-1 slider back into a value." },
+      { name: "mapRange", reason: "Do both at once: convert straight from one scale to another." },
+    ],
+  },
+  wrap: {
+    whatItIs:
+      "This makes a number loop around inside a range instead of stopping. Go past the top and it pops back to the bottom, like a clock rolling from 59 minutes back to 0.",
+    howToUse:
+      "Use this for anything that should cycle: an object leaving the right edge and reappearing on the left, an angle staying inside one full turn, or a carousel index.",
+    related: [
+      { name: "clamp", reason: "When you'd rather the value stop at the edge instead of looping around." },
+      { name: "pingPong", reason: "When you want it to bounce back at the ends instead of jumping to the other side." },
+    ],
+  },
+  pingPong: {
+    whatItIs:
+      "This makes a value walk up to a limit, then turn around and walk back, over and over, like a bouncing back-and-forth.",
+    howToUse:
+      "Use this for motion that should reverse instead of restart: something sliding left and right, a pulse growing and shrinking, or a value that sweeps a range endlessly.",
+    related: [
+      { name: "wrap", reason: "When you want it to jump back to the start instead of reversing." },
+    ],
+  },
+  smoothstep: {
+    whatItIs:
+      "This is like a gentler `lerp`. It still goes from one edge to the other, but it eases in at the start and eases out at the end instead of moving at a constant, robotic speed.",
+    howToUse:
+      "Use this when a transition should feel soft and natural: fading something in, a camera settling into place, or a value that shouldn't snap harshly at the edges.",
+    related: [
+      { name: "smootherstep", reason: "An even smoother version with softer starts and stops." },
+      { name: "lerp", reason: "The plain, constant-speed version with no easing." },
+    ],
+  },
+  smootherstep: {
+    whatItIs:
+      "This is `smoothstep` with the corners rounded off even more. Ken Perlin's version, which starts and stops so gently there's no visible kink at the ends.",
+    howToUse:
+      "Use this when even `smoothstep` looks a touch abrupt and you want the silkiest possible ease between two edges.",
+    related: [
+      { name: "smoothstep", reason: "The standard, slightly less soft version." },
+    ],
+  },
+
+  // --- Vec2 (direction, distance, and motion primitives) ---
+  vecAdd: {
+    whatItIs:
+      "This adds two vectors together, matching up their x's and their y's. Think of it as walking one arrow, then walking the next, and asking where you ended up.",
+    howToUse:
+      "Use this to apply movement: add a velocity to a position each frame, or stack up several pushes (gravity, wind, a nudge) into one combined move.",
+    related: [
+      { name: "vecSubtract", reason: "The opposite: find the arrow pointing from one place to another." },
+    ],
+  },
+  vecSubtract: {
+    whatItIs:
+      "This subtracts one vector from another, which gives you the arrow that points from the second place to the first. It's how you get a 'direction toward' something.",
+    howToUse:
+      "Use this to find which way one thing is from another: aim a chaser at its target, or measure the gap between two points before you normalize it.",
+    related: [
+      { name: "vecNormalize", reason: "Squash that arrow down to length 1 to get a pure direction." },
+      { name: "vecAdd", reason: "The opposite operation: combine two vectors." },
+    ],
+  },
+  vecScale: {
+    whatItIs:
+      "This stretches or shrinks a vector by a single number, keeping its direction the same (unless the number is negative, which flips it).",
+    howToUse:
+      "Use this to set how far or how fast: take a unit direction and multiply it by a speed, or shrink a push so it's gentler.",
+    related: [
+      { name: "vecNormalize", reason: "Get a length-1 direction first, then scale it to the size you want." },
+      { name: "vecLimit", reason: "Cap the length instead of setting it exactly." },
+    ],
+  },
+  vecNormalize: {
+    whatItIs:
+      "This keeps a vector's direction but forces its length to exactly 1. The result is a 'unit vector' — a pure pointer with no size baked in.",
+    howToUse:
+      "Use this whenever you care about which way, not how far: get a clean direction, then multiply by your own speed with `vecScale`.",
+    related: [
+      { name: "vecScale", reason: "Multiply the length-1 direction by the speed you actually want." },
+      { name: "vecMagnitude", reason: "Read a vector's current length before or after normalizing." },
+    ],
+  },
+  vecMagnitude: {
+    whatItIs:
+      "This tells you how long a vector is — the straight-line distance from its tail to its tip.",
+    howToUse:
+      "Use this to measure speed from a velocity, or the distance represented by an arrow between two points.",
+    related: [
+      { name: "vecMagnitudeSquared", reason: "The faster version when you only need to compare lengths, not read them." },
+      { name: "distance", reason: "Measure straight between two points without building a vector first." },
+    ],
+  },
+  vecMagnitudeSquared: {
+    whatItIs:
+      "This is the length of a vector, but left squared — it skips the slow square-root step. The number is bigger than the real length, but it sorts in the same order.",
+    howToUse:
+      "Use this when you're only comparing distances (which is closer? is it within range?) and want the cheaper math. Compare against your radius squared.",
+    related: [
+      { name: "vecMagnitude", reason: "The real length when you actually need the true number." },
+    ],
+  },
+  vecDot: {
+    whatItIs:
+      "The dot product. The simplest way to think about it: it's big and positive when two vectors point the same way, zero when they're at right angles, and negative when they point apart.",
+    howToUse:
+      "Use this to ask 'are these facing the same direction?' — is the target in front of me or behind, how aligned are two headings, or is a surface facing the light.",
+    related: [
+      { name: "vecCross", reason: "Tells you the turning side (left or right) instead of the same-way/opposite-way answer." },
+      { name: "vecAngleBetween", reason: "Turn that alignment into an actual angle." },
+    ],
+  },
+  vecCross: {
+    whatItIs:
+      "The 2D cross product. It gives you a single number whose sign tells you which side one vector is on relative to another: positive for one turning direction, negative for the other.",
+    howToUse:
+      "Use this to tell left from right: is the target to my left or right, is a point on one side of a line, is a turn clockwise or counter-clockwise.",
+    related: [
+      { name: "vecDot", reason: "Tells you same-way vs opposite-way instead of which side." },
+    ],
+  },
+  vecPerpendicular: {
+    whatItIs:
+      "This gives you a vector at a right angle to the one you hand it — turned a quarter-turn.",
+    howToUse:
+      "Use this to get a surface's 'normal' for bouncing, to slide something sideways relative to its heading, or to draw a thickness across a line.",
+    related: [
+      { name: "vecReflect", reason: "Uses a perpendicular (a normal) to bounce a vector off a surface." },
+      { name: "vecRotate", reason: "Turn by any angle, not just a quarter-turn." },
+    ],
+  },
+  vecReflect: {
+    whatItIs:
+      "This is the bounce helper. Give it an incoming vector and the surface's normal (which way the wall faces), and it returns the outgoing, bounced vector.",
+    howToUse:
+      "Use this when something hits a wall and should ricochet: a ball off a paddle, light off a mirror, a particle off the floor.",
+    related: [
+      { name: "vecPerpendicular", reason: "Handy for building the surface normal a reflection needs." },
+    ],
+  },
+  vecRotate: {
+    whatItIs:
+      "This spins a vector around by an angle (in radians), keeping its length but changing which way it points.",
+    howToUse:
+      "Use this to turn things: rotate a heading, orbit a point around a center, or fan out several directions from one.",
+    related: [
+      { name: "vecPerpendicular", reason: "The quick special case of rotating exactly a quarter-turn." },
+      { name: "vecAngle", reason: "Read a vector's current angle before rotating it." },
+    ],
+  },
+  vecLerp: {
+    whatItIs:
+      "This is `lerp` for points and directions. Give it a start vector, an end vector, and a 0-to-1 slider, and it hands back the point partway between them.",
+    howToUse:
+      "Use this to glide something between two positions, or to ease a camera, a handle, or a target from where it is to where it should be.",
+    related: [
+      { name: "lerp", reason: "The single-number version for one value at a time." },
+    ],
+  },
+  vecLimit: {
+    whatItIs:
+      "This caps a vector's length at a maximum, keeping its direction. If it's already shorter, it's left alone; if it's too long, it's shortened to the limit.",
+    howToUse:
+      "Use this to enforce a speed limit: let velocity build up but never exceed a top speed, so a chaser or particle can't run away too fast.",
+    related: [
+      { name: "vecScale", reason: "Set the length to an exact value instead of just capping it." },
+      { name: "clamp", reason: "The same 'keep it within bounds' idea for a single number." },
+    ],
+  },
+  vecAngle: {
+    whatItIs:
+      "This tells you which way a vector is pointing, as an angle in radians measured from the positive x-axis (pointing right).",
+    howToUse:
+      "Use this to face a sprite along its direction of travel, or to read a heading you can then tweak and turn back into a vector.",
+    related: [
+      { name: "getRotation", reason: "Get that angle straight from two points instead of a vector." },
+      { name: "vecRotate", reason: "Spin a vector by an angle once you know it." },
+    ],
+  },
+  vecAngleBetween: {
+    whatItIs:
+      "This gives you the angle between two vectors — how far apart their directions are, as a plain (never-negative) number of radians.",
+    howToUse:
+      "Use this to measure how sharply two headings differ: how wide a turn is, or how far off-aim something is from its target.",
+    related: [
+      { name: "vecDot", reason: "The cheaper same-way/opposite-way signal underneath this angle." },
+    ],
+  },
+
+  // --- Angles (the short way around the circle) ---
+  lerpAngle: {
+    whatItIs:
+      "This is `lerp`, but for angles. It blends from one angle to another the short way around the circle, so turning from 350° to 10° sweeps a tidy 20° instead of spinning 340° the long way.",
+    howToUse:
+      "Use this to rotate something smoothly toward a new heading — a compass needle, a steering enemy, a dial — without an ugly wrap-around jump at the 0°/360° seam.",
+    related: [
+      { name: "shortestAngleBetween", reason: "The raw shortest turn this blend is built on." },
+      { name: "lerp", reason: "The straight-line version for plain numbers that don't wrap." },
+    ],
+  },
+  shortestAngleBetween: {
+    whatItIs:
+      "This tells you the smallest turn needed to get from one angle to another, and its sign tells you which way to turn. It always takes the short way around.",
+    howToUse:
+      "Use this to steer: how much, and in which direction, should something rotate this frame to face its target.",
+    related: [
+      { name: "lerpAngle", reason: "Smoothly ease across that shortest turn instead of snapping." },
+      { name: "wrapAngle", reason: "Keep the result folded into one tidy turn." },
+    ],
+  },
+  wrapAngle: {
+    whatItIs:
+      "This folds any angle back into a tidy range (about -180° to 180°), so 370° becomes 10° and angles never pile up past a full turn.",
+    howToUse:
+      "Use this to keep an ever-growing rotation sane, or to compare two angles fairly after lots of spinning.",
+    related: [
+      { name: "wrap", reason: "The same looping idea for plain numbers over any range." },
+      { name: "shortestAngleBetween", reason: "Uses this kind of folding to find the short way around." },
+    ],
+  },
+
+  // --- Color ---
+  colorFamily: {
+    whatItIs:
+      "This builds a small ordered palette of colors that all belong to one named family (like 'blue' or 'warm'), so they clearly look like they go together.",
+    howToUse:
+      "Use this when you want a coherent set of colors instead of random ones: bars in a chart, particles in a burst, or a themed background.",
+    related: [
+      { name: "getRandomColors", reason: "One random color, optionally biased toward a family." },
+      { name: "lerpColorHsl", reason: "Blend smoothly between two of these colors." },
+    ],
+  },
+  hslToRgb: {
+    whatItIs:
+      "This converts a color from HSL (hue, saturation, lightness — the human-friendly way to describe color) into RGB (red, green, blue — what screens actually use).",
+    howToUse:
+      "Use this after you've picked or tweaked a color in HSL and now need real RGB channels to draw with.",
+    related: [
+      { name: "rgbToHsl", reason: "The reverse conversion, RGB back to HSL." },
+      { name: "rgbToCss", reason: "Turn the RGB result into a string canvas or CSS can use." },
+    ],
+  },
+  rgbToHsl: {
+    whatItIs:
+      "This converts a color from RGB (red, green, blue) into HSL (hue, saturation, lightness), which is far easier to reason about when you want to shift or brighten a color.",
+    howToUse:
+      "Use this when you have a screen color and want to nudge its hue or lightness without wrestling three separate channels.",
+    related: [
+      { name: "hslToRgb", reason: "The reverse conversion, HSL back to RGB." },
+      { name: "lerpColorHsl", reason: "Blend colors around the HSL wheel." },
+    ],
+  },
+  rgbToCss: {
+    whatItIs:
+      "This turns an RGB color into a plain `rgb(...)` text string, rounding the channels to whole numbers — exactly the format canvas and CSS expect.",
+    howToUse:
+      "Use this right before you draw: convert your computed color into the string you hand to `fillStyle` or a style.",
+    related: [
+      { name: "hslToRgb", reason: "Get an RGB value first if you started in HSL." },
+    ],
+  },
+  getRandomColors: {
+    whatItIs:
+      "This picks a random color in HSL, and you can optionally nudge it toward a named family so the randomness still feels on-theme.",
+    howToUse:
+      "Use this to sprinkle variety with a little control: confetti, particles, or tiles that differ but still belong together.",
+    related: [
+      { name: "colorFamily", reason: "A whole ordered palette instead of one random pick." },
+    ],
+  },
 };
 
 export function makeConceptId(title: string): string {
@@ -391,14 +1020,116 @@ export function getEntryUsageLead(
   const direct = ENTRY_USAGE_LEADS[`${entry.module}:${entry.name}`];
   if (direct) return direct;
   if (entry.kind === "type") {
-    return "Shared shape/type information for the runtime APIs around it.";
+    return "This is a shared data shape used by other helpers.";
   }
   if (entry.kind === "const") {
-    return "Reusable exported data you can import directly instead of rebuilding yourself.";
+    return "This is a ready-made exported value.";
   }
-  return "A small pure function: read the signature, scan the params, then steal the example.";
+  if (entry.module.startsWith("CollisionObjectAPI/") || /ToCircle|ToRect|ToLine|ToPolygon|ToPoint|CircleTo|RectTo|LineTo|PolygonTo/.test(entry.module)) {
+    return "This one helps answer: are these things touching yet?";
+  }
+  if (["Lerp", "InverseLerp", "MapRange", "Clamp", "Wrap", "PingPong", "Smoothstep", "Easing", "Animate", "AngleInterpolation"].includes(entry.module)) {
+    return "This one helps a value move in a useful way.";
+  }
+  if (["UnitCirclePoint", "SineCurve", "SineWave", "WaveAmplitude", "GetRotation", "DegToRad", "RadToDeg", "DFT"].includes(entry.module)) {
+    return "This one is great for loops, waves, turning, and repeated motion.";
+  }
+  if (["Vec2", "Distance", "LineLength", "GetPointOnLine", "MoveAlongLine", "MoveToward", "GetTriangleData", "CircleFromThreePoints", "FindPointAroundCircle", "DistributeAroundCircle", "EquilateralTriangle", "Rectangle", "Star", "QuadraticBezier", "BezierCurve"].includes(entry.module)) {
+    return "This one helps with direction, distance, shape, or placement.";
+  }
+  if (["Color", "GetRandomColors"].includes(entry.module)) {
+    return "This one helps colors change or work nicely together.";
+  }
+  if (["Boids", "BallBounce", "BallToBallBounce", "OrbitalMotion", "GameOfLife", "GRStep", "LensDeflection", "SphereLighting"].includes(entry.module)) {
+    return "This one creates motion or behavior you can actually see.";
+  }
+  return "This is a small helper you can plug into an animation.";
 }
 
 export function getEntryVisual(name: string): DocVisualConfig {
   return ENTRY_VISUALS[name] ?? { kind: "none" };
+}
+
+function cleanInlineDoc(text: string): string {
+  return text.replace(/\{@link\s+([^}]+)\}/g, (_match, ref) => ref.trim()).replace(/\s+/g, " ").trim();
+}
+
+function firstParagraph(text: string): string {
+  const [first = ""] = text.split(/\n\s*\n/);
+  return cleanInlineDoc(first);
+}
+
+function defaultWhatItIs(entry: ApiEntryDocLike): string {
+  // Easing family: one shared explanation, differentiated by each curve's own JSDoc line.
+  if (entry.module === "Easing") {
+    const curve = entry.description?.trim() ? firstParagraph(entry.description) : "";
+    const family =
+      "An easing curve takes a plain 0-to-1 progress and bends it so motion feels natural instead of robotic — slow starts, soft landings, a little bounce or overshoot.";
+    return curve ? `${family} This one: ${curve.replace(/\.$/, "")}.` : family;
+  }
+  if (entry.description?.trim()) {
+    return firstParagraph(entry.description);
+  }
+  if (entry.kind === "type") {
+    return "This is a shared shape name for data, like saying what a point or circle is supposed to look like.";
+  }
+  if (entry.kind === "const") {
+    return "This is a ready-made value you can grab and use without rebuilding it yourself.";
+  }
+  return "This is one small reusable building block from `@utilspalooza/core`.";
+}
+
+function defaultHowToUse(entry: ApiEntryDocLike): string {
+  if (entry.kind === "type") {
+    return "Use this when you want your own code to clearly describe what kind of data it expects.";
+  }
+  if (entry.kind === "const") {
+    return "Use this when you want a ready-made value instead of typing it all out yourself.";
+  }
+  if (entry.module === "Easing") {
+    return "Feed it a 0-to-1 progress value (how far a tween has gone) and use what it returns to drive position, size, or opacity. Swapping one easing for another changes how the movement *feels* without touching the rest of your animation.";
+  }
+  const directLead = ENTRY_USAGE_LEADS[`${entry.module}:${entry.name}`];
+  if (directLead) return directLead;
+  if (entry.module.startsWith("CollisionObjectAPI/") || /ToCircle|ToRect|ToLine|ToPolygon|ToPoint|CircleTo|RectTo|LineTo|PolygonTo/.test(entry.module)) {
+    return "Use this when you want to know whether two things in your animation are touching so you can bounce, stop, light up, or react.";
+  }
+  if (["Lerp", "InverseLerp", "MapRange", "Clamp", "Wrap", "PingPong", "Smoothstep", "Easing", "Animate", "AngleInterpolation"].includes(entry.module)) {
+    return "Use this when one value in your animation should move smoothly, loop, ease, or stay within a limit.";
+  }
+  if (["UnitCirclePoint", "SineCurve", "SineWave", "WaveAmplitude", "GetRotation", "DegToRad", "RadToDeg", "DFT"].includes(entry.module)) {
+    return "Use this when something should spin, orbit, wiggle, wave, or repeat in a smooth rhythm.";
+  }
+  if (["Vec2", "Distance", "LineLength", "GetPointOnLine", "MoveAlongLine", "MoveToward", "GetTriangleData", "CircleFromThreePoints", "FindPointAroundCircle", "DistributeAroundCircle", "EquilateralTriangle", "Rectangle", "Star", "QuadraticBezier", "BezierCurve"].includes(entry.module)) {
+    return "Use this when you need help with position, direction, distance, paths, or placing shapes in space.";
+  }
+  if (["Color", "GetRandomColors"].includes(entry.module)) {
+    return "Use this when colors in your animation should change, blend, or stay in the same family.";
+  }
+  if (["Boids", "BallBounce", "BallToBallBounce", "OrbitalMotion", "GameOfLife", "GRStep", "LensDeflection", "SphereLighting"].includes(entry.module)) {
+    return "Use this when you want motion or behavior that feels alive, like bouncing, orbiting, flocking, or reacting to light.";
+  }
+  if (["RandomIntegerBetween", "RandomNumberBetween", "NumberWithCommas", "CenterOnParent"].includes(entry.module)) {
+    return "Use this when you need a small utility to help place, format, or randomize something in your scene.";
+  }
+  if (entry.example?.trim()) {
+    return "Start with the example call below, then swap in your own numbers or objects.";
+  }
+  return "Start with the example below, then plug in values from your own animation.";
+}
+
+export function getEntryTabs(entry: ApiEntryDocLike): EntryTabConfig[] {
+  const visual = getEntryVisual(entry.name);
+  const overrideTabs = ENTRY_DOCS[entry.name]?.tabs;
+  const sourceTabs = overrideTabs ?? DEFAULT_ENTRY_TABS[visual.kind];
+  return sourceTabs.filter((tab) => visual.kind !== "none" || tab.panel !== "visual");
+}
+
+export function getEntryIntro(entry: ApiEntryDocLike) {
+  const override = ENTRY_DOCS[entry.name];
+  return {
+    whatItIs: override?.whatItIs ?? defaultWhatItIs(entry),
+    howToUse: override?.howToUse ?? defaultHowToUse(entry),
+    related: override?.related ?? [],
+  };
 }

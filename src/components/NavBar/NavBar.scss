@@ -1,4 +1,4 @@
-nav {
+.site-nav {
   height: var(--menu-height);
   // 100% (not 100vw) so the bar never includes the vertical-scrollbar gutter,
   // which otherwise forces a horizontal scrollbar on any tall page.
@@ -115,7 +115,7 @@ nav {
 }
 
 @media screen and (min-width: 768px) {
-  nav {
+  .site-nav {
     padding-right: 0.75rem;
 
     h1 {

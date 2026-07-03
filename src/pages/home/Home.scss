@@ -3,7 +3,7 @@
   position: fixed;
   top: var(--menu-height);
   width: 100vw;
-  height: calc(100vh - var(--menu-height));
+  height: calc(100vh - var(--menu-height) - var(--footer-height));
 
   &--canvas-container {
     width: 100vw;

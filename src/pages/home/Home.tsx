@@ -24,7 +24,7 @@ function Home() {
       <div id="home-page--text-container">
         <div id="home-page--text-container_inner">
           <h2>utilspalooza</h2>
-          <p>Readable animation math for canvas, creative coding, and visual experiments.</p>
+          <p>Canvas animation math you can see, understand, and copy into your own project.</p>
           <CopyInstall />
           <div className="home-actions">
             <a href="/examples">Browse examples</a>

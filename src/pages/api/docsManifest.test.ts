@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import animationManifest from "../../animationManifest";
 import coreApi from "./core-api.json";
 import {
+  getEntryIntro,
+  getEntryTabs,
   MODULE_GUIDES,
   getEntryVisual,
 } from "./docsManifest";
@@ -40,6 +42,22 @@ describe("api docs manifest", () => {
       if (visual.kind !== "example") continue;
       expect(visual.exampleSlug).toBeTruthy();
       expect(exampleSlugs.has(visual.exampleSlug!)).toBe(true);
+    }
+  });
+
+  it("every export gets at least one docs tab", () => {
+    for (const entry of apiEntries) {
+      expect(getEntryTabs(entry).length).toBeGreaterThan(0);
+    }
+  });
+
+  it("related-entry links point at real exports", () => {
+    const exportNames = new Set(apiEntries.map((entry) => entry.name));
+
+    for (const entry of apiEntries) {
+      for (const related of getEntryIntro(entry).related) {
+        expect(exportNames.has(related.name)).toBe(true);
+      }
     }
   });
 });

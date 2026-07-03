@@ -7,6 +7,13 @@
   background: var(--bg-elevated);
   overflow: hidden;
   font-family: "Space Mono", monospace;
+  transition: border-color 0.15s ease;
+
+  /* Hovering the copy button turns the whole box border orange — no glow. */
+  &:has(.copy-install__button:hover),
+  &:has(.copy-install__button:focus-visible) {
+    border-color: var(--brand-orange);
+  }
 
   &__command {
     display: flex;
@@ -30,8 +37,10 @@
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background: rgba(9, 11, 19, 0.85);
+      box-shadow: none; // suppress the global button:hover glow
     }
   }
 }

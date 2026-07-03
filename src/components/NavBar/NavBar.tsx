@@ -11,7 +11,7 @@ function NavBar() {
   }, [location.pathname]);
 
   return (
-    <nav>
+    <nav className="site-nav">
       <h1>
         <div className="logo-container">
           <UtilspaloozaLogo />
@@ -31,10 +31,9 @@ function NavBar() {
       <div id="nav-links" className={collapsed ? "collapsed" : ""}>
         <NavLink to="/quickstart">start here</NavLink>
         <NavLink to="/examples">examples</NavLink>
-        <NavLink to="/create-json">à la carte</NavLink>
+        <NavLink to="/create-json">copy code</NavLink>
         <NavLink to="/api">api</NavLink>
-        <NavLink to="/studio">studio</NavLink>
-        <NavLink to="/about">about</NavLink>
+        <NavLink to="/studio">projects</NavLink>
       </div>
     </nav>
   );

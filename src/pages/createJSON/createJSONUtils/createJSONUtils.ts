@@ -57,91 +57,106 @@ export const INTERFACE_ORDER = [
   "Ball",
 ];
 
-export function downloadTsExport() {
-  const selected: string[] = (localStorage.getItem("functions")
-    ? localStorage.getItem("functions")!.split(",")
-    : []);
+export type ExportLang = "ts" | "js";
 
+export interface SelectedEntry {
+  key: string;
+  title: string;
+  category: string;
+}
+
+export interface GatheredSelection {
+  entries: SelectedEntry[];
+  functionStrings: string[];
+  dependencies: string[];
+  interfaces: string[];
+}
+
+// Single source of truth for what the current selection pulls in: the picked
+// entries, their function bodies, the helper functions they depend on, and the
+// shared interfaces they need (with parent interfaces auto-included). The live
+// preview, the copy button, and both downloads all read from this so they can
+// never drift.
+export function gatherSelection(selectedKeys?: string[]): GatheredSelection {
+  const selected =
+    selectedKeys ??
+    (localStorage.getItem("functions") ?? "").split(",").filter(Boolean);
+
+  const entries: SelectedEntry[] = [];
   const functionStrings: string[] = [];
   const dependencySet = new Set<string>();
   const interfaceNames = new Set<string>();
 
-  Object.values(animationManifest).forEach((objects) => {
+  Object.entries(animationManifest).forEach(([category, objects]) => {
     Object.entries(objects).forEach(([key, value]) => {
-      if (selected.includes(key)) {
-        functionStrings.push(value.formula.functionString.trim());
-        value.formula.dependencies.forEach((dep: string) => dependencySet.add(dep.trim()));
-        (value.formula.interfaces ?? []).forEach((iface: string) => {
-          interfaceNames.add(iface);
-          // pull in parent interfaces automatically
-          if (iface === "Ball" || iface === "Rectangle") interfaceNames.add("ShapeInMotion");
-          if (iface === "Polygon") interfaceNames.add("Vector");
-          if (iface === "Line" || iface === "Triangle") interfaceNames.add("Point");
-        });
-      }
+      if (!selected.includes(key)) return;
+      entries.push({ key, title: value.title, category });
+      functionStrings.push(value.formula.functionString.trim());
+      value.formula.dependencies.forEach((dep: string) =>
+        dependencySet.add(dep.trim()),
+      );
+      (value.formula.interfaces ?? []).forEach((iface: string) => {
+        interfaceNames.add(iface);
+        // pull in parent interfaces automatically
+        if (iface === "Ball" || iface === "Rectangle")
+          interfaceNames.add("ShapeInMotion");
+        if (iface === "Polygon") interfaceNames.add("Vector");
+        if (iface === "Line" || iface === "Triangle") interfaceNames.add("Point");
+      });
     });
   });
 
-  const orderedInterfaces = INTERFACE_ORDER.filter((name) => interfaceNames.has(name));
+  return {
+    entries,
+    functionStrings,
+    dependencies: [...dependencySet],
+    interfaces: INTERFACE_ORDER.filter((name) => interfaceNames.has(name)),
+  };
+}
 
+// Format a gathered selection into a copy/download-ready file. TypeScript keeps
+// the interface block and type annotations; JavaScript strips both.
+export function formatExport(lang: ExportLang, selectedKeys?: string[]): string {
+  const { functionStrings, dependencies, interfaces } =
+    gatherSelection(selectedKeys);
   const parts: string[] = [];
 
-  if (orderedInterfaces.length > 0) {
+  if (lang === "ts" && interfaces.length > 0) {
     parts.push("// ── interfaces " + "─".repeat(63));
-    orderedInterfaces.forEach((name) => {
-      parts.push("\nexport " + InterfaceMap[name]);
-    });
+    interfaces.forEach((name) => parts.push("\nexport " + InterfaceMap[name]));
   }
 
-  if (dependencySet.size > 0) {
-    parts.push("\n// ── dependencies " + "─".repeat(61));
-    dependencySet.forEach((dep) => parts.push("\n" + dep));
+  if (dependencies.length > 0) {
+    parts.push((parts.length ? "\n" : "") + "// ── dependencies " + "─".repeat(61));
+    dependencies.forEach((dep) =>
+      parts.push("\n" + (lang === "js" ? stripTypeScript(dep) : dep)),
+    );
   }
 
   if (functionStrings.length > 0) {
-    parts.push("\n// ── selected functions " + "─".repeat(55));
-    functionStrings.forEach((fn) => parts.push("\nexport function " + fn.replace(/^function\s+/, "")));
+    parts.push(
+      (parts.length ? "\n" : "") + "// ── selected functions " + "─".repeat(55),
+    );
+    functionStrings.forEach((fn) => {
+      const body = lang === "js" ? stripTypeScript(fn) : fn;
+      parts.push("\nexport function " + body.replace(/^function\s+/, ""));
+    });
   }
 
-  const fileContent = parts.join("\n");
+  return parts.join("\n");
+}
 
-  triggerDownload(fileContent, "utilspalooza-functions.ts");
+export function downloadExport(lang: ExportLang) {
+  triggerDownload(formatExport(lang), `utilspalooza-functions.${lang}`);
+}
+
+// Kept as thin backward-compatible wrappers over the unified generator.
+export function downloadTsExport() {
+  downloadExport("ts");
 }
 
 export function downloadJsExport() {
-  const selected: string[] = (localStorage.getItem("functions")
-    ? localStorage.getItem("functions")!.split(",")
-    : []);
-
-  const functionStrings: string[] = [];
-  const dependencySet = new Set<string>();
-
-  Object.values(animationManifest).forEach((objects) => {
-    Object.entries(objects).forEach(([key, value]) => {
-      if (selected.includes(key)) {
-        functionStrings.push(value.formula.functionString.trim());
-        value.formula.dependencies.forEach((dep: string) => dependencySet.add(dep.trim()));
-      }
-    });
-  });
-
-  const parts: string[] = [];
-
-  if (dependencySet.size > 0) {
-    parts.push("// ── dependencies " + "─".repeat(61));
-    dependencySet.forEach((dep) =>
-      parts.push("\n" + stripTypeScript(dep))
-    );
-  }
-
-  if (functionStrings.length > 0) {
-    parts.push("\n// ── selected functions " + "─".repeat(55));
-    functionStrings.forEach((fn) =>
-      parts.push("\nexport function " + stripTypeScript(fn).replace(/^function\s+/, ""))
-    );
-  }
-
-  triggerDownload(parts.join("\n"), "utilspalooza-functions.js");
+  downloadExport("js");
 }
 
 function triggerDownload(content: string, filename: string) {

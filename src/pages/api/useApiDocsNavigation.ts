@@ -7,8 +7,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CONCEPT_PREFIX } from "./apiModel";
 
 export const TABS = [
-  { id: "overview", label: "Overview" },
   { id: "documentation", label: "Documentation" },
+  { id: "overview", label: "Overview" },
 ] as const;
 
 export type TabId = (typeof TABS)[number]["id"];
@@ -21,13 +21,14 @@ function isTabId(value: string | null): value is TabId {
 
 function getTabFromSearch(search: string): TabId {
   const value = new URLSearchParams(search).get("tab");
-  return isTabId(value) ? value : "overview";
+  return isTabId(value) ? value : "documentation";
 }
 
 export interface ApiDocsNavigation {
   tab: TabId;
   query: string;
   pickFunction: (name: string, conceptId: string) => void;
+  focusFunction: (name: string) => void;
   setTab: (nextTab: TabId) => void;
   setDocumentationQuery: (value: string) => void;
   jumpToConcept: (conceptId: string) => void;
@@ -73,7 +74,7 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
     replace = false,
   ) => {
     const params = new URLSearchParams();
-    if (nextTab !== "overview") params.set("tab", nextTab);
+    if (nextTab !== "documentation") params.set("tab", nextTab);
     const trimmedQuery = nextQuery.trim();
     if (trimmedQuery) params.set("q", trimmedQuery);
     if (nextFn) params.set("fn", nextFn);
@@ -131,6 +132,17 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
     updateSearch("documentation", name, name, conceptId);
   };
 
+  const focusFunction = (name: string) => {
+    setQuery(name);
+    pendingDocTargetRef.current = name;
+    updateSearch(
+      "documentation",
+      name,
+      name,
+      pendingOverviewConceptRef.current ?? undefined,
+    );
+  };
+
   const setTab = (nextTab: TabId) => {
     if (nextTab === tab) return;
     if (tab === "overview") saveOverviewScroll();
@@ -161,5 +173,13 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
     updateSearch("overview", "", undefined, conceptId);
   };
 
-  return { tab, query, pickFunction, setTab, setDocumentationQuery, jumpToConcept };
+  return {
+    tab,
+    query,
+    pickFunction,
+    focusFunction,
+    setTab,
+    setDocumentationQuery,
+    jumpToConcept,
+  };
 }

@@ -6,6 +6,7 @@
 
 :root {
   --menu-height:   50px;
+  --footer-height: 44px;
   --bg:            #0d0f1a;
   --bg-surface:    #161929;
   --bg-elevated:   #1e2235;
@@ -104,18 +105,56 @@ pre {
 }
 
 .app-main {
-  /* grow to fill leftover viewport so the footer sits at the bottom on short
-     pages; stays a plain block so page layouts are unaffected */
+  /* grow to fill leftover viewport; pad the bottom so scrolling page content
+     is never hidden behind the fixed footer bar */
   flex: 1 0 auto;
+  padding-bottom: var(--footer-height);
 }
 
+/* Fixed bottom bar so About / GitHub / npm stay reachable on every page,
+   including the immersive full-viewport ones (home, examples, projects) that
+   pin their own content and would otherwise paint over a flow footer. */
 .site-footer {
-  flex-shrink: 0;
-  text-align: center;
-  padding: 20px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  height: var(--footer-height);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 20px;
+  padding: 0 16px;
+  background: var(--bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.35);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+
+  a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.01em;
+    transition: color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--brand-orange-soft, #ffcf8f);
+    }
+  }
+}
+
+.site-footer__legal {
+  color: rgba(255, 255, 255, 0.32);
 }
 
 .text-container-div {

@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import CopyInstall from "../../components/CopyInstall/CopyInstall";
 import {
+  getEntryIntro,
+  getEntryTabs,
   getEntryUsageLead,
   getModuleDocMode,
   MODULE_GUIDES,
@@ -30,34 +32,71 @@ function renderEntryMeta(entry: ApiEntry, mode: ModuleDocMode) {
   );
 }
 
-function ApiEntryCard({
+function EntryIntroPanel({
   entry,
-  mode,
-  onJumpToConcept,
+  onFocusFunction,
 }: {
   entry: ApiEntry;
-  mode: ModuleDocMode;
-  onJumpToConcept: (conceptId: string) => void;
+  onFocusFunction: (name: string) => void;
 }) {
-  const concept = getConceptForModule(entry.module);
+  const intro = getEntryIntro(entry);
   return (
-    <article className="api-docs__fn" key={`${entry.module}.${entry.name}`} id={entry.name}>
-      <div className="api-docs__fn-head">
-        <code className="api-docs__fn-name">{entry.name}</code>
-        {renderEntryMeta(entry, mode)}
+    <div className="api-docs__entry-panel">
+      <p className="api-docs__usage-lead">{getEntryUsageLead(entry)}</p>
+
+      <div className="api-docs__teaching-grid">
+        <section className="api-docs__teaching-block">
+          <h3>In Plain English</h3>
+          <p>{intro.whatItIs}</p>
+        </section>
+        <section className="api-docs__teaching-block">
+          <h3>When You'd Use It</h3>
+          <p>{intro.howToUse}</p>
+        </section>
       </div>
-      {concept && (
-        <div className="api-docs__crumbs">
-          <button type="button" onClick={() => onJumpToConcept(concept.id)}>
-            Overview
-          </button>
-          <span>/</span>
-          <button type="button" onClick={() => onJumpToConcept(concept.id)}>
-            {concept.title}
-          </button>
-        </div>
+
+      <div className="api-docs__teaching-grid">
+        <section className="api-docs__teaching-block">
+          <h3>Grab It Like This</h3>
+          <pre className="api-docs__fn-sig">
+            <code>{renderImportLine(entry)}</code>
+          </pre>
+        </section>
+        {entry.example && (
+          <section className="api-docs__teaching-block">
+            <h3>Starter Example</h3>
+            <pre className="api-docs__fn-example">
+              <code>{entry.example}</code>
+            </pre>
+          </section>
+        )}
+      </div>
+
+      {intro.related.length > 0 && (
+        <section className="api-docs__related">
+          <h3>You Might Also Want</h3>
+          <div className="api-docs__related-list">
+            {intro.related.map((related) => (
+              <button
+                type="button"
+                key={`${entry.name}-${related.name}`}
+                className="api-docs__related-item"
+                onClick={() => onFocusFunction(related.name)}
+              >
+                <code>{related.name}</code>
+                <span>{related.reason}</span>
+              </button>
+            ))}
+          </div>
+        </section>
       )}
-      {mode === "guide" && <p className="api-docs__usage-lead">{getEntryUsageLead(entry)}</p>}
+    </div>
+  );
+}
+
+function EntryReferencePanel({ entry }: { entry: ApiEntry }) {
+  return (
+    <div className="api-docs__entry-panel">
       <pre className="api-docs__fn-sig">
         <code>{renderImportLine(entry)}</code>
       </pre>
@@ -65,7 +104,6 @@ function ApiEntryCard({
         <code>{`${entry.name}${entry.kind === "type" ? "" : `: ${entry.signature}`}`}</code>
       </pre>
       {entry.description && <p>{cleanDoc(entry.description)}</p>}
-      <EntryVisual entry={entry} />
       {entry.params.length > 0 && (
         <dl className="api-docs__params">
           {entry.params.map((param) => (
@@ -86,6 +124,90 @@ function ApiEntryCard({
           <code>{entry.example}</code>
         </pre>
       )}
+    </div>
+  );
+}
+
+function EntryTabs({
+  entry,
+  onFocusFunction,
+}: {
+  entry: ApiEntry;
+  onFocusFunction: (name: string) => void;
+}) {
+  const tabs = getEntryTabs(entry);
+  const [activeTabId, setActiveTabId] = useState(tabs[0]?.id ?? "intro");
+  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
+  const panelId = `${entry.name}-${activeTab.id}-panel`;
+
+  return (
+    <>
+      <nav className="api-docs__entry-tabs" aria-label={`${entry.name} sections`} role="tablist">
+        {tabs.map((tab) => {
+          const isActive = tab.id === activeTab.id;
+          return (
+            <button
+              key={`${entry.name}-${tab.id}`}
+              id={`${entry.name}-${tab.id}-tab`}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`${entry.name}-${tab.id}-panel`}
+              className={isActive ? "api-docs__entry-tab active" : "api-docs__entry-tab"}
+              onClick={() => setActiveTabId(tab.id)}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      <div
+        id={panelId}
+        role="tabpanel"
+        aria-labelledby={`${entry.name}-${activeTab.id}-tab`}
+        className="api-docs__entry-tabpanel"
+      >
+        {activeTab.panel === "intro" && (
+          <EntryIntroPanel entry={entry} onFocusFunction={onFocusFunction} />
+        )}
+        {activeTab.panel === "visual" && <EntryVisual entry={entry} />}
+        {activeTab.panel === "reference" && <EntryReferencePanel entry={entry} />}
+      </div>
+    </>
+  );
+}
+
+function ApiEntryCard({
+  entry,
+  mode,
+  onJumpToConcept,
+  onFocusFunction,
+}: {
+  entry: ApiEntry;
+  mode: ModuleDocMode;
+  onJumpToConcept: (conceptId: string) => void;
+  onFocusFunction: (name: string) => void;
+}) {
+  const concept = getConceptForModule(entry.module);
+  return (
+    <article className="api-docs__fn" key={`${entry.module}.${entry.name}`} id={entry.name}>
+      <div className="api-docs__fn-head">
+        <code className="api-docs__fn-name">{entry.name}</code>
+        {renderEntryMeta(entry, mode)}
+      </div>
+      {concept && (
+        <div className="api-docs__crumbs">
+          <button type="button" onClick={() => onJumpToConcept(concept.id)}>
+            Overview
+          </button>
+          <span>/</span>
+          <button type="button" onClick={() => onJumpToConcept(concept.id)}>
+            {concept.title}
+          </button>
+        </div>
+      )}
+      <EntryTabs entry={entry} onFocusFunction={onFocusFunction} />
     </article>
   );
 }
@@ -94,10 +216,12 @@ function Documentation({
   query,
   setQuery,
   onJumpToConcept,
+  onFocusFunction,
 }: {
   query: string;
   setQuery: (value: string) => void;
   onJumpToConcept: (conceptId: string) => void;
+  onFocusFunction: (name: string) => void;
 }) {
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -105,6 +229,7 @@ function Documentation({
       ? apiEntries.filter(
           (e) =>
             e.name.toLowerCase().includes(q) ||
+            e.module.toLowerCase().includes(q) ||
             e.description.toLowerCase().includes(q),
         )
       : apiEntries;
@@ -123,9 +248,9 @@ function Documentation({
       <div className="api-docs__section-head">
         <h2>Function Reference</h2>
         <p>
-          Generated from the source JSDoc. Pure functions still read like a normal
-          reference; the handful of bigger systems are documented from the top down
-          so you can see how to use them before reading every member.
+          Every export now opens as a small teaching surface: plain-language intro,
+          dedicated motion/example tab, then the raw signature and params. Change the
+          query when you want to compare siblings or narrow to one tool.
         </p>
       </div>
 
@@ -161,11 +286,7 @@ function Documentation({
                 {MODULE_GUIDES[module]!.keyPieceNames
                   .filter((name) => visibleEntryNames.has(name))
                   .map((name) => (
-                    <button
-                      type="button"
-                      key={name}
-                      onClick={() => document.getElementById(name)?.scrollIntoView({ block: "start" })}
-                    >
+                    <button type="button" key={name} onClick={() => onFocusFunction(name)}>
                       {name}
                     </button>
                   ))}
@@ -178,6 +299,7 @@ function Documentation({
               entry={entry}
               mode={getModuleDocMode(module)}
               onJumpToConcept={onJumpToConcept}
+              onFocusFunction={onFocusFunction}
             />
           ))}
         </div>
@@ -189,8 +311,15 @@ function Documentation({
 }
 
 function ApiDocs() {
-  const { tab, query, pickFunction, setTab, setDocumentationQuery, jumpToConcept } =
-    useApiDocsNavigation();
+  const {
+    tab,
+    query,
+    pickFunction,
+    focusFunction,
+    setTab,
+    setDocumentationQuery,
+    jumpToConcept,
+  } = useApiDocsNavigation();
 
   return (
     <main className="api-docs">
@@ -240,6 +369,7 @@ function ApiDocs() {
           query={query}
           setQuery={setDocumentationQuery}
           onJumpToConcept={jumpToConcept}
+          onFocusFunction={focusFunction}
         />
       )}
     </main>
