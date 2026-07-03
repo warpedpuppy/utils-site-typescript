@@ -26,8 +26,8 @@ function CreateChecklists() {
         );
         let tempArray: ReactNode[] = [];
         Object.entries(innerArray[1]).forEach((innerInnerArray) => {
-          const { t, l, f } = innerInnerArray[1];
-          const docsTarget = f.keyFunction?.name ?? "";
+          const { title, slug, formula } = innerInnerArray[1];
+          const docsTarget = formula.keyFunction?.name ?? "";
           const docsHref = docsTarget
             ? `/api?tab=documentation&fn=${encodeURIComponent(docsTarget)}`
             : "";
@@ -35,21 +35,21 @@ function CreateChecklists() {
           if (innerInnerArray[1].include !== false)
             tempArray.push(
               <div
-                key={`createjson-dd-${l}`}
+                key={`createjson-dd-${slug}`}
                 className="individual-checklist-item"
               >
                 {clickHandler !== null ? (
                   <div
                     className={
-                      location.pathname.includes(l)
+                      location.pathname.includes(slug)
                         ? "checklist-div active"
                         : "checklist-div"
                     }
-                    onClick={() => navigate(`/examples/${l}`)}
+                    onClick={() => navigate(`/examples/${slug}`)}
                   >
-                    <Link className="example-checklist-link" to={`/examples/${l}`}>
+                    <Link className="example-checklist-link" to={`/examples/${slug}`}>
                       <div className="hover-anim"></div>
-                      <div className="link-name">{t}</div>
+                      <div className="link-name">{title}</div>
                     </Link>
                     {/* Actions stop propagation so the box-wide click above can't
                         clobber their own destinations (docs → /api, full function
@@ -65,7 +65,7 @@ function CreateChecklists() {
                       )}
                       <Link
                         className="checklist-mini-link"
-                        to={`/examples/${l}`}
+                        to={`/examples/${slug}`}
                         state={{ openCode: true }}
                       >
                         full function
@@ -76,9 +76,9 @@ function CreateChecklists() {
                   <>
                     <CheckListCheckbox
                       objectProperty={innerInnerArray[0]}
-                      idAttribute={`${l}`}
+                      idAttribute={`${slug}`}
                     />
-                    <label htmlFor={`${l}`}>{t}</label>
+                    <label htmlFor={`${slug}`}>{title}</label>
                   </>
                 )}
               </div>
@@ -96,7 +96,7 @@ function CreateChecklists() {
               if (setOpen) setOpen(nextOpen);
               if (clickHandler && nextOpen !== -1 && firstEntry) {
                 const [itemKey, itemVal] = firstEntry as [string, any];
-                clickHandler(`/examples/${itemVal.l}`, innerArray[0], itemKey);
+                clickHandler(`/examples/${itemVal.slug}`, innerArray[0], itemKey);
               }
             }}
           />

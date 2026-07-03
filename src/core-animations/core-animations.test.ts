@@ -79,14 +79,14 @@ describe("Animation manifest metadata", () => {
     for (const [categoryName, category] of Object.entries(animationManifest)) {
       for (const [animationKey, entry] of Object.entries(category)) {
         const { default: AnimationClass } = await entry.load();
-        if (AnimationClass.t !== entry.t) {
+        if (AnimationClass.t !== entry.title) {
           failures.push(
-            `${categoryName}.${animationKey}: title ${entry.t} does not match ${AnimationClass.t}`
+            `${categoryName}.${animationKey}: title ${entry.title} does not match ${AnimationClass.t}`
           );
         }
-        if (AnimationClass.l !== entry.l) {
+        if (AnimationClass.l !== entry.slug) {
           failures.push(
-            `${categoryName}.${animationKey}: slug ${entry.l} does not match ${AnimationClass.l}`
+            `${categoryName}.${animationKey}: slug ${entry.slug} does not match ${AnimationClass.l}`
           );
         }
         if (AnimationClass.include !== entry.include) {

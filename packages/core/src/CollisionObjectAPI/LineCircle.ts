@@ -10,6 +10,9 @@ import { Line, Circle } from '../types';
  * @param line - The line segment (`startPoint`, `endPoint`).
  * @param circle - The circle (`x`, `y`, `radius`).
  * @returns `true` if the segment touches or crosses the circle.
+ * @remarks
+ * This object-argument form is the **recommended** one; {@link lineToCircle} is the flat,
+ * seven-number equivalent running the identical closest-point-on-segment test.
  * @example
  * lineCircle({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0, radius: 2 }); // => true
  */

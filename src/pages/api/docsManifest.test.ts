@@ -16,7 +16,7 @@ const apiEntries = coreApi as ApiEntry[];
 function getExampleSlugs() {
   return new Set(
     Object.values(animationManifest).flatMap((category) =>
-      Object.values(category).map((entry) => entry.l),
+      Object.values(category).map((entry) => entry.slug),
     ),
   );
 }

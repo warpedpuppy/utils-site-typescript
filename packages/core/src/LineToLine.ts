@@ -12,6 +12,10 @@
  * @param x4 - Second segment end x.
  * @param y4 - Second segment end y.
  * @returns `true` if the two segments intersect (parallel segments return `false`).
+ * @remarks
+ * Flat, eight-number form that answers only "do they cross?" If you also need *where*
+ * they cross, use the object-argument {@link lineLine}, which returns
+ * `{ hit, intersectionX, intersectionY }`.
  * @example
  * lineToLine(0, 0, 10, 10, 0, 10, 10, 0); // => true (an X)
  */

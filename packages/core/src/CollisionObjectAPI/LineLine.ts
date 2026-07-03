@@ -11,6 +11,9 @@ import { Line } from '../types';
  * @param line1 - First segment (`startPoint`, `endPoint`).
  * @param line2 - Second segment (`startPoint`, `endPoint`).
  * @returns `{ hit: true, intersectionX, intersectionY }` if they cross, else `{ hit: false }`.
+ * @remarks
+ * Use this when you need the intersection *point*. If a plain yes/no is enough, the flat
+ * {@link lineToLine} returns a `boolean`.
  * @example
  * const r = lineLine(a, b);
  * if (r.hit) drawDot(r.intersectionX, r.intersectionY);

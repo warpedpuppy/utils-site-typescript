@@ -13,8 +13,8 @@ export function CreateJson() {
     Object.values(animationManifest).forEach((objects) => {
       Object.entries(objects).forEach((keyValues) => {
         if (arrayOfFormulas.includes(keyValues[0])) {
-          set.add(keyValues[1].f.functionString);
-          keyValues[1].f.dependencies.forEach((dependency: string) => {
+          set.add(keyValues[1].formula.functionString);
+          keyValues[1].formula.dependencies.forEach((dependency: string) => {
             set.add(dependency);
           });
         }
@@ -69,9 +69,9 @@ export function downloadTsExport() {
   Object.values(animationManifest).forEach((objects) => {
     Object.entries(objects).forEach(([key, value]) => {
       if (selected.includes(key)) {
-        functionStrings.push(value.f.functionString.trim());
-        value.f.dependencies.forEach((dep: string) => dependencySet.add(dep.trim()));
-        (value.f.interfaces ?? []).forEach((iface: string) => {
+        functionStrings.push(value.formula.functionString.trim());
+        value.formula.dependencies.forEach((dep: string) => dependencySet.add(dep.trim()));
+        (value.formula.interfaces ?? []).forEach((iface: string) => {
           interfaceNames.add(iface);
           // pull in parent interfaces automatically
           if (iface === "Ball" || iface === "Rectangle") interfaceNames.add("ShapeInMotion");
@@ -119,8 +119,8 @@ export function downloadJsExport() {
   Object.values(animationManifest).forEach((objects) => {
     Object.entries(objects).forEach(([key, value]) => {
       if (selected.includes(key)) {
-        functionStrings.push(value.f.functionString.trim());
-        value.f.dependencies.forEach((dep: string) => dependencySet.add(dep.trim()));
+        functionStrings.push(value.formula.functionString.trim());
+        value.formula.dependencies.forEach((dep: string) => dependencySet.add(dep.trim()));
       }
     });
   });

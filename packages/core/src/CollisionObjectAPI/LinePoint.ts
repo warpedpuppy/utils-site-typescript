@@ -10,6 +10,9 @@ import { Line, Point } from '../types';
  * @param line - The line segment (`startPoint`, `endPoint`).
  * @param point - The point to test.
  * @returns `true` if the point sits on the segment within the built-in `0.1` tolerance.
+ * @remarks
+ * The tolerance here is fixed at `0.1`. If you need to choose it, use the flat
+ * {@link lineToPoint}, which takes an explicit `threshold` argument.
  * @example
  * linePoint({ startPoint: { x: 0, y: 0 }, endPoint: { x: 10, y: 0 } }, { x: 5, y: 0 }); // => true
  */

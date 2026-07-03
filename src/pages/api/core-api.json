@@ -1864,7 +1864,7 @@
     "kind": "function",
     "module": "PolygonToPolygon",
     "signature": "(poly1: Point[], poly2: Point[]) => boolean",
-    "description": "Test whether two polygons overlap, by checking if either has a vertex inside the other.\n\nUses ray-casting (the point-in-polygon test) on each polygon's vertices. This\ncatches most overlaps but can miss edge-only crossings where no vertex is contained.",
+    "description": "Test whether two polygons overlap.\n\nThis flat form takes two raw vertex arrays and delegates to the canonical\n{@link polygonPolygon}, which is complete: it checks edge crossings *and* both\ncontainment directions. (An earlier version tested vertices only and silently\nmissed edge-only overlaps — two rotated squares crossing in an \"X\" with no\ncontained vertex. That gap is gone.)\n\nFor new code the **recommended** shape is {@link polygonPolygon} itself\n(`polygonPolygon({ vertices }, { vertices })`); this wrapper exists for callers\nthat already hold bare point arrays.",
     "params": [
       {
         "name": "poly1",
@@ -1875,7 +1875,7 @@
         "text": "Second polygon as an array of points."
       }
     ],
-    "returns": "`true` if a vertex of either polygon lies inside the other.",
+    "returns": "`true` if the polygons intersect or one contains the other.",
     "example": "polygonToPolygon(squareA, squareB); // => true when they overlap"
   },
   {

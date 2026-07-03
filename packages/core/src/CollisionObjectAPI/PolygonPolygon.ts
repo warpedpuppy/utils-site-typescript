@@ -12,6 +12,10 @@ import { Polygon, Line } from '../types';
  * @param polygon1 - First polygon (`vertices`).
  * @param polygon2 - Second polygon (`vertices`).
  * @returns `true` if the polygons intersect or one contains the other.
+ * @remarks
+ * This is the **canonical, complete** polygon-overlap test. The flat {@link polygonToPolygon}
+ * (bare vertex arrays) delegates here, so both catch edge-only crossings, not just
+ * contained vertices.
  * @example
  * polygonPolygon({ vertices: squareA }, { vertices: squareB }); // => true when overlapping
  */

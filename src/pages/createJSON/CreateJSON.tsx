@@ -21,7 +21,7 @@ function getSelectedInterfaceNames(): string[] {
   Object.values(animationManifest).forEach((objects) => {
     Object.entries(objects).forEach(([key, value]) => {
       if (selected.includes(key)) {
-        (value.f.interfaces ?? []).forEach((iface: string) => {
+        (value.formula.interfaces ?? []).forEach((iface: string) => {
           names.add(iface);
           if (iface === "Ball" || iface === "Rectangle") names.add("ShapeInMotion");
           if (iface === "Polygon") names.add("Vector");

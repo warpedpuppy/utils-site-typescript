@@ -1,30 +1,25 @@
 import { Point } from './types';
-function pointInPolygon(x: number, y: number, poly: Point[]): boolean {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    let xi = poly[i].x, yi = poly[i].y;
-    let xj = poly[j].x, yj = poly[j].y;
-    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
-      inside = !inside;
-    }
-  }
-  return inside;
-}
+import { polygonPolygon } from './CollisionObjectAPI/PolygonPolygon';
 
 /**
- * Test whether two polygons overlap, by checking if either has a vertex inside the other.
+ * Test whether two polygons overlap.
  *
- * Uses ray-casting (the point-in-polygon test) on each polygon's vertices. This
- * catches most overlaps but can miss edge-only crossings where no vertex is contained.
+ * This flat form takes two raw vertex arrays and delegates to the canonical
+ * {@link polygonPolygon}, which is complete: it checks edge crossings *and* both
+ * containment directions. (An earlier version tested vertices only and silently
+ * missed edge-only overlaps — two rotated squares crossing in an "X" with no
+ * contained vertex. That gap is gone.)
+ *
+ * For new code the **recommended** shape is {@link polygonPolygon} itself
+ * (`polygonPolygon({ vertices }, { vertices })`); this wrapper exists for callers
+ * that already hold bare point arrays.
  *
  * @param poly1 - First polygon as an array of points.
  * @param poly2 - Second polygon as an array of points.
- * @returns `true` if a vertex of either polygon lies inside the other.
+ * @returns `true` if the polygons intersect or one contains the other.
  * @example
  * polygonToPolygon(squareA, squareB); // => true when they overlap
  */
 export function polygonToPolygon(poly1: Point[], poly2: Point[]): boolean {
-  for (let p of poly1) if (pointInPolygon(p.x, p.y, poly2)) return true;
-  for (let p of poly2) if (pointInPolygon(p.x, p.y, poly1)) return true;
-  return false;
+  return polygonPolygon({ vertices: poly1 }, { vertices: poly2 });
 }
