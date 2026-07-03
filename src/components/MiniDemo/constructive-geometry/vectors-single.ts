@@ -158,9 +158,36 @@ export function drawSingleVectorScene(
     drawVector(ctx, origin, handleFromVector(origin, perpendicular, 0.75), "#fb7185", "⊥", false);
     drawAngleArcBetween(ctx, origin, handle, handleFromVector(origin, perpendicular, 0.75), 42, "rgba(249, 115, 22, 0.95)");
   } else {
+    // vecAngle: the heading measured from the +x axis. Teach that reference
+    // explicitly — draw the "0°" baseline ray, sweep a small arc from it to the
+    // vector, and label θ on the arc itself. (The arc radius is a small constant;
+    // the old code passed `origin.x + 54`, which ballooned the radius to ~175px so
+    // the arc fell outside the box and only a tiny sliver showed.)
+    const arcRadius = 46;
+
+    // The +x axis is the zero reference the angle is measured from.
+    ctx.strokeStyle = "rgba(249, 115, 22, 0.55)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(origin.x, origin.y);
+    ctx.lineTo(origin.x + arcRadius + 34, origin.y);
+    ctx.stroke();
+    labelSegment(ctx, origin.x + arcRadius + 38, origin.y + 4, "0° (+x)", "rgba(249, 115, 22, 0.85)");
+
+    drawAngleArc(ctx, origin, handle, arcRadius, "rgba(249, 115, 22, 0.95)");
+
+    // θ label at the arc's angular midpoint, nudged just outside the arc so it
+    // rides the sweep instead of sitting on the axis.
+    const endAngle = Math.atan2(handle.y - origin.y, handle.x - origin.x);
+    const labelR = arcRadius + 18;
+    labelSegment(
+      ctx,
+      origin.x + Math.cos(endAngle / 2) * labelR,
+      origin.y + Math.sin(endAngle / 2) * labelR,
+      `θ = ${fmt(radToDeg(radians))}°`,
+      "rgba(249, 115, 22, 0.98)",
+    );
     drawHeaderBox(ctx, [{ text: `θ = ${fmt(radians)} rad = ${fmt(radToDeg(radians))}°`, color: "#e2e8f0" }]);
-    drawAngleArc(ctx, origin, handle, origin.x + 54, "rgba(249, 115, 22, 0.95)");
-    labelSegment(ctx, origin.x + 52, origin.y - 10, `θ = ${fmt(radToDeg(radians))}°`, "rgba(249, 115, 22, 0.98)");
   }
 }
 

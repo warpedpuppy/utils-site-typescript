@@ -21,7 +21,6 @@ import {
   drawRail,
   unitCircleLayout,
   normalizeCycleAngle,
-  normalizeCycleFraction,
   radToDeg,
   fmt,
   fmtSigned,
@@ -63,22 +62,17 @@ export function buildSineWaveScene(width: number, height: number, handle: Point,
   const amplitude = Math.max(12, centerY - handle.y);
   const sampleX = Math.round(width * 0.58);
   const sampleY = sineWave(sampleX, centerY, amplitude, wavelength, phase);
-  const cycleFraction = normalizeCycleFraction(sampleX / wavelength + phase);
-  const cycleAngle = cycleFraction * Math.PI * 2;
-  const offset = sampleY - centerY;
 
   return {
     call: `sineWave(x, ${fmt(centerY)}, ${fmt(amplitude)}, ${fmt(wavelength)}, ${fmt(phase)})`,
     hint:
-      "Drag the crest handle or the orange phase rail. This is the same sine story as `sineCurve()`, except the cycle is spread across x-distance: every wavelength repeats one full 0→2π oscillation.",
+      "Drag the crest handle to set the wave's height (amplitude) and width (wavelength), or drag the orange phase rail to slide the whole wave sideways. Everything is read straight off the one wave: amplitude is how far a crest rises above the midline, one wavelength is the distance before the shape repeats, and the sample dot is the y you get at a single x.",
     readouts: [
-      { label: "centerY", value: fmt(centerY) },
-      { label: "amplitude", value: fmt(amplitude) },
-      { label: "wavelength", value: fmt(wavelength) },
-      { label: "phase", value: fmt(phase) },
-      { label: "cycle position", value: `${fmt(cycleFraction * wavelength)} px = ${fmt(cycleFraction * 100)}% of λ = ${fmt(cycleAngle)} rad` },
-      { label: "sin(cycle) × amplitude", value: `${fmt(Math.sin(cycleAngle))} × ${fmt(amplitude)} = ${fmtSigned(offset)}` },
-      { label: `y @ x=${fmt(sampleX)}`, value: `${fmt(centerY)} + ${fmtSigned(offset)} = ${fmt(sampleY)}`, tone: "live" },
+      { label: "midline", value: fmt(centerY) },
+      { label: "amplitude", value: `${fmt(amplitude)} (crest height above midline)` },
+      { label: "wavelength (λ)", value: `${fmt(wavelength)} px per full cycle` },
+      { label: "phase", value: `${fmt(phase)} (slides the wave left/right)` },
+      { label: `y at x = ${fmt(sampleX)}`, value: `sineWave(${fmt(sampleX)}, …) = ${fmt(sampleY)}`, tone: "live" },
     ],
   };
 }
@@ -257,40 +251,19 @@ export function drawSineWaveScene(
   const crestY = centerY - amplitude;
   const sampleX = Math.round(width * 0.58);
   const sampleY = sineWave(sampleX, centerY, amplitude, wavelength, phase);
-  const cycleFraction = normalizeCycleFraction(sampleX / wavelength + phase);
-  const cycleAngle = cycleFraction * Math.PI * 2;
-  const stripLeft = Math.max(originX + 12, width - 220);
-  const stripRight = width - PAD;
-  const stripWidth = stripRight - stripLeft;
-  const stripY = 44;
-  const stripAmplitude = 14;
-  const stripCenterY = stripY + 22;
-  const stripX = stripLeft + stripWidth * cycleFraction;
-  const stripSampleY = stripCenterY + Math.sin(cycleFraction * Math.PI * 2) * stripAmplitude;
 
   drawBackdrop(ctx, width, height);
 
+  // Midline — the baseline the wave oscillates around.
   ctx.strokeStyle = "rgba(255,255,255,0.2)";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(PAD, centerY);
   ctx.lineTo(width - PAD, centerY);
   ctx.stroke();
+  labelSegment(ctx, width - PAD - 52, centerY - 8, "midline", "rgba(226, 232, 240, 0.7)");
 
-  ctx.setLineDash([6, 6]);
-  ctx.strokeStyle = "rgba(96, 165, 250, 0.9)";
-  ctx.beginPath();
-  ctx.moveTo(originX, centerY);
-  ctx.lineTo(originX, crestY);
-  ctx.stroke();
-
-  ctx.strokeStyle = "rgba(125, 211, 252, 0.9)";
-  ctx.beginPath();
-  ctx.moveTo(originX, crestY);
-  ctx.lineTo(crestX, crestY);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
+  // The one and only wave.
   ctx.strokeStyle = "#818cf8";
   ctx.lineWidth = 3;
   ctx.beginPath();
@@ -301,59 +274,69 @@ export function drawSineWaveScene(
   }
   ctx.stroke();
 
-  drawCenter(ctx, { x: crestX, y: crestY }, "#fb7185", 7);
-  labelSegment(ctx, crestX + 18, crestY - 10, "crest", "#fb7185");
-
-  drawCenter(ctx, { x: sampleX, y: sampleY }, "#f97316", 6);
-  labelSegment(ctx, sampleX + 36, sampleY - 12, `same y = ${fmt(sampleY)}`, "#f97316");
-
-  labelSegment(ctx, originX + 18, centerY - amplitude / 2, `amp = ${fmt(amplitude)}`, "rgba(96, 165, 250, 0.95)");
-  labelSegment(ctx, originX + wavelength / 8, crestY - 14, `λ/4 = ${fmt(wavelength / 4)}`, "rgba(125, 211, 252, 0.95)");
-
-  ctx.strokeStyle = "rgba(255,255,255,0.16)";
-  ctx.lineWidth = 1.5;
+  // Amplitude — a capped vertical measure from the midline up to the crest,
+  // drawn at the crest x so it reads as "this is how tall a crest is."
+  ctx.strokeStyle = "rgba(96, 165, 250, 0.95)";
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(stripLeft, stripCenterY);
-  ctx.lineTo(stripRight, stripCenterY);
+  ctx.moveTo(crestX, centerY);
+  ctx.lineTo(crestX, crestY);
+  ctx.moveTo(crestX - 5, centerY);
+  ctx.lineTo(crestX + 5, centerY);
+  ctx.moveTo(crestX - 5, crestY);
+  ctx.lineTo(crestX + 5, crestY);
   ctx.stroke();
+  labelSegment(ctx, crestX + 10, (centerY + crestY) / 2, `amplitude = ${fmt(amplitude)}`, "rgba(96, 165, 250, 0.95)");
 
-  ctx.strokeStyle = "rgba(196, 181, 253, 0.95)";
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  for (let i = 0; i <= 64; i += 1) {
-    const t = i / 64;
-    const x = stripLeft + stripWidth * t;
-    const y = stripCenterY + Math.sin(t * Math.PI * 2) * stripAmplitude;
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+  // Wavelength — measured along the midline between two crossings a full cycle
+  // apart. Keeping it on the midline (canvas center) keeps it clear of the
+  // top-left legend and the bottom phase rail, so nothing overpaints it. The
+  // endpoints land exactly where the wave crosses the midline, which is the
+  // clearest read of "one full cycle." If λ is wider than the box (no crossing
+  // pair fits), skip the bracket and let the readout carry the number.
+  const crossings: number[] = [];
+  for (let m = Math.ceil((PAD / wavelength + phase) * 2); ; m += 1) {
+    const x = (m / 2 - phase) * wavelength;
+    if (x > width - PAD) break;
+    if (x >= PAD) crossings.push(x);
   }
-  ctx.stroke();
+  // crossings[i] and crossings[i+2] sit one full wavelength apart (same phase);
+  // the first such pair is the leftmost full cycle that fits in the box.
+  if (crossings.length >= 3) {
+    const [xa, xb] = [crossings[0], crossings[2]];
+    ctx.strokeStyle = "rgba(125, 211, 252, 0.95)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(xa, centerY);
+    ctx.lineTo(xb, centerY);
+    ctx.moveTo(xa, centerY - 6);
+    ctx.lineTo(xa, centerY + 6);
+    ctx.moveTo(xb, centerY - 6);
+    ctx.lineTo(xb, centerY + 6);
+    ctx.stroke();
+    labelSegment(ctx, (xa + xb) / 2 - 46, centerY - 12, `λ = ${fmt(wavelength)} (one full cycle)`, "rgba(125, 211, 252, 0.95)");
+  }
 
+  // Sample — one x, one y read off the curve.
   ctx.setLineDash([5, 5]);
   ctx.strokeStyle = "rgba(249, 115, 22, 0.9)";
   ctx.beginPath();
-  ctx.moveTo(sampleX, sampleY);
-  ctx.lineTo(stripX, stripCenterY + Math.sin(cycleFraction * Math.PI * 2) * stripAmplitude);
-  ctx.stroke();
-
-  ctx.strokeStyle = "rgba(125, 211, 252, 0.9)";
-  ctx.beginPath();
-  ctx.moveTo(stripX, stripY - 6);
-  ctx.lineTo(stripX, stripY + 48);
+  ctx.moveTo(sampleX, centerY);
+  ctx.lineTo(sampleX, sampleY);
   ctx.stroke();
   ctx.setLineDash([]);
+  drawCenter(ctx, { x: sampleX, y: sampleY }, "#f97316", 6);
+  labelSegment(ctx, sampleX + 12, sampleY + (sampleY < centerY ? -12 : 18), `sineWave(x) = ${fmt(sampleY)}`, "#f97316");
+  labelSegment(ctx, sampleX - 2, centerY + 16, `x = ${fmt(sampleX)}`, "rgba(249, 115, 22, 0.8)");
 
-  drawCenter(ctx, { x: stripX, y: stripSampleY }, "#f97316", 5);
-  labelSegment(ctx, stripX + 28, stripSampleY - 10, "same cycle point", "#f97316");
-  labelSegment(ctx, stripLeft + 16, stripY - 10, "0", "rgba(226, 232, 240, 0.9)");
-  labelSegment(ctx, stripLeft + stripWidth / 2, stripY - 10, "λ/2", "rgba(226, 232, 240, 0.9)");
-  labelSegment(ctx, stripRight - 12, stripY - 10, "λ", "rgba(226, 232, 240, 0.9)");
+  // Crest handle (draggable) — drawn last so nothing occludes the grab target.
+  drawCenter(ctx, { x: crestX, y: crestY }, "#fb7185", 7);
+  labelSegment(ctx, crestX + 14, crestY - 12, "drag me", "#fb7185");
 
   drawRail(ctx, width, height, "phase", phase, -1, 1);
   drawHeaderBox(ctx, [
     { text: `phase = ${fmt(phase)}`, color: "#e2e8f0" },
-    { text: `x lands ${fmt(cycleFraction * 100)}% through one wavelength = ${fmt(cycleAngle)} rad`, color: "#c4b5fd" },
-    { text: `that repeated sine sample gives y = ${fmt(sampleY)}`, color: "#fdba74" },
+    { text: `sineWave(x) = ${fmt(sampleY)}`, color: "#fdba74" },
   ]);
 }
 
