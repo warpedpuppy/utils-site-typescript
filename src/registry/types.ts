@@ -41,9 +41,9 @@ export type PenStatus =
   | "mini-demo-no-pen";
 
 export interface RegistryRecord {
-  /** Canonical id: === manifest `l`, === animation `static l`, === pen `key`. */
+  /** Canonical id: === manifest `slug`, === animation `static l`, === pen `key`. */
   slug: string;
-  /** Sidebar/display title: === manifest `t`. */
+  /** Sidebar/display title: === manifest `title`. */
   title: string;
   category: Category;
   /**
@@ -55,7 +55,7 @@ export interface RegistryRecord {
   manifestKey: string;
   /** Mirrors today's optional `include: false` (hidden from sidebars). */
   include?: boolean;
-  /** The existing formula wrapper object (today's `f`). */
+  /** The existing formula wrapper object (=== manifest `formula`). */
   formula: CollisionDetectionObject;
   /** Literal dynamic import of the animation class (today's `load`). */
   load: () => Promise<{ default: new (canvasCont: string) => any }>;
@@ -76,10 +76,10 @@ export interface RegistryRecord {
 // from animationManifest.ts, hence types live here (types → registry → shim).
 
 export interface AnimationManifestEntry {
-  t: string;
-  l: string;
+  title: string;
+  slug: string;
   include?: boolean;
-  f: CollisionDetectionObject;
+  formula: CollisionDetectionObject;
   load: () => Promise<{ default: new (canvasCont: string) => any }>;
 }
 

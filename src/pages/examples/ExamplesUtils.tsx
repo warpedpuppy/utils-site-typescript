@@ -11,8 +11,8 @@ function ExamplesUtils() {
         const subObject: GenericObject = siteData[key];
         let innerKey: keyof typeof subObject;
         for (innerKey in subObject) {
-          let { l } = subObject[innerKey];
-          if (location.includes(l)) {
+          let { slug } = subObject[innerKey];
+          if (location.includes(slug)) {
             forceBreak = true;
             returnKey = key;
             returnInnerKey = innerKey;

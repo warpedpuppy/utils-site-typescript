@@ -6,6 +6,9 @@ import { Point, Circle } from '../types';
  * @param point - The point to test.
  * @param circle - The circle (`x`, `y`, `radius`).
  * @returns `true` if the point is within `radius` of the circle center.
+ * @remarks
+ * This object-argument form is the **recommended** one; {@link pointToCircle} is the
+ * flat, five-number equivalent running the same squared-distance comparison.
  * @example
  * pointCircle({ x: 1, y: 1 }, { x: 0, y: 0, radius: 5 }); // => true
  */

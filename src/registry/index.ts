@@ -25,10 +25,10 @@ export function buildManifest(): AnimationManifest {
   for (const cat of CATEGORY_ORDER) manifest[cat] = {};
   for (const r of ALL_RECORDS) {
     manifest[r.category][r.manifestKey] = {
-      t: r.title,
-      l: r.slug,
+      title: r.title,
+      slug: r.slug,
       ...(r.include === false ? { include: false } : {}),
-      f: r.formula,
+      formula: r.formula,
       load: r.load,
     };
   }

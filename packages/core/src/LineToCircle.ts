@@ -13,6 +13,10 @@
  * @param cy - Circle center y.
  * @param cr - Circle radius.
  * @returns `true` if the segment touches or crosses the circle.
+ * @remarks
+ * Flat, seven-number form. For new code the **recommended** shape is the object-argument
+ * {@link lineCircle} (`lineCircle({ startPoint, endPoint }, { x, y, radius })`); both run
+ * the identical closest-point-on-segment test.
  * @example
  * lineToCircle(0, 0, 10, 0, 5, 0, 2); // => true
  */

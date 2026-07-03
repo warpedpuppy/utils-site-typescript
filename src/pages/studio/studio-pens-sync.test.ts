@@ -18,17 +18,21 @@ import { ALL_RECORDS } from "../../registry";
 
 // ─── The Examples catalogue: every animation registered in SiteData ──────────
 // (the single source both surfaces are supposed to feed from)
+// Shape of an animation CLASS's static metadata (read off `mod.default` below).
+// These stay single-letter (`static t`/`static l`) — only the *manifest* keys
+// were renamed to title/slug.
 interface AnimationClass {
   l?: string; // slug  (static l)
   t?: string; // title (static t)
   include?: boolean;
 }
 
+// The manifest entries themselves now expose `slug`/`title` (not `l`/`t`).
 const exampleAnimations: { slug: string; title: string }[] = [];
 for (const category of Object.values(SiteData)) {
-  for (const cls of Object.values(category as Record<string, AnimationClass>)) {
-    if (cls && typeof cls.l === "string" && cls.include !== false) {
-      exampleAnimations.push({ slug: cls.l, title: cls.t ?? cls.l });
+  for (const entry of Object.values(category)) {
+    if (typeof entry.slug === "string" && entry.include !== false) {
+      exampleAnimations.push({ slug: entry.slug, title: entry.title ?? entry.slug });
     }
   }
 }

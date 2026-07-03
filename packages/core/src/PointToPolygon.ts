@@ -11,6 +11,10 @@ import { Point } from './types';
  * @param py - Point y.
  * @param vertices - The polygon vertices, in order.
  * @returns `true` if the point lies inside the polygon.
+ * @remarks
+ * Takes loose `px, py` plus a raw vertex array. For new code the **recommended** shape is
+ * the object-argument {@link polygonPoint} (`polygonPoint({ vertices }, { x, y })`), which
+ * runs the identical ray-cast.
  * @example
  * const square = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }];
  * pointToPolygon(5, 5, square); // => true

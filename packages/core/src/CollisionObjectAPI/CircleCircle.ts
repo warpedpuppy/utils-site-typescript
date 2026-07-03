@@ -6,6 +6,9 @@ import { Circle } from '../types';
  * @param circle1 - First circle (`x`, `y`, `radius`).
  * @param circle2 - Second circle (`x`, `y`, `radius`).
  * @returns `true` if the circles touch or overlap, including exact tangency.
+ * @remarks
+ * This object-argument form is the **recommended** one; {@link circleToCircle} is the
+ * flat, six-number equivalent that runs the same squared-distance comparison.
  * @example
  * circleCircle({ x: 0, y: 0, radius: 5 }, { x: 6, y: 0, radius: 5 }); // => true
  */

@@ -14,6 +14,9 @@ import { Polygon, Point } from '../types';
  * @param polygon - The polygon (`vertices`).
  * @param point - The point to test.
  * @returns `true` if the point is inside the polygon.
+ * @remarks
+ * This object-argument form is the **recommended** one; {@link pointToPolygon} is the flat
+ * `(px, py, vertices[])` equivalent running the same ray-cast.
  * @example
  * polygonPoint({ vertices: square }, { x: 5, y: 5 }); // => true
  */
