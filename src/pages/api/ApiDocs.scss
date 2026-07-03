@@ -578,6 +578,14 @@
   border-radius: 8px;
   background: rgba(255, 122, 0, 0.06);
 
+  // The intro-tab back-link block can list more than one example (a few core
+  // exports are taught by two animations), so lay the links out in a wrap row.
+  .api-docs__example-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+  }
+
   p {
     margin: 0 0 8px;
     color: var(--text-muted);

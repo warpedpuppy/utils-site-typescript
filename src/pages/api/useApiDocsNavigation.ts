@@ -6,12 +6,20 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CONCEPT_PREFIX } from "./apiModel";
 
+// Concept map first: /api opens on "Explore by concept" (the grouped-by-idea
+// map that covers every export), not the alphabetical reference. "reference,
+// not first destination" — you browse by idea, then drill into Full reference
+// when you already know the name.
 export const TABS = [
-  { id: "documentation", label: "Documentation" },
-  { id: "overview", label: "Overview" },
+  { id: "overview", label: "Explore by concept" },
+  { id: "documentation", label: "Full reference" },
 ] as const;
 
 export type TabId = (typeof TABS)[number]["id"];
+
+// The tab a bare /api URL lands on (and therefore the one that carries no ?tab
+// param). Flipping this to "overview" is what makes the concept map the front door.
+const DEFAULT_TAB: TabId = "overview";
 
 const OVERVIEW_SCROLL_KEY = "api-docs:overview-scroll-y";
 
@@ -20,8 +28,13 @@ function isTabId(value: string | null): value is TabId {
 }
 
 function getTabFromSearch(search: string): TabId {
-  const value = new URLSearchParams(search).get("tab");
-  return isTabId(value) ? value : "documentation";
+  const params = new URLSearchParams(search);
+  const value = params.get("tab");
+  if (isTabId(value)) return value;
+  // A bare ?fn= deep link (no explicit tab) still lands on the reference so the
+  // targeted function is shown, not hidden behind the concept map.
+  if (params.get("fn")) return "documentation";
+  return DEFAULT_TAB;
 }
 
 export interface ApiDocsNavigation {
@@ -74,7 +87,7 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
     replace = false,
   ) => {
     const params = new URLSearchParams();
-    if (nextTab !== "documentation") params.set("tab", nextTab);
+    if (nextTab !== DEFAULT_TAB) params.set("tab", nextTab);
     const trimmedQuery = nextQuery.trim();
     if (trimmedQuery) params.set("q", trimmedQuery);
     if (nextFn) params.set("fn", nextFn);

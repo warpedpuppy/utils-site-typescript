@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CopyInstall from "../../components/CopyInstall/CopyInstall";
+import { getExamplesForExport } from "../../registry/exampleCoreLinks";
 import {
   getEntryIntro,
   getEntryTabs,
@@ -29,6 +31,32 @@ function renderEntryMeta(entry: ApiEntry, mode: ModuleDocMode) {
       <span className={`api-docs__kind api-docs__kind--${entry.kind}`}>{entry.kind}</span>
       {mode === "guide" && guide && <span className="api-docs__role">{guide.badgeLabel}</span>}
     </div>
+  );
+}
+
+// The rich-altitude handoff: every documented function that some /examples
+// animation teaches gets a live back-link to it, straight from the intro tab.
+// Registry-driven (getExamplesForExport), so it covers functions that also have
+// a docs mini-demo — the visual tab's own "example" callout only fires for
+// functions with NO docs cut, so this is the complete cross-link, not a dupe.
+function EntryExampleLinks({ entry }: { entry: ApiEntry }) {
+  const examples = getExamplesForExport(entry.name);
+  if (examples.length === 0) return null;
+  return (
+    <section className="api-docs__example-callout api-docs__example-callout--intro">
+      <p>{examples.length === 1 ? "See it move in a full example:" : "See it move in full examples:"}</p>
+      <div className="api-docs__example-links">
+        {examples.map((example) => (
+          <Link
+            key={example.slug}
+            to={`/examples/${example.slug}`}
+            state={{ fromApi: true, fnName: entry.name }}
+          >
+            {example.title}
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -71,6 +99,8 @@ function EntryIntroPanel({
           </section>
         )}
       </div>
+
+      <EntryExampleLinks entry={entry} />
 
       {intro.related.length > 0 && (
         <section className="api-docs__related">

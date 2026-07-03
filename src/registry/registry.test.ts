@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import animationManifest from "../animationManifest";
 import { ALL_RECORDS } from "./index";
+import { EXAMPLE_CORE_ROWS } from "./exampleCoreLinks";
 import { CODEPEN_GALLERY } from "../pages/studio/pens";
 import coreApi from "../pages/api/core-api.json";
 
@@ -590,5 +591,16 @@ describe("registry drift tests", () => {
     ];
     const bogus = [...new Set(claimed)].filter((n) => !CORE_API_NAMES.has(n)).sort();
     expect(bogus).toEqual([]);
+  });
+
+  // A6 — the /api "See it in Examples" links are a pure-data projection of the
+  // registry, kept standalone so the /api bundle need not import the heavy
+  // registry. This locks that projection to ALL_RECORDS; edit the registry and
+  // this fails until exampleCoreLinks.ts is regenerated (recipe in its header).
+  it("A6 — EXAMPLE_CORE_ROWS matches the visible-record projection of ALL_RECORDS", () => {
+    const expected = ALL_RECORDS.filter(
+      (r) => r.include !== false && r.coreExports.length > 0
+    ).map((r) => ({ slug: r.slug, title: r.title, coreExports: r.coreExports }));
+    expect(EXAMPLE_CORE_ROWS).toEqual(expected);
   });
 });
