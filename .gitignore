@@ -36,4 +36,5 @@ yarn-error.log*
 
 /.claude
 packages/core/dist
+packages/effects/dist
 CLAUDE.md
