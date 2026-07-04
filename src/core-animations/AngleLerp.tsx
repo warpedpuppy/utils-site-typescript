@@ -98,27 +98,29 @@ class AngleLerpAnimation extends AnimationBaseClass {
   title = "angle interpolation (shortest turn)";
   animationObject = AngleLerpFormula;
 
-  startAngle = 0;
-  targetAngle = Math.PI * 1.7;
+  startAngle = (350 * Math.PI) / 180;
+  targetAngle = (10 * Math.PI) / 180;
   t = 0;
   speed = 0.008;
+  direction = 1;
 
   init() {
     if (this.textDiv) {
       this.textDiv.innerHTML =
-        "<h3>Both needles rotate from the orange angle to the green one. The left needle lerps the raw numbers and spins the long way around; the right uses <code>lerpAngle</code>, which knows angles wrap and takes the short path.</h3>";
+        "<h3>Both needles rotate from 350° (orange) to 10° (green). The left needle lerps the raw numbers and makes the long almost-full spin backward through 180°. The right uses <code>lerpAngle</code>, which understands angle wrap-around and takes the tiny 20° hop across the 0°/360° seam.</h3>";
     }
     this.draw();
   }
 
   draw = () => {
     if (!this.ctx) return;
-    this.t += this.speed;
+    this.t += this.speed * this.direction;
     if (this.t >= 1) {
-      // arrived — hold the target as the next start and pick a fresh target
+      this.t = 1;
+      this.direction = -1;
+    } else if (this.t <= 0) {
       this.t = 0;
-      this.startAngle = this.targetAngle;
-      this.targetAngle = Math.random() * Math.PI * 2;
+      this.direction = 1;
     }
     const naive = this.startAngle + (this.targetAngle - this.startAngle) * this.t;
     const smart = lerpAngle(this.startAngle, this.targetAngle, this.t);
