@@ -102,7 +102,7 @@ class VectorReflectAnimation extends AnimationBaseClass {
   init() {
     if (this.textDiv) {
       this.textDiv.innerHTML =
-        "<h3>An incoming arrow (orange) hits a wall and bounces off (indigo). The bounce is computed with <code>vecReflect</code> using the wall's normal (green dashed). Watch how the reflection changes as the wall rotates — slide to freeze it.</h3>";
+        "<h3>An incoming velocity vector (orange) hits an angled surface and leaves as a reflected vector (indigo). <code>vecReflect</code> uses the surface normal (green dashed), not the wall direction itself, to compute that ricochet. Rotate or freeze the wall and you can see the same incoming motion bounce to a different outgoing angle.</h3>";
     }
     this.draw();
   }

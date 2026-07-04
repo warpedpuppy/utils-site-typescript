@@ -12,6 +12,8 @@ import InteractiveMiniDemo from "../../components/MiniDemo/InteractiveMiniDemo";
 import AnimateMiniDemo from "../../components/MiniDemo/AnimateMiniDemo";
 import ColorMiniDemo from "../../components/MiniDemo/ColorMiniDemo";
 import ConstructiveGeometryDemo from "../../components/MiniDemo/ConstructiveGeometryDemo";
+import VecAddMiniDemo from "../../components/MiniDemo/VecAddMiniDemo";
+import VecReflectMiniDemo from "../../components/MiniDemo/VecReflectMiniDemo";
 import { INTERACTIVE_DEMOS } from "../../components/MiniDemo/interactiveDemos";
 import { ANIMATE_DEMOS } from "../../components/MiniDemo/animateDemos";
 import { COLOR_DEMOS } from "../../components/MiniDemo/colorDemos";
@@ -101,10 +103,22 @@ export function EntryVisual({ entry }: { entry: ApiEntry }) {
           <ColorMiniDemo demo={COLOR_DEMOS[entry.name]} />
         </>
       )}
-      {visual.kind === "mini-demo" && geometryDemo && (
+      {visual.kind === "mini-demo" && geometryDemo && entry.name !== "vecAdd" && entry.name !== "vecReflect" && (
         <>
           <p className="api-docs__demo-caption">Drag the scene:</p>
           <ConstructiveGeometryDemo demo={geometryDemo} />
+        </>
+      )}
+      {visual.kind === "mini-demo" && entry.name === "vecAdd" && (
+        <>
+          <p className="api-docs__demo-caption">See why you'd add vectors:</p>
+          <VecAddMiniDemo />
+        </>
+      )}
+      {visual.kind === "mini-demo" && entry.name === "vecReflect" && (
+        <>
+          <p className="api-docs__demo-caption">Watch the ricochet:</p>
+          <VecReflectMiniDemo />
         </>
       )}
       {visual.kind === "mini-demo" && !INTERACTIVE_DEMOS[entry.name] && MINI_DEMOS[entry.name] && (

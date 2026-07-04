@@ -60,7 +60,7 @@ function EntryExampleLinks({ entry }: { entry: ApiEntry }) {
   );
 }
 
-function EntryIntroPanel({
+function EntryExplainPanel({
   entry,
   onFocusFunction,
 }: {
@@ -70,8 +70,6 @@ function EntryIntroPanel({
   const intro = getEntryIntro(entry);
   return (
     <div className="api-docs__entry-panel">
-      <p className="api-docs__usage-lead">{getEntryUsageLead(entry)}</p>
-
       <div className="api-docs__teaching-grid">
         <section className="api-docs__teaching-block">
           <h3>In Plain English</h3>
@@ -82,25 +80,6 @@ function EntryIntroPanel({
           <p>{intro.howToUse}</p>
         </section>
       </div>
-
-      <div className="api-docs__teaching-grid">
-        <section className="api-docs__teaching-block">
-          <h3>Grab It Like This</h3>
-          <pre className="api-docs__fn-sig">
-            <code>{renderImportLine(entry)}</code>
-          </pre>
-        </section>
-        {entry.example && (
-          <section className="api-docs__teaching-block">
-            <h3>Starter Example</h3>
-            <pre className="api-docs__fn-example">
-              <code>{entry.example}</code>
-            </pre>
-          </section>
-        )}
-      </div>
-
-      <EntryExampleLinks entry={entry} />
 
       {intro.related.length > 0 && (
         <section className="api-docs__related">
@@ -120,6 +99,16 @@ function EntryIntroPanel({
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+function EntryVisualPanel({ entry }: { entry: ApiEntry }) {
+  return (
+    <div className="api-docs__entry-panel">
+      <p className="api-docs__usage-lead">{getEntryUsageLead(entry)}</p>
+      <EntryVisual entry={entry} />
+      <EntryExampleLinks entry={entry} />
     </div>
   );
 }
@@ -199,9 +188,9 @@ function EntryTabs({
         className="api-docs__entry-tabpanel"
       >
         {activeTab.panel === "intro" && (
-          <EntryIntroPanel entry={entry} onFocusFunction={onFocusFunction} />
+          <EntryExplainPanel entry={entry} onFocusFunction={onFocusFunction} />
         )}
-        {activeTab.panel === "visual" && <EntryVisual entry={entry} />}
+        {activeTab.panel === "visual" && <EntryVisualPanel entry={entry} />}
         {activeTab.panel === "reference" && <EntryReferencePanel entry={entry} />}
       </div>
     </>

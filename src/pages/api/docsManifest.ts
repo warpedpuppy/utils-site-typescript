@@ -377,7 +377,7 @@ export const ENTRY_VISUALS: Partial<Record<string, DocVisualConfig>> = {
   vecPerpendicular: { kind: "mini-demo" },
   vecLerp: { kind: "mini-demo" },
   vecLimit: { kind: "mini-demo" },
-  vecReflect: { kind: "example", exampleSlug: "vector-reflection", exampleLabel: "Open the vector reflection example" },
+  vecReflect: { kind: "mini-demo" },
   vecRotate: { kind: "example", exampleSlug: "vector-rotation", exampleLabel: "Open the vector rotation example" },
   waveAmplitude: { kind: "mini-demo" },
 };
@@ -400,18 +400,19 @@ const ENTRY_USAGE_LEADS: Partial<Record<string, string>> = {
   "WaveAmplitude:waveAmplitude": "Use this when several waves are all pushing on the same point at once.",
   "Vec2:vecNormalize": "Use this when you care about direction, but you want every step to have the same size.",
   "Vec2:vecDot": "Use this when you want to know whether two things are pointing mostly the same way.",
-  "Vec2:vecReflect": "Use this when something hits a surface and needs to bounce away.",
+  "Vec2:vecReflect": "Use this when an incoming velocity or direction hits a surface and you need the clean bounced direction back.",
 };
 
 const INTRO_TAB: EntryTabConfig = { id: "intro", label: "Start Here", panel: "intro" };
+const EXPLAIN_TAB: EntryTabConfig = { id: "intro", label: "Explain It", panel: "intro" };
 const VISUAL_TAB: EntryTabConfig = { id: "visual", label: "See It Move", panel: "visual" };
 const REFERENCE_TAB: EntryTabConfig = { id: "reference", label: "Code & Details", panel: "reference" };
 
 // Reorder these arrays if you want the docs to lead with motion instead of prose.
 const DEFAULT_ENTRY_TABS: Record<DocVisualKind, EntryTabConfig[]> = {
   none: [INTRO_TAB, REFERENCE_TAB],
-  "mini-demo": [INTRO_TAB, VISUAL_TAB, REFERENCE_TAB],
-  example: [INTRO_TAB, { ...VISUAL_TAB, label: "See Example" }, REFERENCE_TAB],
+  "mini-demo": [VISUAL_TAB, EXPLAIN_TAB, REFERENCE_TAB],
+  example: [{ ...VISUAL_TAB, label: "See Example" }, EXPLAIN_TAB, REFERENCE_TAB],
 };
 
 const ENTRY_DOCS: Partial<Record<string, EntryDocConfig>> = {
@@ -867,9 +868,9 @@ const ENTRY_DOCS: Partial<Record<string, EntryDocConfig>> = {
   },
   vecReflect: {
     whatItIs:
-      "This is the bounce helper. Give it an incoming vector and the surface's normal (which way the wall faces), and it returns the outgoing, bounced vector.",
+      "This is the vector bounce helper. You give it the direction or velocity that is coming in, plus the surface normal for the wall, floor, mirror, or slope it hits, and it gives you back the reflected vector that leaves the collision.",
     howToUse:
-      "Use this when something hits a wall and should ricochet: a ball off a paddle, light off a mirror, a particle off the floor.",
+      "Use this when you already know the thing has hit a surface and now you need the rebound direction. Typical cases are a puck ricocheting off an angled wall, a ball bouncing off a paddle, a particle hitting the floor, or a light ray reflecting off a mirror. The important input is the surface normal: that perpendicular direction is what tells the function which way the surface is facing.",
     related: [
       { name: "vecPerpendicular", reason: "Handy for building the surface normal a reflection needs." },
     ],
