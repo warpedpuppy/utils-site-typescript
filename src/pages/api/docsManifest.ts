@@ -389,6 +389,9 @@ const ENTRY_USAGE_LEADS: Partial<Record<string, string>> = {
   "Animate:tweenObject": "Use this when several things should move together, like x, y, scale, and opacity.",
   "Animate:tweenValue": "Use this when one number should glide from one value to another.",
   "Animate:springValue": "Use this when you want motion that feels bouncy instead of robotic.",
+  "AngleInterpolation:lerpAngle": "Use this when something rotates toward a target heading and must take the short turn across the 0°/360° seam instead of whipping almost a full circle.",
+  "AngleInterpolation:shortestAngleBetween": "Use this when you need the signed shortest turn from one heading to another, like steering an enemy or pointing a turret.",
+  "AngleInterpolation:wrapAngle": "Use this when rotations keep accumulating and you want equivalent angles like 370° and 10° treated as the same direction.",
   "DegToRad:degToRad": "Use this when you think in degrees, but `Math.sin` and `Math.cos` need radians.",
   "RadToDeg:radToDeg": "Use this when the math gives you radians, but you want to show degrees to a human.",
   "Color:lerpColor": "Use this when one color should fade into another.",
@@ -400,6 +403,7 @@ const ENTRY_USAGE_LEADS: Partial<Record<string, string>> = {
   "WaveAmplitude:waveAmplitude": "Use this when several waves are all pushing on the same point at once.",
   "Vec2:vecNormalize": "Use this when you care about direction, but you want every step to have the same size.",
   "Vec2:vecDot": "Use this when you want to know whether two things are pointing mostly the same way.",
+  "Vec2:vecAngleBetween": "Use this when you need the size of the turn from one direction to another, like measuring how far off-target an aim or heading is.",
   "Vec2:vecReflect": "Use this when an incoming velocity or direction hits a surface and you need the clean bounced direction back.",
 };
 
@@ -916,11 +920,12 @@ const ENTRY_DOCS: Partial<Record<string, EntryDocConfig>> = {
   },
   vecAngleBetween: {
     whatItIs:
-      "This gives you the angle between two vectors — how far apart their directions are, as a plain (never-negative) number of radians.",
+      "This tells you how much one vector would need to turn to line up with another. The result is the smallest unsigned gap between their directions, returned in radians.",
     howToUse:
-      "Use this to measure how sharply two headings differ: how wide a turn is, or how far off-aim something is from its target.",
+      "Use this when you want the size of a turn without caring whether it goes left or right: how far off-aim a shot is, how sharply a mover would need to turn, or whether two headings are nearly aligned, perpendicular, or opposite.",
     related: [
       { name: "vecDot", reason: "The cheaper same-way/opposite-way signal underneath this angle." },
+      { name: "shortestAngleBetween", reason: "Use this when you also need the turn direction, not just its size." },
     ],
   },
 
@@ -1018,6 +1023,9 @@ export function getModuleDocMode(module: string): ModuleDocMode {
 export function getEntryUsageLead(
   entry: Pick<ApiEntryLike, "module" | "name"> & { kind?: "function" | "const" | "type" },
 ): string {
+  const collisionLead = getCollisionUsageLead(entry);
+  if (collisionLead) return collisionLead;
+
   const direct = ENTRY_USAGE_LEADS[`${entry.module}:${entry.name}`];
   if (direct) return direct;
   if (entry.kind === "type") {
@@ -1045,6 +1053,47 @@ export function getEntryUsageLead(
     return "This one creates motion or behavior you can actually see.";
   }
   return "This is a small helper you can plug into an animation.";
+}
+
+function getCollisionUsageLead(
+  entry: Pick<ApiEntryLike, "module" | "name"> & { kind?: "function" | "const" | "type" },
+): string | null {
+  const id = `${entry.module}:${entry.name}`;
+  switch (id) {
+    case "CircleToCircle:circleToCircle":
+    case "CollisionObjectAPI/CircleCircle:circleCircle":
+      return "This one helps answer: are these circles touching yet?";
+    case "CircleToRect:circleToRect":
+      return "This one helps answer: is this circle touching the rectangle yet?";
+    case "LineToCircle:lineToCircle":
+      return "This one helps answer: is this line touching the circle yet?";
+    case "LineToLine:lineToLine":
+      return "This one helps answer: are these lines crossing yet?";
+    case "LineToPoint:lineToPoint":
+      return "This one helps answer: is this point on the line yet?";
+    case "LineToRect:lineToRect":
+      return "This one helps answer: is this line crossing the rectangle yet?";
+    case "PointToCircle:pointToCircle":
+      return "This one helps answer: is this point inside the circle yet?";
+    case "PointToPolygon:pointToPolygon":
+    case "PolygonCollision:polygonPoint":
+      return "This one helps answer: is this point inside the polygon yet?";
+    case "PointToRect:pointToRect":
+      return "This one helps answer: is this point inside the rectangle yet?";
+    case "PolygonCollision:polygonCircle":
+      return "This one helps answer: is this circle touching the polygon yet?";
+    case "PolygonCollision:polygonLine":
+      return "This one helps answer: is this line crossing the polygon yet?";
+    case "PolygonCollision:polygonPolygon":
+    case "PolygonToPolygon:polygonToPolygon":
+      return "This one helps answer: are these polygons overlapping yet?";
+    case "RectToPolygon:rectToPolygon":
+      return "This one helps answer: is this rectangle overlapping the polygon yet?";
+    case "RectToRect:rectToRect":
+      return "This one helps answer: are these rectangles overlapping yet?";
+    default:
+      return null;
+  }
 }
 
 export function getEntryVisual(name: string): DocVisualConfig {

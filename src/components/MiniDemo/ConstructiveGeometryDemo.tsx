@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { distance } from "@utilspalooza/core/Distance";
 import type { Point } from "@utilspalooza/core";
-import type { ConstructiveGeometryDemoDef } from "./constructiveGeometryDemos";
+import type { ConstructiveGeometryDemoDef, GeometryDemoKind } from "./constructiveGeometryDemos";
 import type {
   CirclePair,
   PointPair,
@@ -30,25 +29,148 @@ interface ConstructiveGeometryDemoProps {
   height?: number;
 }
 
+interface DemoDefaults {
+  circles: CirclePair;
+  points: PointPair;
+  handles: HandlePair;
+  polyScene: PolyScene;
+}
+
+function buildCollisionDefaults(kind: GeometryDemoKind, size: { width: number; height: number }): DemoDefaults {
+  const cx = Math.round(size.width * 0.52);
+  const cy = Math.round(size.height * 0.56);
+  const base: DemoDefaults = {
+    circles: {
+      circle1: { x: cx - 42, y: cy - 2, radius: 46 },
+      circle2: { x: cx + 42, y: cy + 8, radius: 42 },
+    },
+    points: {
+      point1: { x: cx - 34, y: cy + 6 },
+      point2: { x: cx + 34, y: cy - 8 },
+    },
+    handles: {
+      a: { x: cx - 66, y: cy - 22 },
+      b: { x: cx + 66, y: cy + 18 },
+    },
+    polyScene: {
+      poly1: regularPolygon(cx - 28, cy - 4, 52, 5, -Math.PI / 2),
+      poly2: regularPolygon(cx + 38, cy + 2, 46, 4, -Math.PI / 4),
+      point: { x: cx - 18, y: cy + 8 },
+      circle: { x: cx + 34, y: cy + 2, radius: 34 },
+      lineA: { x: cx - 76, y: cy - 16 },
+      lineB: { x: cx + 76, y: cy + 18 },
+    },
+  };
+
+  switch (kind) {
+    case "point-to-circle":
+      base.points.point1 = { x: cx - 22, y: cy + 2 };
+      base.circles.circle1 = { x: cx + 26, y: cy + 2, radius: 48 };
+      break;
+    case "point-to-rect":
+      base.points.point1 = { x: cx - 24, y: cy + 6 };
+      base.points.point2 = { x: cx + 28, y: cy + 2 };
+      break;
+    case "line-to-point":
+      base.handles = {
+        a: { x: cx - 74, y: cy - 18 },
+        b: { x: cx + 56, y: cy + 18 },
+      };
+      base.points.point1 = { x: cx + 4, y: cy + 2 };
+      break;
+    case "circle-to-rect":
+      base.circles.circle1 = { x: cx - 34, y: cy + 2, radius: 46 };
+      base.points.point1 = { x: cx + 34, y: cy + 2 };
+      break;
+    case "rect-to-rect":
+      base.points.point1 = { x: cx - 30, y: cy + 2 };
+      base.points.point2 = { x: cx + 30, y: cy + 8 };
+      break;
+    case "line-to-circle":
+      base.handles = {
+        a: { x: cx - 78, y: cy - 18 },
+        b: { x: cx + 54, y: cy + 16 },
+      };
+      base.circles.circle1 = { x: cx + 6, y: cy + 2, radius: 40 };
+      break;
+    case "line-to-line":
+      base.handles = {
+        a: { x: cx - 70, y: cy - 20 },
+        b: { x: cx + 44, y: cy + 18 },
+      };
+      base.points.point1 = { x: cx - 48, y: cy + 20 };
+      base.points.point2 = { x: cx + 42, y: cy - 24 };
+      break;
+    case "line-to-rect":
+      base.handles = {
+        a: { x: cx - 76, y: cy - 18 },
+        b: { x: cx + 58, y: cy + 18 },
+      };
+      base.points.point1 = { x: cx + 10, y: cy + 2 };
+      break;
+    case "polygon-point":
+    case "point-to-polygon":
+      base.polyScene.poly1 = regularPolygon(cx + 10, cy, 54, 5, -Math.PI / 2);
+      base.polyScene.point = { x: cx - 24, y: cy + 8 };
+      break;
+    case "rect-to-polygon":
+      base.polyScene.poly1 = regularPolygon(cx - 10, cy, 52, 5, -Math.PI / 2);
+      base.polyScene.point = { x: cx + 40, y: cy + 4 };
+      break;
+    case "polygon-line":
+      base.polyScene.poly1 = regularPolygon(cx + 6, cy, 54, 5, -Math.PI / 2);
+      base.polyScene.lineA = { x: cx - 80, y: cy - 16 };
+      base.polyScene.lineB = { x: cx + 72, y: cy + 18 };
+      break;
+    case "polygon-circle":
+      base.polyScene.poly1 = regularPolygon(cx - 12, cy, 52, 5, -Math.PI / 2);
+      base.polyScene.circle = { x: cx + 42, y: cy + 2, radius: 34 };
+      break;
+    case "polygon-polygon":
+    case "polygon-to-polygon":
+      base.polyScene.poly1 = regularPolygon(cx - 34, cy - 2, 50, 5, -Math.PI / 2);
+      base.polyScene.poly2 = regularPolygon(cx + 34, cy + 4, 44, 4, -Math.PI / 4);
+      break;
+    default:
+      break;
+  }
+
+  return base;
+}
+
+function isCollisionKind(kind: GeometryDemoKind): boolean {
+  return [
+    "circle-to-circle",
+    "circle-circle",
+    "point-to-circle",
+    "point-to-rect",
+    "line-to-point",
+    "circle-to-rect",
+    "rect-to-rect",
+    "line-to-circle",
+    "line-to-line",
+    "line-to-rect",
+    "polygon-point",
+    "point-to-polygon",
+    "rect-to-polygon",
+    "polygon-line",
+    "polygon-circle",
+    "polygon-polygon",
+    "polygon-to-polygon",
+  ].includes(kind);
+}
+
 export default function ConstructiveGeometryDemo({
   demo,
   height = 248,
 }: ConstructiveGeometryDemoProps) {
+  const initialDefaults = buildCollisionDefaults(demo.kind, { width: 480, height });
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const dragRef = useRef<DragState | null>(null);
   const [size, setSize] = useState({ width: 480, height });
-  const [circles, setCircles] = useState<CirclePair>({
-    circle1: { x: 156, y: 124, radius: 72 },
-    circle2: { x: 330, y: 164, radius: 56 },
-  });
-  const [points, setPoints] = useState<PointPair>({
-    point1: { x: 150, y: 154 },
-    point2: { x: 330, y: 84 },
-  });
-  const [handles, setHandles] = useState<HandlePair>({
-    a: { x: 320, y: 98 },
-    b: { x: 314, y: 176 },
-  });
+  const [circles, setCircles] = useState<CirclePair>(initialDefaults.circles);
+  const [points, setPoints] = useState<PointPair>(initialDefaults.points);
+  const [handles, setHandles] = useState<HandlePair>(initialDefaults.handles);
   const [controls, setControls] = useState<RailControls>({
     scale: 1.5,
     lerp: 0.5,
@@ -56,16 +178,7 @@ export default function ConstructiveGeometryDemo({
     phase: 0.15,
     waveTime: 18,
   });
-  const [polyScene, setPolyScene] = useState<PolyScene>(() => ({
-    poly1: regularPolygon(215, 118, 60, 5, -Math.PI / 2),
-    poly2: regularPolygon(348, 128, 54, 4, -Math.PI / 4),
-    point: { x: 100, y: 150 },
-    circle: { x: 108, y: 120, radius: 38 },
-    // lineA starts below the header-box legend (which occupies roughly the top
-    // ~84px) so the polygon-line demo's segment doesn't open tucked under it.
-    lineA: { x: 70, y: 120 },
-    lineB: { x: 360, y: 182 },
-  }));
+  const [polyScene, setPolyScene] = useState<PolyScene>(initialDefaults.polyScene);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -95,6 +208,26 @@ export default function ConstructiveGeometryDemo({
       b: clampPoint(current.b, size.width, size.height),
     }));
   }, [size.height, size.width]);
+
+  useEffect(() => {
+    if (!isCollisionKind(demo.kind)) return;
+    const defaults = buildCollisionDefaults(demo.kind, size);
+    setCircles(defaults.circles);
+    setPoints(defaults.points);
+    setHandles(defaults.handles);
+    setPolyScene(defaults.polyScene);
+  }, [demo.kind, size.height, size.width]);
+
+  useEffect(() => {
+    if (demo.kind !== "unit-circle-point" && demo.kind !== "sine-curve" && demo.kind !== "lerp-angle") {
+      return;
+    }
+    const layout = unitCircleLayout(size.width, size.height);
+    setHandles((current) => ({
+      a: snapPointToCircle(current.a, layout),
+      b: demo.kind === "lerp-angle" ? snapPointToCircle(current.b, layout) : current.b,
+    }));
+  }, [demo.kind, size.height, size.width]);
 
   const origin = useMemo<Point>(
     () => ({ x: Math.round(size.width * 0.34), y: Math.round(size.height * 0.62) }),
@@ -290,4 +423,3 @@ export default function ConstructiveGeometryDemo({
     </div>
   );
 }
-

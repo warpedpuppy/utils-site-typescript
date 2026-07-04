@@ -503,6 +503,16 @@ export function dotReading(dot: number, angle: number) {
   return `opposed (${fmt(radToDeg(angle))}° apart)`;
 }
 
+export function angleReading(angle: number) {
+  const deg = radToDeg(angle);
+  if (deg < 8) return "nearly aligned";
+  if (deg < 35) return `small correction (${fmt(deg)}°)`;
+  if (deg < 80) return `clear turn needed (${fmt(deg)}°)`;
+  if (deg < 100) return "perpendicular";
+  if (deg < 145) return `wide turn (${fmt(deg)}°)`;
+  return `nearly opposite (${fmt(deg)}°)`;
+}
+
 export function crossReading(cross: number) {
   if (Math.abs(cross) < 0.001) return "collinear / zero area";
   return cross > 0 ? "counter-clockwise turn" : "clockwise turn";

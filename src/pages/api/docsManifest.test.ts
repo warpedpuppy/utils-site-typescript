@@ -4,6 +4,7 @@ import coreApi from "./core-api.json";
 import {
   getEntryIntro,
   getEntryTabs,
+  getEntryUsageLead,
   MODULE_GUIDES,
   getEntryVisual,
 } from "./docsManifest";
@@ -59,5 +60,23 @@ describe("api docs manifest", () => {
         expect(exportNames.has(related.name)).toBe(true);
       }
     }
+  });
+
+  it("angle interpolation entries get specific usage leads", () => {
+    expect(getEntryUsageLead({ module: "AngleInterpolation", name: "lerpAngle" })).toContain("short turn");
+    expect(getEntryUsageLead({ module: "AngleInterpolation", name: "shortestAngleBetween" })).toContain("signed shortest turn");
+    expect(getEntryUsageLead({ module: "AngleInterpolation", name: "wrapAngle" })).toContain("370°");
+  });
+
+  it("collision entries get shape-specific usage leads", () => {
+    expect(getEntryUsageLead({ module: "PointToCircle", name: "pointToCircle" })).toBe(
+      "This one helps answer: is this point inside the circle yet?",
+    );
+    expect(getEntryUsageLead({ module: "LineToLine", name: "lineToLine" })).toBe(
+      "This one helps answer: are these lines crossing yet?",
+    );
+    expect(getEntryUsageLead({ module: "RectToRect", name: "rectToRect" })).toBe(
+      "This one helps answer: are these rectangles overlapping yet?",
+    );
   });
 });

@@ -12,6 +12,9 @@ import InteractiveMiniDemo from "../../components/MiniDemo/InteractiveMiniDemo";
 import AnimateMiniDemo from "../../components/MiniDemo/AnimateMiniDemo";
 import ColorMiniDemo from "../../components/MiniDemo/ColorMiniDemo";
 import ConstructiveGeometryDemo from "../../components/MiniDemo/ConstructiveGeometryDemo";
+import AngleLerpMiniDemo from "../../components/MiniDemo/AngleLerpMiniDemo";
+import ShortestAngleBetweenMiniDemo from "../../components/MiniDemo/ShortestAngleBetweenMiniDemo";
+import WrapAngleMiniDemo from "../../components/MiniDemo/WrapAngleMiniDemo";
 import VecAddMiniDemo from "../../components/MiniDemo/VecAddMiniDemo";
 import VecReflectMiniDemo from "../../components/MiniDemo/VecReflectMiniDemo";
 import { INTERACTIVE_DEMOS } from "../../components/MiniDemo/interactiveDemos";
@@ -103,7 +106,7 @@ export function EntryVisual({ entry }: { entry: ApiEntry }) {
           <ColorMiniDemo demo={COLOR_DEMOS[entry.name]} />
         </>
       )}
-      {visual.kind === "mini-demo" && geometryDemo && entry.name !== "vecAdd" && entry.name !== "vecReflect" && (
+      {visual.kind === "mini-demo" && geometryDemo && entry.name !== "vecAdd" && entry.name !== "vecReflect" && entry.name !== "lerpAngle" && entry.name !== "shortestAngleBetween" && entry.name !== "wrapAngle" && (
         <>
           <p className="api-docs__demo-caption">Drag the scene:</p>
           <ConstructiveGeometryDemo demo={geometryDemo} />
@@ -119,6 +122,24 @@ export function EntryVisual({ entry }: { entry: ApiEntry }) {
         <>
           <p className="api-docs__demo-caption">Watch the ricochet:</p>
           <VecReflectMiniDemo />
+        </>
+      )}
+      {visual.kind === "mini-demo" && entry.name === "lerpAngle" && (
+        <>
+          <p className="api-docs__demo-caption">Watch it retarget:</p>
+          <AngleLerpMiniDemo />
+        </>
+      )}
+      {visual.kind === "mini-demo" && entry.name === "shortestAngleBetween" && (
+        <>
+          <p className="api-docs__demo-caption">See which turn wins:</p>
+          <ShortestAngleBetweenMiniDemo />
+        </>
+      )}
+      {visual.kind === "mini-demo" && entry.name === "wrapAngle" && (
+        <>
+          <p className="api-docs__demo-caption">Watch the number get normalized:</p>
+          <WrapAngleMiniDemo />
         </>
       )}
       {visual.kind === "mini-demo" && !INTERACTIVE_DEMOS[entry.name] && MINI_DEMOS[entry.name] && (

@@ -93,7 +93,7 @@ export function buildLerpAngleScene(
   return {
     call: callStr,
     hint:
-      "Drag either handle to set an angle. The shaded arc is the shortest path — lerpAngle always travels it, even across the 0°/360° seam.",
+      "Drag either handle to set a heading. The shaded arc is the turn you actually want a compass needle, turret, or steering sprite to take — the short way across the 0°/360° seam, not the long spin.",
     readouts: [
       { label: "a", value: `${fmt(radToDeg(angleA))}°` },
       { label: "b", value: `${fmt(radToDeg(angleB))}°` },

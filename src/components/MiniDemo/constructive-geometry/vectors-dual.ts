@@ -26,6 +26,7 @@ import {
   vectorFromHandle,
   handleFromVector,
   dotReading,
+  angleReading,
   crossReading,
   formatVector,
   fmt,
@@ -106,11 +107,12 @@ export function buildVecAngleBetweenScene(origin: Point, handles: HandlePair): S
   return {
     call: `vecAngleBetween(${formatVector(a)}, ${formatVector(b)}) = ${fmt(angle)} rad`,
     hint:
-      "Drag either vector. This one answers the pure turning question between them: no sign, no direction test, just the smallest unsigned angle from one to the other.",
+      "Drag either vector. Read blue as your current heading and pink as the target heading. This measures how big the turn is between them, but not whether that turn is clockwise or counter-clockwise.",
     readouts: [
-      { label: "a", value: formatVector(a) },
-      { label: "b", value: formatVector(b) },
-      { label: "angle", value: `${fmt(angle)} rad = ${fmt(radToDeg(angle))}°` },
+      { label: "heading", value: formatVector(a) },
+      { label: "target", value: formatVector(b) },
+      { label: "turn needed", value: `${fmt(angle)} rad = ${fmt(radToDeg(angle))}°` },
+      { label: "reading", value: angleReading(angle) },
     ],
   };
 }
@@ -203,11 +205,14 @@ export function drawDualVectorScene(
     ]);
     drawParallelogram(ctx, origin, handles.a, handles.b);
   } else {
-    drawHeaderBox(ctx, [{ text: `angle = ${fmt(angle)} rad = ${fmt(radToDeg(angle))}°`, color: "#e2e8f0" }]);
+    drawHeaderBox(ctx, [
+      { text: `turn needed = ${fmt(angle)} rad = ${fmt(radToDeg(angle))}°`, color: "#e2e8f0" },
+      { text: angleReading(angle), color: "#fdba74" },
+    ]);
   }
 
-  labelSegment(ctx, handles.a.x + 18, handles.a.y - 10, "a", "#818cf8");
-  labelSegment(ctx, handles.b.x + 18, handles.b.y - 10, "b", "#fb7185");
+  labelSegment(ctx, handles.a.x + 18, handles.a.y - 10, focus === "angle-between" ? "heading" : "a", "#818cf8");
+  labelSegment(ctx, handles.b.x + 18, handles.b.y - 10, focus === "angle-between" ? "target" : "b", "#fb7185");
 }
 
 export function drawLerpScene(
