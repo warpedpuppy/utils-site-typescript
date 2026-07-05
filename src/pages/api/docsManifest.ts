@@ -419,7 +419,7 @@ const DEFAULT_ENTRY_TABS: Record<DocVisualKind, EntryTabConfig[]> = {
   example: [{ ...VISUAL_TAB, label: "See Example" }, EXPLAIN_TAB, REFERENCE_TAB],
 };
 
-const ENTRY_DOCS: Partial<Record<string, EntryDocConfig>> = {
+export const ENTRY_DOCS: Partial<Record<string, EntryDocConfig>> = {
   circleToCircle: {
     whatItIs:
       "This is the simple version of 'are these two circles touching?' You hand it two circle centers and two radii, and it gives you back `true` or `false`.",
@@ -1008,6 +1008,339 @@ const ENTRY_DOCS: Partial<Record<string, EntryDocConfig>> = {
       "Use this to sprinkle variety with a little control: confetti, particles, or tiles that differ but still belong together.",
     related: [
       { name: "colorFamily", reason: "A whole ordered palette instead of one random pick." },
+    ],
+  },
+
+  // --- Animate (time & springs) ---
+  ticker: {
+    whatItIs:
+      "This is the heartbeat. It calls your function once per animation frame, hands it the timing info, and gives you back a small handle for stopping it. It is the one piece of core that touches the clock — everything else in the library just does math on the numbers this feeds it.",
+    howToUse:
+      "Use this instead of wiring up `requestAnimationFrame` by hand: start it, read the elapsed time inside your callback, feed that into `loop`, `yoyo`, or `tweenFrame`, and cancel the handle when your page or component goes away.",
+    related: [
+      { name: "loop", reason: "Turn the elapsed time this provides into repeating 0..1 progress." },
+      { name: "tweenFrame", reason: "Sample a whole animation from the elapsed time, one frame at a time." },
+    ],
+  },
+  loop: {
+    whatItIs:
+      "This turns raw elapsed time into a progress value that runs 0→1, snaps back to 0, and runs again — a sawtooth. You tell it how long one cycle is; it answers 'how far through the current cycle are we?'",
+    howToUse:
+      "Use this for anything that repeats forever: an orbit, a blinking cursor, a marching dash pattern. Feed the 0..1 through an easing curve or a lerp to drive the thing that actually moves.",
+    related: [
+      { name: "yoyo", reason: "Comes back down smoothly (0→1→0) instead of snapping to the start." },
+      { name: "pingPong", reason: "The same back-and-forth idea for arbitrary value ranges instead of time." },
+    ],
+  },
+  yoyo: {
+    whatItIs:
+      "Like `loop`, but instead of snapping back to 0 at the end of each cycle, the progress turns around and comes home: 0→1→0, over and over. A triangle wave made of time.",
+    howToUse:
+      "Use this for breathing, hovering, and pulsing — any motion that should go out and come back with no visible seam where the cycle restarts.",
+    related: [
+      { name: "loop", reason: "The one-way version that snaps back to the start each cycle." },
+    ],
+  },
+  delay: {
+    whatItIs:
+      "This holds a progress value at 0 until a delay has passed, then lets it run 0→1 over the duration. It is how 'wait, then go' becomes plain math instead of a setTimeout.",
+    howToUse:
+      "Use this to choreograph from one shared clock: the title fades in, and half a second later the subtitle follows — two calls with different delays, no timers to clean up.",
+    related: [
+      { name: "stagger", reason: "This same idea applied across a whole list by index." },
+    ],
+  },
+  stagger: {
+    whatItIs:
+      "This is `delay` for a whole list: item 0 starts now, item 1 starts one beat later, item 2 a beat after that. Call it with each item's index and you get a cascade from a single clock.",
+    howToUse:
+      "Use this for ripple-in effects: menu items sliding in one after another, chart bars growing left to right, particles launching in sequence.",
+    related: [
+      { name: "delay", reason: "The single-item version, when there's no list involved." },
+    ],
+  },
+  springValue: {
+    whatItIs:
+      "This advances a spring simulation one small step: the value gets pulled toward its target like a weight on a spring — it can overshoot, wobble, and settle. Unlike a tween it has no duration; it has physics (stiffness, damping, mass), and the motion falls out of them.",
+    howToUse:
+      "Use this when the target keeps moving — a cursor follower, a dragged card settling into place — because springs never need to know when they'll arrive. Keep the returned state and feed it back in every frame.",
+    related: [
+      { name: "criticalDamping", reason: "The damping value where the wobble disappears — the natural tuning starting point." },
+      { name: "lerp", reason: "The no-physics way to chase a target, when you don't want overshoot." },
+    ],
+  },
+  criticalDamping: {
+    whatItIs:
+      "This computes the exact damping value at which a spring stops overshooting: any less and it bounces past the target, any more and it oozes in slowly. Physics calls that 'critically damped' — the fastest possible arrival with zero wobble.",
+    howToUse:
+      "Use it as your tuning anchor for `springValue`: take the critical value, then multiply by less than 1 for playful bounce or more than 1 for a heavier, damped feel.",
+    related: [
+      { name: "springValue", reason: "The spring this value tunes." },
+    ],
+  },
+  tweenFrame: {
+    whatItIs:
+      "This is `tweenObject` under a name that matches how you actually call it in an animation loop: every frame, hand it the spec, the elapsed time, and the duration, and it hands back that frame's in-between values. Same math, frame-at-a-time framing.",
+    howToUse:
+      "Use it inside a `ticker` callback: it eases every numeric property from its start value to its end value and returns the current snapshot, ready to draw.",
+    related: [
+      { name: "tweenObject", reason: "The same function under its primary name." },
+      { name: "ticker", reason: "The frame loop that supplies the elapsed time." },
+    ],
+  },
+
+  // --- Physics & simulation ---
+  ballToBallBounce: {
+    whatItIs:
+      "This is the 'two balls bumped into each other' response. While they overlap, it pushes them apart with a spring-like force sized to the overlap — a soft, springy shove rather than an instant billiard-ball deflection. It edits both balls' velocities in place.",
+    howToUse:
+      "Call it every frame for each pair of balls that might be touching (a cheap `circleToCircle` check first saves work). Deeper overlaps push harder, so a crowd of balls jostles itself apart naturally.",
+    related: [
+      { name: "circleToCircle", reason: "The touch test that tells you when this response is needed." },
+      { name: "ballBounce", reason: "The wall-bounce sibling: one ball against the container edges." },
+    ],
+  },
+  boidsStep: {
+    whatItIs:
+      "This advances a whole flock one tick using Craig Reynolds' three boids rules: separation (don't crowd me), alignment (fly the way my neighbors fly), and cohesion (drift toward the group). From just those, flocking emerges. No randomness, no clock — the same flock in gives the same flock out.",
+    howToUse:
+      "Keep an array of boids, call this once per frame, then draw each boid at its new position. The rule weights in the options are the personality dials: tight school of fish at one end, loose gaggle of tourists at the other.",
+    related: [
+      { name: "Flock", reason: "The higher-level flock object that wraps this stepping function for you." },
+    ],
+  },
+  gravitationalStep: {
+    whatItIs:
+      "One frame of Newtonian gravity: the orbiter feels a pull toward the central body proportional to mass over distance squared, then its velocity and position update. String frames together and real orbits appear — ellipses and slingshots included. It mutates the orbiter in place.",
+    howToUse:
+      "Call it once per frame with your orbiter and the body it orbits. Give the orbiter some sideways starting velocity, or it will do the physically-correct thing and fall straight in.",
+    related: [
+      { name: "grStep", reason: "The same step with a general-relativity correction that makes orbits precess." },
+    ],
+  },
+  grStep: {
+    whatItIs:
+      "Same as `gravitationalStep`, plus a pinch of general relativity: an extra term strengthens gravity at close range, which makes the orbit's ellipse slowly rotate (precess) instead of retracing itself. This is the effect that made Mercury's orbit famously refuse to behave for Newton.",
+    howToUse:
+      "Use it exactly like `gravitationalStep`, with `grStrength` as the 'how much Einstein' dial: 0 is plain Newton; turn it up and the rosette pattern becomes obvious.",
+    related: [
+      { name: "gravitationalStep", reason: "The plain Newtonian version this extends." },
+      { name: "lensDeflection", reason: "The other relativity demo: gravity bending light instead of orbits." },
+    ],
+  },
+  lensDeflection: {
+    whatItIs:
+      "This approximates how much a light ray bends as it passes a heavy object — gravitational lensing. Bigger mass bends more; passing farther from the lens bends less. It's why galaxies smear whatever is behind them into arcs.",
+    howToUse:
+      "March rays across your canvas and add this deflection to each one as it passes the lens — the warped-grid look appears on its own. The gravitational-lensing example is exactly this, with sliders.",
+    related: [
+      { name: "grStep", reason: "The other relativity demo: gravity bending orbits instead of light." },
+    ],
+  },
+  gameOfLifeStep: {
+    whatItIs:
+      "One generation of Conway's Game of Life: every cell looks at its eight neighbors — a live cell survives with two or three alive, a dead cell is born with exactly three, everything else dies or stays empty. The grid wraps at the edges, and you get a brand-new grid back; the input isn't touched.",
+    howToUse:
+      "Keep a flat grid of 0s and 1s, call this on a throttled tick (full frame rate is an unreadable blur), and draw the live cells. Seed it randomly, or with a known pattern like a glider, and watch structure emerge from three rules.",
+  },
+  sphereLighting: {
+    whatItIs:
+      "This fakes 3D on a flat circle: given a light position, it returns where the bright specular highlight should sit — partway from the circle's center toward the light. Draw a radial gradient there and the circle reads as a shiny ball.",
+    howToUse:
+      "Recompute it every frame as the ball or the light moves and the illusion holds up surprisingly well. The ball-orbiting-a-sun example leans on this for its lit planet.",
+  },
+
+  // --- Curves ---
+  quadraticBezier: {
+    whatItIs:
+      "This gives you the point at `t` along a quadratic Bézier — the simplest curved path: a start point, an end point, and one control point that pulls the curve toward itself (the path bends toward it but never touches it).",
+    howToUse:
+      "Sweep `t` from 0 to 1 to move something along the arc, or sample many `t` values to draw the path yourself. If you only need to *stroke* the curve, `ctx.quadraticCurveTo` already does that — this is for when you need the actual points.",
+    related: [
+      { name: "bezierPoint", reason: "The cubic version: two control points, S-curves possible." },
+      { name: "deCasteljau", reason: "The same evaluation for any number of control points, showing its work." },
+    ],
+  },
+  bezierPoint: {
+    whatItIs:
+      "The point at `t` along a cubic Bézier — the workhorse curve with two control points, the same kind you drag around with a pen tool. Under the hood it's just repeated lerps between the control points (de Casteljau's construction) until one point remains.",
+    howToUse:
+      "Use it to move objects along a designed path, not just draw one: sweep `t` over time (through an easing function, if you want acceleration) and place your object at each result.",
+    related: [
+      { name: "quadraticBezier", reason: "The simpler one-control-point version." },
+      { name: "deCasteljau", reason: "The same algorithm generalized, returning the construction lines too." },
+    ],
+  },
+  deCasteljau: {
+    whatItIs:
+      "Bézier evaluation with the construction left in. It lerps between adjacent control points, then between those results, and so on until a single point remains — and it returns every intermediate level, not just the answer. Any number of control points welcome.",
+    howToUse:
+      "Use it when you want to *show* how Béziers work — draw the shrinking scaffolding of lines at each level as `t` sweeps — or when your curve has more control points than the standard quadratic/cubic helpers handle.",
+    related: [
+      { name: "bezierPoint", reason: "The fixed cubic case, when you just want the point." },
+      { name: "getPointOnLine", reason: "The single 2D lerp this whole algorithm is stacked out of." },
+    ],
+  },
+
+  // --- Lines, points & triangles ---
+  lineLength: {
+    whatItIs:
+      "The length of a line segment, taken from a line object's two endpoints. It's Pythagoras with the coordinate unpacking done for you.",
+    howToUse:
+      "Use it when your data is already line objects: sizing dashes, showing distance readouts, or sorting segments by length.",
+    related: [
+      { name: "distance", reason: "The same measurement from two loose points instead of a line object." },
+      { name: "getTriangleData", reason: "The distance plus its dx/dy legs, when you need direction too." },
+    ],
+  },
+  getPointOnLine: {
+    whatItIs:
+      "This finds the point a fraction `t` of the way from one point to another — a lerp applied to x and y at once. `t = 0` is the start, `t = 1` the end, `t = 0.5` the midpoint.",
+    howToUse:
+      "Use it to place things along a straight path: evenly spaced dots, an object 30% of the way to its target, or the repeated-lerp skeleton underneath a Bézier curve.",
+    related: [
+      { name: "moveAlongLine", reason: "Same job, different argument names — pick whichever reads better." },
+      { name: "lerp", reason: "The 1D version this applies to both axes." },
+    ],
+  },
+  moveAlongLine: {
+    whatItIs:
+      "This finds the point a given fraction of the way from an origin to a destination. It's the same math as `getPointOnLine` — a 2D lerp — under a name that reads like motion.",
+    howToUse:
+      "Use it to park something partway along a route, or sweep the ratio 0→1 over time to slide it there. For constant-speed chasing of a moving target, `moveToward` is the better fit.",
+    related: [
+      { name: "getPointOnLine", reason: "Same job, different argument names — pick whichever reads better." },
+      { name: "moveToward", reason: "Fixed-speed stepping instead of fraction-based placement." },
+    ],
+  },
+  moveToward: {
+    whatItIs:
+      "This nudges an object a fixed number of pixels toward a destination each call, and snaps it exactly onto the target once it's within one step. Unlike a lerp chase, the speed is constant — no slowing down on approach. It edits the object's x/y in place.",
+    howToUse:
+      "Call it every frame for homing behavior: an enemy chasing the player, items flying to an inventory slot, a camera walking to its mark. It's perfectly happy while the destination moves.",
+    related: [
+      { name: "lerp", reason: "Proportional chasing that eases in, instead of marching at constant speed." },
+      { name: "moveAlongLine", reason: "Placement by fraction of the route, when you know the whole path." },
+    ],
+  },
+  getTriangleData: {
+    whatItIs:
+      "Given two points, this returns the right triangle hiding between them: the horizontal leg (dx), the vertical leg (dy), and the hypotenuse (their distance). Every pair of points has one.",
+    howToUse:
+      "Use it when the distance alone isn't enough — dx and dy give you direction, for velocities, proportional forces, or feeding the trig functions.",
+    related: [
+      { name: "triangleDataFromLine", reason: "The same triangle solved fully: side lengths and the angles." },
+      { name: "distance", reason: "Just the hypotenuse, when the legs don't matter." },
+    ],
+  },
+  triangleDataFromLine: {
+    whatItIs:
+      "This solves the right triangle the trig-class way: treat the line as the hypotenuse and get back the side lengths *and* both angles, in degrees. It's SOH-CAH-TOA as a function.",
+    howToUse:
+      "Use it when you need the angle a line makes — to rotate a sprite along its path, to label a slope, or to see with real numbers why atan2 gives what it gives.",
+    related: [
+      { name: "getTriangleData", reason: "Just the sides, when you don't need angles." },
+      { name: "getRotation", reason: "The one-liner when the angle is all you wanted." },
+    ],
+  },
+  circleFromThreePoints: {
+    whatItIs:
+      "Pick any three points that aren't in a straight line, and exactly one circle passes through all three. This finds it — center and radius. Geometry calls it the circumcircle.",
+    howToUse:
+      "Use it to fit an arc through known points: three positions of a moving object, three user clicks, or the circle a triangle naturally sits on.",
+  },
+
+  // --- Around a circle & shape builders ---
+  findPointAroundCircle: {
+    whatItIs:
+      "This finds the point a given percentage of the way around a circle — 0 is the start, 0.25 a quarter-turn, 0.5 the far side. Cosine and sine do the converting from 'how far around' to x/y, so you never have to.",
+    howToUse:
+      "Sweep the percentage over time and you have an orbit. Park it at a fixed value to place a marker on a dial, a moon at a phase, or a label around a badge.",
+    related: [
+      { name: "distributeAroundCircle", reason: "All N evenly-spaced points at once, instead of one at a chosen fraction." },
+      { name: "unitCirclePoint", reason: "The same idea parameterized by angle instead of percentage." },
+    ],
+  },
+  distributeAroundCircle: {
+    whatItIs:
+      "This places N points evenly around a circle and hands you all of them at once — a clock face in one call.",
+    howToUse:
+      "Use it for radial menus, orbiting clusters, flower petals, dots on a loading spinner — anywhere 'evenly around a ring' is the layout.",
+    related: [
+      { name: "findPointAroundCircle", reason: "One point at an arbitrary fraction, instead of the whole evenly-spaced set." },
+    ],
+  },
+  equilateralTriangle: {
+    whatItIs:
+      "The three corners of an equilateral triangle inscribed in a circle: give it a center, radius, and starting angle, and it returns the vertices — three points on the circle, 120° apart.",
+    howToUse:
+      "Use it to draw or hit-test triangles that rotate cleanly: spin the angle over time and the triangle turns in place around its center.",
+    related: [
+      { name: "starVertices", reason: "The same vertices-around-a-center recipe, grown into a star." },
+      { name: "createRect", reason: "The rectangle member of the same shape-builder family." },
+    ],
+  },
+  createRect: {
+    whatItIs:
+      "The four corner vertices of a rectangle centered on the origin, optionally rotated — with a built-in spin option if you feed it a running time. You translate the points to where the rectangle lives and connect the dots.",
+    howToUse:
+      "Use it when you need a rectangle's actual corners — for polygon collision checks or custom drawing with rotation — rather than the axis-aligned box `ctx.fillRect` gives you.",
+    related: [
+      { name: "starVertices", reason: "Same family and options, star-shaped." },
+      { name: "polygonPolygon", reason: "The corner list drops straight into the polygon overlap checks." },
+    ],
+  },
+  starVertices: {
+    whatItIs:
+      "The corner points of a star: it walks around a circle alternating between an outer radius (the spike tips) and an inner radius (the notches between them). Change the spike count or the radius ratio and you change the star's whole character.",
+    howToUse:
+      "Connect the returned vertices to draw it; use the spin option for a rotating star. The inner-to-outer ratio is the personality dial — close together reads as a subtle badge, far apart as a spiky cartoon burst.",
+    related: [
+      { name: "equilateralTriangle", reason: "The simplest member of the same shape-builder family." },
+      { name: "createRect", reason: "Same family and options, four corners instead of spikes." },
+    ],
+  },
+
+  // --- Signals ---
+  dft: {
+    whatItIs:
+      "The Discrete Fourier Transform, pointed at drawings: it takes a path of 2D points and re-expresses it as a stack of spinning circles (epicycles), each with a size, a spin speed, and a starting angle. Chain the circles tip-to-tail, set them spinning, and the last tip retraces your drawing.",
+    howToUse:
+      "Sample a shape's outline into points, run it through once, then animate the returned circles. They come sorted by size, so keeping just the first handful redraws a dreamier, simplified version of the shape.",
+    related: [
+      { name: "findPointAroundCircle", reason: "Each epicycle's tip is exactly this, swept over time." },
+    ],
+  },
+
+  // --- Helpers ---
+  centerOnParent: {
+    whatItIs:
+      "Given a child box and a parent box, this returns the top-left position that centers the child inside the parent — the subtract-half-the-difference math, done for both axes.",
+    howToUse:
+      "Use it to park a canvas, sprite, or panel dead-center in its container without re-deriving the offset arithmetic for the hundredth time.",
+  },
+  numberWithCommas: {
+    whatItIs:
+      "This formats a number with comma thousands-separators: 1234567 becomes '1,234,567'. That's the whole job, and that's the point.",
+    howToUse:
+      "Use it on score counters, stat readouts, and labels — anywhere raw digits get hard to read past four figures.",
+  },
+  randomIntegerBetween: {
+    whatItIs:
+      "A random whole number between min and max, with both ends included — the dice-roll function.",
+    howToUse:
+      "Use it for counts and picks: how many particles to spawn, which color index to grab, which cell to seed.",
+    related: [
+      { name: "randomNumberBetween", reason: "The decimal version, for continuous values like speeds and sizes." },
+    ],
+  },
+  randomNumberBetween: {
+    whatItIs:
+      "A random decimal number from min up to (but not including) max — for values that live on a continuum rather than in whole-number steps.",
+    howToUse:
+      "Use it to give particles individuality: each gets its own speed, drift, and size, and the crowd stops looking stamped from one mold.",
+    related: [
+      { name: "randomIntegerBetween", reason: "The whole-number version, for counts and index picks." },
     ],
   },
 };

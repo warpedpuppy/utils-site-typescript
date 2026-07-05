@@ -103,19 +103,33 @@ src/
 
 ## Adding A Core Function
 
-1. Add a named export in `packages/core/src/`.
+1. Add a named export in `packages/core/src/`, with a JSDoc description and an
+   `@example` block — the docs test suite fails on any function missing either.
 2. Add tests in `packages/core/src/core.test.ts`.
-3. Run the barrel generator:
+3. Regenerate the barrel and the committed API extract (a sync test fails if
+   `src/pages/api/core-api.json` drifts from source):
 
 ```sh
 npm run barrel --workspace @utilspalooza/core
+npm run docs --workspace @utilspalooza/core
 ```
 
-4. If the function should appear on the Copy Code page, add a wrapper in
+4. Write the hand-authored intro for the `/api` "Explain It" tab: an
+   `ENTRY_DOCS` entry (`whatItIs` + `howToUse`) in
+   `src/pages/api/docsManifest.ts`. A test in
+   `src/pages/api/docsManifest.test.ts` fails on any function export missing
+   one. (The Easing family is the sole sanctioned exception — its intros are
+   generated from the shared family writeup plus each curve's own JSDoc line.)
+5. If the function should appear on the Copy Code page, add a wrapper in
    `src/pages/createJSON/formulas/`.
-5. If the function needs a visual explanation, add a teaching demo — a class in
-   `src/core-animations/` plus a `RegistryRecord` in the matching
-   `src/registry/categories/*.ts` file (see "Adding A Demo Animation").
+6. Give the function a teaching demo — a class in `src/core-animations/` plus a
+   `RegistryRecord` in the matching `src/registry/categories/*.ts` file (see
+   "Adding A Demo Animation"). A registry drift test requires every core export
+   to be taught by an animation or explicitly listed, with a one-line
+   justification, in `DOCS_ONLY_EXPORTS` in `src/registry/registry.test.ts` —
+   that list is a visible debt ledger, not a loophole.
+7. Finish with `npx vitest run` and `npx tsc --noEmit` at the repo root — the
+   drift and completeness tests above are the real checklist.
 
 ## Adding A Demo Animation
 
@@ -126,6 +140,11 @@ Copy Code list, and the manifest are all derived — `src/animationManifest.ts` 
 `src/SiteData.ts` are compatibility shims, so do not edit them directly. Drift
 tests in `src/registry/registry.test.ts` fail if a record is missing a pen, a
 `load()` that resolves, or a core export that no animation teaches.
+
+Every visible animation also needs its CodePen entry in
+`src/pages/studio/pens-examples.ts`: the entry's `key` must match the
+animation's slug (`static l`), and its `js` embeds the standalone `drawX()`
+verbatim via `.toString()` so the pen and the example cannot drift.
 
 Each class should:
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import animationManifest from "../../animationManifest";
 import coreApi from "./core-api.json";
 import {
+  ENTRY_DOCS,
   getEntryIntro,
   getEntryTabs,
   getEntryUsageLead,
@@ -12,6 +13,7 @@ import {
 interface ApiEntry {
   name: string;
   module: string;
+  kind: string;
 }
 
 const apiEntries = coreApi as ApiEntry[];
@@ -60,6 +62,25 @@ describe("api docs manifest", () => {
         expect(exportNames.has(related.name)).toBe(true);
       }
     }
+  });
+
+  it("every function export has a bespoke Explain It intro (easing family excepted)", () => {
+    // Coverage reached 100% of function exports on 2026-07-05; this fence keeps
+    // it there. A missing ENTRY_DOCS entry silently falls back to generated
+    // boilerplate, so without this test the regression would be invisible.
+    // The Easing module is the one sanctioned exception: its intros are built
+    // from the shared family writeup plus each curve's own JSDoc line (which
+    // api-docs-complete.test.ts enforces), so per-curve entries would only
+    // duplicate that.
+    const missing = apiEntries
+      .filter((entry) => entry.kind === "function" && entry.module !== "Easing")
+      .filter((entry) => {
+        const doc = ENTRY_DOCS[entry.name];
+        return !doc?.whatItIs?.trim() || !doc?.howToUse?.trim();
+      })
+      .map((entry) => `${entry.module}:${entry.name}`);
+
+    expect(missing).toEqual([]);
   });
 
   it("angle interpolation entries get specific usage leads", () => {
