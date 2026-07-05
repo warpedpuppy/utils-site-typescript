@@ -51,7 +51,7 @@ function Quickstart() {
       </Helmet>
 
       <div id="quickstart-wrapper--inner">
-        <h2>Don't know where to begin? Start here.</h2>
+        <h1>Don't know where to begin? Start here.</h1>
         <p>
           Every example on this site is a function you call inside an animation
           loop. If you've never wired one up before, the gap between{" "}
@@ -61,7 +61,7 @@ function Quickstart() {
           thing, nothing hidden.
         </p>
 
-        <h3>The whole file</h3>
+        <h2>The whole file</h2>
         <p>
           Copy this into a file called <code>index.html</code>, save it, and
           double-click it. That's the entire build step. There is no bundler, no{" "}
@@ -79,7 +79,7 @@ function Quickstart() {
 
         <div className="quickstart-pen" ref={penMountRef} />
 
-        <h3>What each part is doing</h3>
+        <h2>What each part is doing</h2>
         <ol className="quickstart-anatomy">
           <li>
             <strong>The canvas.</strong> One <code>&lt;canvas&gt;</code> element
@@ -102,7 +102,7 @@ function Quickstart() {
           </li>
         </ol>
 
-        <h3>Ready for a real project?</h3>
+        <h2>Ready for a real project?</h2>
         <p>
           The CDN tag above is the zero-setup path. When you're working in a
           bundled project (Vite, Next, etc.), install it instead:

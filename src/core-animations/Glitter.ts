@@ -58,8 +58,7 @@ class Glitter extends Template {
 
 const ELI5 = `Glitter — a haze of drifting light over a slow pinwheel of beams.
 
-This demo is now backed by the reusable @utilspalooza/effects package. The math
-is still small: a radial-gradient dot is baked once, then many copies breathe
+The math is small: a radial-gradient dot is baked once, then many copies breathe
 in and out along their own paths with cosine and sine waves. Each dot gets a
 slightly different speed and amplitude, so the field shimmers instead of
 pulsing as one.`;

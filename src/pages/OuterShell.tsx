@@ -1,8 +1,12 @@
 import NavBar from "../components/NavBar/NavBar";
 import { Link, Outlet } from "react-router-dom";
-
-const GITHUB_URL = "https://github.com/warpedpuppy/utils-site-typescript";
-const NPM_URL = "https://www.npmjs.com/package/@utilspalooza/core";
+import {
+  CORE_LICENSE,
+  CORE_PACKAGE_NAME,
+  CORE_VERSION,
+  GITHUB_URL,
+  NPM_URL,
+} from "../packageMeta";
 
 function OuterShell() {
   return (
@@ -22,7 +26,13 @@ function OuterShell() {
           </a>
         </nav>
         <div className="site-footer__legal">
-          © {new Date().getFullYear()} Warped Puppy LLC
+          <a href={NPM_URL} target="_blank" rel="noopener noreferrer">
+            {CORE_PACKAGE_NAME} v{CORE_VERSION}
+          </a>
+          <span aria-hidden="true"> · </span>
+          {CORE_LICENSE} license
+          <span aria-hidden="true"> · </span>© {new Date().getFullYear()} Warped
+          Puppy LLC
         </div>
       </footer>
     </div>

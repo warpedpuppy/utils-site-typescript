@@ -593,6 +593,16 @@ describe("registry drift tests", () => {
     expect(bogus).toEqual([]);
   });
 
+  // A7 — public/sitemap.xml lists every visible /examples/:slug page (plus the
+  // static pages). It is generated, not hand-maintained; edit the registry and
+  // this fails until `npx vite-node scripts/generate-sitemap.ts` is re-run.
+  it("A7 — public/sitemap.xml matches the registry-generated sitemap", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { buildSitemapXml } = await import("../../scripts/sitemap");
+    const committed = readFileSync("public/sitemap.xml", "utf8");
+    expect(committed).toEqual(buildSitemapXml(ALL_RECORDS));
+  });
+
   // A6 — the /api "See it in Examples" links are a pure-data projection of the
   // registry, kept standalone so the /api bundle need not import the heavy
   // registry. This locks that projection to ALL_RECORDS; edit the registry and

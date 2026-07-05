@@ -22,6 +22,7 @@ function Examples() {
   const [innerKey, setInnerKey] = useState<string>("");
   const [className, setClassName] = useState<any>(["", ""]);
   const [open, setOpen] = useState<number>(-1);
+  const [filterQuery, setFilterQuery] = useState<string>("");
 
   const { getKeyAndInnerKeyFromLocation } = ExamplesUtils();
   const { createChecklist } = CreateChecklists();
@@ -52,7 +53,8 @@ function Examples() {
     "example-page-checklist",
     clickHandler,
     open,
-    setOpen
+    setOpen,
+    { query: filterQuery, setQuery: setFilterQuery }
   );
 
   useEffect(() => {
@@ -81,15 +83,27 @@ function Examples() {
     setClassName([objectKey, objectInnerKey]);
   }, [key, innerKey]);
 
+  const pageTitle = activeObject
+    ? `${activeObject.title} — Canvas Animation Example — Utilspalooza`
+    : "Animation Examples — Utilspalooza";
+  const pageUrl = activeObject
+    ? `https://utilspalooza.com/examples/${activeObject.slug}`
+    : "https://utilspalooza.com/examples";
+
   return (
     <section id="example-page">
       <Helmet>
-        <title>Animation Examples — Utilspalooza</title>
+        <title>{pageTitle}</title>
         <meta name="description" content="Browse live canvas animation demos: ball bounce, collision detection, bezier curves, sine waves, easing, and more. Click any formula to see it animate in real time." />
-        <link rel="canonical" href="https://utilspalooza.com/examples" />
-        <meta property="og:url" content="https://utilspalooza.com/examples" />
-        <meta property="og:title" content="Animation Examples — Utilspalooza" />
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
       </Helmet>
+      <h1 className="sr-only">
+        {activeObject
+          ? `${activeObject.title} — live canvas animation example`
+          : "Animation examples"}
+      </h1>
       {checklist}
       <PrimaryCanvas activeObject={activeObject} />
     </section>

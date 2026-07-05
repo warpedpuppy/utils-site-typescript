@@ -13,7 +13,7 @@ function About() {
         <meta property="og:title" content="About — Utilspalooza" />
       </Helmet>
       <div id="about-wrapper--inner">
-        <h2>What is Utilspalooza?</h2>
+        <h1>What is Utilspalooza?</h1>
         <p>
           Every animation project starts the same way: hunting down the same
           trigonometry helpers, collision-detection routines, and easing

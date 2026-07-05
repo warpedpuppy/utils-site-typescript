@@ -12,12 +12,12 @@ function NavBar() {
 
   return (
     <nav className="site-nav">
-      <h1>
+      <div className="site-nav__brand">
         <div className="logo-container">
           <UtilspaloozaLogo />
         </div>
         <NavLink to="/" end>utilspalooza</NavLink>
-      </h1>
+      </div>
 
       <div
         id="hamburger"

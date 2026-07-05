@@ -2,6 +2,42 @@
   background: var(--bg-surface);
   border-right: 1px solid var(--border);
 
+  .checklist-filter {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 0.55rem 0.75rem;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+
+    input {
+      width: 100%;
+      padding: 0.4rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-surface);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      transition: border-color 0.12s;
+
+      &::placeholder {
+        color: var(--text-muted);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: var(--brand-orange-soft);
+      }
+    }
+  }
+
+  .checklist-no-matches {
+    padding: 0.9rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
     .checklist-category {
     display: flex;
     justify-content: space-between;

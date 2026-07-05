@@ -23,7 +23,7 @@ function Home() {
       </Helmet>
       <div id="home-page--text-container">
         <div id="home-page--text-container_inner">
-          <h2>utilspalooza</h2>
+          <h1>utilspalooza</h1>
           <p>Canvas animation math you can see, understand, and copy into your own project.</p>
           <CopyInstall />
           <div className="home-actions">

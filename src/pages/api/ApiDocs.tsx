@@ -2,6 +2,12 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CopyInstall from "../../components/CopyInstall/CopyInstall";
+import {
+  CORE_LICENSE,
+  CORE_VERSION,
+  GITHUB_URL,
+  NPM_URL,
+} from "../../packageMeta";
 import { getExamplesForExport } from "../../registry/exampleCoreLinks";
 import {
   getEntryIntro,
@@ -359,11 +365,31 @@ function ApiDocs() {
         <p>
           Every animation on this site comes apart into small, nameable pieces of
           math — a lerp, an easing curve, a vector reflection. This is that toolbox:
-          pure functions in <code>@utilspalooza/core</code>, the same primitives
-          eventually composed into finished canvas effects in <code>@utilspalooza/effects</code>.
-          Read it to understand the idea, then take the code.
+          pure functions in <code>@utilspalooza/core</code>, published on npm. (A
+          companion effects package that composes these primitives into finished
+          canvas effects is in the works.) Read it to understand the idea, then
+          take the code.
         </p>
         <CopyInstall />
+        <p className="api-docs__badges">
+          <a
+            className="api-docs__badge"
+            href={NPM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            v{CORE_VERSION} on npm ↗
+          </a>
+          <span className="api-docs__badge">{CORE_LICENSE} license</span>
+          <a
+            className="api-docs__badge"
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            source on GitHub ↗
+          </a>
+        </p>
       </section>
 
       <nav className="api-docs__tabs" role="tablist">

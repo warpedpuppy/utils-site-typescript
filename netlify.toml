@@ -1,5 +1,11 @@
 [build]
-  command = "npm run build"
+  # Prerender: after the Vite build, scripts/prerender.mjs crawls every
+  # sitemap route with headless Chromium and writes static HTML into dist/
+  # (Netlify serves static files before the SPA fallback in _redirects, so
+  # crawlers get real per-page HTML). The chromium install is ~1 min on a
+  # cold cache; plain `npm run build` remains the escape hatch if this
+  # ever misbehaves.
+  command = "npx playwright install chromium && npm run build:prerender"
   publish = "dist"
 
 # Netlify defaulted to Node 18, but vitest (a devDependency) requires Node >=20

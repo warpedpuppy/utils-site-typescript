@@ -6,6 +6,11 @@ import CheckListCheckbox from "./CheckListCheckbox";
 import CheckListDT from "./CheckListDT";
 import "./CreateChecklists.scss";
 
+export interface ChecklistFilter {
+  query: string;
+  setQuery: (query: string) => void;
+}
+
 function CreateChecklists() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,25 +20,38 @@ function CreateChecklists() {
       containerClass: string,
       clickHandler: Nullable<Function> = null,
       open: Nullable<number> = null,
-      setOpen: Nullable<Function> = null
+      setOpen: Nullable<Function> = null,
+      filter: Nullable<ChecklistFilter> = null
     ) => {
       let returnArray: ReactNode[] = [];
+      const query = filter?.query.trim().toLowerCase() ?? "";
 
       let loopingObj = { ...animationManifest };
       Object.entries(loopingObj).forEach((innerArray, index) => {
-        const firstEntry = Object.entries(innerArray[1]).find(
-          ([, v]: any) => v.include !== false
+        // A query hit on the category name keeps the whole category visible.
+        const categoryMatches =
+          query !== "" && innerArray[0].toLowerCase().includes(query);
+        const visibleEntries = Object.entries(innerArray[1]).filter(
+          ([, v]: any) => {
+            if (v.include === false) return false;
+            if (query === "" || categoryMatches) return true;
+            return (
+              v.title.toLowerCase().includes(query) ||
+              v.slug.toLowerCase().includes(query)
+            );
+          }
         );
+        if (query !== "" && visibleEntries.length === 0) return;
+        const firstEntry = visibleEntries[0];
         let tempArray: ReactNode[] = [];
-        Object.entries(innerArray[1]).forEach((innerInnerArray) => {
+        visibleEntries.forEach((innerInnerArray) => {
           const { title, slug, formula } = innerInnerArray[1];
           const docsTarget = formula.keyFunction?.name ?? "";
           const docsHref = docsTarget
             ? `/api?tab=documentation&fn=${encodeURIComponent(docsTarget)}`
             : "";
 
-          if (innerInnerArray[1].include !== false)
-            tempArray.push(
+          tempArray.push(
               <div
                 key={`createjson-dd-${slug}`}
                 className="individual-checklist-item"
@@ -89,7 +107,7 @@ function CreateChecklists() {
             innerText={innerArray[0]}
             count={tempArray.length}
             key={`createjson-dt-${innerArray[0]}`}
-            open={open}
+            open={query !== "" ? index : open}
             index={index}
             test={(i: number) => {
               const nextOpen = open === i ? -1 : i;
@@ -114,7 +132,24 @@ function CreateChecklists() {
 
       return (
         <div className={`dl-masterclass checklist ${containerClass}`}>
-          {returnArray}
+          {filter && (
+            <div className="checklist-filter">
+              <input
+                type="search"
+                value={filter.query}
+                onChange={(e) => filter.setQuery(e.target.value)}
+                placeholder="Filter animations…"
+                aria-label="Filter animations"
+              />
+            </div>
+          )}
+          {query !== "" && returnArray.length === 0 ? (
+            <p className="checklist-no-matches">
+              No animations match “{filter?.query.trim()}”.
+            </p>
+          ) : (
+            returnArray
+          )}
         </div>
       );
     },
