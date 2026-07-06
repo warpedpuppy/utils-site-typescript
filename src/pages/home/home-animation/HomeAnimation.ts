@@ -6,7 +6,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
   title: string = "move object to changing point";
   points = [];
   text = [];
-  interval: any = undefined;
+  interval: ReturnType<typeof setInterval> | undefined = undefined;
   dot: Point = { x: 0, y: 0 };
   dotOrigin: Point = { x: 0, y: 0 };
   dotNew: Point = { x: 0, y: 0 };
@@ -186,7 +186,7 @@ class MoveObjectToDestinationPoint extends AnimationBaseClass {
     //   this.distanceBetweenTwoPoint(this.arrowPoint, this.dot)
     // );
 
-    requestAnimationFrame(this.draw);
+    this.raf(this.draw);
   };
 }
 export default MoveObjectToDestinationPoint;

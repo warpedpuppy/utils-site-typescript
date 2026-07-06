@@ -1,14 +1,15 @@
 import { useCallback } from "react";
-import { GenericObject } from "../../types/types";
+import { AnimationClassRef, AnimationInstance } from "../../types/types";
+import type { AnimationManifest } from "../../animationManifest";
 function ExamplesUtils() {
   const getKeyAndInnerKeyFromLocation = useCallback(
-    (siteData: GenericObject, location: string) => {
+    (siteData: AnimationManifest, location: string) => {
       let key: keyof typeof siteData;
       let forceBreak: boolean = false;
       let returnKey: string = "";
       let returnInnerKey: string = "";
       for (key in siteData) {
-        const subObject: GenericObject = siteData[key];
+        const subObject = siteData[key];
         let innerKey: keyof typeof subObject;
         for (innerKey in subObject) {
           let { slug } = subObject[innerKey];
@@ -25,19 +26,14 @@ function ExamplesUtils() {
     },
     []
   );
-  const createClassReference = useCallback((f: Function) => {
-    // had to nest the class in an object because it was instantiating it when it was placed in a useState variable
-    let classRef: any = f;
-    function create(ctor: {
-      new (canvasCont: any): typeof classRef;
-    }): typeof classRef {
-      let obj = {
-        initiate: (canvasCont: any) => new ctor(canvasCont),
-      };
-      return obj;
-    }
-    return create(classRef);
-  }, []);
+  const createClassReference = useCallback(
+    // Nested in an object because useState would instantiate a bare class.
+    (ctor: new (containerId: string) => unknown): AnimationClassRef => ({
+      initiate: (containerId: string) =>
+        new ctor(containerId) as AnimationInstance,
+    }),
+    []
+  );
 
   return { getKeyAndInnerKeyFromLocation, createClassReference };
 }

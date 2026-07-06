@@ -33,6 +33,7 @@ class Glitter extends Template {
       dotCount: 1000,
       beamCount: 360,
     });
+    this.gateEffect(this.effect);
   }
 
   resizeHandler = () => {

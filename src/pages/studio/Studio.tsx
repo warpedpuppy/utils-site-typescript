@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "./Studio.scss";
 import StudioCanvas from "./StudioCanvas";
-import { STUDIO_PROJECTS, FunctionUse } from "./studioProjects";
+import { STUDIO_PROJECTS, FunctionUse, StudioProject } from "./studioProjects";
 import { CODEPEN_GALLERY } from "./pens";
 import { CodePenPayload, CODEPEN_ENDPOINT } from "./codepen";
 
@@ -39,7 +39,9 @@ function lineReferenceText(payload: CodePenPayload, item: FunctionUse) {
 function Studio() {
   const { projectName } = useParams();
   const navigate = useNavigate();
-  const [activeProject, setActiveProject] = useState<{ Cls: any } | null>(null);
+  const [activeProject, setActiveProject] = useState<{
+    Cls: StudioProject["ProjectClass"];
+  } | null>(null);
   const [workspaceTab, setWorkspaceTab] = useState<WorkspaceTab>("demo");
   const [sourceTab, setSourceTab] = useState<SourceTab>("JS");
   const [selectedPenKey, setSelectedPenKey] = useState(
@@ -245,7 +247,7 @@ function Studio() {
               aria-hidden={workspaceTab !== "demo"}
             >
               {activeProject ? (
-                <StudioCanvas activeProject={activeProject} siteData={{}} />
+                <StudioCanvas activeProject={activeProject} />
               ) : (
                 <div style={{ padding: "20px", color: "#a0a080" }}>
                   Loading…

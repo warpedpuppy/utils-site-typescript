@@ -10,11 +10,11 @@ of the circle. To rotate an object, increase that percentage every frame and dra
 the object at the returned x/y point.</p>`;
 
 function drawMoveItemAroundCircle(
-  ctx: any,
-  halfWidth: any,
-  halfHeight: any,
-  canvasWidth: any,
-  canvasHeight: any,
+  ctx: CanvasRenderingContext2D,
+  halfWidth: number,
+  halfHeight: number,
+  canvasWidth: number,
+  canvasHeight: number,
   i: number,
   findPointAroundCircleFn: (
     centerPoint: { x: number; y: number },

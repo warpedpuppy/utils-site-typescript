@@ -27,7 +27,7 @@ const BG = "rgb(10, 8, 20)";
  * highlight. References nothing outside its args, so it ports straight to CodePen
  * via `.toString()`. Color comes from the ball's `hue` as a CSS `hsl()` string.
  */
-function drawRainbowBall(ctx: any, ball: any): void {
+function drawRainbowBall(ctx: CanvasRenderingContext2D, ball: RainbowBall): void {
   const gr = ctx.createRadialGradient(
     ball.x - ball.radius * 0.32,
     ball.y - ball.radius * 0.32,

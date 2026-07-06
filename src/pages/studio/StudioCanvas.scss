@@ -139,6 +139,27 @@
     }
   }
 
+  .studio-motion-toggle {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 11;
+    padding: 8px 11px;
+    border: 1px solid rgba(100, 200, 255, 0.32);
+    border-radius: 6px;
+    background: rgba(8, 8, 18, 0.88);
+    color: #a0d0ff;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+    &:hover {
+      border-color: rgba(100, 200, 255, 0.62);
+      color: #e6dcc8;
+    }
+  }
+
   .open-notes {
     position: absolute;
     top: 14px;

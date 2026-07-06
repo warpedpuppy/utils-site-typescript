@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
+import { AnimationInstance } from "../../types/types";
 import "./StudioCanvas.scss";
 
-function StudioCanvas({ activeProject, siteData }: { activeProject: any; siteData: any }) {
-  const [instanceOfClass, setInstanceOfClass] = useState<any>();
+function StudioCanvas({
+  activeProject,
+}: {
+  activeProject: { Cls: new (containerId: string) => AnimationInstance } | null;
+}) {
+  const [instanceOfClass, setInstanceOfClass] = useState<AnimationInstance>();
   const [notesOpen, setNotesOpen] = useState(false);
+  // Mirrors the instance's motion gate so the pause/play button re-renders.
+  const [motionPlaying, setMotionPlaying] = useState(true);
 
   useEffect(() => {
     if (!activeProject) {
@@ -19,6 +26,7 @@ function StudioCanvas({ activeProject, siteData }: { activeProject: any; siteDat
       console.log("StudioCanvas: Calling init()");
       instance.init();
       setInstanceOfClass(instance);
+      setMotionPlaying(!instance.motionPaused);
 
       return () => {
         console.log("StudioCanvas: Cleaning up");
@@ -29,9 +37,30 @@ function StudioCanvas({ activeProject, siteData }: { activeProject: any; siteDat
     }
   }, [activeProject]);
 
+  function toggleMotionHandler() {
+    if (!instanceOfClass) return;
+    if (instanceOfClass.motionPaused) {
+      instanceOfClass.resumeMotion();
+      setMotionPlaying(true);
+    } else {
+      instanceOfClass.pauseMotion();
+      setMotionPlaying(false);
+    }
+  }
+
   return (
     <div id="studio-canvas-section">
       <div id="studio-canvas-wrapper"></div>
+      {instanceOfClass && (
+        <button
+          type="button"
+          className="studio-motion-toggle"
+          onClick={toggleMotionHandler}
+          aria-label={motionPlaying ? "Pause the animation" : "Play the animation"}
+        >
+          {motionPlaying ? "❚❚ pause" : "▶ play"}
+        </button>
+      )}
       <button
         type="button"
         className={`open-notes ${notesOpen ? "" : "visible"}`}

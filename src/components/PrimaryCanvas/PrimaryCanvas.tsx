@@ -5,6 +5,7 @@ import "./PrimaryCanvas.scss";
 
 import CanvasContainer from "./CanvasContainer";
 import { AnimationManifestEntry } from "../../animationManifest";
+import { AnimationClassRef } from "../../types/types";
 
 function PrimaryCanvas({
   activeObject,
@@ -12,7 +13,7 @@ function PrimaryCanvas({
   activeObject: AnimationManifestEntry | null;
 }) {
   const { createClassReference } = ExamplesUtils();
-  const [instanceOfClass, setInstanceOfClass] = useState<any>();
+  const [instanceOfClass, setInstanceOfClass] = useState<AnimationClassRef>();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

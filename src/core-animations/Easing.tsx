@@ -36,7 +36,7 @@ const TRACKS = [
 const PERIOD_MS = 2800; // ms for one full pass (left → right)
 const PAUSE_MS = 500; // ms of pause at the end before looping
 
-function drawEasing(ctx: any, canvasWidth: any, canvasHeight: any): void {
+function drawEasing(ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
   const elapsed = Date.now() % (PERIOD_MS + PAUSE_MS);

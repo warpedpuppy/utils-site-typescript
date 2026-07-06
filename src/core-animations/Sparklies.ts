@@ -34,6 +34,7 @@ class Sparklies extends Template {
       seed: 19,
       trail: 0.28,
     });
+    this.gateEffect(this.effect);
   }
 
   resizeHandler = () => {

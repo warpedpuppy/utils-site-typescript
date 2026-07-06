@@ -1,13 +1,13 @@
-import { Point, Polygon } from "../types/shapes";
+import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { createRect as Rectangle } from "@utilspalooza/core/Rectangle";
 import { RectangleObject as rectangleFormula } from "../pages/createJSON/formulas/animation/Rectangle";
 
-function drawPolygon(ctx: any, rect: any, halfWidth: any, halfHeight: any): void {
+function drawPolygon(ctx: CanvasRenderingContext2D, rect: { vertices: Point[] }, halfWidth: number, halfHeight: number): void {
   ctx.strokeStyle = "rgba(255,255,255,0.85)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  rect.vertices.forEach((corner: any, i: number) => {
+  rect.vertices.forEach((corner: Point, i: number) => {
     let { x, y } = corner;
     x += halfWidth;
     y += halfHeight;
@@ -29,7 +29,7 @@ export default class PolygonAnimation extends AnimationBaseClass {
   static f = rectangleFormula;
   title = "draw rectangle";
   animationObject = rectangleFormula;
-  rect: Polygon = { vertices: [], draw: () => {}, drag: false };
+  rect: { vertices: Point[] } = { vertices: [] };
 
   width = 280;
   height = 160;
@@ -97,7 +97,7 @@ export default class PolygonAnimation extends AnimationBaseClass {
     if (!this.ctx) return;
     this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-    this.rect = Rectangle(this.width, this.height, this.angle) as any;
+    this.rect = Rectangle(this.width, this.height, this.angle);
 
     drawPolygon(this.ctx, this.rect, this.halfWidth, this.halfHeight);
     this.drawGuides();

@@ -7,7 +7,7 @@ const T_MIN = -0.4;
 const T_MAX = 1.4;
 
 function drawGetPointOnLine(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   startPoint: Point,
   endPoint: Point,
   t: number,

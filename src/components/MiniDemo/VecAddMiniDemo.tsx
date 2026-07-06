@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { vecAdd } from "@utilspalooza/core/Vec2";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 type Vector = { x: number; y: number };
@@ -17,6 +18,7 @@ function transformPoint(point: Vector, scale: number, offset: Vector): Vector {
 
 export default function VecAddMiniDemo({ height = 220 }: VecAddMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { playing, playingRef, setPlaying } = useMotionGate();
   const [moveX, setMoveX] = useState(62);
   const [moveY, setMoveY] = useState(-18);
   const [windX, setWindX] = useState(28);
@@ -111,18 +113,22 @@ export default function VecAddMiniDemo({ height = 220 }: VecAddMiniDemoProps) {
     const step = 1 / (60 * 2.6);
 
     const loop = () => {
-      if (holding) {
-        holdFrames -= 1;
-        if (holdFrames <= 0) {
-          holding = false;
-          progress = 0;
-        }
-      } else {
-        progress += step;
-        if (progress >= 1) {
-          progress = 1;
-          holding = true;
-          holdFrames = 24;
+      // Motion gate: progress only advances while playing; the frame still
+      // draws so slider changes and resizes stay visible.
+      if (playingRef.current) {
+        if (holding) {
+          holdFrames -= 1;
+          if (holdFrames <= 0) {
+            holding = false;
+            progress = 0;
+          }
+        } else {
+          progress += step;
+          if (progress >= 1) {
+            progress = 1;
+            holding = true;
+            holdFrames = 24;
+          }
         }
       }
 
@@ -272,6 +278,7 @@ export default function VecAddMiniDemo({ height = 220 }: VecAddMiniDemoProps) {
         style={{ height }}
         aria-label="Animated vecAdd demo"
       />
+      <MotionToggle playing={playing} setPlaying={setPlaying} />
       <div className="mini-demo__controls">
         <label className="mini-demo__control">
           <span className="mini-demo__control-name">move x</span>

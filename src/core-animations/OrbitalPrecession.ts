@@ -333,7 +333,7 @@ class OrbitalPrecession extends Template {
 
   animate = () => {
     this.drawFrame();
-    this.animId = requestAnimationFrame(this.animate);
+    this.animId = this.raf(this.animate);
   };
 
   resizeHandler = () => {

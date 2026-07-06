@@ -357,7 +357,7 @@ class Klimt extends Template {
       swirl.draw(ctx);
     }
 
-    this.animId = requestAnimationFrame(this.animate);
+    this.animId = this.raf(this.animate);
   };
 
   resizeHandler = () => {

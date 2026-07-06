@@ -9,9 +9,9 @@ function cosWave(startValue: number, differential: number, speed: number): numbe
 }
 
 function drawDistributeAroundCircle(
-  ctx: any,
-  canvasWidth: any,
-  canvasHeight: any,
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
   totalItems: number,
   distributeAroundCircleFn: (
     centerPoint: Point,

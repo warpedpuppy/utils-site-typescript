@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { shortestAngleBetween } from "@utilspalooza/core/AngleInterpolation";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 interface ShortestAngleBetweenMiniDemoProps {
@@ -22,6 +23,7 @@ const TARGET_RADIUS = 92;
 
 export default function ShortestAngleBetweenMiniDemo({ height = 248 }: ShortestAngleBetweenMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { playing, playingRef, setPlaying } = useMotionGate();
   const stateRef = useRef({
     targetIndex: 0,
     enteredAt: 0,
@@ -49,13 +51,22 @@ export default function ShortestAngleBetweenMiniDemo({ height = 248 }: ShortestA
     let size = fitCanvas(canvas, ctx, height);
     const onResize = () => {
       size = fitCanvas(canvas, ctx, height);
+      needsFrame = true;
     };
     window.addEventListener("resize", onResize);
 
     let raf = 0;
     const currentAngle = toRad(CURRENT_ANGLE_DEG);
+    // Motion gate: draw at least one frame (and one after each resize), then
+    // hold the whole scene while paused so the target stops cycling.
+    let needsFrame = true;
 
     const loop = (now: number) => {
+      if (!playingRef.current && !needsFrame) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      needsFrame = false;
       const state = stateRef.current;
       if (!state.enteredAt) state.enteredAt = now;
 
@@ -131,6 +142,7 @@ export default function ShortestAngleBetweenMiniDemo({ height = 248 }: ShortestA
         style={{ height }}
         aria-label="shortestAngleBetween turn choice demo"
       />
+      <MotionToggle playing={playing} setPlaying={setPlaying} />
     </div>
   );
 }

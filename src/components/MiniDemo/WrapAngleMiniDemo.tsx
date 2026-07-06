@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { wrapAngle } from "@utilspalooza/core/AngleInterpolation";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 interface WrapAngleMiniDemoProps {
@@ -14,6 +15,7 @@ interface DemoSnapshot {
 
 export default function WrapAngleMiniDemo({ height = 248 }: WrapAngleMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { playing, playingRef, setPlaying } = useMotionGate();
   const rawAngleRef = useRef(0);
   const [snapshot, setSnapshot] = useState<DemoSnapshot>({
     rawAngle: 0,
@@ -30,13 +32,23 @@ export default function WrapAngleMiniDemo({ height = 248 }: WrapAngleMiniDemoPro
     let size = fitCanvas(canvas, ctx, height);
     const onResize = () => {
       size = fitCanvas(canvas, ctx, height);
+      needsFrame = true;
     };
     window.addEventListener("resize", onResize);
 
     let raf = 0;
     let lastTime = 0;
+    // Motion gate: draw at least one frame (and one after each resize), then
+    // hold the whole scene while paused so nothing drifts.
+    let needsFrame = true;
 
     const loop = (now: number) => {
+      if (!playingRef.current && !needsFrame) {
+        lastTime = 0;
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      needsFrame = false;
       if (!lastTime) lastTime = now;
       const dt = Math.min(40, now - lastTime);
       lastTime = now;
@@ -92,6 +104,7 @@ export default function WrapAngleMiniDemo({ height = 248 }: WrapAngleMiniDemoPro
         style={{ height }}
         aria-label="wrapAngle spinning normalization demo"
       />
+      <MotionToggle playing={playing} setPlaying={setPlaying} />
     </div>
   );
 }

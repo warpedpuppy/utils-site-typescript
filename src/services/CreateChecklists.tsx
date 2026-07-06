@@ -32,7 +32,7 @@ function CreateChecklists() {
         const categoryMatches =
           query !== "" && innerArray[0].toLowerCase().includes(query);
         const visibleEntries = Object.entries(innerArray[1]).filter(
-          ([, v]: any) => {
+          ([, v]) => {
             if (v.include === false) return false;
             if (query === "" || categoryMatches) return true;
             return (

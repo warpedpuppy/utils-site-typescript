@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { drawEasingMiniDemo } from "./drawEasingMiniDemo";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 export interface EasingMiniDemoProps {
@@ -19,6 +20,7 @@ export interface EasingMiniDemoProps {
  */
 export default function EasingMiniDemo({ ease, label, height = 200 }: EasingMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { playing, playingRef, setPlaying } = useMotionGate();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -58,18 +60,22 @@ export default function EasingMiniDemo({ ease, label, height = 200 }: EasingMini
     window.addEventListener("resize", onResize);
 
     const loop = () => {
-      if (holding) {
-        holdFrames--;
-        if (holdFrames <= 0) {
-          holding = false;
-          progress = 0;
-        }
-      } else {
-        progress += step;
-        if (progress >= 1) {
-          progress = 1;
-          holding = true;
-          holdFrames = 30;
+      // Motion gate: progress only advances while playing; the frame still
+      // draws so the canvas stays correct across resizes.
+      if (playingRef.current) {
+        if (holding) {
+          holdFrames--;
+          if (holdFrames <= 0) {
+            holding = false;
+            progress = 0;
+          }
+        } else {
+          progress += step;
+          if (progress >= 1) {
+            progress = 1;
+            holding = true;
+            holdFrames = 30;
+          }
         }
       }
 
@@ -89,7 +95,7 @@ export default function EasingMiniDemo({ ease, label, height = 200 }: EasingMini
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, [ease, label, height]);
+  }, [ease, label, height, playingRef]);
 
   return (
     <div className="mini-demo">
@@ -99,6 +105,7 @@ export default function EasingMiniDemo({ ease, label, height = 200 }: EasingMini
         style={{ height }}
         aria-label={label ? `Animated easing demo of ${label}` : "Animated easing demo"}
       />
+      <MotionToggle playing={playing} setPlaying={setPlaying} />
     </div>
   );
 }

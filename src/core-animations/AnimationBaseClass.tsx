@@ -1,5 +1,6 @@
 import { Nullable } from "../types/types";
 import { Point } from "../types/shapes";
+import { prefersReducedMotion } from "../motionPreference";
 
 class AnimationBaseClass {
   static t = "";
@@ -22,6 +23,15 @@ class AnimationBaseClass {
   continue: boolean = true;
   /** Stored RAF id so we can cancel it on stop(). */
   private rafId: number = 0;
+  /**
+   * Motion gate. When the OS asks for reduced motion, the loop is allowed ONE
+   * frame (so the canvas shows a real still of the animation) and then holds
+   * until the visitor presses play. raf() always remembers the latest frame
+   * callback, so pause/resume works mid-flight for any subclass.
+   */
+  motionPaused: boolean = prefersReducedMotion();
+  private lastFrame: Nullable<FrameRequestCallback> = null;
+  private firstFrameScheduled = false;
 
   // Store bound handlers as stable references so removeEventListener works.
   private _onPointerDown = (e: PointerEvent) => this.pointerDownHandler(e);
@@ -65,9 +75,30 @@ class AnimationBaseClass {
   };
 
   /** Subclasses should call this.raf(this.draw) at the end of draw(). */
-  protected raf(fn: FrameRequestCallback) {
+  protected raf(fn: FrameRequestCallback): number {
+    this.lastFrame = fn;
+    if (this.motionPaused && this.firstFrameScheduled) return 0;
+    this.firstFrameScheduled = true;
     this.rafId = requestAnimationFrame(fn);
+    return this.rafId;
   }
+
+  /** Restart the loop after the motion gate (or pauseMotion) held it. */
+  resumeMotion() {
+    if (!this.motionPaused) return;
+    this.motionPaused = false;
+    if (this.lastFrame) this.rafId = requestAnimationFrame(this.lastFrame);
+  }
+
+  /** Freeze the loop on the current frame; resumeMotion() picks it back up. */
+  pauseMotion() {
+    if (this.motionPaused) return;
+    this.motionPaused = true;
+    cancelAnimationFrame(this.rafId);
+  }
+
+  /** Subclasses override; declared here so the base satisfies AnimationInstance. */
+  init() {}
 
   pointerDownHandler(_e: PointerEvent) {}
   pointerMoveHandler(_e: PointerEvent) {}

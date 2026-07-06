@@ -29,10 +29,10 @@ function calculateTriangleData(startPoint: Point, endPoint: Point) {
 }
 
 function drawTriangleDataFromLine(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   startPoint: Point,
   endPoint: Point,
-  textDiv: any
+  textDiv: HTMLElement | null
 ): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.fillStyle = "rgba(255,255,255,0.85)";

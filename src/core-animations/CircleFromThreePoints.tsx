@@ -1,14 +1,14 @@
-import { GenericObject } from "../types/types";
+import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { circleFromThreePoints as CircleFromThreePointsFunc } from "@utilspalooza/core/CircleFromThreePoints";
 import { circleFromThreePoints as circleFromThreePointsFormula } from "../pages/createJSON/formulas/animation/CircleFromThreePoints";
 
 function drawCircleFromThreePoints(
-  ctx: any,
-  points: any[],
+  ctx: CanvasRenderingContext2D,
+  points: Point[],
   text: string[],
   circleQ: number,
-  textDiv: any
+  textDiv: HTMLElement | null
 ): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -20,7 +20,7 @@ function drawCircleFromThreePoints(
     textDiv.innerHTML = textString;
   }
 
-  points.forEach((item: GenericObject) => {
+  points.forEach((item: Point) => {
     ctx.beginPath();
     ctx.arc(item.x, item.y, 5, 0, 2 * Math.PI);
     ctx.stroke();
@@ -49,9 +49,9 @@ export default class CircleFromThreePointsAnimation extends AnimationBaseClass {
   title = "get circle from three points";
   animationObject = circleFromThreePointsFormula;
   text: string[] = [];
-  interval: any = 0;
+  interval: ReturnType<typeof setTimeout> | undefined = undefined;
   circleQ = 0;
-  points: any = [
+  points: Point[] = [
     { x: 423, y: 400 },
     { x: 576, y: 349 },
     { x: 519, y: 273 },
@@ -118,7 +118,7 @@ export default class CircleFromThreePointsAnimation extends AnimationBaseClass {
 
   formatText() {
     let str = this.points
-      .map((item: GenericObject, index: number) => {
+      .map((item: Point, index: number) => {
         let i = index + 1;
         return `point ${i}: { x:${item.x}, y:${item.y} }`;
       })

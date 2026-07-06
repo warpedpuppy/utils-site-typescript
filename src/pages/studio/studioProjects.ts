@@ -19,6 +19,7 @@ import GenerativeWallpaper, {
   GENERATIVE_WALLPAPER_PEN,
 } from "./GenerativeWallpaper";
 import { CodePenPayload } from "./codepen";
+import { AnimationInstance } from "../../types/types";
 
 export interface FunctionUse {
   name: string;
@@ -35,7 +36,7 @@ export interface StudioProject {
   /** "+"-separated math chips shown on the card and workspace header */
   math: string;
   blurb: string;
-  ProjectClass: new (canvasCont: any) => any;
+  ProjectClass: new (containerId: string) => AnimationInstance;
   /** Canonical pen payload — also rendered verbatim as the Code tab source */
   codePen: CodePenPayload;
   functionsUsed: FunctionUse[];

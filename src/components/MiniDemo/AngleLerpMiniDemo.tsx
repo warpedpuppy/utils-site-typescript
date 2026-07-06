@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { lerpAngle, shortestAngleBetween } from "@utilspalooza/core/AngleInterpolation";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 interface AngleLerpMiniDemoProps {
@@ -23,6 +24,7 @@ const TARGET_RADIUS = 92;
 
 export default function AngleLerpMiniDemo({ height = 248 }: AngleLerpMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { playing, playingRef, setPlaying } = useMotionGate();
   const stateRef = useRef({
     currentAngle: toRad(350),
     targetAngle: toRad(TARGET_SEQUENCE_DEG[0]),
@@ -53,13 +55,23 @@ export default function AngleLerpMiniDemo({ height = 248 }: AngleLerpMiniDemoPro
     let size = fitCanvas(canvas, ctx, height);
     const onResize = () => {
       size = fitCanvas(canvas, ctx, height);
+      needsFrame = true;
     };
     window.addEventListener("resize", onResize);
 
     let raf = 0;
     let lastTime = 0;
+    // Motion gate: draw at least one frame (and one after each resize), then
+    // hold the whole scene while paused so the compass stops retargeting.
+    let needsFrame = true;
 
     const loop = (now: number) => {
+      if (!playingRef.current && !needsFrame) {
+        lastTime = 0;
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      needsFrame = false;
       if (!lastTime) {
         lastTime = now;
         stateRef.current.enteredAt = now;
@@ -147,6 +159,7 @@ export default function AngleLerpMiniDemo({ height = 248 }: AngleLerpMiniDemoPro
         style={{ height }}
         aria-label="lerpAngle compass retargeting demo"
       />
+      <MotionToggle playing={playing} setPlaying={setPlaying} />
     </div>
   );
 }

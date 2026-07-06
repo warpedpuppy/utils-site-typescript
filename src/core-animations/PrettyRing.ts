@@ -33,6 +33,7 @@ class PrettyRing extends Template {
       speed: 1,
       wobble: 25,
     });
+    this.gateEffect(this.effect);
   }
 
   resizeHandler = () => {

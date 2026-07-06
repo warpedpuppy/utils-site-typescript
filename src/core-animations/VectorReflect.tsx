@@ -9,7 +9,7 @@ import { CollisionDetectionObject } from "../types/types";
 type V = { x: number; y: number };
 
 function drawArrow(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   fromX: number,
   fromY: number,
   toX: number,
@@ -39,7 +39,7 @@ function drawArrow(
 }
 
 function drawVectorReflect(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
   incoming: V,

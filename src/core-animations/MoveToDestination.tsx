@@ -5,15 +5,16 @@ import { moveAlongLine as moveAlongLineFormula } from "../pages/createJSON/formu
 import { getRotation } from "@utilspalooza/core/GetRotation";
 
 function drawMoveToDestination(
-  ctx: any,
-  canvas: any,
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement | null,
   dot: Point,
   dotNew: Point,
   arrowPoint: Point,
   ratio: number,
   img: HTMLImageElement
 ): void {
-  ctx.clearRect(0, 0, canvas?.width, canvas?.height);
+  if (!canvas) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.strokeStyle = "green";
   ctx.lineWidth = 10;
 
@@ -49,7 +50,7 @@ export default class MoveObjectToDestinationPoint extends AnimationBaseClass {
   animationObject = moveAlongLineFormula;
   points = [];
   text = [];
-  interval: any = undefined;
+  interval: ReturnType<typeof setInterval> | undefined = undefined;
   dot: Point = { x: 0, y: 0 };
   dotNew: Point = { x: 0, y: 0 };
   arrowPoint: Point = { x: 0, y: 0 };

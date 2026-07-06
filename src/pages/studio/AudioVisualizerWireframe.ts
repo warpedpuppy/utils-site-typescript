@@ -256,7 +256,7 @@ class AudioVisualizerWireframe extends Template {
 
   private loop() {
     const frame = () => {
-      this.animId = requestAnimationFrame(frame);
+      this.animId = this.raf(frame);
       if (!this.ctx || !this.canvas) return;
 
       this.tick += 0.018;

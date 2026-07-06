@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { pingPong } from "@utilspalooza/core/PingPong";
 import { drawScalarMiniDemo } from "./drawScalarMiniDemo";
 import type { InteractiveScalarDemo } from "./interactiveDemos";
+import { prefersReducedMotion } from "../../motionPreference";
 import "./MiniDemo.scss";
 
 export interface InteractiveMiniDemoProps {
@@ -23,7 +24,9 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
   // after user interaction. During auto-sweep, only argsRef is updated per-frame;
   // the swept arg's DOM nodes are updated imperatively so we don't re-render at 60fps.
   const [args, setArgs] = useState<number[]>(() => demo.args.map((a) => a.value));
-  const [auto, setAuto] = useState(true);
+  // Reduced motion: no auto-sweep until the reader asks — the sliders scrub,
+  // and the existing "resume auto-sweep" button doubles as the play control.
+  const [auto, setAuto] = useState(() => !prefersReducedMotion());
   const argsRef = useRef(args);
   const autoRef = useRef(auto);
   argsRef.current = args;
@@ -41,7 +44,7 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
     const fresh = demo.args.map((a) => a.value);
     argsRef.current = fresh;
     setArgs(fresh);
-    setAuto(true);
+    setAuto(!prefersReducedMotion());
   }, [demo]);
 
   useEffect(() => {
@@ -171,7 +174,7 @@ export default function InteractiveMiniDemo({ demo, height = 168 }: InteractiveM
         ))}
         {!auto && (
           <button type="button" className="mini-demo__resume" onClick={() => setAuto(true)}>
-            ▶ resume auto-sweep
+            ▶ {prefersReducedMotion() ? "start auto-sweep" : "resume auto-sweep"}
           </button>
         )}
       </div>

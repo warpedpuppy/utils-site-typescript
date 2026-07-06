@@ -109,6 +109,41 @@
     }
   }
 
+  &__canvas--draggable:focus-visible {
+    outline: 2px solid rgba(249, 115, 22, 0.85);
+    outline-offset: 2px;
+  }
+
+  &__keyhint {
+    margin: 0.35rem 0 0;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+
+    strong {
+      color: #f97316;
+    }
+  }
+
+  // Pause/play for auto-sweeping demos: the required "play" affordance under
+  // prefers-reduced-motion, and a "freeze the frame" study aid otherwise.
+  &__motion {
+    justify-self: start;
+    margin-top: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    font-family: monospace;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+  }
+
   &__geometry-readout {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));

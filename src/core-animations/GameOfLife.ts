@@ -130,7 +130,7 @@ class GameOfLife extends Template {
   nextGrid: Uint8Array = new Uint8Array(0);
   running: boolean = false;
   generation: number = 0;
-  tickInterval: any = null;
+  tickInterval: ReturnType<typeof setInterval> | undefined = undefined;
   speed: number = 100; // ms between ticks
   painting: boolean = false;
   paintValue: number = 1;
@@ -286,7 +286,7 @@ class GameOfLife extends Template {
 
   renderLoop = () => {
     this.drawGrid();
-    this.animId = requestAnimationFrame(this.renderLoop);
+    this.animId = this.raf(this.renderLoop);
   };
 
   drawGrid() {

@@ -278,7 +278,12 @@ export default function ConstructiveGeometryDemo({
     if (!drag) return;
     const point = getCanvasPoint(event, canvasRef.current);
     if (!point) return;
+    applyDrag(point, drag);
+  };
 
+  // Shared by pointer drags and keyboard nudges: move whatever `drag`
+  // describes so its anchor lands at (point − drag offset).
+  const applyDrag = (point: Point, drag: DragState) => {
     switch (drag.kind) {
       case "circle":
         setCircles((current) => ({
@@ -393,6 +398,110 @@ export default function ConstructiveGeometryDemo({
     dragRef.current = null;
   };
 
+  // ── Keyboard access (Fable review §4.6) ──────────────────────────────────
+  // Draggable parts are discovered by probing the canvas with the SAME
+  // getDragState hit-test the pointer uses, so there is zero per-kind
+  // keyboard knowledge to drift. Arrow keys nudge the active part through
+  // applyDrag; Enter/Space cycles between parts.
+  const [keyboardFocused, setKeyboardFocused] = useState(false);
+  const [activeTargetId, setActiveTargetId] = useState<string | null>(null);
+  const [keyInfo, setKeyInfo] = useState<{ label: string; count: number } | null>(null);
+
+  interface KeyTarget {
+    id: string;
+    drag: DragState;
+    anchor: Point;
+  }
+
+  const findKeyTargets = (): KeyTarget[] => {
+    const found = new Map<string, KeyTarget>();
+    // 6px grid comfortably undershoots every hit radius (≥14px).
+    for (let y = 4; y < size.height; y += 6) {
+      for (let x = 4; x < size.width; x += 6) {
+        const drag = getDragState({ x, y }, demo.kind, circles, points, handles, controls, polyScene, size.width, size.height);
+        if (!drag) continue;
+        const id = "key" in drag ? `${drag.kind}:${drag.key}` : drag.kind;
+        if (found.has(id)) continue;
+        found.set(id, {
+          id,
+          drag,
+          anchor: { x: x - drag.dx, y: "dy" in drag ? y - drag.dy : y },
+        });
+      }
+    }
+    return Array.from(found.values());
+  };
+
+  const targetLabel = (drag: DragState): string => {
+    switch (drag.kind) {
+      case "circle":
+        return drag.key === "circle1" ? "circle 1" : "circle 2";
+      case "point":
+        return drag.key === "point1" ? "point 1" : "point 2";
+      case "handle":
+        return drag.key === "a" ? "handle A" : "handle B";
+      case "rail":
+        return `${drag.key} slider`;
+      case "poly-point":
+        return demo.kind === "rect-to-polygon" ? "the rectangle" : "the point";
+      case "poly-circle":
+        return "the circle";
+      case "poly-handle":
+        return drag.key === "lineA" ? "line end A" : "line end B";
+      case "poly-translate":
+        return drag.key === "poly1" ? "polygon 1" : "polygon 2";
+    }
+  };
+
+  const syncKeyInfo = (targets: KeyTarget[], id: string | null) => {
+    const active = targets.find((t) => t.id === id) ?? targets[0];
+    setKeyInfo(active ? { label: targetLabel(active.drag), count: targets.length } : null);
+  };
+
+  const onCanvasFocus = () => {
+    setKeyboardFocused(true);
+    const targets = findKeyTargets();
+    const id = targets.some((t) => t.id === activeTargetId)
+      ? activeTargetId
+      : targets[0]?.id ?? null;
+    setActiveTargetId(id);
+    syncKeyInfo(targets, id);
+  };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLCanvasElement>) => {
+    const targets = findKeyTargets();
+    if (!targets.length) return;
+
+    const activeIndex = Math.max(0, targets.findIndex((t) => t.id === activeTargetId));
+    const active = targets[activeIndex];
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      const next = targets[(activeIndex + 1) % targets.length];
+      setActiveTargetId(next.id);
+      syncKeyInfo(targets, next.id);
+      return;
+    }
+
+    const step = event.shiftKey ? 24 : 6;
+    let dx = 0;
+    let dy = 0;
+    if (event.key === "ArrowLeft") dx = -step;
+    else if (event.key === "ArrowRight") dx = step;
+    else if (event.key === "ArrowUp") dy = -step;
+    else if (event.key === "ArrowDown") dy = step;
+    else return;
+
+    event.preventDefault();
+    applyDrag(
+      {
+        x: active.anchor.x + active.drag.dx + dx,
+        y: ("dy" in active.drag ? active.anchor.y + active.drag.dy : active.anchor.y) + dy,
+      },
+      active.drag,
+    );
+  };
+
   return (
     <div className="mini-demo mini-demo--geometry">
       <div className="mini-demo__call">
@@ -414,12 +523,22 @@ export default function ConstructiveGeometryDemo({
         ref={canvasRef}
         className="mini-demo__canvas mini-demo__canvas--draggable"
         style={{ height }}
+        tabIndex={0}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={stopDrag}
         onPointerLeave={stopDrag}
-        aria-label={`Interactive ${demo.fnName} geometry demo`}
+        onFocus={onCanvasFocus}
+        onBlur={() => setKeyboardFocused(false)}
+        onKeyDown={onKeyDown}
+        aria-label={`Interactive ${demo.fnName} geometry demo. Drag the shapes with a pointer, or focus the canvas and use the arrow keys to move a part; Enter switches parts.`}
       />
+      {keyboardFocused && keyInfo && (
+        <p className="mini-demo__keyhint">
+          Arrow keys move <strong>{keyInfo.label}</strong> (Shift = bigger steps)
+          {keyInfo.count > 1 ? " · Enter or Space switches parts" : ""}
+        </p>
+      )}
     </div>
   );
 }

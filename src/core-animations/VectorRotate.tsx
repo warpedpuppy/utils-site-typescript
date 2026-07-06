@@ -5,7 +5,7 @@ import { CollisionDetectionObject } from "../types/types";
 type V = { x: number; y: number };
 
 function drawVectorRotate(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
   basePoints: V[],

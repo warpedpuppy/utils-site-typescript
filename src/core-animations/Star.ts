@@ -1,13 +1,13 @@
-import { Point, Polygon } from "../types/shapes";
+import { Point } from "../types/shapes";
 import AnimationBaseClass from "./AnimationBaseClass";
 import { starVertices } from "@utilspalooza/core/Star";
 import { StarObject as starFormula } from "../pages/createJSON/formulas/animation/Star";
 
-function drawStar(ctx: any, star: any, halfWidth: any, halfHeight: any): void {
+function drawStar(ctx: CanvasRenderingContext2D, star: { vertices: Point[] }, halfWidth: number, halfHeight: number): void {
   ctx.strokeStyle = "rgba(255,255,255,0.85)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  star.vertices.forEach((vertex: any, i: number) => {
+  star.vertices.forEach((vertex: Point, i: number) => {
     if (i === 0) {
       ctx.moveTo(halfWidth + vertex.x, halfHeight + vertex.y);
     } else {
@@ -26,7 +26,7 @@ export default class StarAnimation extends AnimationBaseClass {
   static f = starFormula;
   title = "draw star";
   animationObject = starFormula;
-  star: Polygon = { vertices: [], draw: () => {}, drag: false };
+  star: { vertices: Point[] } = { vertices: [] };
 
   spikes = 5;
   angle = -Math.PI / 2; // first tip points straight up
@@ -111,7 +111,7 @@ export default class StarAnimation extends AnimationBaseClass {
       this.innerRadius,
       this.outerRadius,
       this.angle
-    ) as any;
+    );
 
     drawStar(this.ctx, this.star, this.halfWidth, this.halfHeight);
     this.drawGuides();

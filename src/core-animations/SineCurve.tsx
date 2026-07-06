@@ -3,9 +3,9 @@ import { sineCurve } from "@utilspalooza/core/SineCurve";
 import { sineCurve as sineCurveFormula } from "../pages/createJSON/formulas/animation/SineCurve";
 
 function drawSineCurve(
-  ctx: any,
-  canvasWidth: any,
-  canvasHeight: any,
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
   startValue: number,
   differential: number,
   speed: number,
@@ -48,7 +48,6 @@ export default class SineCurveAnimation extends AnimationBaseClass {
   static f = sineCurveFormula;
   animationObject = sineCurveFormula;
   title = "sine curve";
-  interval: any = 0;
   i: number = 0;
   startValue = 0;
   differential = 200;
@@ -58,7 +57,8 @@ export default class SineCurveAnimation extends AnimationBaseClass {
     this.draw();
   }
 
-  changeHandler(value: any, type: string) {
+  changeHandler(rawValue: string, type: string) {
+    const value = Number(rawValue);
     if (type === "starting") {
       this.startValue = value;
     } else if (type === "differential") {

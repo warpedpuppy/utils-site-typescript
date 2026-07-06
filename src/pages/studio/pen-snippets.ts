@@ -9,7 +9,7 @@
 // promote them back into @utilspalooza/core (the math is worth shipping). See the
 // "Draw helpers to reinstate" reminder in .claude/CLAUDE.md.
 
-declare var ctx: any;
+declare var ctx: CanvasRenderingContext2D;
 
 export function drawEquilateralTriangle(cx: number, cy: number, r: number): void {
   ctx.beginPath();

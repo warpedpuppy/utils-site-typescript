@@ -19,7 +19,7 @@ marker crosses the middle — that's the whole lesson.</p>
  * (CodePen-portable, like the other drawX functions).
  */
 function drawColorLerp(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   rgbStops: string[],
   hslStops: string[],
   t: number,

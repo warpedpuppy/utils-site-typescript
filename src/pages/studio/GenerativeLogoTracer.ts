@@ -209,7 +209,7 @@ class GenerativeLogoTracer extends Template {
 
   private loop() {
     const frame = () => {
-      this.animId = requestAnimationFrame(frame);
+      this.animId = this.raf(frame);
       const { ctx } = this;
       if (!ctx) return;
 

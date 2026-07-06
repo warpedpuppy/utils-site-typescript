@@ -138,7 +138,7 @@ class Murmuration extends Template {
       drawBird(ctx, b.position.x, b.position.y, angle, 4);
     }
 
-    this.animId = requestAnimationFrame(this.animate);
+    this.animId = this.raf(this.animate);
   };
 
   resizeHandler = () => {

@@ -514,7 +514,7 @@ class Phyllotaxis extends Template {
     }
 
     this.draw();
-    this.animId = requestAnimationFrame(this.animate);
+    this.animId = this.raf(this.animate);
   };
 
   resizeHandler = () => {

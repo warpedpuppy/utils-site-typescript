@@ -17,9 +17,9 @@ function pointsAroundCircle(
 }
 
 function drawPointTowards(
-  ctx: any,
-  canvasWidth: any,
-  canvasHeight: any,
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
   i: number,
   img: HTMLImageElement
 ): void {

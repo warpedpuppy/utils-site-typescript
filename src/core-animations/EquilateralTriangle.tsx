@@ -1,12 +1,17 @@
 import { Point } from "../types/shapes";
-import { GenericObject } from "../types/types";
 import { equilateralTriangle as EquilateralTriangleFunc } from "@utilspalooza/core/EquilateralTriangle";
 import { equilateralTriangle as equilateralTriangleFormula } from "../pages/createJSON/formulas/animation/EquilateralTriangle";
 import AnimationBaseClass from "./AnimationBaseClass";
 
+interface BackgroundTri {
+  radius: number;
+  centerPoint: Point;
+  angle: number;
+}
+
 function drawEquilateralTriangle(
-  ctx: any,
-  backgroundTris: any[],
+  ctx: CanvasRenderingContext2D,
+  backgroundTris: BackgroundTri[],
   angle: number,
   startPoint: Point,
   endPoint: Point,
@@ -18,7 +23,7 @@ function drawEquilateralTriangle(
     currentPoint: number
   ) => { point1: Point; point2: Point; point3: Point }
 ): void {
-  backgroundTris.forEach((tri: GenericObject) => {
+  backgroundTris.forEach((tri: BackgroundTri) => {
     let { point1, point2, point3 } = equilateralTriangleFn(
       tri.radius,
       tri.centerPoint,
@@ -69,7 +74,7 @@ export default class EquilateralTriangleAnimation extends AnimationBaseClass {
   static l = "equilateral-trianlge-points";
   static f = equilateralTriangleFormula;
   title = "draw equilateral triangle (from radius and center point)";
-  backgroundTris: object[] = [];
+  backgroundTris: BackgroundTri[] = [];
   animationObject = equilateralTriangleFormula;
   angle = 0;
   startPoint: Point = { x: this.halfWidth, y: this.halfHeight + 50 };
@@ -83,7 +88,7 @@ export default class EquilateralTriangleAnimation extends AnimationBaseClass {
         y: Math.random() * this.canvasHeight,
       };
       let angle = Math.random() * 1;
-      let obj: GenericObject = { radius, centerPoint, angle };
+      let obj: BackgroundTri = { radius, centerPoint, angle };
       this.backgroundTris.push(obj);
     }
     if (this.textDiv)

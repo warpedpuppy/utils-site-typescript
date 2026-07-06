@@ -10,6 +10,8 @@ import {
 } from "./animateMiniDemoModel";
 import { paint } from "./drawAnimateMiniDemo";
 import { summarize } from "./animateMiniDemoSummary";
+import { prefersReducedMotion } from "../../motionPreference";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 interface AnimateMiniDemoProps {
@@ -23,7 +25,11 @@ export default function AnimateMiniDemo({
 }: AnimateMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [controls, setControls] = useState<AnimateControls>(DEFAULT_CONTROLS);
-  const [auto, setAuto] = useState(true);
+  // Reduced motion: no auto-sweep until the reader asks — the elapsedMs
+  // slider scrubs the timeline by hand.
+  const [auto, setAuto] = useState(() => !prefersReducedMotion());
+  // The ticker demo has no sweep to gate, so it gets a real play/pause.
+  const { playing: tickerOn, setPlaying: setTickerOn } = useMotionGate();
   const controlsRef = useRef(controls);
   const autoRef = useRef(auto);
   const [tickerFrame, setTickerFrame] = useState<TickerSnapshot>({
@@ -37,12 +43,12 @@ export default function AnimateMiniDemo({
   useEffect(() => {
     controlsRef.current = DEFAULT_CONTROLS;
     setControls(DEFAULT_CONTROLS);
-    setAuto(true);
+    setAuto(!prefersReducedMotion());
     setTickerFrame({ frame: 0, elapsed: 0, delta: 16.7 });
   }, [demo]);
 
   useEffect(() => {
-    if (demo.kind !== "ticker") return;
+    if (demo.kind !== "ticker" || !tickerOn) return;
     let active = true;
     const handle = ticker((frame) => {
       if (!active) return;
@@ -56,7 +62,7 @@ export default function AnimateMiniDemo({
       active = false;
       handle.cancel();
     };
-  }, [demo.kind]);
+  }, [demo.kind, tickerOn]);
 
   useEffect(() => {
     if (demo.kind === "ticker") return;
@@ -133,6 +139,9 @@ export default function AnimateMiniDemo({
         style={{ height }}
         aria-label={`Interactive ${demo.fnName} animation demo`}
       />
+      {demo.kind === "ticker" && (
+        <MotionToggle playing={tickerOn} setPlaying={setTickerOn} />
+      )}
       {demo.kind !== "ticker" && (
         <div className="mini-demo__controls">
           <RangeControl

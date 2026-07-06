@@ -16,7 +16,7 @@ ordered <b>range</b> of that color — the grown-up version of "give me a random
  * site overlays on the top-left of the canvas, so swatches start beneath it.
  */
 function drawColorFamily(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   colors: string[],
   family: string,
   canvasWidth: number,

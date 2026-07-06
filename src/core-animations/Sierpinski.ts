@@ -173,7 +173,7 @@ class Sierpinski extends Template {
     ctx.rotate(this.rotation);
     this.update(ctx);
     ctx.restore();
-    this.animId = requestAnimationFrame(this.animate);
+    this.animId = this.raf(this.animate);
   };
 
   update(ctx: CanvasRenderingContext2D) {

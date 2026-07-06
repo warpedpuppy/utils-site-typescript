@@ -20,7 +20,7 @@ function Examples() {
     useState<Nullable<AnimationManifestEntry>>(null);
   const [key, setKey] = useState<string>("");
   const [innerKey, setInnerKey] = useState<string>("");
-  const [className, setClassName] = useState<any>(["", ""]);
+  const [className, setClassName] = useState<[string, string]>(["", ""]);
   const [open, setOpen] = useState<number>(-1);
   const [filterQuery, setFilterQuery] = useState<string>("");
 

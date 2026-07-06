@@ -9,7 +9,7 @@ const HANDLE_RADIUS = 14;
 const HIT_SLOP = 6; // extra px around each handle for easier grabbing
 
 function drawQuadraticBezier(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   p0: Point,
   p1: Point,
   p2: Point,

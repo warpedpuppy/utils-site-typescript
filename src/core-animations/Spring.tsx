@@ -3,7 +3,7 @@ import { springValue, criticalDamping, SpringState } from "@utilspalooza/core/An
 import { CollisionDetectionObject } from "../types/types";
 
 function drawSpring(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   canvasWidth: number,
   canvasHeight: number,
   target: number,

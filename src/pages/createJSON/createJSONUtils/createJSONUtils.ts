@@ -6,7 +6,7 @@ import { InterfaceMap } from "../../../types/shapes";
 export function CreateJson() {
   const { getLocalStorageAsArray } = LocalStorageManager();
   let value = useMemo(() => {
-    let arrayOfFormulas: any = getLocalStorageAsArray();
+    const arrayOfFormulas: string[] = getLocalStorageAsArray() ?? [];
     let set = new Set();
     let str = ``;
 

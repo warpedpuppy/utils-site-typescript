@@ -5,7 +5,7 @@ import { lineLength as lineLengthFormula } from "../pages/createJSON/formulas/an
 import AnimationBaseClass from "./AnimationBaseClass";
 
 function drawLineLength(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   startPoint: Point,
   endPoint: Point,
   canvasWidth: number,

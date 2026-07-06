@@ -3,7 +3,7 @@ import { lerpAngle } from "@utilspalooza/core/AngleInterpolation";
 import { CollisionDetectionObject } from "../types/types";
 
 function drawDial(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
   r: number,
@@ -37,7 +37,7 @@ function drawDial(
 }
 
 function drawAngleLerp(
-  ctx: any,
+  ctx: CanvasRenderingContext2D,
   canvasWidth: number,
   canvasHeight: number,
   naiveAngle: number,

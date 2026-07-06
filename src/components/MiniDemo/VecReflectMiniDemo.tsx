@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { vecNormalize, vecPerpendicular, vecReflect } from "@utilspalooza/core/Vec2";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 type Vector = { x: number; y: number };
@@ -13,6 +14,7 @@ const GUIDE_LENGTH = 120;
 
 export default function VecReflectMiniDemo({ height = 220 }: VecReflectMiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { playing, playingRef, setPlaying } = useMotionGate();
   const [wallAngle, setWallAngle] = useState(-0.52);
 
   useEffect(() => {
@@ -65,18 +67,22 @@ export default function VecReflectMiniDemo({ height = 220 }: VecReflectMiniDemoP
     const step = 1 / (60 * 2.5);
 
     const loop = () => {
-      if (holding) {
-        holdFrames -= 1;
-        if (holdFrames <= 0) {
-          holding = false;
-          progress = 0;
-        }
-      } else {
-        progress += step;
-        if (progress >= 1) {
-          progress = 1;
-          holding = true;
-          holdFrames = 24;
+      // Motion gate: progress only advances while playing; the frame still
+      // draws so slider changes and resizes stay visible.
+      if (playingRef.current) {
+        if (holding) {
+          holdFrames -= 1;
+          if (holdFrames <= 0) {
+            holding = false;
+            progress = 0;
+          }
+        } else {
+          progress += step;
+          if (progress >= 1) {
+            progress = 1;
+            holding = true;
+            holdFrames = 24;
+          }
         }
       }
 
@@ -196,6 +202,7 @@ export default function VecReflectMiniDemo({ height = 220 }: VecReflectMiniDemoP
         style={{ height }}
         aria-label="Animated vecReflect demo"
       />
+      <MotionToggle playing={playing} setPlaying={setPlaying} />
       <div className="mini-demo__controls">
         <label className="mini-demo__control">
           <span className="mini-demo__control-name">wall angle</span>

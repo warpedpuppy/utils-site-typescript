@@ -10,10 +10,10 @@ interface GradientBall extends Ball {
 }
 
 function drawBallBall(
-  ctx: any,
-  balls: any[],
-  canvasWidth: any,
-  canvasHeight: any,
+  ctx: CanvasRenderingContext2D,
+  balls: GradientBall[],
+  canvasWidth: number,
+  canvasHeight: number,
   bounceFn: (ball1: Ball, ball2: Ball) => void
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);

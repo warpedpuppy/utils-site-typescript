@@ -2,20 +2,31 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import PrimaryCanvasHeader from "./PrimaryCanvasHeader";
 import Modal from "../modal/Modal";
+import {
+  AnimationClassRef,
+  AnimationInstance,
+  CollisionDetectionObject,
+} from "../../types/types";
+
+const EMPTY_ANIMATION_OBJECT: CollisionDetectionObject = {
+  keyFunction: () => {},
+  dependencies: [],
+  functionString: "",
+};
+
 function CanvasContainer({
   instance,
   isLoading = false,
 }: {
-  instance: any;
+  instance: AnimationClassRef | undefined;
   isLoading?: boolean;
 }) {
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [animationObject, setAnimationObject] = useState({
-    keyFunction: () => {},
-    dependencies: [],
-    functionString: "",
-  });
-  const [instanceOfClass, setInstanceOfClass] = useState<any>();
+  const [animationObject, setAnimationObject] =
+    useState<CollisionDetectionObject>(EMPTY_ANIMATION_OBJECT);
+  const [instanceOfClass, setInstanceOfClass] = useState<AnimationInstance>();
+  // Mirrors the instance's motion gate so the pause/play button re-renders.
+  const [motionPlaying, setMotionPlaying] = useState(true);
   const location = useLocation();
   const lastAutoOpenedLocationKeyRef = useRef<string | null>(null);
   useEffect(() => {
@@ -23,10 +34,11 @@ function CanvasContainer({
       setInstanceOfClass(undefined);
       return;
     }
-    let i = instance?.initiate("primary-canvas--content--canvas-container");
+    let i = instance.initiate("primary-canvas--content--canvas-container");
     i?.init();
     setInstanceOfClass(i);
-    setAnimationObject(i?.animationObject);
+    setAnimationObject(i?.animationObject ?? EMPTY_ANIMATION_OBJECT);
+    setMotionPlaying(!i?.motionPaused);
     return () => i?.stop();
   }, [instance]);
 
@@ -44,11 +56,24 @@ function CanvasContainer({
     setShowModal(true);
   }
 
+  function toggleMotionHandler() {
+    if (!instanceOfClass) return;
+    if (instanceOfClass.motionPaused) {
+      instanceOfClass.resumeMotion();
+      setMotionPlaying(true);
+    } else {
+      instanceOfClass.pauseMotion();
+      setMotionPlaying(false);
+    }
+  }
+
   return (
     <section id="primary-canvas">
       <PrimaryCanvasHeader
         instanceOfClass={instanceOfClass}
         showEquationHandler={showEquationHandler}
+        motionPlaying={motionPlaying}
+        toggleMotionHandler={toggleMotionHandler}
       />
       <div id="primary-canvas--content">
         <div id="primary-canvas--content--text"></div>

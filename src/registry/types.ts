@@ -1,4 +1,4 @@
-import { CollisionDetectionObject } from "../types/types";
+import { AnimationInstance, CollisionDetectionObject } from "../types/types";
 
 /** The seven sidebar categories, in display order. Do not reorder. */
 export const CATEGORY_ORDER = [
@@ -58,7 +58,7 @@ export interface RegistryRecord {
   /** The existing formula wrapper object (=== manifest `formula`). */
   formula: CollisionDetectionObject;
   /** Literal dynamic import of the animation class (today's `load`). */
-  load: () => Promise<{ default: new (canvasCont: string) => any }>;
+  load: () => Promise<{ default: new (containerId: string) => AnimationInstance }>;
   /**
    * Names of the @utilspalooza/core exports this animation teaches, exactly
    * as they appear in core-api.json `name` fields (e.g. ["lerp"],
@@ -80,7 +80,7 @@ export interface AnimationManifestEntry {
   slug: string;
   include?: boolean;
   formula: CollisionDetectionObject;
-  load: () => Promise<{ default: new (canvasCont: string) => any }>;
+  load: () => Promise<{ default: new (containerId: string) => AnimationInstance }>;
 }
 
 export interface AnimationManifest {

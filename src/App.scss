@@ -182,3 +182,16 @@ pre {
 .text-container-div {
   min-height: 500px;
 }
+
+// Reduced motion: canvas loops are gated in JS (motionPreference.ts); this
+// covers the DOM side — CSS transitions, keyframe animations, smooth scroll.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

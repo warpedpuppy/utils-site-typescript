@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { drawScalarMiniDemo } from "./drawScalarMiniDemo";
 import { SCALAR_DEMO_STEP } from "./scalarTransforms";
+import { MotionToggle, useMotionGate } from "./useMotionGate";
 import "./MiniDemo.scss";
 
 export interface MiniDemoProps {
@@ -47,6 +48,7 @@ export default function MiniDemo({
   height = 168,
 }: MiniDemoProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { playing, playingRef, setPlaying } = useMotionGate();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -78,7 +80,9 @@ export default function MiniDemo({
     window.addEventListener("resize", onResize);
 
     const loop = () => {
-      t += step;
+      // Motion gate: the clock only advances while playing; the frame still
+      // draws so the canvas stays correct across resizes.
+      if (playingRef.current) t += step;
       if (sample) {
         const { input, value } = sample(t);
         drawScalarMiniDemo(ctx, {
@@ -108,7 +112,7 @@ export default function MiniDemo({
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
     };
-  }, [fn, sample, length, label, inputMin, inputMax, speed, height]);
+  }, [fn, sample, length, label, inputMin, inputMax, speed, height, playingRef]);
 
   return (
     <div className="mini-demo">
@@ -118,6 +122,7 @@ export default function MiniDemo({
         style={{ height }}
         aria-label={label ? `Animated demo of ${label}` : "Animated demo"}
       />
+      <MotionToggle playing={playing} setPlaying={setPlaying} />
     </div>
   );
 }

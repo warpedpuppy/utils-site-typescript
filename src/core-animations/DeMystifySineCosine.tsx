@@ -4,9 +4,9 @@ import { radToDeg } from "@utilspalooza/core/RadToDeg";
 import { unitCirclePoint as unitCirclePointFormula } from "../pages/createJSON/formulas/animation/UnitCirclePoint";
 
 function drawDeMystifySineCosine(
-  ctx: any,
-  canvasWidth: any,
-  canvasHeight: any,
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
   textDiv: HTMLElement | null,
   unitCirclePointFn: (
     centerX: number,

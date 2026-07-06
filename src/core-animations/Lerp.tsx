@@ -4,12 +4,12 @@ import { lerp as lerpFormula } from "../pages/createJSON/formulas/animation/Lerp
 import { Point } from "../types/shapes";
 
 function drawLerp(
-  ctx: any,
-  target: any,
-  follower: any,
-  lerpFactor: any,
-  canvasWidth: any,
-  canvasHeight: any
+  ctx: CanvasRenderingContext2D,
+  target: Point,
+  follower: Point,
+  lerpFactor: number,
+  canvasWidth: number,
+  canvasHeight: number
 ): void {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 

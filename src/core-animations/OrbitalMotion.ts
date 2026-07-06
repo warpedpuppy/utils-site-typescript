@@ -13,9 +13,9 @@ spot should sit on the orbiting ball, based on the sun's position.</p>
 which returns the x/y point for the ball at each percentage around the orbit.</p>`;
 
 function drawOrbitalMotion(
-  ctx: any,
-  canvasWidth: any,
-  canvasHeight: any,
+  ctx: CanvasRenderingContext2D,
+  canvasWidth: number,
+  canvasHeight: number,
   pct: number,
   sunRadius: number,
   orbiterRadius: number,
