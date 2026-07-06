@@ -4,12 +4,12 @@ import { CODEPEN_GALLERY } from "./pens";
 import { ALL_RECORDS } from "../../registry";
 
 // The VM-boot smoke-test allowlist, now DERIVED from the registry's `pen` field
-// (REGISTRY-CONSOLIDATION-SPEC step 6). This is intentionally narrower than the
+// (the completed registry-consolidation work). This is intentionally narrower than the
 // sync test's identity set: it is exactly the pens whose serialized runtime is
 // known to boot cleanly under a bare VM stub — the "canonical-vm-tested" tier.
 // The "canonical" tier (identity-checked but not VM-booted) is deliberately
 // excluded, with runtime caveats documented in
-// .claude/STUDIO-CANONICALIZATION-CHECKLIST.md.
+// archived Studio canonicalization checklist.
 const CANONICAL_DRAW_PEN_KEYS = new Set(
   ALL_RECORDS.filter((r) => r.pen === "canonical-vm-tested").map((r) => r.slug)
 );

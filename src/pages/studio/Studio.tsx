@@ -121,6 +121,7 @@ function Studio() {
               action={CODEPEN_ENDPOINT}
               method="POST"
               target="_blank"
+              rel="noopener noreferrer"
             >
               <input
                 type="hidden"
@@ -309,6 +310,7 @@ function Studio() {
                   action={CODEPEN_ENDPOINT}
                   method="POST"
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="source-codepen-form"
                 >
                   <input

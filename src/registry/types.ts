@@ -23,12 +23,11 @@ export type Category = (typeof CATEGORY_ORDER)[number];
  *                            (today: CANONICAL_DRAW_PEN_KEYS in
  *                            studio-codepen-runtime.test.ts).
  * - "canonical"            — pen embeds drawX() verbatim; identity-checked
- *                            but not VM-booted (runtime caveats documented in
- *                            STUDIO-CANONICALIZATION-CHECKLIST.md).
+ *                            but not VM-booted.
  * - "handwritten"          — pen exists but predates canonicalization; only
  *                            coverage is checked, not identity.
  * - "effects-mount"        — mounted via @utilspalooza/effects; exempt from
- *                            draw identity (today: EFFECT_MOUNT_EXCEPTION_KEYS).
+ *                            draw identity.
  * - "mini-demo-no-pen"     — docs-first scalar; deliberately has NO pen
  *                            (today: MINI_DEMO_KEYS). The no-pen rule is
  *                            CLAUDE.md law ("mini-demo is never a pen source").

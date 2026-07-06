@@ -6,7 +6,7 @@ import { CODEPEN_GALLERY } from "../pages/studio/pens";
 import coreApi from "../pages/api/core-api.json";
 
 // Locks category + entry INSERTION ORDER, which drives the /examples and
-// à la carte sidebars (invariant #2 in REGISTRY-CONSOLIDATION-SPEC §2). The
+// à la carte sidebars (locked during the completed registry consolidation). The
 // shape snapshot below cannot do this on its own: vitest's snapshot serializer
 // alphabetizes object keys, so only arrays preserve order. Keep this test.
 it("manifest category + entry order is unchanged by the registry refactor", () => {
@@ -468,7 +468,7 @@ it("manifest shape is unchanged by the registry refactor", () => {
   `);
 });
 
-// ─── Drift tests A1–A5 (REGISTRY-CONSOLIDATION-SPEC §7) ──────────────────────
+// ─── Registry drift tests ───────────────────────────────────────────────────
 // These are the mechanism that turns the "ships the full set" iron rule from
 // policy into enforcement — including the check (A4) that would have caught the
 // five degToRad/radToDeg/commas/random functions that once shipped with no

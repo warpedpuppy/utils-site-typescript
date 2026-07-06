@@ -1,29 +1,35 @@
 import { useCallback } from "react";
 import { AnimationClassRef, AnimationInstance } from "../../types/types";
 import type { AnimationManifest } from "../../animationManifest";
-function ExamplesUtils() {
-  const getKeyAndInnerKeyFromLocation = useCallback(
-    (siteData: AnimationManifest, location: string) => {
-      let key: keyof typeof siteData;
-      let forceBreak: boolean = false;
-      let returnKey: string = "";
-      let returnInnerKey: string = "";
-      for (key in siteData) {
-        const subObject = siteData[key];
-        let innerKey: keyof typeof subObject;
-        for (innerKey in subObject) {
-          let { slug } = subObject[innerKey];
-          if (location.includes(slug)) {
-            forceBreak = true;
-            returnKey = key;
-            returnInnerKey = innerKey;
-            break;
-          }
-        }
-        if (forceBreak) break;
+
+export function getKeyAndInnerKeyFromSlug(
+  siteData: AnimationManifest,
+  exampleSlug: string
+) {
+  let key: keyof typeof siteData;
+  let returnKey: string = "";
+  let returnInnerKey: string = "";
+
+  for (key in siteData) {
+    const subObject = siteData[key];
+    let innerKey: keyof typeof subObject;
+    for (innerKey in subObject) {
+      const { slug } = subObject[innerKey];
+      if (exampleSlug === slug) {
+        returnKey = key;
+        returnInnerKey = innerKey;
+        return { returnKey, returnInnerKey };
       }
-      return { returnKey, returnInnerKey };
-    },
+    }
+  }
+
+  return { returnKey, returnInnerKey };
+}
+
+function ExamplesUtils() {
+  const getKeyAndInnerKeyFromRouteSlug = useCallback(
+    (siteData: AnimationManifest, exampleSlug: string) =>
+      getKeyAndInnerKeyFromSlug(siteData, exampleSlug),
     []
   );
   const createClassReference = useCallback(
@@ -35,7 +41,7 @@ function ExamplesUtils() {
     []
   );
 
-  return { getKeyAndInnerKeyFromLocation, createClassReference };
+  return { getKeyAndInnerKeyFromRouteSlug, createClassReference };
 }
 
 export default ExamplesUtils;

@@ -20,7 +20,7 @@ import {
 // midpoint subdivision, tip-to-tail bricks) has no @utilspalooza/core export to
 // teach, and the effects-backed ones (Glitter/PrettyRing/Sparklies) teach
 // @utilspalooza/effects exports, not core. Those records carry coreExports: []
-// on purpose — see REGISTRY-CONSOLIDATION-SPEC and Edward's 2026-07-02 ruling.
+// on purpose — see Edward's 2026-07-02 registry-consolidation ruling.
 export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
   {
     slug: "fourier-epicycles",

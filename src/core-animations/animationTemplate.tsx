@@ -31,6 +31,10 @@ class Template {
   private lastFrame: Nullable<FrameRequestCallback> = null;
   private firstFrameScheduled = false;
   private gatedEffect: Nullable<{ pause(): void; resume(): void }> = null;
+  private onPointerDown = (e: PointerEvent) => this.pointerDownHandler(e);
+  private onPointerMove = (e: PointerEvent) => this.pointerMoveHandler(e);
+  private onPointerUp = (e: PointerEvent) => this.pointerUpHandler(e);
+
   constructor(id: string) {
     if (!this.canvas || !this.ctx) return;
 
@@ -49,16 +53,9 @@ class Template {
     this.top = top;
     this.left = left;
 
-    this.canvas.addEventListener(
-      "pointerdown",
-      this.pointerDownHandler.bind(this)
-    );
-    this.canvas.addEventListener(
-      "pointermove",
-      this.pointerMoveHandler.bind(this)
-    );
-    this.canvas.addEventListener("pointerup", this.pointerUpHandler.bind(this));
-
+    this.canvas.addEventListener("pointerdown", this.onPointerDown);
+    this.canvas.addEventListener("pointermove", this.onPointerMove);
+    this.canvas.addEventListener("pointerup", this.onPointerUp);
     window.addEventListener("resize", this.resizeHandler);
   }
   resizeHandler = () => {
@@ -122,22 +119,17 @@ class Template {
   pointerMoveHandler(e: PointerEvent) {}
   pointerUpHandler(e: PointerEvent) {}
   stop() {
-    if (!this.textDiv || !this.canvas || !this.cont) return;
-    this.textDiv.innerHTML = "";
-    this.canvas.removeEventListener(
-      "pointerdown",
-      this.pointerDownHandler.bind(this)
-    );
-    this.canvas.removeEventListener(
-      "pointermove",
-      this.pointerMoveHandler.bind(this)
-    );
-    this.canvas.removeEventListener(
-      "pointerup",
-      this.pointerUpHandler.bind(this)
-    );
-    window.removeEventListener("resize", this.resizeHandler.bind(this));
-    this.cont.innerHTML = "";
+    this.continue = false;
+    cancelAnimationFrame(this.rafId);
+
+    if (this.textDiv) this.textDiv.innerHTML = "";
+    if (this.canvas) {
+      this.canvas.removeEventListener("pointerdown", this.onPointerDown);
+      this.canvas.removeEventListener("pointermove", this.onPointerMove);
+      this.canvas.removeEventListener("pointerup", this.onPointerUp);
+    }
+    window.removeEventListener("resize", this.resizeHandler);
+    if (this.cont) this.cont.innerHTML = "";
     this.ctx = null;
     this.canvas = null;
   }

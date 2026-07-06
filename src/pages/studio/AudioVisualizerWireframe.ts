@@ -386,15 +386,7 @@ class AudioVisualizerWireframe extends Template {
 
   stop() {
     cancelAnimationFrame(this.animId);
-    if (this.canvas) {
-      this.canvas.removeEventListener("pointerdown", this.pointerDownHandler.bind(this));
-      this.canvas.removeEventListener("pointermove", this.pointerMoveHandler.bind(this));
-      this.canvas.removeEventListener("pointerup", this.pointerUpHandler.bind(this));
-    }
-    window.removeEventListener("resize", this.resizeHandler);
-    if (this.cont) this.cont.innerHTML = "";
-    this.ctx = null;
-    this.canvas = null;
+    super.stop();
   }
 }
 

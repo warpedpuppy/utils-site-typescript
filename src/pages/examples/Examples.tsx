@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
 import PrimaryCanvas from "../../components/PrimaryCanvas/PrimaryCanvas";
 import ExamplesUtils from "./ExamplesUtils";
 import { Nullable } from "../../types/types";
@@ -13,7 +12,6 @@ import animationManifest, {
 } from "../../animationManifest";
 
 function Examples() {
-  const location = useLocation();
   const navigate = useNavigate();
   const { exampleName } = useParams();
   const [activeObject, setActiveObject] =
@@ -24,7 +22,7 @@ function Examples() {
   const [open, setOpen] = useState<number>(-1);
   const [filterQuery, setFilterQuery] = useState<string>("");
 
-  const { getKeyAndInnerKeyFromLocation } = ExamplesUtils();
+  const { getKeyAndInnerKeyFromRouteSlug } = ExamplesUtils();
   const { createChecklist } = CreateChecklists();
 
   useEffect(() => {
@@ -65,16 +63,16 @@ function Examples() {
   }, [className]);
 
   useEffect(() => {
-    const { returnKey, returnInnerKey } = getKeyAndInnerKeyFromLocation(
+    const { returnKey, returnInnerKey } = getKeyAndInnerKeyFromRouteSlug(
       animationManifest,
-      location.pathname
+      exampleName ?? ""
     );
     setKey(returnKey);
     setInnerKey(returnInnerKey);
     if (returnKey) {
       setOpen(Object.keys(animationManifest).indexOf(returnKey));
     }
-  }, [getKeyAndInnerKeyFromLocation, location]);
+  }, [exampleName, getKeyAndInnerKeyFromRouteSlug]);
 
   useEffect(() => {
     if (!key && !innerKey) return;

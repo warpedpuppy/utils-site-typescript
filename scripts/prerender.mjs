@@ -22,12 +22,14 @@
 //   the static HTML is for crawlers; browsers get the live app as before.
 import { createServer } from "node:http";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { extname, join, resolve } from "node:path";
+import { extname, join, resolve, sep } from "node:path";
 import { chromium } from "playwright";
 
 const DIST = resolve(process.cwd(), "dist");
+const DIST_PREFIX = `${DIST}${sep}`;
 const PORT = 4179;
-const ORIGIN = `http://localhost:${PORT}`;
+const HOST = "127.0.0.1";
+const ORIGIN = `http://${HOST}:${PORT}`;
 const CONCURRENCY = 4;
 
 // ── routes ────────────────────────────────────────────────────────────────────
@@ -55,8 +57,23 @@ const MIME = {
   ".jpg": "image/jpeg",
 };
 const server = createServer((req, res) => {
-  const path = decodeURIComponent(new URL(req.url, ORIGIN).pathname);
-  const candidate = join(DIST, path);
+  let urlPath;
+  try {
+    urlPath = decodeURIComponent(new URL(req.url ?? "/", ORIGIN).pathname);
+  } catch {
+    res.writeHead(404, { "content-type": "text/plain" });
+    res.end("Not found");
+    return;
+  }
+
+  const requested = urlPath.endsWith("/") ? `${urlPath}index.html` : urlPath;
+  const candidate = resolve(DIST, `.${requested}`);
+  if (candidate !== DIST && !candidate.startsWith(DIST_PREFIX)) {
+    res.writeHead(404, { "content-type": "text/plain" });
+    res.end("Not found");
+    return;
+  }
+
   let body;
   let type = MIME[extname(candidate)] ?? "application/octet-stream";
   try {
@@ -68,7 +85,7 @@ const server = createServer((req, res) => {
   res.writeHead(200, { "content-type": type });
   res.end(body);
 });
-await new Promise((ok) => server.listen(PORT, ok));
+await new Promise((ok) => server.listen(PORT, HOST, ok));
 
 // ── crawl ─────────────────────────────────────────────────────────────────────
 const browser = await chromium.launch();

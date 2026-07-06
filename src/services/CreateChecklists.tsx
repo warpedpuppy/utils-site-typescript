@@ -14,6 +14,7 @@ export interface ChecklistFilter {
 function CreateChecklists() {
   const location = useLocation();
   const navigate = useNavigate();
+  const activeExampleSlug = location.pathname.match(/^\/examples\/([^/]+)\/?$/)?.[1] ?? "";
 
   let createChecklist = useCallback(
     (
@@ -59,7 +60,7 @@ function CreateChecklists() {
                 {clickHandler !== null ? (
                   <div
                     className={
-                      location.pathname.includes(slug)
+                      activeExampleSlug === slug
                         ? "checklist-div active"
                         : "checklist-div"
                     }
@@ -153,7 +154,7 @@ function CreateChecklists() {
         </div>
       );
     },
-    [location, navigate]
+    [activeExampleSlug, navigate]
   );
 
   return { createChecklist };

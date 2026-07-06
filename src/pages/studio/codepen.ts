@@ -43,6 +43,7 @@ export function buildCodePenForm(
   form.action = CODEPEN_ENDPOINT;
   form.method = "POST";
   form.target = "_blank";
+  form.setAttribute("rel", "noopener noreferrer");
   form.style.cssText = "margin:0;display:inline-flex";
 
   const input = document.createElement("input");
