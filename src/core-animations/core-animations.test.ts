@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import animationManifest from "../animationManifest";
@@ -43,6 +43,35 @@ describe("pens-examples.ts consolidation", () => {
     const violations = paths.filter((p) => p.includes("pages/examples/animations"));
     expect(violations).toEqual([]);
   });
+});
+
+// ─── Motion-gate rule: frames go through this.raf(), never raw rAF ──────────
+// The base classes' raf() implements the reduced-motion gate (one still frame,
+// then hold until the visitor presses play) and pause/resume. A subclass that
+// calls requestAnimationFrame directly silently bypasses that gate — an a11y
+// regression no other test would catch.
+
+describe("Motion-gate rule: no direct requestAnimationFrame in animations", () => {
+  const allowed = new Set([
+    "AnimationBaseClass.tsx", // owns raf() — the one legitimate call site
+    "animationTemplate.tsx", // owns raf() — the one legitimate call site
+    "core-animations.test.ts", // this file mentions the string
+  ]);
+
+  const files = readdirSync(resolve(root, "src/core-animations")).filter(
+    (f) => /\.tsx?$/.test(f) && !allowed.has(f)
+  );
+
+  it("scans a plausible number of animation files", () => {
+    expect(files.length).toBeGreaterThan(40);
+  });
+
+  for (const file of files) {
+    it(`${file} schedules frames only via this.raf()`, () => {
+      const source = readSrc(`core-animations/${file}`);
+      expect(source).not.toContain("requestAnimationFrame(");
+    });
+  }
 });
 
 // ─── Test 2: Collision animations are in core-animations ────────────────────

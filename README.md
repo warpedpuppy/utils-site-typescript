@@ -152,6 +152,10 @@ Each class should:
 - use package math instead of retyping formulas
 - include a useful plain-English explanation
 - cleanly stop its animation loop
+- schedule every frame through `this.raf(...)`, never `requestAnimationFrame`
+  directly — `raf()` is where the reduced-motion gate and pause/resume live,
+  and a source-scan test in `src/core-animations/core-animations.test.ts`
+  fails on any direct call
 
 ## Adding A Drop-In Effect
 
