@@ -89,6 +89,23 @@ describe("api docs manifest", () => {
     expect(getEntryUsageLead({ module: "AngleInterpolation", name: "wrapAngle" })).toContain("370°");
   });
 
+  // The Full Reference's default view is a table of contents whose rows render
+  // each entry as "name + usage lead" — a blank lead would render a broken row.
+  it("every export has a non-empty usage lead for the table-of-contents index", () => {
+    const missing = apiEntries
+      .filter(
+        (entry) =>
+          getEntryUsageLead({
+            module: entry.module,
+            name: entry.name,
+            kind: entry.kind as "function" | "const" | "type",
+          }).trim() === "",
+      )
+      .map((entry) => `${entry.module}:${entry.name}`);
+
+    expect(missing).toEqual([]);
+  });
+
   it("collision entries get shape-specific usage leads", () => {
     expect(getEntryUsageLead({ module: "PointToCircle", name: "pointToCircle" })).toBe(
       "This one helps answer: is this point inside the circle yet?",

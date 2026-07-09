@@ -40,8 +40,11 @@ function getTabFromSearch(search: string): TabId {
 export interface ApiDocsNavigation {
   tab: TabId;
   query: string;
+  fnTarget: string | null;
   pickFunction: (name: string, conceptId: string) => void;
   focusFunction: (name: string) => void;
+  expandFunction: (name: string) => void;
+  collapseFunction: () => void;
   setTab: (nextTab: TabId) => void;
   setDocumentationQuery: (value: string) => void;
   jumpToConcept: (conceptId: string) => void;
@@ -156,6 +159,33 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
     );
   };
 
+  // Expanding a table-of-contents row in place: record the function in ?fn= so
+  // the expanded state is shareable, but leave the filter alone (the book stays
+  // open) and don't scroll — the entry opens exactly where the reader clicked.
+  // replace:true keeps browsing the index from flooding the history stack.
+  const expandFunction = (name: string) => {
+    updateSearch(
+      "documentation",
+      query,
+      name,
+      pendingOverviewConceptRef.current ?? undefined,
+      true,
+    );
+  };
+
+  // Collapsing the entry that ?fn= points at: drop the param so a copied URL
+  // no longer claims an entry the reader has closed.
+  const collapseFunction = () => {
+    pendingDocTargetRef.current = null;
+    updateSearch(
+      "documentation",
+      query,
+      undefined,
+      pendingOverviewConceptRef.current ?? undefined,
+      true,
+    );
+  };
+
   const setTab = (nextTab: TabId) => {
     if (nextTab === tab) return;
     if (tab === "overview") saveOverviewScroll();
@@ -189,8 +219,11 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
   return {
     tab,
     query,
+    fnTarget: searchParams.get("fn"),
     pickFunction,
     focusFunction,
+    expandFunction,
+    collapseFunction,
     setTab,
     setDocumentationQuery,
     jumpToConcept,

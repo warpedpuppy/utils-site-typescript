@@ -295,6 +295,17 @@ a.api-docs__badge:hover {
   margin-top: 26px;
 }
 
+// In the table-of-contents view most modules hold a single compact row, so the
+// full 26px module gap makes the index read unevenly airy — tighten it, and give
+// cards expanded in place a little breathing room against neighboring rows.
+.api-docs__chapter--index .api-docs__module {
+  margin-top: 4px;
+}
+
+.api-docs__chapter--index .api-docs__fn {
+  margin: 10px 0 14px;
+}
+
 // A chapter break in the reading spine: concept title + blurb (from CONCEPTS in
 // docsManifest), replacing the old per-file module headers.
 .api-docs__chapter {
@@ -346,6 +357,75 @@ a.api-docs__badge:hover {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.api-docs__fn-head-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// Shown only on cards expanded from a table-of-contents row.
+.api-docs__fn-collapse {
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--text);
+    border-color: var(--text-muted);
+  }
+}
+
+// The default (empty-filter) reference is a table of contents: each entry is a
+// compact row — name + its one-line usage lead — that expands in place on click.
+// Plain text on purpose: these rows are what crawlers and the prerender see.
+.api-docs__toc-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 9px 12px;
+  margin: 0 0 4px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+
+  code {
+    font-family: "Space Mono", monospace;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  span {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.4;
+  }
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--border);
+    background: rgba(22, 25, 41, 0.72);
+
+    code {
+      color: var(--brand-orange-soft);
+    }
+  }
 }
 
 .api-docs__fn-name {

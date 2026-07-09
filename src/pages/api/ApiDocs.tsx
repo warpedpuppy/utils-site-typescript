@@ -215,18 +215,39 @@ function ApiEntryCard({
   mode,
   onJumpToConcept,
   onFocusFunction,
+  onCollapse,
 }: {
   entry: ApiEntry;
   mode: ModuleDocMode;
   onJumpToConcept: (conceptId: string) => void;
   onFocusFunction: (name: string) => void;
+  // Present only when the card was expanded from a table-of-contents row —
+  // search results and deep-filtered views stay plain cards with no close button.
+  onCollapse?: () => void;
 }) {
   const concept = getConceptForModule(entry.module);
   return (
-    <article className="api-docs__fn" key={`${entry.module}.${entry.name}`} id={entry.name}>
+    <article
+      className="api-docs__fn"
+      key={`${entry.module}.${entry.name}`}
+      id={entry.name}
+      tabIndex={-1}
+    >
       <div className="api-docs__fn-head">
         <code className="api-docs__fn-name">{entry.name}</code>
-        {renderEntryMeta(entry, mode)}
+        <div className="api-docs__fn-head-side">
+          {renderEntryMeta(entry, mode)}
+          {onCollapse && (
+            <button
+              type="button"
+              className="api-docs__fn-collapse"
+              onClick={onCollapse}
+              aria-label={`Collapse ${entry.name} back to the chapter index`}
+            >
+              close
+            </button>
+          )}
+        </div>
       </div>
       {concept && (
         <div className="api-docs__crumbs">
@@ -247,14 +268,51 @@ function ApiEntryCard({
 function Documentation({
   query,
   setQuery,
+  fnTarget,
   onJumpToConcept,
   onFocusFunction,
+  onExpandFunction,
+  onCollapseFunction,
 }: {
   query: string;
   setQuery: (value: string) => void;
+  fnTarget: string | null;
   onJumpToConcept: (conceptId: string) => void;
   onFocusFunction: (name: string) => void;
+  onExpandFunction: (name: string) => void;
+  onCollapseFunction: () => void;
 }) {
+  // With no filter, the reference is a table of contents: chapters list their
+  // entries as compact rows (name + one-line lead) that expand in place. Rows
+  // the reader has opened live in local state; the ?fn= target is always merged
+  // in so deep links land on a fully expanded entry inside the book. A search
+  // query switches to full cards for every match — today's behavior.
+  const isIndexView = query.trim() === "";
+  const [openedNames, setOpenedNames] = useState<Set<string>>(() => new Set());
+  const expandedNames = useMemo(() => {
+    if (!fnTarget) return openedNames;
+    const merged = new Set(openedNames);
+    merged.add(fnTarget);
+    return merged;
+  }, [openedNames, fnTarget]);
+
+  const expandEntry = (name: string) => {
+    setOpenedNames((prev) => new Set(prev).add(name));
+    onExpandFunction(name);
+    // The row unmounts under the keyboard user's focus; hand focus to the card.
+    requestAnimationFrame(() => document.getElementById(name)?.focus());
+  };
+
+  const collapseEntry = (name: string) => {
+    setOpenedNames((prev) => {
+      const next = new Set(prev);
+      next.delete(name);
+      return next;
+    });
+    if (name === fnTarget) onCollapseFunction();
+    requestAnimationFrame(() => document.getElementById(`toc-${name}`)?.focus());
+  };
+
   const chapters = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = q
@@ -289,9 +347,9 @@ function Documentation({
         <h2>Function Reference</h2>
         <p>
           Read it like a book — short chapters, each building on the last, from plain
-          numbers all the way to physics systems. Or type a name below to jump straight
-          to one function: every entry explains itself, shows its math moving, and hands
-          you the real signature.
+          numbers all the way to physics systems. Open any entry and it explains itself,
+          shows its math moving, and hands you the real signature. Or type a name below
+          to jump straight to one function.
         </p>
       </div>
 
@@ -310,7 +368,10 @@ function Documentation({
       </div>
 
       {chapters.map((chapter) => (
-        <section className="api-docs__chapter" key={chapter.id}>
+        <section
+          className={`api-docs__chapter${isIndexView ? " api-docs__chapter--index" : ""}`}
+          key={chapter.id}
+        >
           <header className="api-docs__chapter-head">
             <h3>{chapter.title}</h3>
             <p>{chapter.blurb}</p>
@@ -339,15 +400,29 @@ function Documentation({
                   </div>
                 </article>
               )}
-              {entries.map((entry) => (
-                <ApiEntryCard
-                  key={`${entry.module}.${entry.name}`}
-                  entry={entry}
-                  mode={getModuleDocMode(module)}
-                  onJumpToConcept={onJumpToConcept}
-                  onFocusFunction={onFocusFunction}
-                />
-              ))}
+              {entries.map((entry) =>
+                isIndexView && !expandedNames.has(entry.name) ? (
+                  <button
+                    type="button"
+                    key={`${entry.module}.${entry.name}`}
+                    id={`toc-${entry.name}`}
+                    className="api-docs__toc-row"
+                    onClick={() => expandEntry(entry.name)}
+                  >
+                    <code>{entry.name}</code>
+                    <span>{getEntryUsageLead(entry)}</span>
+                  </button>
+                ) : (
+                  <ApiEntryCard
+                    key={`${entry.module}.${entry.name}`}
+                    entry={entry}
+                    mode={getModuleDocMode(module)}
+                    onJumpToConcept={onJumpToConcept}
+                    onFocusFunction={onFocusFunction}
+                    onCollapse={isIndexView ? () => collapseEntry(entry.name) : undefined}
+                  />
+                ),
+              )}
             </div>
           ))}
         </section>
@@ -362,8 +437,11 @@ function ApiDocs() {
   const {
     tab,
     query,
+    fnTarget,
     pickFunction,
     focusFunction,
+    expandFunction,
+    collapseFunction,
     setTab,
     setDocumentationQuery,
     jumpToConcept,
@@ -436,8 +514,11 @@ function ApiDocs() {
         <Documentation
           query={query}
           setQuery={setDocumentationQuery}
+          fnTarget={fnTarget}
           onJumpToConcept={jumpToConcept}
           onFocusFunction={focusFunction}
+          onExpandFunction={expandFunction}
+          onCollapseFunction={collapseFunction}
         />
       )}
     </main>
