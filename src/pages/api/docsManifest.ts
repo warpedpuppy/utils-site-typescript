@@ -91,7 +91,7 @@ export const CONCEPTS: ConceptDefinition[] = [
       "Distance", "LineLength", "GetPointOnLine", "MoveAlongLine", "MoveToward",
       "GetTriangleData", "CircleFromThreePoints", "FindPointAroundCircle",
       "DistributeAroundCircle", "EquilateralTriangle", "Rectangle", "Star",
-      "QuadraticBezier", "BezierCurve",
+      "QuadraticBezier", "BezierCurve", "DeCasteljau",
     ],
   },
   {

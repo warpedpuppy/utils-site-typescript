@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import CopyInstall from "../../components/CopyInstall/CopyInstall";
+import LazyMount from "../../components/LazyMount/LazyMount";
 import {
   CORE_LICENSE,
   CORE_VERSION,
@@ -13,6 +14,7 @@ import {
   getEntryIntro,
   getEntryTabs,
   getEntryUsageLead,
+  getEntryVisual,
   getModuleDocMode,
   MODULE_GUIDES,
   ModuleDocMode,
@@ -22,7 +24,7 @@ import {
   apiEntries,
   cleanDoc,
   getConceptForModule,
-  groupByModule,
+  groupByConcept,
   renderImportLine,
 } from "./apiModel";
 import { EntryVisual } from "./docsVisuals";
@@ -113,7 +115,12 @@ function EntryVisualPanel({ entry }: { entry: ApiEntry }) {
   return (
     <div className="api-docs__entry-panel">
       <p className="api-docs__usage-lead">{getEntryUsageLead(entry)}</p>
-      <EntryVisual entry={entry} />
+      {/* Demos mount only near the viewport — with every entry expanded this page
+          otherwise runs ~79 rAF canvases at once. minHeight approximates the block's
+          real height (canvas demo vs. small example callout) so scroll stays stable. */}
+      <LazyMount minHeight={getEntryVisual(entry.name).kind === "mini-demo" ? 360 : 90}>
+        <EntryVisual entry={entry} />
+      </LazyMount>
       <EntryExampleLinks entry={entry} />
     </div>
   );
@@ -248,7 +255,7 @@ function Documentation({
   onJumpToConcept: (conceptId: string) => void;
   onFocusFunction: (name: string) => void;
 }) {
-  const groups = useMemo(() => {
+  const chapters = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = q
       ? apiEntries.filter(
@@ -258,14 +265,22 @@ function Documentation({
             e.description.toLowerCase().includes(q),
         )
       : apiEntries;
-    return groupByModule(filtered);
+    return groupByConcept(filtered);
   }, [query]);
 
   const total = apiEntries.length;
-  const shown = groups.reduce((n, [, list]) => n + list.length, 0);
+  const shown = chapters.reduce(
+    (n, chapter) => n + chapter.moduleGroups.reduce((m, [, list]) => m + list.length, 0),
+    0,
+  );
   const visibleEntryNames = useMemo(
-    () => new Set(groups.flatMap(([, entries]) => entries.map((entry) => entry.name))),
-    [groups],
+    () =>
+      new Set(
+        chapters.flatMap((chapter) =>
+          chapter.moduleGroups.flatMap(([, entries]) => entries.map((entry) => entry.name)),
+        ),
+      ),
+    [chapters],
   );
 
   return (
@@ -273,9 +288,10 @@ function Documentation({
       <div className="api-docs__section-head">
         <h2>Function Reference</h2>
         <p>
-          Every export now opens as a small teaching surface: plain-language intro,
-          dedicated motion/example tab, then the raw signature and params. Change the
-          query when you want to compare siblings or narrow to one tool.
+          Read it like a book — short chapters, each building on the last, from plain
+          numbers all the way to physics systems. Or type a name below to jump straight
+          to one function: every entry explains itself, shows its math moving, and hands
+          you the real signature.
         </p>
       </div>
 
@@ -293,41 +309,48 @@ function Documentation({
         </p>
       </div>
 
-      {groups.map(([module, entries]) => (
-        <div className="api-docs__module" key={module}>
-          <h3 className="api-docs__module-title">{module}</h3>
-          {MODULE_GUIDES[module] && (
-            <article className="api-docs__guide">
-              <div className="api-docs__guide-head">
-                <h4>{MODULE_GUIDES[module]!.title}</h4>
-                <span>start here</span>
-              </div>
-              <p>{MODULE_GUIDES[module]!.whatItIs}</p>
-              <p>{MODULE_GUIDES[module]!.howToStart}</p>
-              <pre className="api-docs__fn-sig">
-                <code>{MODULE_GUIDES[module]!.importSnippet}</code>
-              </pre>
-              <div className="api-docs__guide-pieces">
-                {MODULE_GUIDES[module]!.keyPieceNames
-                  .filter((name) => visibleEntryNames.has(name))
-                  .map((name) => (
-                    <button type="button" key={name} onClick={() => onFocusFunction(name)}>
-                      {name}
-                    </button>
-                  ))}
-              </div>
-            </article>
-          )}
-          {entries.map((entry) => (
-            <ApiEntryCard
-              key={`${entry.module}.${entry.name}`}
-              entry={entry}
-              mode={getModuleDocMode(module)}
-              onJumpToConcept={onJumpToConcept}
-              onFocusFunction={onFocusFunction}
-            />
+      {chapters.map((chapter) => (
+        <section className="api-docs__chapter" key={chapter.id}>
+          <header className="api-docs__chapter-head">
+            <h3>{chapter.title}</h3>
+            <p>{chapter.blurb}</p>
+          </header>
+          {chapter.moduleGroups.map(([module, entries]) => (
+            <div className="api-docs__module" key={module}>
+              {MODULE_GUIDES[module] && (
+                <article className="api-docs__guide">
+                  <div className="api-docs__guide-head">
+                    <h4>{MODULE_GUIDES[module]!.title}</h4>
+                    <span>start here</span>
+                  </div>
+                  <p>{MODULE_GUIDES[module]!.whatItIs}</p>
+                  <p>{MODULE_GUIDES[module]!.howToStart}</p>
+                  <pre className="api-docs__fn-sig">
+                    <code>{MODULE_GUIDES[module]!.importSnippet}</code>
+                  </pre>
+                  <div className="api-docs__guide-pieces">
+                    {MODULE_GUIDES[module]!.keyPieceNames
+                      .filter((name) => visibleEntryNames.has(name))
+                      .map((name) => (
+                        <button type="button" key={name} onClick={() => onFocusFunction(name)}>
+                          {name}
+                        </button>
+                      ))}
+                  </div>
+                </article>
+              )}
+              {entries.map((entry) => (
+                <ApiEntryCard
+                  key={`${entry.module}.${entry.name}`}
+                  entry={entry}
+                  mode={getModuleDocMode(module)}
+                  onJumpToConcept={onJumpToConcept}
+                  onFocusFunction={onFocusFunction}
+                />
+              ))}
+            </div>
           ))}
-        </div>
+        </section>
       ))}
 
       {shown === 0 && <p className="api-docs__empty">No exports match “{query}”.</p>}

@@ -43,17 +43,6 @@ export function cleanDoc(text: string): string {
   return text.replace(/\{@link\s+([^}]+)\}/g, (_m, ref) => ref.trim());
 }
 
-// Preserve the source order (alphabetical by module, then name) while grouping.
-export function groupByModule(entries: ApiEntry[]): [string, ApiEntry[]][] {
-  const groups = new Map<string, ApiEntry[]>();
-  for (const entry of entries) {
-    const list = groups.get(entry.module) ?? [];
-    list.push(entry);
-    groups.set(entry.module, list);
-  }
-  return [...groups.entries()].map(([module, list]) => [module, sortModuleEntries(module, list)]);
-}
-
 function sortModuleEntries(module: string, entries: ApiEntry[]): ApiEntry[] {
   const preferredOrder = MODULE_ENTRY_ORDER[module];
   if (!preferredOrder) return entries;
@@ -64,6 +53,59 @@ function sortModuleEntries(module: string, entries: ApiEntry[]): ApiEntry[] {
     if (aRank !== bRank) return aRank - bRank;
     return a.name.localeCompare(b.name);
   });
+}
+
+// The reference's reading spine: chapters follow the CONCEPTS teaching order
+// (Numbers in motion first, systems last), modules follow each concept's curated
+// modules list, and entries within a module follow MODULE_ENTRY_ORDER. Anything
+// no concept claims lands in a final catch-all chapter, so filtering the full
+// entry set through here can never lose an export.
+export interface ConceptChapter {
+  id: string;
+  title: string;
+  blurb: string;
+  moduleGroups: [string, ApiEntry[]][];
+}
+
+export function groupByConcept(entries: ApiEntry[]): ConceptChapter[] {
+  const byModule = new Map<string, ApiEntry[]>();
+  for (const entry of entries) {
+    const list = byModule.get(entry.module) ?? [];
+    list.push(entry);
+    byModule.set(entry.module, list);
+  }
+
+  const claimed = new Set<string>();
+  const chapters: ConceptChapter[] = [];
+  for (const concept of CONCEPTS) {
+    const moduleGroups: [string, ApiEntry[]][] = [];
+    for (const module of concept.modules) {
+      claimed.add(module);
+      const list = byModule.get(module);
+      if (list) moduleGroups.push([module, sortModuleEntries(module, list)]);
+    }
+    if (moduleGroups.length > 0) {
+      chapters.push({
+        id: makeConceptId(concept.title),
+        title: concept.title,
+        blurb: concept.blurb,
+        moduleGroups,
+      });
+    }
+  }
+
+  const leftovers: [string, ApiEntry[]][] = [];
+  for (const [module, list] of byModule) {
+    if (!claimed.has(module)) leftovers.push([module, sortModuleEntries(module, list)]);
+  }
+  if (leftovers.length > 0) {
+    chapters.push({
+      id: makeConceptId(CATCH_ALL_CONCEPT.title),
+      ...CATCH_ALL_CONCEPT,
+      moduleGroups: leftovers,
+    });
+  }
+  return chapters;
 }
 
 export function renderImportLine(entry: ApiEntry): string {

@@ -188,7 +188,16 @@ function drawTickerScene(
   const y = 116;
   const frac = loop(tickerFrame.elapsed, 1600);
 
-  drawTrack(ctx, x0, x1, y, "elapsed");
+  // Track drawn without drawTrack(): its side label sits at (x0, y - 18), which
+  // collides with the payload text block's third line — this scene labels the
+  // track BELOW the line instead, where nothing else draws.
+  ctx.strokeStyle = "rgba(255,255,255,0.24)";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x0, y);
+  ctx.lineTo(x1, y);
+  ctx.stroke();
+  label(ctx, x0, y + 26, "elapsed", "#e2e8f0", "left");
   drawDot(ctx, x0 + frac * (x1 - x0), y, "#f97316");
   label(ctx, x0 + frac * (x1 - x0), y - 18, `frame ${tickerFrame.frame}`, "#fdba74");
 
