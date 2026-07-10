@@ -1308,10 +1308,38 @@ a.api-docs__badge:hover {
 }
 
 // The page-turn: hand the reader the next issue in the teaching order.
+// Phase 5 chapter hand-off — the narrator's one-sentence bridge to the next
+// chapter. Two homes: a yellow caption plate at the end of a newsstand shelf,
+// and a line above the NEXT ISSUE button when the page-turn opens a chapter.
+.api-docs__handoff {
+  max-width: 46em;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.api-docs__handoff--shelf {
+  @include comic-plate(var(--comic-yellow));
+  margin: 18px 0 0;
+  padding: 10px 16px;
+  color: var(--comic-ink);
+}
+
 .api-docs__next-issue {
   margin: 26px -22px -30px; // bleed to the page border
   border-top: 4px solid var(--comic-ink);
   background: var(--comic-red);
+
+  .api-docs__handoff {
+    margin: 0;
+    padding: 16px 22px 0;
+    color: var(--comic-paper);
+
+    // The button's own top padding already provides the gap below.
+    + button {
+      padding-top: 12px;
+    }
+  }
 
   button {
     display: block;

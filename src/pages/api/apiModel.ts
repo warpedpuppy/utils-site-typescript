@@ -65,6 +65,8 @@ export interface ConceptChapter {
   title: string;
   blurb: string;
   moduleGroups: [string, ApiEntry[]][];
+  /** Narrator bridge to the next chapter; absent on the final chapter and the catch-all. */
+  handoff?: string;
 }
 
 export function groupByConcept(entries: ApiEntry[]): ConceptChapter[] {
@@ -90,6 +92,7 @@ export function groupByConcept(entries: ApiEntry[]): ConceptChapter[] {
         title: concept.title,
         blurb: concept.blurb,
         moduleGroups,
+        handoff: concept.handoff,
       });
     }
   }
@@ -134,6 +137,17 @@ const chapterNumberByConceptId = new Map(
 /** 1-based chapter number in the reading spine (CH.1 = Numbers in motion). */
 export function getChapterNumber(conceptId: string): number {
   return chapterNumberByConceptId.get(conceptId) ?? fullChapters.length;
+}
+
+const chapterByModule = new Map<string, ConceptChapter>(
+  fullChapters.flatMap((chapter) =>
+    chapter.moduleGroups.map(([module]): [string, ConceptChapter] => [module, chapter]),
+  ),
+);
+
+/** The reading-spine chapter that claims a module (issue footers use this to spot chapter turns). */
+export function getChapterForModule(module: string): ConceptChapter | undefined {
+  return chapterByModule.get(module);
 }
 
 // Masthead lettering for the comic issue view: `lerpAngle` → "Lerp Angle",

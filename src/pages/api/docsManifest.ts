@@ -53,6 +53,14 @@ export interface ConceptDefinition {
   title: string;
   blurb: string;
   modules: string[];
+  /**
+   * Phase 5's graphic-novel page-turn: one narrator sentence at the chapter's
+   * end that bridges to the NEXT chapter in CONCEPTS order. Rendered on the
+   * newsstand after the chapter's last tile and in the NEXT ISSUE footer when
+   * the reading order crosses into a new chapter. The final chapter omits it
+   * (the footer's "start over" line closes the run instead).
+   */
+  handoff?: string;
 }
 
 export const CONCEPTS: ConceptDefinition[] = [
@@ -61,12 +69,16 @@ export const CONCEPTS: ConceptDefinition[] = [
     blurb:
       "The scalar building blocks: turn time, input, or distance into a usable value. Almost every animation downstream is just these, repeated.",
     modules: ["Lerp", "InverseLerp", "MapRange", "Clamp", "Wrap", "PingPong", "Smoothstep"],
+    handoff:
+      "You can steer any number now — next come the curves that make its motion feel alive instead of robotic.",
   },
   {
     title: "Easing & tweening",
     blurb:
       "Why motion feels alive instead of robotic. The curves that shape acceleration, plus tiny time-driven helpers that sample them — they move values, never your render layer.",
     modules: ["Easing", "Animate"],
+    handoff:
+      "Ease a value and it glides beautifully in a straight line — to orbit, spin, or wave, you need angles.",
   },
   {
     title: "Angles & trigonometry",
@@ -76,12 +88,16 @@ export const CONCEPTS: ConceptDefinition[] = [
       "AngleInterpolation", "DegToRad", "RadToDeg", "UnitCirclePoint",
       "GetRotation", "SineCurve", "SineWave", "WaveAmplitude", "DFT",
     ],
+    handoff:
+      "An angle points the way; a vector takes the step. Next: position and velocity as one little arrow.",
   },
   {
     title: "Vectors",
     blurb:
       "How anything that moves knows where it is going. Add, scale, rotate, reflect, normalize — the grammar of position and velocity in 2D.",
     modules: ["Vec2"],
+    handoff:
+      "Now that things can move, they need somewhere to go — points, paths, triangles, and curves ahead.",
   },
   {
     title: "Points, lines & curves",
@@ -93,6 +109,8 @@ export const CONCEPTS: ConceptDefinition[] = [
       "DistributeAroundCircle", "EquilateralTriangle", "Rectangle", "Star",
       "QuadraticBezier", "BezierCurve", "DeCasteljau",
     ],
+    handoff:
+      "You can place anything now — and the instant two of those things meet, you're asking the next chapter's question.",
   },
   {
     title: "Collision detection",
@@ -108,12 +126,16 @@ export const CONCEPTS: ConceptDefinition[] = [
       "CollisionObjectAPI/PolygonLine", "CollisionObjectAPI/PolygonPoint",
       "CollisionObjectAPI/PolygonPolygon",
     ],
+    handoff:
+      "Things touch, bounce, and react — now give the scene some feeling. Color, it turns out, is math too.",
   },
   {
     title: "Color",
     blurb:
       "Color as math you can interpolate. Convert between RGB and HSL, blend two colors, and build palettes that actually go together.",
     modules: ["Color", "GetRandomColors"],
+    handoff:
+      "Motion, geometry, collisions, color — time to let simple rules run wild: flocks, orbits, and gravity.",
   },
   {
     title: "Physics & systems",
@@ -123,12 +145,16 @@ export const CONCEPTS: ConceptDefinition[] = [
       "Boids", "BallBounce", "BallToBallBounce", "OrbitalMotion",
       "GameOfLife", "GRStep", "LensDeflection", "SphereLighting",
     ],
+    handoff:
+      "Every spectacular system leans on a few humble conveniences — meet the helpers that keep demos honest.",
   },
   {
     title: "Helpers",
     blurb:
       "The small conveniences every demo needs and nobody wants to rewrite: random numbers, number formatting, centering on a parent.",
     modules: ["RandomIntegerBetween", "RandomNumberBetween", "NumberWithCommas", "CenterOnParent"],
+    handoff:
+      "And underneath it all, the shared shapes the whole library speaks in — time to meet the cast.",
   },
   {
     title: "Core types",
@@ -227,6 +253,9 @@ export const MODULE_ENTRY_ORDER: Partial<Record<string, string[]>> = {
     "Boid",
     "FlockBounds",
   ],
+  // Teach the classic before Perlin's refinement — smootherstep's lead points
+  // back at smoothstep, so alphabetical order would reference it forwards.
+  Smoothstep: ["smoothstep", "smootherstep"],
   Color: [
     "lerpColor",
     "lerpColorHsl",
@@ -382,6 +411,10 @@ export const ENTRY_VISUALS: Partial<Record<string, DocVisualConfig>> = {
   waveAmplitude: { kind: "mini-demo" },
 };
 
+// House style (Phase 5): the lead poses the question the demo answers.
+// Model: "This one helps answer: are these circles touching yet?" — never
+// "helps a value move in a useful way". Keep each ≤ ~90 chars, plain English.
+// docsManifest.test.ts fences this: no function may fall back to a generic line.
 const ENTRY_USAGE_LEADS: Partial<Record<string, string>> = {
   "Boids:Flock": "Use this when you want a whole flock of little movers that steer together.",
   "Boids:boidsStep": "Use this when you already have the boids and just want to advance them by one frame.",
@@ -405,6 +438,100 @@ const ENTRY_USAGE_LEADS: Partial<Record<string, string>> = {
   "Vec2:vecDot": "Use this when you want to know whether two things are pointing mostly the same way.",
   "Vec2:vecAngleBetween": "Use this when you need the size of the turn from one direction to another, like measuring how far off-target an aim or heading is.",
   "Vec2:vecReflect": "Use this when an incoming velocity or direction hits a surface and you need the clean bounced direction back.",
+
+  // Numbers in motion — the scalar primitives.
+  "Lerp:lerp": "This one helps answer: what number sits 30% of the way from a to b?",
+  "InverseLerp:inverseLerp": "This one helps answer: how far between a and b is this value, as a 0-to-1 fraction?",
+  "MapRange:mapRange": "This one helps answer: if the input runs 0–100, what's the matching value on 0–360?",
+  "Clamp:clamp": "This one helps answer: how do I stop this value from ever leaving its allowed range?",
+  "Wrap:wrap": "This one helps answer: how does a runaway value loop back around, like a clock hand?",
+  "PingPong:pingPong": "This one helps answer: how does ever-growing time become back-and-forth motion?",
+  "Smoothstep:smoothstep": "This one helps answer: how do I fade between two edges without a snap at either end?",
+  "Smoothstep:smootherstep": "Same question as smoothstep, answered with an even silkier start and finish.",
+
+  // Animate — the time-sampling helpers.
+  "Animate:tweenFrame": "This one helps answer: what should every animated property be at this exact moment?",
+  "Animate:delay": "This one helps answer: how does an animation wait its turn before starting?",
+  "Animate:loop": "This one helps answer: how does a finished animation start over, forever?",
+  "Animate:yoyo": "This one helps answer: how does progress climb 0 to 1, then glide back down to 0?",
+  "Animate:stagger": "This one helps answer: how do list items animate one after another, not all at once?",
+  "Animate:criticalDamping": "This one helps answer: how much damping lands a spring on target with zero overshoot?",
+
+  // Easing — each lead names the curve's feel; the sweep demo is the proof.
+  "Easing:linear": "The baseline: constant speed, no easing — the straight line every other curve bends.",
+  "Easing:easeIn": "Starts slow and accelerates — the gentle quadratic take-off.",
+  "Easing:easeOut": "Starts fast and glides to a stop — the quadratic soft landing.",
+  "Easing:easeInOut": "Slow start, quick middle, soft landing — the quadratic S-curve.",
+  "Easing:easeInQuad": "The same quadratic take-off as easeIn, kept so older code using this name still works.",
+  "Easing:easeOutQuad": "The same quadratic landing as easeOut, kept so older code using this name still works.",
+  "Easing:easeInOutQuad": "The same S-curve as easeInOut, kept so older code using this name still works.",
+  "Easing:easeInCubic": "A deeper slow start than quadratic — the cubic take-off.",
+  "Easing:easeOutCubic": "Faster out of the gate, softer landing than quadratic — the cubic ease-out.",
+  "Easing:easeInOutCubic": "A punchier S-curve than quadratic: gentler ends, a quicker middle.",
+  "Easing:easeInQuart": "An even more patient start — quartic barely moves, then rushes the finish.",
+  "Easing:easeOutQuart": "A hard launch and a long, feathered landing — the quartic ease-out.",
+  "Easing:easeInOutQuart": "A stronger S-curve: long calm ends with a dash through the middle.",
+  "Easing:easeInQuint": "The most extreme slow start in the family — quintic creeps, then rockets.",
+  "Easing:easeOutQuint": "The most extreme soft landing in the family — quintic bolts, then feathers in.",
+  "Easing:easeInOutQuint": "The family's steepest S-curve — it creeps, sprints, then creeps again.",
+  "Easing:easeOutBounce": "Lands like a dropped ball — hits the end and bounces before settling.",
+  "Easing:easeOutElastic": "Overshoots the target and twangs back, like letting go of a rubber band.",
+
+  // Angles & trig.
+  "GetRotation:getRotation": "This one helps answer: what angle points me from here toward there?",
+  "DFT:dft": "This one helps answer: what recipe of spinning circles retraces this shape?",
+
+  // Vectors.
+  "Vec2:vecAdd": "This one helps answer: where do I end up after taking both of these steps?",
+  "Vec2:vecSubtract": "This one helps answer: what single step carries me from that point to this one?",
+  "Vec2:vecScale": "This one helps answer: what is this step at double, half, or reverse strength?",
+  "Vec2:vecMagnitude": "This one helps answer: how long is this vector — how big a step is it?",
+  "Vec2:vecMagnitudeSquared": "The fast cousin of vecMagnitude: compare lengths without paying for a square root.",
+  "Vec2:vecLerp": "This one helps answer: what point sits 30% of the way between these two positions?",
+  "Vec2:vecLimit": "This one helps answer: how do I cap a speed without bending its direction?",
+  "Vec2:vecAngle": "This one helps answer: which way is this vector pointing, as an angle?",
+  "Vec2:vecCross": "This one helps answer: does that vector sit to my left or to my right?",
+  "Vec2:vecPerpendicular": "This one helps answer: which direction is exactly 90° from this one?",
+  "Vec2:vecRotate": "This one helps answer: where does this vector point after turning by that angle?",
+
+  // Points, lines & curves.
+  "Distance:distance": "This one helps answer: how far apart are these two points, as the crow flies?",
+  "LineLength:lineLength": "This one helps answer: how long is this line segment?",
+  "GetPointOnLine:getPointOnLine": "This one helps answer: what point sits 30% of the way along this line?",
+  "MoveAlongLine:moveAlongLine": "This one helps answer: what point is this fraction of the trip from here to there?",
+  "MoveToward:moveToward": "This one helps answer: where is my object next frame, moving at fixed speed to its goal?",
+  "GetTriangleData:getTriangleData": "This one helps answer: what right triangle hides between these two points?",
+  "GetTriangleData:triangleDataFromLine": "This one helps answer: what are all the sides and angles of the triangle under this line?",
+  "CircleFromThreePoints:circleFromThreePoints": "This one helps answer: which circle passes exactly through these three points?",
+  "FindPointAroundCircle:findPointAroundCircle": "This one helps answer: where is the point 25% of the way around this circle?",
+  "DistributeAroundCircle:distributeAroundCircle": "This one helps answer: how do N things space out evenly around a circle, clock-face style?",
+  "EquilateralTriangle:equilateralTriangle": "This one helps answer: where do a perfect triangle's three corners land on this circle?",
+  "Rectangle:createRect": "This one helps answer: where are this rectangle's four corners, even mid-spin?",
+  "Star:starVertices": "This one helps answer: where do a star's spikes and notches go, point by point?",
+  "QuadraticBezier:quadraticBezier": "This one helps answer: where is the point at t on a curve bent by one control point?",
+  "BezierCurve:bezierPoint": "This one helps answer: where is the point at t on a curve bent by two control points?",
+  "DeCasteljau:deCasteljau": "This one helps answer: where does a Bézier of any degree land at t — scaffolding included.",
+
+  // Color.
+  "Color:rgbToHsl": "This one helps answer: what hue, saturation, and lightness is this RGB color, really?",
+  "Color:hslToRgb": "This one helps answer: which RGB values match this hue, saturation, and lightness?",
+  "Color:rgbToCss": "This one helps answer: how do I hand this RGB color to the canvas as a CSS string?",
+  "GetRandomColors:getRandomColors": "This one helps answer: can I have a nice random color — maybe something in the blues?",
+
+  // Physics & systems.
+  "BallBounce:ballBounce": "This one helps answer: how does a ball fall, hit the floor, and bounce believably?",
+  "BallToBallBounce:ballToBallBounce": "This one helps answer: what happens when two moving balls smack into each other?",
+  "GameOfLife:gameOfLifeStep": "This one helps answer: in this grid of cells, who lives and who dies next tick?",
+  "OrbitalMotion:gravitationalStep": "This one helps answer: where does gravity pull this orbiting body next frame?",
+  "GRStep:grStep": "This one helps answer: what does an orbit do when Einstein corrects Newton?",
+  "LensDeflection:lensDeflection": "This one helps answer: how much does a heavy mass bend a passing ray of light?",
+  "SphereLighting:sphereLighting": "This one helps answer: where does the shiny highlight sit on this lit ball?",
+
+  // Helpers.
+  "RandomIntegerBetween:randomIntegerBetween": "This one helps answer: roll me a whole number from min to max, ends included.",
+  "RandomNumberBetween:randomNumberBetween": "This one helps answer: give me any number from min up to — but never touching — max.",
+  "NumberWithCommas:numberWithCommas": "This one helps answer: how do I show 1234567 as 1,234,567?",
+  "CenterOnParent:centerOnParent": "This one helps answer: what x,y puts this box dead-center inside that one?",
 };
 
 const INTRO_TAB: EntryTabConfig = { id: "intro", label: "Start Here", panel: "intro" };
@@ -1399,26 +1526,31 @@ function getCollisionUsageLead(
     case "CircleToRect:circleToRect":
       return "This one helps answer: is this circle touching the rectangle yet?";
     case "LineToCircle:lineToCircle":
+    case "CollisionObjectAPI/LineCircle:lineCircle":
       return "This one helps answer: is this line touching the circle yet?";
     case "LineToLine:lineToLine":
       return "This one helps answer: are these lines crossing yet?";
+    case "CollisionObjectAPI/LineLine:lineLine":
+      return "This one helps answer: exactly where do these two lines cross?";
     case "LineToPoint:lineToPoint":
+    case "CollisionObjectAPI/LinePoint:linePoint":
       return "This one helps answer: is this point on the line yet?";
     case "LineToRect:lineToRect":
       return "This one helps answer: is this line crossing the rectangle yet?";
     case "PointToCircle:pointToCircle":
+    case "CollisionObjectAPI/PointCircle:pointCircle":
       return "This one helps answer: is this point inside the circle yet?";
     case "PointToPolygon:pointToPolygon":
-    case "PolygonCollision:polygonPoint":
+    case "CollisionObjectAPI/PolygonPoint:polygonPoint":
       return "This one helps answer: is this point inside the polygon yet?";
     case "PointToRect:pointToRect":
       return "This one helps answer: is this point inside the rectangle yet?";
-    case "PolygonCollision:polygonCircle":
+    case "CollisionObjectAPI/PolygonCircle:polygonCircle":
       return "This one helps answer: is this circle touching the polygon yet?";
-    case "PolygonCollision:polygonLine":
+    case "CollisionObjectAPI/PolygonLine:polygonLine":
       return "This one helps answer: is this line crossing the polygon yet?";
-    case "PolygonCollision:polygonPolygon":
     case "PolygonToPolygon:polygonToPolygon":
+    case "CollisionObjectAPI/PolygonPolygon:polygonPolygon":
       return "This one helps answer: are these polygons overlapping yet?";
     case "RectToPolygon:rectToPolygon":
       return "This one helps answer: is this rectangle overlapping the polygon yet?";

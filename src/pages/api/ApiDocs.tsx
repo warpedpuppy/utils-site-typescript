@@ -25,6 +25,7 @@ import {
   apiEntries,
   cleanDoc,
   comicDisplayTitle,
+  getChapterForModule,
   getChapterNumber,
   getConceptForModule,
   getTeachingIndex,
@@ -235,6 +236,11 @@ function IssueView({
   const issueIndex = getTeachingIndex(entry.name);
   const isLast = issueIndex === teachingOrderEntries.length - 1;
   const next = teachingOrderEntries[(issueIndex + 1) % teachingOrderEntries.length];
+  // The graphic-novel page-turn: when the next issue opens a new chapter, the
+  // footer carries the outgoing chapter's narrator hand-off as the bridge.
+  const chapter = getChapterForModule(entry.module);
+  const nextChapter = getChapterForModule(next.module);
+  const turnsChapter = !isLast && chapter && nextChapter && chapter.id !== nextChapter.id;
 
   // Turning to another issue (tile, related button, NEXT ISSUE) presents it
   // from the top like a page turn, and hands focus to the article so keyboard
@@ -283,8 +289,17 @@ function IssueView({
       )}
       <EntryTabs entry={entry} onFocusFunction={onFocusFunction} />
       <footer className="api-docs__next-issue">
+        {turnsChapter && chapter.handoff && (
+          <p className="api-docs__handoff">{chapter.handoff}</p>
+        )}
         <button type="button" onClick={() => onFocusFunction(next.name)}>
-          <span>{isLast ? "That's the whole run — start over…" : "Next issue…"}</span>
+          <span>
+            {isLast
+              ? "That's the whole run — start over…"
+              : turnsChapter
+                ? `New chapter — ${nextChapter.title}…`
+                : "Next issue…"}
+          </span>
           <strong>{comicDisplayTitle(next.name)}!</strong>
           <em>{getEntryUsageLead(next)}</em>
         </button>
@@ -469,6 +484,11 @@ function Documentation({
                 )),
               )}
             </div>
+            {/* The narrator's page-turn to the next shelf. Hidden while
+                filtering: a partial shelf's "next chapter" may not be shown. */}
+            {!isFiltering && chapter.handoff && (
+              <p className="api-docs__handoff api-docs__handoff--shelf">{chapter.handoff}</p>
+            )}
           </section>
         );
       })}
