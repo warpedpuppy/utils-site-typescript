@@ -44,7 +44,6 @@ export interface ApiDocsNavigation {
   pickFunction: (name: string, conceptId: string) => void;
   focusFunction: (name: string) => void;
   expandFunction: (name: string) => void;
-  collapseFunction: () => void;
   setTab: (nextTab: TabId) => void;
   setDocumentationQuery: (value: string) => void;
   jumpToConcept: (conceptId: string) => void;
@@ -159,30 +158,15 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
     );
   };
 
-  // Expanding a table-of-contents row in place: record the function in ?fn= so
-  // the expanded state is shareable, but leave the filter alone (the book stays
-  // open) and don't scroll — the entry opens exactly where the reader clicked.
-  // replace:true keeps browsing the index from flooding the history stack.
+  // Opening an issue from a newsstand tile: record the function in ?fn= so the
+  // issue takeover is shareable, and PUSH (not replace) — opening an issue is a
+  // real navigation now, so the browser Back button returns to the rack.
   const expandFunction = (name: string) => {
     updateSearch(
       "documentation",
       query,
       name,
       pendingOverviewConceptRef.current ?? undefined,
-      true,
-    );
-  };
-
-  // Collapsing the entry that ?fn= points at: drop the param so a copied URL
-  // no longer claims an entry the reader has closed.
-  const collapseFunction = () => {
-    pendingDocTargetRef.current = null;
-    updateSearch(
-      "documentation",
-      query,
-      undefined,
-      pendingOverviewConceptRef.current ?? undefined,
-      true,
     );
   };
 
@@ -223,7 +207,6 @@ export function useApiDocsNavigation(): ApiDocsNavigation {
     pickFunction,
     focusFunction,
     expandFunction,
-    collapseFunction,
     setTab,
     setDocumentationQuery,
     jumpToConcept,

@@ -1,5 +1,17 @@
 .api-docs {
   --api-tab-h: 44px; // explicit tab-bar height so the sticky filter can sit flush below it
+
+  // Comic-book (Lichtenstein) tokens for the Full Reference surface. The
+  // documentation tab deliberately commits to this printed-paper world in both
+  // site themes — comic pages are paper regardless of the room's lighting.
+  // Values match the approved mocks (see .claude/PLAN-API-GRAPHIC-NOVEL.md).
+  --comic-ink: #12100e;
+  --comic-paper: #fbf3df;
+  --comic-paper-deep: #f3e7c9;
+  --comic-red: #e5261f;
+  --comic-yellow: #ffd630;
+  --comic-blue: #1d53c0;
+  --comic-display: "Bangers", "Arial Black", "Avenir Next Condensed", sans-serif;
   width: min(1120px, calc(100vw - 32px));
   margin: calc(var(--menu-height) + 34px) auto 64px;
   color: var(--text);
@@ -291,143 +303,6 @@ a.api-docs__badge:hover {
   font-size: 0.8rem;
 }
 
-.api-docs__module {
-  margin-top: 26px;
-}
-
-// In the table-of-contents view most modules hold a single compact row, so the
-// full 26px module gap makes the index read unevenly airy — tighten it, and give
-// cards expanded in place a little breathing room against neighboring rows.
-.api-docs__chapter--index .api-docs__module {
-  margin-top: 4px;
-}
-
-.api-docs__chapter--index .api-docs__fn {
-  margin: 10px 0 14px;
-}
-
-// A chapter break in the reading spine: concept title + blurb (from CONCEPTS in
-// docsManifest), replacing the old per-file module headers.
-.api-docs__chapter {
-  margin-top: 56px;
-
-  &:first-of-type {
-    margin-top: 34px;
-  }
-}
-
-.api-docs__chapter-head {
-  padding-top: 22px;
-  border-top: 1px solid var(--border);
-
-  h3 {
-    margin-bottom: 8px;
-    font-size: 1.4rem;
-    letter-spacing: 0;
-  }
-
-  p {
-    max-width: 720px;
-    color: var(--text-muted);
-    font-size: 0.98rem;
-    line-height: 1.55;
-  }
-}
-
-.api-docs__fn {
-  border: 1px solid var(--border);
-  background: rgba(22, 25, 41, 0.72);
-  border-radius: 8px;
-  padding: 16px 18px;
-  margin-bottom: 12px;
-  // scrollIntoView targets (?fn= deep links, Overview chip clicks) must clear the
-  // fixed NavBar + sticky tab bar + sticky filter, or the entry name/tabs land clipped.
-  scroll-margin-top: calc(var(--menu-height) + var(--api-tab-h) + 96px);
-
-  p {
-    color: var(--text-muted);
-    font-size: 0.92rem;
-    margin: 8px 0 0;
-  }
-}
-
-.api-docs__fn-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.api-docs__fn-head-side {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-// Shown only on cards expanded from a table-of-contents row.
-.api-docs__fn-collapse {
-  padding: 2px 10px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: none;
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-
-  &:hover,
-  &:focus-visible {
-    color: var(--text);
-    border-color: var(--text-muted);
-  }
-}
-
-// The default (empty-filter) reference is a table of contents: each entry is a
-// compact row — name + its one-line usage lead — that expands in place on click.
-// Plain text on purpose: these rows are what crawlers and the prerender see.
-.api-docs__toc-row {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  flex-wrap: wrap;
-  width: 100%;
-  padding: 9px 12px;
-  margin: 0 0 4px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  background: none;
-  text-align: left;
-  font: inherit;
-  cursor: pointer;
-
-  code {
-    font-family: "Space Mono", monospace;
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: var(--text);
-    white-space: nowrap;
-  }
-
-  span {
-    color: var(--text-muted);
-    font-size: 0.88rem;
-    line-height: 1.4;
-  }
-
-  &:hover,
-  &:focus-visible {
-    border-color: var(--border);
-    background: rgba(22, 25, 41, 0.72);
-
-    code {
-      color: var(--brand-orange-soft);
-    }
-  }
-}
-
 .api-docs__fn-name {
   font-family: "Space Mono", monospace;
   font-size: 1rem;
@@ -631,12 +506,6 @@ a.api-docs__badge:hover {
   margin-top: 10px;
 }
 
-.api-docs__usage-lead {
-  margin: 0;
-  color: var(--text) !important;
-  font-size: 0.94rem !important;
-}
-
 .api-docs__teaching-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -796,4 +665,720 @@ a.api-docs__badge:hover {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   opacity: 0.55;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COMIC SURFACE — the Full Reference as a newsstand of issues (Lichtenstein).
+// Two paper "pages" share this world: .api-docs__newsstand (rack + shelves)
+// and .api-docs__issue (the ?fn= takeover). Both commit to printed paper in
+// either site theme. Palette + type live in the --comic-* tokens up top.
+// ═══════════════════════════════════════════════════════════════════════════
+
+@mixin comic-plate($bg: #fff) {
+  background: $bg;
+  border: 3px solid var(--comic-ink);
+  box-shadow: 4px 4px 0 var(--comic-ink);
+}
+
+.api-docs__newsstand,
+.api-docs__issue {
+  margin-top: 26px;
+  padding: 0 22px 30px;
+  background: var(--comic-paper);
+  border: 4px solid var(--comic-ink);
+  box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.45);
+  color: var(--comic-ink);
+
+  code {
+    color: var(--comic-ink);
+  }
+}
+
+// ── Newsstand chrome ────────────────────────────────────────────────────────
+
+.api-docs__newsstand .api-docs__section-head {
+  display: block;
+  padding-top: 24px;
+
+  h2 {
+    font-family: var(--comic-display);
+    font-weight: 400; // Bangers ships one weight; bolding it just blurs the ink
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    letter-spacing: 0.03em;
+    color: var(--comic-red);
+    text-shadow: 3px 3px 0 var(--comic-yellow), 5px 5px 0 var(--comic-ink);
+    transform: skew(-4deg);
+  }
+
+  p {
+    max-width: 46em;
+    color: #5c5344;
+    font-size: 0.98rem;
+  }
+}
+
+.api-docs__newsstand .api-docs__filter {
+  background: var(--comic-paper); // opaque sticky mask over the scrolling rack
+}
+
+.api-docs__newsstand .api-docs__search {
+  border: 3px solid var(--comic-ink);
+  border-radius: 0;
+  background-color: #fff;
+  color: var(--comic-ink);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+
+  &::placeholder {
+    color: #8a8071;
+  }
+
+  &:hover {
+    border-color: var(--comic-ink);
+  }
+
+  &:focus {
+    border-color: var(--comic-ink);
+    box-shadow: 4px 4px 0 var(--comic-blue);
+    background-color: #fff;
+  }
+}
+
+.api-docs__newsstand .api-docs__count {
+  color: #5c5344;
+}
+
+// ── The rack (chapter covers) ───────────────────────────────────────────────
+
+.api-docs__rack {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(172px, 1fr));
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.api-docs__cover,
+.api-docs__cover:visited {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  // :visited included: covers are anchors, and the global visited-link color
+  // must not gray out a chapter title after its shelf has been jumped to.
+  color: var(--comic-ink);
+  @include comic-plate;
+  box-shadow: 5px 5px 0 var(--comic-ink);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(-2px, -2px) rotate(-0.6deg);
+    box-shadow: 8px 8px 0 var(--comic-ink);
+    // The global `a:hover { color: var(--text) }` (light, for the dark site)
+    // must not gray out cover titles on paper.
+    color: var(--comic-ink);
+  }
+
+  &:focus-visible {
+    outline: 4px dashed var(--comic-blue);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
+  }
+}
+
+.api-docs__cover-art {
+  height: 118px;
+  border-bottom: 3px solid var(--comic-ink);
+  overflow: hidden;
+
+  // LazyMount's wrapper div must pass the box height down to the canvas.
+  > div {
+    height: 100%;
+  }
+}
+
+.api-docs__cover-no {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 7px;
+  background: var(--comic-yellow);
+  border: 3px solid var(--comic-ink);
+  font-family: var(--comic-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.api-docs__cover-body {
+  padding: 8px 10px 10px;
+  background: #fff;
+}
+
+.api-docs__cover-title {
+  font-family: var(--comic-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.api-docs__cover-count {
+  font-size: 0.76rem;
+  color: #5c5344;
+}
+
+// ── Shelves + issue tiles ───────────────────────────────────────────────────
+
+.api-docs__shelf {
+  margin-top: 38px;
+  // Cover-rack anchor jumps must clear the fixed NavBar + sticky tab bar + filter.
+  scroll-margin-top: calc(var(--menu-height) + var(--api-tab-h) + 96px);
+}
+
+.api-docs__shelf-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  border-bottom: 4px solid var(--comic-ink);
+  padding-bottom: 8px;
+
+  h3 {
+    margin: 0;
+    font-family: var(--comic-display);
+    font-weight: 400;
+    font-size: clamp(1.2rem, 3.4vw, 1.7rem);
+    letter-spacing: 0.04em;
+  }
+}
+
+.api-docs__shelf-no {
+  padding: 3px 10px;
+  background: var(--comic-ink);
+  color: var(--comic-yellow);
+  font-family: var(--comic-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+}
+
+.api-docs__shelf-blurb {
+  max-width: 52em;
+  margin: 10px 0 14px;
+  color: #5c5344;
+  font-size: 0.92rem;
+}
+
+.api-docs__tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.api-docs__tile {
+  display: block;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: var(--comic-ink);
+  cursor: pointer;
+  @include comic-plate;
+  box-shadow: 3px 3px 0 var(--comic-ink);
+  border-radius: 0;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--comic-ink);
+  }
+
+  &:focus-visible {
+    outline: 4px dashed var(--comic-blue);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
+  }
+}
+
+.api-docs__tile-strip {
+  display: block;
+  height: 8px;
+  border-bottom: 3px solid var(--comic-ink);
+}
+
+.api-docs__tile--red .api-docs__tile-strip {
+  background: var(--comic-red);
+}
+
+.api-docs__tile--blue .api-docs__tile-strip {
+  background: var(--comic-blue);
+}
+
+.api-docs__tile--yellow .api-docs__tile-strip {
+  background: var(--comic-yellow);
+}
+
+.api-docs__tile-body {
+  display: block;
+  padding: 7px 9px 8px;
+}
+
+.api-docs__tile-topline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+
+  code {
+    font-family: "Space Mono", monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    word-break: break-word;
+  }
+}
+
+.api-docs__tile-kind {
+  flex: none;
+  padding: 1px 5px;
+  border: 2px solid var(--comic-ink);
+  background: var(--comic-paper-deep);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+// One-line teaching scent under the name; also keeps the leads in the DOM as
+// real text for crawlers now that the old TOC rows are gone.
+.api-docs__tile-lead {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  margin-top: 3px;
+  color: #5c5344;
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+// Guides ("start here" boxes) become narrator caption plates on the shelf.
+.api-docs__newsstand .api-docs__guide {
+  @include comic-plate(var(--comic-yellow));
+  border-radius: 0;
+  margin: 14px 0 12px;
+
+  p {
+    color: var(--comic-ink);
+  }
+}
+
+.api-docs__newsstand .api-docs__guide-head span {
+  color: var(--comic-red);
+}
+
+.api-docs__newsstand .api-docs__guide-pieces button {
+  border: 2px solid var(--comic-ink);
+  border-radius: 0;
+  background: #fff;
+  color: var(--comic-ink);
+
+  &:hover,
+  &:focus-visible {
+    background: var(--comic-blue);
+    border-color: var(--comic-ink);
+    color: #fff;
+  }
+}
+
+.api-docs__newsstand .api-docs__fn-sig {
+  border: 2px solid var(--comic-ink);
+  border-radius: 0;
+  background: #fff;
+}
+
+.api-docs__newsstand .api-docs__empty {
+  color: #5c5344;
+}
+
+// ── The issue (one export, full comic treatment) ────────────────────────────
+
+.api-docs__issue {
+  padding-top: 0;
+  // ?fn= deep links scrollIntoView the article; clear the NavBar + tab bar.
+  scroll-margin-top: calc(var(--menu-height) + var(--api-tab-h) + 12px);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.api-docs__issue-masthead {
+  position: relative;
+  min-height: 300px;
+  margin: 0 -22px; // bleed to the page border
+  border-bottom: 4px solid var(--comic-ink);
+  overflow: hidden;
+}
+
+.api-docs__issue-art {
+  position: absolute;
+  inset: 0;
+}
+
+.api-docs__issue-masthead-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  box-sizing: border-box;
+  padding: 14px 22px 20px;
+}
+
+.api-docs__issue-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.api-docs__issue-back {
+  @include comic-plate(var(--comic-yellow));
+  box-shadow: 3px 3px 0 var(--comic-ink);
+  border-radius: 0;
+  padding: 5px 12px;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--comic-ink);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: #fff;
+  }
+
+  &:focus-visible {
+    outline: 4px dashed var(--comic-blue);
+    outline-offset: 2px;
+  }
+}
+
+.api-docs__issue-badge {
+  @include comic-plate;
+  box-shadow: 3px 3px 0 var(--comic-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 12px;
+  transform: rotate(4deg);
+  font-family: var(--comic-display);
+  line-height: 1.1;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+
+  strong {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--comic-red);
+    letter-spacing: 0.02em;
+  }
+}
+
+.api-docs__issue-title {
+  margin: 14px 0 6px;
+  font-family: var(--comic-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 8vw, 4.6rem);
+  line-height: 0.95;
+  letter-spacing: 0.03em;
+  color: var(--comic-yellow);
+  -webkit-text-stroke: 2px var(--comic-ink);
+  paint-order: stroke fill;
+  text-shadow: 4px 4px 0 var(--comic-red), 6px 6px 0 var(--comic-ink);
+  transform: skew(-4deg, -1deg);
+  text-wrap: balance;
+}
+
+.api-docs__issue-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .api-docs__fn-name {
+    @include comic-plate;
+    box-shadow: 2px 2px 0 var(--comic-ink);
+    padding: 2px 8px;
+    font-size: 0.85rem;
+  }
+
+  .api-docs__kind,
+  .api-docs__role {
+    border: 2px solid var(--comic-ink);
+    border-radius: 0;
+    background: var(--comic-paper-deep);
+    color: var(--comic-ink);
+  }
+}
+
+.api-docs__issue-subtitle {
+  @include comic-plate;
+  align-self: flex-start;
+  max-width: 36em;
+  margin: auto 0 0; // pinned to the masthead's bottom edge
+  padding: 8px 14px;
+  font-size: 0.98rem;
+  transform: rotate(-1deg);
+}
+
+.api-docs__issue .api-docs__crumbs {
+  margin-top: 14px;
+
+  span {
+    color: #5c5344;
+  }
+
+  button {
+    color: var(--comic-blue);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--comic-ink);
+    }
+  }
+}
+
+// The three-tab anatomy, re-inked. Same markup, comic clothes.
+.api-docs__issue .api-docs__entry-tabs {
+  border-bottom: 4px solid var(--comic-ink);
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.api-docs__issue .api-docs__entry-tab {
+  border: 3px solid var(--comic-ink);
+  border-bottom: none;
+  border-radius: 0;
+  background: var(--comic-paper-deep);
+  color: var(--comic-ink);
+  font-family: var(--comic-display);
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--comic-yellow);
+    color: var(--comic-ink);
+  }
+
+  &.active {
+    background: var(--comic-red);
+    color: #fff;
+    text-shadow: 2px 2px 0 var(--comic-ink);
+    border-color: var(--comic-ink);
+    margin-bottom: 0;
+  }
+}
+
+.api-docs__issue .api-docs__entry-tabpanel {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 18px 0 0;
+}
+
+.api-docs__issue .api-docs__teaching-block,
+.api-docs__issue .api-docs__related {
+  @include comic-plate(var(--comic-yellow));
+  border-radius: 0;
+
+  h3 {
+    font-family: var(--comic-display);
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    color: var(--comic-red);
+  }
+
+  p {
+    color: var(--comic-ink);
+  }
+}
+
+.api-docs__issue .api-docs__related {
+  background: var(--comic-paper);
+}
+
+.api-docs__issue .api-docs__related-item {
+  border: 3px solid var(--comic-ink);
+  border-radius: 0;
+  background: var(--comic-blue);
+  box-shadow: 3px 3px 0 var(--comic-ink);
+  color: #fff;
+
+  code {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  span {
+    color: #dbe6ff;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--comic-red);
+    border-color: var(--comic-ink);
+  }
+}
+
+.api-docs__issue .api-docs__fn-sig,
+.api-docs__issue .api-docs__fn-example {
+  border: 2px solid var(--comic-ink);
+  border-radius: 0;
+  background: #fff;
+}
+
+.api-docs__issue .api-docs__example-callout {
+  @include comic-plate;
+  border-radius: 0;
+
+  p {
+    color: var(--comic-ink);
+  }
+
+  a {
+    color: var(--comic-blue);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--comic-ink);
+    }
+  }
+}
+
+.api-docs__issue .api-docs__entry-panel > p {
+  color: var(--comic-ink);
+}
+
+// The live demos are styled for the site's dark pages (translucent whites,
+// light text) and wash out on comic paper. Frame each one as a dark "screen"
+// panel — the comic page holds a window onto the site's night world, and the
+// demo components keep the ground they were designed against.
+.api-docs__issue .mini-demo {
+  background: #10131f;
+  border: 3px solid var(--comic-ink);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--comic-ink);
+  padding: 12px;
+
+  // The paper surface's blanket ink `code` color must stop at the screen's
+  // edge — inside, code goes back to the site's light code color.
+  code {
+    color: var(--text-code);
+  }
+}
+
+.api-docs__issue .api-docs__params {
+  dt {
+    color: var(--comic-blue);
+  }
+
+  dd {
+    color: #5c5344;
+  }
+}
+
+.api-docs__issue .api-docs__returns span {
+  color: var(--comic-red);
+}
+
+// The page-turn: hand the reader the next issue in the teaching order.
+.api-docs__next-issue {
+  margin: 26px -22px -30px; // bleed to the page border
+  border-top: 4px solid var(--comic-ink);
+  background: var(--comic-red);
+
+  button {
+    display: block;
+    width: 100%;
+    padding: 16px 22px 20px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+
+    span {
+      display: block;
+      font-family: var(--comic-display);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--comic-yellow);
+      text-shadow: 2px 2px 0 var(--comic-ink);
+    }
+
+    strong {
+      display: block;
+      margin: 2px 0 4px;
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: clamp(1.3rem, 4vw, 1.9rem);
+      letter-spacing: 0.04em;
+      color: #fff;
+      text-shadow: 3px 3px 0 var(--comic-ink);
+    }
+
+    em {
+      display: block;
+      max-width: 46em;
+      font-style: normal;
+      font-size: 0.92rem;
+      color: var(--comic-paper);
+    }
+
+    &:hover strong,
+    &:focus-visible strong {
+      color: var(--comic-yellow);
+    }
+
+    &:focus-visible {
+      outline: 4px dashed var(--comic-yellow);
+      outline-offset: -8px;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .api-docs__newsstand,
+  .api-docs__issue {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .api-docs__issue-masthead,
+  .api-docs__next-issue {
+    margin-left: -14px;
+    margin-right: -14px;
+  }
+
+  .api-docs__issue-masthead,
+  .api-docs__issue-masthead-inner {
+    min-height: 250px;
+  }
 }

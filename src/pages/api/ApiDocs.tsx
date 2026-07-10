@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import AmbientConceptCanvas from "../../components/AmbientConceptCanvas/AmbientConceptCanvas";
 import CopyInstall from "../../components/CopyInstall/CopyInstall";
 import LazyMount from "../../components/LazyMount/LazyMount";
 import {
@@ -23,9 +24,13 @@ import {
   ApiEntry,
   apiEntries,
   cleanDoc,
+  comicDisplayTitle,
+  getChapterNumber,
   getConceptForModule,
+  getTeachingIndex,
   groupByConcept,
   renderImportLine,
+  teachingOrderEntries,
 } from "./apiModel";
 import { EntryVisual } from "./docsVisuals";
 import { Overview } from "./ApiOverview";
@@ -112,11 +117,11 @@ function EntryExplainPanel({
 }
 
 function EntryVisualPanel({ entry }: { entry: ApiEntry }) {
+  // No usage-lead line here: on the issue view the lead is the masthead
+  // subtitle, directly above this panel — printing it twice reads as a stutter.
   return (
     <div className="api-docs__entry-panel">
-      <p className="api-docs__usage-lead">{getEntryUsageLead(entry)}</p>
-      {/* Demos mount only near the viewport — with every entry expanded this page
-          otherwise runs ~79 rAF canvases at once. minHeight approximates the block's
+      {/* Demos mount only near the viewport. minHeight approximates the block's
           real height (canvas demo vs. small example callout) so scroll stays stable. */}
       <LazyMount minHeight={getEntryVisual(entry.name).kind === "mini-demo" ? 360 : 90}>
         <EntryVisual entry={entry} />
@@ -210,45 +215,61 @@ function EntryTabs({
   );
 }
 
-function ApiEntryCard({
+// A single export presented as a full comic issue: animated masthead in its
+// chapter's colorway, comic-lettered title, the usage lead as the cover
+// subtitle, then the unchanged three-tab anatomy (See It Move / Explain It /
+// Code & Details). This is the ?fn= takeover view — the newsstand's tiles,
+// Overview chips, related buttons, and external deep links all land here.
+function IssueView({
   entry,
-  mode,
   onJumpToConcept,
   onFocusFunction,
-  onCollapse,
+  onBackToRack,
 }: {
   entry: ApiEntry;
-  mode: ModuleDocMode;
   onJumpToConcept: (conceptId: string) => void;
   onFocusFunction: (name: string) => void;
-  // Present only when the card was expanded from a table-of-contents row —
-  // search results and deep-filtered views stay plain cards with no close button.
-  onCollapse?: () => void;
+  onBackToRack: () => void;
 }) {
   const concept = getConceptForModule(entry.module);
+  const issueIndex = getTeachingIndex(entry.name);
+  const isLast = issueIndex === teachingOrderEntries.length - 1;
+  const next = teachingOrderEntries[(issueIndex + 1) % teachingOrderEntries.length];
+
+  // Turning to another issue (tile, related button, NEXT ISSUE) presents it
+  // from the top like a page turn, and hands focus to the article so keyboard
+  // readers aren't stranded on an unmounted control.
+  useEffect(() => {
+    const article = document.getElementById(entry.name);
+    article?.scrollIntoView({ block: "start" });
+    article?.focus({ preventScroll: true });
+  }, [entry.name]);
+
   return (
-    <article
-      className="api-docs__fn"
-      key={`${entry.module}.${entry.name}`}
-      id={entry.name}
-      tabIndex={-1}
-    >
-      <div className="api-docs__fn-head">
-        <code className="api-docs__fn-name">{entry.name}</code>
-        <div className="api-docs__fn-head-side">
-          {renderEntryMeta(entry, mode)}
-          {onCollapse && (
-            <button
-              type="button"
-              className="api-docs__fn-collapse"
-              onClick={onCollapse}
-              aria-label={`Collapse ${entry.name} back to the chapter index`}
-            >
-              close
-            </button>
-          )}
+    <article className="api-docs__issue" id={entry.name} tabIndex={-1}>
+      <header className="api-docs__issue-masthead">
+        <div className="api-docs__issue-art" aria-hidden="true">
+          {concept && <AmbientConceptCanvas conceptId={concept.id} />}
         </div>
-      </div>
+        <div className="api-docs__issue-masthead-inner">
+          <div className="api-docs__issue-topline">
+            <button type="button" className="api-docs__issue-back" onClick={onBackToRack}>
+              ← Back to the rack
+            </button>
+            <span className="api-docs__issue-badge">
+              <span>issue</span>
+              <strong>№{issueIndex + 1}</strong>
+              <span>of {teachingOrderEntries.length}</span>
+            </span>
+          </div>
+          <h3 className="api-docs__issue-title">{comicDisplayTitle(entry.name)}</h3>
+          <div className="api-docs__issue-meta">
+            <code className="api-docs__fn-name">{entry.name}</code>
+            {renderEntryMeta(entry, getModuleDocMode(entry.module))}
+          </div>
+          <p className="api-docs__issue-subtitle">{getEntryUsageLead(entry)}</p>
+        </div>
+      </header>
       {concept && (
         <div className="api-docs__crumbs">
           <button type="button" onClick={() => onJumpToConcept(concept.id)}>
@@ -261,9 +282,20 @@ function ApiEntryCard({
         </div>
       )}
       <EntryTabs entry={entry} onFocusFunction={onFocusFunction} />
+      <footer className="api-docs__next-issue">
+        <button type="button" onClick={() => onFocusFunction(next.name)}>
+          <span>{isLast ? "That's the whole run — start over…" : "Next issue…"}</span>
+          <strong>{comicDisplayTitle(next.name)}!</strong>
+          <em>{getEntryUsageLead(next)}</em>
+        </button>
+      </footer>
     </article>
   );
 }
+
+// Tile accents rotate through the comic primaries by chapter, like cover
+// stripes on a shelf of the same imprint.
+const TILE_ACCENTS = ["red", "blue", "yellow"] as const;
 
 function Documentation({
   query,
@@ -272,7 +304,6 @@ function Documentation({
   onJumpToConcept,
   onFocusFunction,
   onExpandFunction,
-  onCollapseFunction,
 }: {
   query: string;
   setQuery: (value: string) => void;
@@ -280,39 +311,12 @@ function Documentation({
   onJumpToConcept: (conceptId: string) => void;
   onFocusFunction: (name: string) => void;
   onExpandFunction: (name: string) => void;
-  onCollapseFunction: () => void;
 }) {
-  // With no filter, the reference is a table of contents: chapters list their
-  // entries as compact rows (name + one-line lead) that expand in place. Rows
-  // the reader has opened live in local state; the ?fn= target is always merged
-  // in so deep links land on a fully expanded entry inside the book. A search
-  // query switches to full cards for every match — today's behavior.
-  const isIndexView = query.trim() === "";
-  const [openedNames, setOpenedNames] = useState<Set<string>>(() => new Set());
-  const expandedNames = useMemo(() => {
-    if (!fnTarget) return openedNames;
-    const merged = new Set(openedNames);
-    merged.add(fnTarget);
-    return merged;
-  }, [openedNames, fnTarget]);
-
-  const expandEntry = (name: string) => {
-    setOpenedNames((prev) => new Set(prev).add(name));
-    onExpandFunction(name);
-    // The row unmounts under the keyboard user's focus; hand focus to the card.
-    requestAnimationFrame(() => document.getElementById(name)?.focus());
-  };
-
-  const collapseEntry = (name: string) => {
-    setOpenedNames((prev) => {
-      const next = new Set(prev);
-      next.delete(name);
-      return next;
-    });
-    if (name === fnTarget) onCollapseFunction();
-    requestAnimationFrame(() => document.getElementById(`toc-${name}`)?.focus());
-  };
-
+  // The Full Reference is a newsstand: chapter covers up top (the rack), then
+  // one shelf per chapter holding every export as a small issue-cover tile.
+  // Opening a tile — or arriving with ?fn= from a chip, related button, or an
+  // external link — takes over the tab with that entry as a full comic issue.
+  // A search query hides the rack and filters the shelves' tiles.
   const chapters = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = q
@@ -326,6 +330,7 @@ function Documentation({
     return groupByConcept(filtered);
   }, [query]);
 
+  const isFiltering = query.trim() !== "";
   const total = apiEntries.length;
   const shown = chapters.reduce(
     (n, chapter) => n + chapter.moduleGroups.reduce((m, [, list]) => m + list.length, 0),
@@ -341,15 +346,33 @@ function Documentation({
     [chapters],
   );
 
+  const issueEntry = fnTarget
+    ? apiEntries.find((entry) => entry.name === fnTarget)
+    : undefined;
+
+  if (issueEntry) {
+    return (
+      <section className="api-docs__section">
+        <IssueView
+          entry={issueEntry}
+          onJumpToConcept={onJumpToConcept}
+          onFocusFunction={onFocusFunction}
+          // Clearing the query clears ?fn= with it — one hop back to the rack
+          // even when the issue was reached through a pre-filtered chip click.
+          onBackToRack={() => setQuery("")}
+        />
+      </section>
+    );
+  }
+
   return (
-    <section className="api-docs__section">
+    <section className="api-docs__section api-docs__newsstand">
       <div className="api-docs__section-head">
         <h2>Function Reference</h2>
         <p>
-          Read it like a book — short chapters, each building on the last, from plain
-          numbers all the way to physics systems. Open any entry and it explains itself,
-          shows its math moving, and hands you the real signature. Or type a name below
-          to jump straight to one function.
+          Racked like a newsstand: ten chapters in teaching order, every function its
+          own issue. Pick a cover and it opens the whole story — see the math move,
+          understand it, take the code. Or type a name below to jump straight there.
         </p>
       </div>
 
@@ -357,7 +380,7 @@ function Documentation({
         <input
           type="search"
           className="api-docs__search"
-          placeholder={`Filter ${total} exports by name, module, or description…`}
+          placeholder={`Looking for someone? Filter ${total} exports…`}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           aria-label="Filter API functions"
@@ -367,68 +390,94 @@ function Documentation({
         </p>
       </div>
 
-      {chapters.map((chapter) => (
-        <section
-          className={`api-docs__chapter${isIndexView ? " api-docs__chapter--index" : ""}`}
-          key={chapter.id}
-        >
-          <header className="api-docs__chapter-head">
-            <h3>{chapter.title}</h3>
-            <p>{chapter.blurb}</p>
-          </header>
-          {chapter.moduleGroups.map(([module, entries]) => (
-            <div className="api-docs__module" key={module}>
-              {MODULE_GUIDES[module] && (
-                <article className="api-docs__guide">
-                  <div className="api-docs__guide-head">
-                    <h4>{MODULE_GUIDES[module]!.title}</h4>
-                    <span>start here</span>
-                  </div>
-                  <p>{MODULE_GUIDES[module]!.whatItIs}</p>
-                  <p>{MODULE_GUIDES[module]!.howToStart}</p>
-                  <pre className="api-docs__fn-sig">
-                    <code>{MODULE_GUIDES[module]!.importSnippet}</code>
-                  </pre>
-                  <div className="api-docs__guide-pieces">
-                    {MODULE_GUIDES[module]!.keyPieceNames
-                      .filter((name) => visibleEntryNames.has(name))
-                      .map((name) => (
-                        <button type="button" key={name} onClick={() => onFocusFunction(name)}>
-                          {name}
-                        </button>
-                      ))}
-                  </div>
-                </article>
-              )}
-              {entries.map((entry) =>
-                isIndexView && !expandedNames.has(entry.name) ? (
+      {!isFiltering && (
+        <div className="api-docs__rack" aria-label="Chapters">
+          {chapters.map((chapter) => (
+            <a className="api-docs__cover" href={`#shelf-${chapter.id}`} key={chapter.id}>
+              <div className="api-docs__cover-art">
+                <LazyMount minHeight={118}>
+                  <AmbientConceptCanvas conceptId={chapter.id} />
+                </LazyMount>
+              </div>
+              <div className="api-docs__cover-no">CH.{getChapterNumber(chapter.id)}</div>
+              <div className="api-docs__cover-body">
+                <div className="api-docs__cover-title">{chapter.title}</div>
+                <div className="api-docs__cover-count">
+                  {chapter.moduleGroups.reduce((n, [, list]) => n + list.length, 0)} issues
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {chapters.map((chapter) => {
+        const chapterNo = getChapterNumber(chapter.id);
+        const accent = TILE_ACCENTS[(chapterNo - 1) % TILE_ACCENTS.length];
+        return (
+          <section className="api-docs__shelf" id={`shelf-${chapter.id}`} key={chapter.id}>
+            <header className="api-docs__shelf-head">
+              <span className="api-docs__shelf-no">CH.{chapterNo}</span>
+              <h3>{chapter.title}</h3>
+            </header>
+            <p className="api-docs__shelf-blurb">{chapter.blurb}</p>
+            {chapter.moduleGroups.map(
+              ([module]) =>
+                MODULE_GUIDES[module] && (
+                  <article className="api-docs__guide" key={module}>
+                    <div className="api-docs__guide-head">
+                      <h4>{MODULE_GUIDES[module]!.title}</h4>
+                      <span>start here</span>
+                    </div>
+                    <p>{MODULE_GUIDES[module]!.whatItIs}</p>
+                    <p>{MODULE_GUIDES[module]!.howToStart}</p>
+                    <pre className="api-docs__fn-sig">
+                      <code>{MODULE_GUIDES[module]!.importSnippet}</code>
+                    </pre>
+                    <div className="api-docs__guide-pieces">
+                      {MODULE_GUIDES[module]!.keyPieceNames
+                        .filter((name) => visibleEntryNames.has(name))
+                        .map((name) => (
+                          <button type="button" key={name} onClick={() => onFocusFunction(name)}>
+                            {name}
+                          </button>
+                        ))}
+                    </div>
+                  </article>
+                ),
+            )}
+            <div className="api-docs__tile-grid">
+              {chapter.moduleGroups.flatMap(([module, entries]) =>
+                entries.map((entry) => (
                   <button
                     type="button"
-                    key={`${entry.module}.${entry.name}`}
-                    id={`toc-${entry.name}`}
-                    className="api-docs__toc-row"
-                    onClick={() => expandEntry(entry.name)}
+                    key={`${module}.${entry.name}`}
+                    className={`api-docs__tile api-docs__tile--${accent}`}
+                    onClick={() => onExpandFunction(entry.name)}
                   >
-                    <code>{entry.name}</code>
-                    <span>{getEntryUsageLead(entry)}</span>
+                    <span className="api-docs__tile-strip" aria-hidden="true" />
+                    <span className="api-docs__tile-body">
+                      <span className="api-docs__tile-topline">
+                        <code>{entry.name}</code>
+                        {entry.kind !== "function" && (
+                          <span className="api-docs__tile-kind">{entry.kind}</span>
+                        )}
+                      </span>
+                      <span className="api-docs__tile-lead">{getEntryUsageLead(entry)}</span>
+                    </span>
                   </button>
-                ) : (
-                  <ApiEntryCard
-                    key={`${entry.module}.${entry.name}`}
-                    entry={entry}
-                    mode={getModuleDocMode(module)}
-                    onJumpToConcept={onJumpToConcept}
-                    onFocusFunction={onFocusFunction}
-                    onCollapse={isIndexView ? () => collapseEntry(entry.name) : undefined}
-                  />
-                ),
+                )),
               )}
             </div>
-          ))}
-        </section>
-      ))}
+          </section>
+        );
+      })}
 
-      {shown === 0 && <p className="api-docs__empty">No exports match “{query}”.</p>}
+      {shown === 0 && (
+        <p className="api-docs__empty">
+          Nobody by the name “{query}” on this rack — check the spelling.
+        </p>
+      )}
     </section>
   );
 }
@@ -441,7 +490,6 @@ function ApiDocs() {
     pickFunction,
     focusFunction,
     expandFunction,
-    collapseFunction,
     setTab,
     setDocumentationQuery,
     jumpToConcept,
@@ -518,7 +566,6 @@ function ApiDocs() {
           onJumpToConcept={jumpToConcept}
           onFocusFunction={focusFunction}
           onExpandFunction={expandFunction}
-          onCollapseFunction={collapseFunction}
         />
       )}
     </main>

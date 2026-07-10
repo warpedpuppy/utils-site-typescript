@@ -3,7 +3,14 @@
 // in teaching order, never alphabetical file order. Part of the graphic-novel
 // reference plan (.claude/PLAN-API-GRAPHIC-NOVEL.md, Phase 1).
 import { describe, expect, it } from "vitest";
-import { apiEntries, groupByConcept } from "./apiModel";
+import {
+  apiEntries,
+  comicDisplayTitle,
+  getChapterNumber,
+  getTeachingIndex,
+  groupByConcept,
+  teachingOrderEntries,
+} from "./apiModel";
 import { CATCH_ALL_CONCEPT, CONCEPTS } from "./docsManifest";
 
 const chapters = groupByConcept(apiEntries);
@@ -60,6 +67,32 @@ describe("groupByConcept — the reference spine", () => {
     expect(unitCircle).toBeLessThan(sineCurve);
     expect(sineCurve).toBeLessThan(sineWave);
     expect(sineWave).toBeLessThan(waveAmplitude);
+  });
+
+  it("numbers every issue: teaching order covers each export exactly once", () => {
+    // The newsstand's issue numbers (№N of total) and the NEXT ISSUE hand-off
+    // both index into teachingOrderEntries — a gap or duplicate would number
+    // two issues the same or skip one.
+    expect(teachingOrderEntries.length).toBe(apiEntries.length);
+    const names = teachingOrderEntries.map((entry) => entry.name);
+    expect(new Set(names).size).toBe(names.length);
+    names.forEach((name, index) => {
+      expect(getTeachingIndex(name)).toBe(index);
+    });
+  });
+
+  it("gives every chapter a stable 1-based number in spine order", () => {
+    chapters.forEach((chapter, index) => {
+      expect(getChapterNumber(chapter.id)).toBe(index + 1);
+    });
+  });
+
+  it("letters masthead titles from identifiers without mangling them", () => {
+    expect(comicDisplayTitle("lerpAngle")).toBe("Lerp Angle");
+    expect(comicDisplayTitle("circleToCircle")).toBe("Circle To Circle");
+    expect(comicDisplayTitle("HUE_FAMILIES")).toBe("Hue Families");
+    expect(comicDisplayTitle("Point")).toBe("Point");
+    expect(comicDisplayTitle("easeInOutQuad")).toBe("Ease In Out Quad");
   });
 
   it("filters flow through the spine without losing matches", () => {

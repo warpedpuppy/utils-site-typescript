@@ -1,0 +1,7 @@
+// The host decides the box (covers are short, mastheads tall); the canvas just
+// fills it. Backing-store size is managed in the component per devicePixelRatio.
+.ambient-concept-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

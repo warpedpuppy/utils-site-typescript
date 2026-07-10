@@ -108,6 +108,46 @@ export function groupByConcept(entries: ApiEntry[]): ConceptChapter[] {
   return chapters;
 }
 
+// The complete reading order, computed once: every export in chapter →
+// module → entry teaching order. Issue numbers ("№38 of 142") and the
+// NEXT ISSUE hand-off both come from here, so they can never disagree
+// with the newsstand's shelf order.
+export const fullChapters = groupByConcept(apiEntries);
+
+export const teachingOrderEntries: ApiEntry[] = fullChapters.flatMap((chapter) =>
+  chapter.moduleGroups.flatMap(([, entries]) => entries),
+);
+
+const teachingIndexByName = new Map(
+  teachingOrderEntries.map((entry, index) => [entry.name, index]),
+);
+
+/** 0-based position of an export in the teaching order (issue № is this + 1). */
+export function getTeachingIndex(name: string): number {
+  return teachingIndexByName.get(name) ?? -1;
+}
+
+const chapterNumberByConceptId = new Map(
+  fullChapters.map((chapter, index) => [chapter.id, index + 1]),
+);
+
+/** 1-based chapter number in the reading spine (CH.1 = Numbers in motion). */
+export function getChapterNumber(conceptId: string): number {
+  return chapterNumberByConceptId.get(conceptId) ?? fullChapters.length;
+}
+
+// Masthead lettering for the comic issue view: `lerpAngle` → "Lerp Angle",
+// `HUE_FAMILIES` → "Hue Families". Display only — the real identifier stays
+// verbatim everywhere code is shown.
+export function comicDisplayTitle(name: string): string {
+  return name
+    .replace(/_/g, " ")
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+}
+
 export function renderImportLine(entry: ApiEntry): string {
   if (entry.kind === "type") {
     return `import type { ${entry.name} } from "@utilspalooza/core";`;
