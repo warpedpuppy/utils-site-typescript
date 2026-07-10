@@ -30,21 +30,32 @@
       max-width: 600px;
 
       h1 {
-        font-size: clamp(2.2rem, 6vw, 4.8rem);
-        font-weight: 800;
-        letter-spacing: 0;
-        margin-bottom: 1rem;
-        background: linear-gradient(135deg, var(--text) 0%, var(--brand-orange-soft) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        line-height: 1.15;
+        // The cover masthead: same Bangers-with-offset-shadows treatment as
+        // the /api issue titles — this page is the cover of the whole comic.
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-family: var(--comic-display);
+        font-weight: 400; // Bangers has one weight; faux-bold distorts it
+        letter-spacing: 0.04em;
+        margin-bottom: 1.2rem;
+        color: var(--comic-red);
+        text-shadow: 3px 3px 0 var(--comic-yellow), 6px 6px 0 var(--comic-ink);
+        -webkit-text-stroke: 1.5px var(--comic-ink);
+        transform: rotate(-1.5deg);
+        line-height: 1.05;
       }
 
       p {
-        font-size: 1.12rem;
-        color: var(--text-muted);
-        line-height: 1.65;
+        // Narrator caption plate under the masthead.
+        display: inline-block;
+        padding: 0.55rem 0.9rem;
+        background: var(--comic-yellow);
+        border: 3px solid var(--comic-ink);
+        box-shadow: 4px 4px 0 var(--comic-ink);
+        transform: rotate(0.6deg);
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--comic-ink);
+        line-height: 1.55;
         margin: 0.5rem 0;
       }
 
@@ -59,30 +70,28 @@
       a {
         display: inline-block;
         padding: 0.7rem 1.75rem;
-        background: var(--brand-orange);
+        background: var(--comic-red);
         color: #fff;
-        border: 1px solid var(--brand-orange);
-        border-radius: 8px;
+        border: 3px solid var(--comic-ink);
+        border-radius: 0;
         font-weight: 700;
         font-size: 0.95rem;
         letter-spacing: 0;
-        transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 4px 20px var(--brand-orange-glow);
+        transition: transform 0.1s, box-shadow 0.1s;
+        box-shadow: 4px 4px 0 var(--comic-ink);
         -webkit-text-fill-color: #fff;
 
         &:hover {
-          opacity: 0.9;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 28px var(--brand-orange-glow);
+          transform: translate(2px, 2px);
+          box-shadow: 2px 2px 0 var(--comic-ink);
         }
       }
 
       .home-secondary-link {
-        background: rgba(22, 25, 41, 0.86);
-        border-color: var(--border-bright);
-        color: var(--text);
-        -webkit-text-fill-color: var(--text);
-        box-shadow: none;
+        background: #fff;
+        border-color: var(--comic-ink);
+        color: var(--comic-ink);
+        -webkit-text-fill-color: var(--comic-ink);
       }
     }
   }
