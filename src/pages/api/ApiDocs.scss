@@ -455,54 +455,57 @@ a.api-docs__badge:hover {
   }
 }
 
+// The three-tab issue anatomy (See It Move / Explain It / Code & Details):
+// comic folder-tabs on an ink rule. (Phase 7 consolidated the old night base
+// rules with the .api-docs__issue overrides that always shadowed them.)
 .api-docs__entry-tabs {
   display: flex;
-  gap: 8px;
-  margin-top: 14px;
+  gap: 6px;
+  margin-top: 16px;
   padding: 0 0 0 2px;
   padding-bottom: 0;
-  border-bottom: 1px solid rgba(255, 159, 28, 0.34);
+  border-bottom: 4px solid var(--comic-ink);
 }
 
 .api-docs__entry-tab {
   min-width: 112px;
   padding: 8px 14px;
-  border: 1px solid rgba(255, 159, 28, 0.16);
-  border-bottom-color: rgba(255, 159, 28, 0.08);
-  border-radius: 7px 7px 0 0;
-  background: rgba(255, 159, 28, 0.05);
-  color: var(--text-muted);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  border: 3px solid var(--comic-ink);
+  border-bottom: none;
+  border-radius: 0;
+  background: var(--comic-paper-deep);
+  color: var(--comic-ink);
+  font-family: var(--comic-display);
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
   cursor: pointer;
   box-shadow: none;
-  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  transition: color 0.18s ease, background 0.18s ease;
 
   &:hover,
   &:focus-visible {
-    background: rgba(255, 159, 28, 0.12);
-    border-color: rgba(255, 159, 28, 0.4);
-    color: var(--text);
+    background: var(--comic-yellow);
+    color: var(--comic-ink);
     box-shadow: none;
+    transform: none;
   }
 
   &.active {
-    color: #ffe4b0;
-    background: rgba(16, 19, 31, 0.72);
-    border-color: rgba(255, 159, 28, 0.34);
-    border-bottom-color: rgba(16, 19, 31, 0.72);
-    margin-bottom: -1px;
+    background: var(--comic-red);
+    color: #fff;
+    text-shadow: 2px 2px 0 var(--comic-ink);
+    border-color: var(--comic-ink);
+    margin-bottom: 0;
   }
 }
 
 .api-docs__entry-tabpanel {
   margin-top: 0;
-  padding: 16px;
-  border: 1px solid rgba(255, 159, 28, 0.34);
-  border-top: 0;
-  border-radius: 0 8px 8px 8px;
-  background: rgba(16, 19, 31, 0.72);
+  padding: 18px 0 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
 }
 
 .api-docs__entry-panel {
@@ -574,22 +577,27 @@ a.api-docs__badge:hover {
 
 .api-docs__teaching-block,
 .api-docs__related {
+  @include comic-plate(var(--comic-yellow));
   padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
 
   h3 {
     margin: 0 0 8px;
-    font-size: 0.84rem;
-    letter-spacing: 0.04em;
+    font-family: var(--comic-display);
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--brand-orange-soft);
+    color: var(--comic-red);
   }
 
   p {
     margin: 0;
+    color: var(--comic-ink);
   }
+}
+
+.api-docs__related {
+  background: var(--comic-paper);
 }
 
 .api-docs__related-list {
@@ -603,37 +611,36 @@ a.api-docs__badge:hover {
   text-align: left;
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid rgba(125, 232, 255, 0.18);
-  border-radius: 8px;
-  background: rgba(125, 232, 255, 0.04);
-  color: var(--text);
+  border: 3px solid var(--comic-ink);
+  border-radius: 0;
+  background: var(--comic-blue);
+  box-shadow: 3px 3px 0 var(--comic-ink);
+  color: #fff;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: background 0.15s ease;
 
   code {
-    color: rgb(125, 232, 255);
+    color: #fff;
     font-size: 0.82rem;
     font-weight: 700;
   }
 
   span {
-    color: var(--text-muted);
+    color: #dbe6ff;
     font-size: 0.84rem;
   }
 
   &:hover,
   &:focus-visible {
-    border-color: rgb(125, 232, 255);
-    background: rgba(125, 232, 255, 0.08);
+    background: var(--comic-red);
+    border-color: var(--comic-ink);
   }
 }
 
 .api-docs__example-callout {
+  @include comic-plate;
   margin-top: 12px;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 122, 0, 0.2);
-  border-radius: 8px;
-  background: rgba(255, 122, 0, 0.06);
 
   // The intro-tab back-link block can list more than one example (a few core
   // exports are taught by two animations), so lay the links out in a wrap row.
@@ -645,19 +652,19 @@ a.api-docs__badge:hover {
 
   p {
     margin: 0 0 8px;
-    color: var(--text-muted);
+    color: var(--comic-ink);
     font-size: 0.88rem;
   }
 
   a {
-    color: var(--brand-orange-soft);
+    color: var(--comic-blue);
     font-size: 0.88rem;
     font-weight: 600;
     text-decoration: none;
 
     &:hover,
     &:focus-visible {
-      color: var(--text);
+      color: var(--comic-ink);
       text-decoration: underline;
       text-underline-offset: 2px;
     }
@@ -677,7 +684,7 @@ a.api-docs__badge:hover {
   dt {
     flex: 0 0 auto;
     font-family: "Space Mono", monospace;
-    color: var(--text-code);
+    color: var(--comic-blue);
   }
 
   dd {
@@ -692,7 +699,7 @@ a.api-docs__badge:hover {
     font-size: 0.74rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--brand-orange-soft);
+    color: var(--comic-red);
     margin-right: 6px;
   }
 }
@@ -1204,143 +1211,13 @@ a.api-docs__badge:hover {
   transform: rotate(-1deg);
 }
 
-// The three-tab anatomy, re-inked. Same markup, comic clothes.
-.api-docs__issue .api-docs__entry-tabs {
-  border-bottom: 4px solid var(--comic-ink);
-  gap: 6px;
-  margin-top: 16px;
-}
-
-.api-docs__issue .api-docs__entry-tab {
-  border: 3px solid var(--comic-ink);
-  border-bottom: none;
-  border-radius: 0;
-  background: var(--comic-paper-deep);
-  color: var(--comic-ink);
-  font-family: var(--comic-display);
-  font-weight: 400;
-  font-size: 0.95rem;
-  letter-spacing: 0.06em;
-
-  &:hover,
-  &:focus-visible {
-    background: var(--comic-yellow);
-    color: var(--comic-ink);
-  }
-
-  &.active {
-    background: var(--comic-red);
-    color: #fff;
-    text-shadow: 2px 2px 0 var(--comic-ink);
-    border-color: var(--comic-ink);
-    margin-bottom: 0;
-  }
-}
-
-.api-docs__issue .api-docs__entry-tabpanel {
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  padding: 18px 0 0;
-}
-
-.api-docs__issue .api-docs__teaching-block,
-.api-docs__issue .api-docs__related {
-  @include comic-plate(var(--comic-yellow));
-  border-radius: 0;
-
-  h3 {
-    font-family: var(--comic-display);
-    font-weight: 400;
-    font-size: 0.95rem;
-    letter-spacing: 0.08em;
-    color: var(--comic-red);
-  }
-
-  p {
-    color: var(--comic-ink);
-  }
-}
-
-.api-docs__issue .api-docs__related {
-  background: var(--comic-paper);
-}
-
-.api-docs__issue .api-docs__related-item {
-  border: 3px solid var(--comic-ink);
-  border-radius: 0;
-  background: var(--comic-blue);
-  box-shadow: 3px 3px 0 var(--comic-ink);
-  color: #fff;
-
-  code {
-    color: #fff;
-    font-weight: 700;
-  }
-
-  span {
-    color: #dbe6ff;
-  }
-
-  &:hover,
-  &:focus-visible {
-    background: var(--comic-red);
-    border-color: var(--comic-ink);
-  }
-}
-
-.api-docs__issue .api-docs__example-callout {
-  @include comic-plate;
-  border-radius: 0;
-
-  p {
-    color: var(--comic-ink);
-  }
-
-  a {
-    color: var(--comic-blue);
-
-    &:hover,
-    &:focus-visible {
-      color: var(--comic-ink);
-    }
-  }
-}
+// The three-tab anatomy, teaching plates, related buttons, callouts, params,
+// and returns are all styled comic at their BASE rules above (they only ever
+// render inside the issue); the mini-demo's screen plate lives in
+// MiniDemo.scss. No issue-scoped re-skin needed anymore (Phase 7 dedupe).
 
 .api-docs__issue .api-docs__entry-panel > p {
   color: var(--comic-ink);
-}
-
-// The live demos are styled for the site's dark pages (translucent whites,
-// light text) and wash out on comic paper. Frame each one as a dark "screen"
-// panel — the comic page holds a window onto the site's night world, and the
-// demo components keep the ground they were designed against.
-.api-docs__issue .mini-demo {
-  background: #10131f;
-  border: 3px solid var(--comic-ink);
-  border-radius: 0;
-  box-shadow: 4px 4px 0 var(--comic-ink);
-  padding: 12px;
-
-  // The paper surface's blanket ink `code` color must stop at the screen's
-  // edge — inside, code goes back to the site's light code color.
-  code {
-    color: var(--text-code);
-  }
-}
-
-.api-docs__issue .api-docs__params {
-  dt {
-    color: var(--comic-blue);
-  }
-
-  dd {
-    color: #5c5344;
-  }
-}
-
-.api-docs__issue .api-docs__returns span {
-  color: var(--comic-red);
 }
 
 // The page-turn: hand the reader the next issue in the teaching order.

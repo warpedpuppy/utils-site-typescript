@@ -1,9 +1,18 @@
+@use "../../styles/comic" as *;
+
+// The mini-demo is a window from the printed page into the site's night
+// world: its internals are designed light-on-dark, so the component carries
+// its own dark "screen" plate wherever it renders (this replaced the
+// /api-scoped override that used to live in ApiDocs.scss).
 .mini-demo {
   margin: 0.75rem 0 0.25rem;
-  padding: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  background: rgba(99, 102, 241, 0.06);
+  padding: 12px;
+  @include comic-screen;
+
+  // Paper surfaces blanket-ink `code`; inside the screen it re-lights.
+  code {
+    color: var(--text-code);
+  }
 
   &__canvas {
     display: block;
@@ -11,15 +20,19 @@
   }
 
   // ── Interactive variant ────────────────────────────────────────────────────
+  // The variant tints layer OVER the screen ground (they used to replace the
+  // page background; as plain backgrounds they would now punch through to paper).
   &--interactive {
-    background: rgba(99, 102, 241, 0.08);
+    background:
+      linear-gradient(rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.08)),
+      var(--screen-bg);
   }
 
   &--geometry {
     background:
       radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 34%),
       radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.08), transparent 34%),
-      rgba(99, 102, 241, 0.08);
+      var(--screen-bg);
   }
 
   &__call {

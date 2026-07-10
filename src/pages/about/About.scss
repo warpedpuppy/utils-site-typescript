@@ -1,3 +1,5 @@
+@use "../../styles/comic" as *;
+
 #about-wrapper {
   position: relative;
   top: 50px;
@@ -8,18 +10,26 @@
     text-align: left;
     color: var(--text);
 
-    h1,
-    h2 {
-      font-size: 1.08rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--brand-orange-soft);
-      margin: 2.35rem 0 0.65rem;
+    h1 {
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: clamp(1.9rem, 4vw, 2.7rem);
+      letter-spacing: 0.02em;
+      line-height: 1;
+      color: var(--comic-red);
+      text-shadow: 2px 2px 0 var(--comic-yellow), 4px 4px 0 var(--comic-ink);
+      transform: skew(-4deg);
+      margin: 0 0 1rem;
+    }
 
-      &:first-child {
-        margin-top: 0;
-      }
+    h2 {
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: 1.35rem;
+      letter-spacing: 0.04em;
+      text-shadow: 2px 2px 0 var(--comic-yellow);
+      transform: skew(-3deg);
+      margin: 2.35rem 0 0.65rem;
     }
 
     p {
@@ -27,6 +37,24 @@
       line-height: 1.75;
       color: var(--text-muted);
       margin: 0 0 0.75rem;
+    }
+
+    // The opening pitch as the page's one narrator caption plate.
+    h1 + p {
+      @include comic-plate(var(--comic-yellow));
+      padding: 12px 16px;
+      color: var(--comic-ink);
+      transform: rotate(-0.5deg);
+    }
+
+    code {
+      font-family: "Space Mono", monospace;
+      color: var(--comic-ink);
+      word-break: break-word;
+    }
+
+    strong {
+      color: var(--comic-ink);
     }
   }
 }
