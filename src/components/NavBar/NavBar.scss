@@ -10,11 +10,12 @@
   top: 0;
   left: 0;
   z-index: 999;
-  background: rgba(13, 15, 26, 0.85);
+  // Comic masthead strip: near-opaque paper with a hard ink rule beneath —
+  // no soft glow shadows in the printed world.
+  background: rgba(251, 243, 223, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);
+  border-bottom: 3px solid var(--comic-ink);
 
   .site-nav__brand {
     position: relative;
@@ -40,8 +41,8 @@
     a {
       padding: 0;
       margin: 0;
-      color: var(--text);
-      background: linear-gradient(135deg, var(--text), var(--brand-orange-soft));
+      color: var(--comic-ink);
+      background: linear-gradient(135deg, var(--comic-ink) 55%, var(--comic-red));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -85,10 +86,10 @@
     display: flex;
     flex-direction: column;
     width: 100vw;
-    background: rgba(13, 15, 26, 0.97);
+    background: rgba(251, 243, 223, 0.98);
     backdrop-filter: blur(16px);
     z-index: 900;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 3px solid var(--comic-ink);
     transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     &.collapsed {
       top: var(--menu-height);
@@ -154,9 +155,9 @@
           bottom: 0;
           left: 0;
           right: 0;
-          height: 2px;
-          background: var(--brand-orange-soft);
-          border-radius: 1px 1px 0 0;
+          height: 3px;
+          background: var(--comic-red);
+          border-radius: 0;
           transform: scaleX(0);
           transform-origin: center;
           transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);

@@ -12,7 +12,10 @@
 }
 
 .utilspalooza-logo__rays {
-  stroke: var(--brand-orange-soft);
+  // Pinned literal, NOT var(--brand-orange-soft): site accents re-inked to
+  // comic red in the paper flip, but Ted's call is the logo mark alone keeps
+  // its brand orange.
+  stroke: #ff9f1c;
   stroke-width: 1.45;
   stroke-linecap: round;
   filter: drop-shadow(0 0 4px rgba(255, 140, 50, 0.42));
