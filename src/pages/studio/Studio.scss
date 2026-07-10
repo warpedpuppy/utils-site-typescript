@@ -1,10 +1,17 @@
+@use "../../styles/comic" as *;
+
+// Studio, comic edition (Phase 6 of .claude/PLAN-COMIC-SITEWIDE.md): the
+// gallery is a paper page racking six prestige one-shot covers; the workspace
+// is paper chrome around the big dark screen the projects run on. Everything
+// INSIDE #ws-canvas-host (StudioCanvas.scss: notes panel, motion toggle) is
+// the night world and keeps its dark styling untouched.
 #studio-page {
   position: fixed;
   top: var(--menu-height);
   width: 100%;
   height: calc(100vh - var(--menu-height) - var(--footer-height));
-  background: #0a0a0f;
-  color: #e6dcc8;
+  background: var(--bg);
+  color: var(--text);
 
   &.in-gallery { overflow-y: auto; }
   &.in-workspace { overflow: hidden; display: flex; flex-direction: column; }
@@ -15,9 +22,9 @@
     font-family: "Space Mono", monospace;
     font-size: 10px;
     letter-spacing: 0.02em;
-    color: #9fc1e0;
-    background: rgba(100, 200, 255, 0.08);
-    border: 1px solid rgba(100, 200, 255, 0.22);
+    color: var(--comic-ink);
+    background: #fff;
+    border: 2px solid var(--comic-ink);
     border-radius: 999px;
     padding: 2px 9px;
     white-space: nowrap;
@@ -33,47 +40,46 @@
       margin-bottom: 44px;
 
       h1 {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: 38px;
-        font-weight: 700;
-        letter-spacing: -0.01em;
+        font-family: var(--comic-display);
+        font-weight: 400;
+        font-size: clamp(2.2rem, 4.5vw, 3rem);
+        letter-spacing: 0.02em;
+        line-height: 1;
         margin: 0 0 14px;
-        background: linear-gradient(90deg, #ffe090, #ff9fc6 55%, #9fc1ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--comic-red);
+        text-shadow: 3px 3px 0 var(--comic-yellow), 5px 5px 0 var(--comic-ink);
+        transform: skew(-4deg);
       }
 
       .hero-tagline {
         max-width: 640px;
         font-size: 15px;
         line-height: 1.65;
-        color: #b9bdc8;
+        color: var(--text-muted);
         margin: 0;
 
-        strong { color: #ffe090; font-weight: 600; }
-        em { font-style: normal; color: #9fc1ff; }
+        strong { color: var(--comic-red); font-weight: 700; }
+        em { font-style: normal; color: var(--comic-blue); font-weight: 600; }
       }
     }
 
     .gallery-section { margin-top: 40px; }
 
     .gallery-section-label {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 24px;
-      font-weight: 700;
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
       text-transform: uppercase;
       letter-spacing: 0.04em;
       margin: 0 0 8px;
-      background: linear-gradient(90deg, #ffe090, #ff9fc6 55%, #9fc1ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--comic-ink);
+      text-shadow: 2px 2px 0 var(--comic-yellow);
+      transform: skew(-3deg);
     }
 
     .gallery-section-sub {
       font-size: 13px;
-      color: #6f7686;
+      color: var(--text-muted);
       margin: 0 0 18px;
       line-height: 1.5;
     }
@@ -81,47 +87,72 @@
     .project-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(252px, 1fr));
-      gap: 16px;
+      gap: 20px;
     }
 
+    // The six advanced projects as prestige one-shot covers: comic plates
+    // with a rotating accent strip and Bangers titles, echoing the /api rack.
     .project-card {
+      --card-accent: var(--comic-red);
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       gap: 10px;
       text-align: left;
       padding: 18px 18px 16px;
-      border-radius: 12px;
+      border-radius: 0;
       cursor: pointer;
-      border: 1px solid rgba(120, 170, 235, 0.18);
-      background:
-        radial-gradient(120% 120% at 100% 0%, rgba(120, 170, 235, 0.08), transparent 60%),
-        rgba(16, 18, 30, 0.9);
+      @include comic-plate;
+      box-shadow: 5px 5px 0 var(--comic-ink);
       font-family: inherit;
-      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      color: var(--comic-ink);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+
+      &::before {
+        content: "";
+        align-self: stretch;
+        height: 10px;
+        margin: -18px -18px 8px;
+        border-bottom: 3px solid var(--comic-ink);
+        background: var(--card-accent);
+      }
+
+      &:nth-child(3n + 2) { --card-accent: var(--comic-blue); }
+      &:nth-child(3n) { --card-accent: var(--comic-yellow); }
 
       &:hover {
-        transform: translateY(-3px);
-        border-color: rgba(120, 170, 235, 0.5);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(120, 170, 235, 0.15);
+        background: #fff;
+        transform: translate(-2px, -2px) rotate(-0.4deg);
+        box-shadow: 8px 8px 0 var(--comic-ink);
 
-        .card-open { color: #bfe3ff; }
+        .card-open { color: var(--comic-red); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+
+        &:hover {
+          transform: none;
+        }
       }
 
       .card-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
       .card-title {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: 17px;
-        font-weight: 600;
-        color: #eef1f6;
+        font-family: var(--comic-display);
+        font-weight: 400;
+        font-size: 1.45rem;
+        letter-spacing: 0.03em;
+        line-height: 1.05;
+        color: var(--comic-ink);
         margin: 0;
+        transform: skew(-2deg);
       }
 
       .card-blurb {
         font-size: 12.5px;
         line-height: 1.55;
-        color: #97a0b2;
+        color: var(--text-muted);
         margin: 0;
       }
 
@@ -129,8 +160,9 @@
         margin-top: auto;
         font-family: "Space Mono", monospace;
         font-size: 11px;
-        color: #7f93ad;
-        transition: color 0.18s ease;
+        font-weight: 700;
+        color: var(--comic-blue);
+        transition: color 0.12s ease;
       }
     }
 
@@ -146,50 +178,50 @@
       min-width: 220px;
       max-width: 400px;
       padding: 10px 38px 10px 16px;
-      background: rgba(26, 20, 42, 0.9)
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23a098c8' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      background: #fff
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%2312100e' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
         no-repeat right 14px center;
-      border: 1px solid rgba(160, 130, 255, 0.35);
-      border-radius: 8px;
-      color: #cbb8ff;
+      border: 3px solid var(--comic-ink);
+      border-radius: 0;
+      box-shadow: 3px 3px 0 var(--comic-ink);
+      color: var(--comic-ink);
       font-family: "Space Grotesk", sans-serif;
       font-size: 14px;
       appearance: none;
       cursor: pointer;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+      transition: box-shadow 0.18s ease;
 
-      &:hover { border-color: rgba(160, 130, 255, 0.6); }
       &:focus {
         outline: none;
-        border-color: rgba(160, 130, 255, 0.8);
-        box-shadow: 0 0 0 3px rgba(160, 130, 255, 0.12);
+        box-shadow: 3px 3px 0 var(--comic-blue);
       }
 
       option {
-        background: #12101a;
-        color: #cbb8ff;
+        background: #fff;
+        color: var(--comic-ink);
       }
     }
 
     .codepen-picker-btn {
       flex-shrink: 0;
       padding: 10px 22px;
-      background: rgba(160, 130, 255, 0.12);
-      border: 1px solid rgba(160, 130, 255, 0.45);
-      border-radius: 8px;
-      color: #cbb8ff;
+      background: var(--comic-red);
+      border: 3px solid var(--comic-ink);
+      border-radius: 0;
+      box-shadow: 4px 4px 0 var(--comic-ink);
+      color: #fff;
       font-family: "Space Grotesk", sans-serif;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
-      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
 
       &:hover {
-        background: rgba(160, 130, 255, 0.26);
-        border-color: rgba(160, 130, 255, 0.7);
-        transform: translateY(-1px);
-        box-shadow: none;
+        background: var(--comic-red);
+        color: #fff;
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--comic-ink);
       }
     }
   }
@@ -200,6 +232,7 @@
     flex-direction: column;
     height: 100%;
     overflow: hidden;
+    padding: 0 12px 12px;
   }
 
   #ws-header {
@@ -207,23 +240,27 @@
     display: flex;
     align-items: center;
     gap: 18px;
-    padding: 12px 20px;
-    background: rgba(13, 14, 24, 0.95);
-    border-bottom: 1px solid rgba(120, 170, 235, 0.14);
+    padding: 12px 8px;
+    background: var(--bg);
 
     .ws-back {
       flex-shrink: 0;
-      background: rgba(120, 170, 235, 0.08);
-      border: 1px solid rgba(120, 170, 235, 0.25);
-      color: #bcd2ec;
+      background: #fff;
+      border: 2px solid var(--comic-ink);
+      border-radius: 0;
+      box-shadow: 2px 2px 0 var(--comic-ink);
+      color: var(--comic-ink);
       font-family: "Space Mono", monospace;
       font-size: 12px;
       padding: 7px 12px;
-      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.18s ease;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
 
-      &:hover { background: rgba(120, 170, 235, 0.16); border-color: rgba(120, 170, 235, 0.5); }
+      &:hover {
+        background: var(--comic-yellow);
+        transform: translate(1px, 1px);
+        box-shadow: 1px 1px 0 var(--comic-ink);
+      }
     }
 
     .ws-titleblock { flex: 1; min-width: 0; }
@@ -236,10 +273,11 @@
     }
 
     .ws-title {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: #eef1f6;
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: 1.15rem;
+      letter-spacing: 0.03em;
+      color: var(--comic-ink);
     }
 
     .ws-chips { display: inline-flex; gap: 6px; flex-wrap: wrap; }
@@ -248,51 +286,63 @@
       margin: 3px 0 0;
       font-family: "Space Mono", monospace;
       font-size: 11px;
-      color: #717a8b;
+      color: var(--text-muted);
       line-height: 1.4;
     }
   }
 
+  // The project runs inside the big screen plate — the night world, framed.
   #ws-canvas-host {
     flex: 1;
     min-height: 0;
     position: relative;
-    background: #0a0a0f;
+    background: var(--screen-bg);
+    // The tab bar's 4px rule above is the panel's top edge — no double line.
+    border: 3px solid var(--comic-ink);
+    border-top: none;
   }
 
   #ws-tabs {
     flex-shrink: 0;
     display: flex;
     gap: 8px;
-    padding: 10px 20px 0;
-    border-bottom: 1px solid rgba(255, 224, 144, 0.42);
-    background: rgba(8, 9, 16, 0.98);
+    padding: 10px 8px 0;
+    border-bottom: 4px solid var(--comic-ink);
+    background: var(--bg);
 
     button {
       min-width: 112px;
       padding: 8px 14px;
-      border: 1px solid rgba(120, 170, 235, 0.18);
-      border-bottom-color: rgba(120, 170, 235, 0.1);
-      border-radius: 7px 7px 0 0;
-      background: rgba(120, 170, 235, 0.06);
-      color: #8d98ad;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 13px;
-      font-weight: 700;
+      border: 3px solid var(--comic-ink);
+      border-bottom: none;
+      border-radius: 0;
+      background: var(--comic-paper-deep);
+      color: var(--comic-ink);
+      box-shadow: none;
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
       cursor: pointer;
-      transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      transition: color 0.18s ease, background 0.18s ease;
 
       &:hover {
-        color: #d9e8f7;
-        border-color: rgba(120, 170, 235, 0.38);
+        color: var(--comic-ink);
+        background: var(--comic-yellow);
+        transform: none;
+        box-shadow: none;
+      }
+
+      &:active {
+        transform: none;
+        box-shadow: none;
       }
 
       &.active {
-        color: #ffe090;
-        background: #050509;
-        border-color: rgba(255, 224, 144, 0.42);
-        border-bottom-color: #050509;
-        margin-bottom: -1px;
+        color: #fff;
+        background: var(--comic-red);
+        text-shadow: 2px 2px 0 var(--comic-ink);
+        margin-bottom: 0;
       }
     }
   }
@@ -302,7 +352,7 @@
     min-height: 0;
     height: 100%;
     position: relative;
-    background: #050509;
+    background: var(--bg);
     border-top: 0;
   }
 
@@ -321,14 +371,17 @@
 
   #ws-source-panel {
     flex-direction: column;
-    background: #0d0e18;
+    background: var(--bg);
+    border: 3px solid var(--comic-ink);
+    border-top: none;
   }
 
+  // The math walkthrough is reading material — it lives ON the paper.
   #ws-math-panel {
     overflow-y: auto;
-    background:
-      radial-gradient(90% 80% at 100% 0%, rgba(255, 224, 144, 0.06), transparent 55%),
-      #0d0e18;
+    background: var(--bg);
+    border: 3px solid var(--comic-ink);
+    border-top: none;
   }
 
   .math-panel-inner {
@@ -342,17 +395,19 @@
 
     h2 {
       margin: 0;
-      color: #eef1f6;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 0;
+      font-family: var(--comic-display);
+      font-weight: 400;
+      color: var(--comic-ink);
+      font-size: 1.6rem;
+      letter-spacing: 0.03em;
+      text-shadow: 2px 2px 0 var(--comic-yellow);
+      transform: skew(-3deg);
     }
 
     p {
       max-width: 620px;
       margin: 8px 0 0;
-      color: #9ca6b8;
+      color: var(--text-muted);
       font-size: 14px;
       line-height: 1.6;
     }
@@ -366,33 +421,31 @@
 
   .math-function-card {
     padding: 18px;
-    border: 1px solid rgba(120, 170, 235, 0.16);
-    border-radius: 8px;
-    background: rgba(5, 6, 12, 0.74);
+    @include comic-plate;
 
     h3 {
       margin: 0 0 9px;
       font-family: "Space Mono", monospace;
       font-size: 14px;
       font-weight: 700;
-      color: #ffe090;
+      color: var(--comic-blue);
 
       a {
         color: inherit;
         text-decoration: underline;
-        text-decoration-color: rgba(255, 224, 144, 0.42);
+        text-decoration-color: var(--comic-blue);
         text-underline-offset: 0.18em;
 
         &:hover {
-          color: #fff2bd;
-          text-decoration-color: #fff2bd;
+          color: var(--comic-ink);
+          text-decoration-color: var(--comic-ink);
         }
       }
     }
 
     p {
       margin: 0;
-      color: #c3cad8;
+      color: var(--text-muted);
       font-size: 13px;
       line-height: 1.65;
     }
@@ -401,10 +454,10 @@
       display: inline-flex;
       margin: 0 0 10px;
       padding: 3px 7px;
-      border: 1px solid rgba(255, 224, 144, 0.22);
-      border-radius: 4px;
-      background: rgba(255, 224, 144, 0.07);
-      color: #ffe090;
+      border: 2px solid var(--comic-ink);
+      border-radius: 0;
+      background: var(--comic-yellow);
+      color: var(--comic-ink);
       font-family: "Space Mono", monospace;
       font-size: 10px;
       line-height: 1.3;
@@ -418,15 +471,15 @@
     justify-content: space-between;
     gap: 14px;
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(120, 170, 235, 0.16);
-    background: rgba(13, 14, 24, 0.98);
+    border-bottom: 2px solid var(--comic-ink);
+    background: #fff;
 
     h2 {
       margin: 0;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: #eef1f6;
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: 1.05rem;
+      color: var(--comic-ink);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -437,7 +490,7 @@
       font-family: "Space Mono", monospace;
       font-size: 10px;
       line-height: 1.45;
-      color: #7b8496;
+      color: var(--text-muted);
     }
   }
 
@@ -447,21 +500,23 @@
 
     button {
       padding: 8px 12px;
-      border: 1px solid rgba(255, 224, 144, 0.38);
-      border-radius: 6px;
-      background: rgba(255, 224, 144, 0.1);
-      color: #ffe090;
+      border: 2px solid var(--comic-ink);
+      border-radius: 0;
+      box-shadow: 3px 3px 0 var(--comic-ink);
+      background: var(--comic-red);
+      color: #fff;
       font-family: "Space Grotesk", sans-serif;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
 
       &:hover {
-        background: rgba(255, 224, 144, 0.18);
-        border-color: rgba(255, 224, 144, 0.68);
-        color: #fff2bd;
+        background: var(--comic-red);
+        color: #fff;
+        transform: translate(1px, 1px);
+        box-shadow: 2px 2px 0 var(--comic-ink);
       }
     }
   }
@@ -471,46 +526,53 @@
     display: flex;
     gap: 8px;
     padding: 12px 16px 0;
-    background: #0d0e18;
+    background: var(--bg);
+    border-bottom: 3px solid var(--comic-ink);
     position: relative;
     z-index: 2;
 
     button {
       min-width: 76px;
       padding: 8px 12px;
-      border: 1px solid rgba(120, 170, 235, 0.16);
-      border-bottom-color: rgba(120, 170, 235, 0.08);
-      border-radius: 7px 7px 0 0;
-      background: rgba(120, 170, 235, 0.05);
-      color: #8d98ad;
+      border: 2px solid var(--comic-ink);
+      border-bottom: none;
+      border-radius: 0;
+      background: #fff;
+      color: var(--comic-ink);
+      box-shadow: none;
       font-family: "Space Mono", monospace;
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.06em;
       cursor: pointer;
-      transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      transition: color 0.18s ease, background 0.18s ease;
 
       &:hover {
-        color: #d9e8f7;
-        border-color: rgba(120, 170, 235, 0.34);
+        color: var(--comic-ink);
+        background: var(--comic-yellow);
+        transform: none;
+        box-shadow: none;
+      }
+
+      &:active {
+        transform: none;
+        box-shadow: none;
       }
 
       &.active {
-        color: #ffe090;
-        background: rgba(5, 6, 12, 0.92);
-        border-color: rgba(255, 224, 144, 0.34);
-        border-bottom-color: rgba(5, 6, 12, 0.92);
-        margin-bottom: -2px;
-        padding-bottom: 10px;
+        color: #fff;
+        background: var(--comic-red);
+        text-shadow: 1px 1px 0 var(--comic-ink);
       }
     }
   }
 
+  // The source itself is a screen: dark pane, light code, ink frame.
   .source-code-pane {
     flex: 1;
     min-height: 0;
-    padding: 0 16px 16px;
-    background: #0d0e18;
+    padding: 12px 16px 16px;
+    background: var(--bg);
     position: relative;
     z-index: 1;
 
@@ -519,10 +581,9 @@
       margin: 0;
       overflow: auto;
       padding: 0;
-      border: 1px solid rgba(255, 224, 144, 0.18);
-      border-top-color: rgba(255, 224, 144, 0.34);
-      border-radius: 0 8px 8px 8px;
-      background: rgba(5, 6, 12, 0.92);
+      border: 3px solid var(--comic-ink);
+      border-radius: 0;
+      background: var(--screen-bg);
       color: #d6deeb;
       font-family: "Space Mono", monospace;
       font-size: 11px;
@@ -572,7 +633,7 @@
     &.in-workspace { overflow-y: auto; }
 
     #ws-tabs {
-      padding: 8px 12px;
+      padding: 8px 12px 0;
 
       button {
         flex: 1;
