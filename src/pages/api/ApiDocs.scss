@@ -127,6 +127,22 @@ a.api-docs__badge:hover {
   border-color: rgba(255, 122, 0, 0.24);
 }
 
+// The concept's ambient vignette (same scene as its newsstand cover), framed
+// as a small comic panel on the dark card. Decorative; LazyMount unmounts it
+// off-screen, so the wrapper (not the canvas) must own the box height.
+.api-docs__card-art {
+  height: 88px;
+  margin: -6px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+
+  // LazyMount's wrapper div must pass the box height down to the canvas.
+  > div {
+    height: 100%;
+  }
+}
+
 .api-docs__card .api-docs__card-count {
   margin-top: 12px;
   color: var(--text-muted);

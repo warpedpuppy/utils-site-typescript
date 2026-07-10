@@ -2,6 +2,8 @@
 // pre-filtered) and the preview of the planned @utilspalooza/effects surface.
 // Pure layout, fed by conceptGroups from apiModel.
 import type { SyntheticEvent } from "react";
+import AmbientConceptCanvas from "../../components/AmbientConceptCanvas/AmbientConceptCanvas";
+import LazyMount from "../../components/LazyMount/LazyMount";
 import { apiEntries, conceptGroups, CONCEPT_PREFIX } from "./apiModel";
 import { getEntryUsageLead, getModuleDocMode } from "./docsManifest";
 
@@ -67,6 +69,13 @@ export function Overview({ onPick }: { onPick: (name: string, conceptId: string)
               key={group.title}
               id={`${CONCEPT_PREFIX}${group.id}`}
             >
+              {/* Same ambient vignette the newsstand cover for this concept
+                  shows — one component, keyed by the shared concept id. */}
+              <div className="api-docs__card-art" aria-hidden="true">
+                <LazyMount minHeight={88}>
+                  <AmbientConceptCanvas conceptId={group.id} />
+                </LazyMount>
+              </div>
               <h3>{group.title}</h3>
               <p>{group.blurb}</p>
               <p className="api-docs__card-count">
