@@ -1,0 +1,19 @@
+// Shared comic-book (Lichtenstein) building blocks for the site-wide comic
+// surface. The color/type tokens live in App.scss :root (--comic-*); this file
+// holds what plain CSS custom properties can't carry: mixins. Import with
+//   @use "../../styles/comic" as *;
+// (adjust the relative path per file). See .claude/PLAN-COMIC-SITEWIDE.md.
+
+// The universal comic panel: hard ink border + hard offset shadow, no radius.
+@mixin comic-plate($bg: #fff) {
+  background: $bg;
+  border: 3px solid var(--comic-ink);
+  box-shadow: 4px 4px 0 var(--comic-ink);
+}
+
+// The "screen" plate: a window from the printed page into the site's dark
+// night world. Anything that renders a live canvas or site code sits on this —
+// demos and code keep the dark ground they were designed against.
+@mixin comic-screen {
+  @include comic-plate(var(--screen-bg));
+}

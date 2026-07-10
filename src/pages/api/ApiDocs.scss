@@ -1,17 +1,10 @@
+// The --comic-* tokens this surface pioneered were promoted to App.scss :root
+// for the site-wide comic redesign (.claude/PLAN-COMIC-SITEWIDE.md); the
+// comic-plate mixin now comes from src/styles/_comic.scss.
+@use "../../styles/comic" as *;
+
 .api-docs {
   --api-tab-h: 44px; // explicit tab-bar height so the sticky filter can sit flush below it
-
-  // Comic-book (Lichtenstein) tokens for the Full Reference surface. The
-  // documentation tab deliberately commits to this printed-paper world in both
-  // site themes — comic pages are paper regardless of the room's lighting.
-  // Values match the approved mocks (see .claude/PLAN-API-GRAPHIC-NOVEL.md).
-  --comic-ink: #12100e;
-  --comic-paper: #fbf3df;
-  --comic-paper-deep: #f3e7c9;
-  --comic-red: #e5261f;
-  --comic-yellow: #ffd630;
-  --comic-blue: #1d53c0;
-  --comic-display: "Bangers", "Arial Black", "Avenir Next Condensed", sans-serif;
   width: min(1120px, calc(100vw - 32px));
   margin: calc(var(--menu-height) + 34px) auto 64px;
   color: var(--text);
@@ -722,14 +715,9 @@ a.api-docs__badge:hover {
 // COMIC SURFACE — the Full Reference as a newsstand of issues (Lichtenstein).
 // Two paper "pages" share this world: .api-docs__newsstand (rack + shelves)
 // and .api-docs__issue (the ?fn= takeover). Both commit to printed paper in
-// either site theme. Palette + type live in the --comic-* tokens up top.
+// either site theme. Palette + type live in the --comic-* tokens (App.scss);
+// comic-plate comes from src/styles/_comic.scss.
 // ═══════════════════════════════════════════════════════════════════════════
-
-@mixin comic-plate($bg: #fff) {
-  background: $bg;
-  border: 3px solid var(--comic-ink);
-  box-shadow: 4px 4px 0 var(--comic-ink);
-}
 
 .api-docs__newsstand,
 .api-docs__issue {

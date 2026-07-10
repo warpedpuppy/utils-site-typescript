@@ -1,4 +1,17 @@
 #primary-canvas {
+  // Dark "screen" context: the demo canvas keeps its night-world ground, so
+  // the paper-flipped text tokens (ink, warm gray) would be unreadable here.
+  // Restore the night text values locally until Phase 4 of
+  // .claude/PLAN-COMIC-SITEWIDE.md gives this page its full comic treatment.
+  --text: #e2e4f0;
+  --text-muted: #8890b0;
+
+  // …but the global comic buttons are white plates, so their text must stay
+  // ink even inside this dark context.
+  button {
+    color: var(--comic-ink);
+  }
+
   display: flex;
   position: relative;
   flex-direction: column;

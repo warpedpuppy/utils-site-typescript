@@ -20,30 +20,45 @@
 :root {
   --menu-height:   50px;
   --footer-height: 44px;
-  --bg:            #0d0f1a;
-  --bg-surface:    #161929;
-  --bg-elevated:   #1e2235;
-  --border:        rgba(255, 255, 255, 0.07);
-  --border-bright: rgba(255, 255, 255, 0.14);
-  --accent:        #818cf8;
-  --accent-dim:    rgba(129, 140, 248, 0.15);
-  --accent-glow:   rgba(129, 140, 248, 0.25);
-  --brand-orange:  #ff7a00;
-  --brand-orange-soft: #ff9f1c;
-  --brand-orange-dim: rgba(255, 122, 0, 0.16);
-  --brand-orange-glow: rgba(255, 122, 0, 0.28);
-  --brand-yellow:  #ffb000;
-  --text:          #e2e4f0;
-  --text-muted:    #8890b0;
-  --text-code:     #a5b4fc;
-  --code-bg:       #090b13;
-  --green:         #34d399;
-  --red:           #f87171;
 
-  /* legacy aliases so we don't have to touch animation canvas code */
-  --site-gray:       rgba(255, 255, 255, 0.55);
-  --site-light-gray: rgba(255, 255, 255, 0.07);
-  --site-blue:       var(--accent);
+  /* Comic (Lichtenstein) primitives — the site-wide design language.
+     Values match the approved /api mocks; drawConceptScenes.ts mirrors this
+     palette as a JS const (keep the two in sync). Bangers is display-only:
+     mastheads and big numbers, never body text. */
+  --comic-ink:        #12100e;
+  --comic-paper:      #fbf3df;
+  --comic-paper-deep: #f3e7c9;
+  --comic-red:        #e5261f;
+  --comic-yellow:     #ffd630;
+  --comic-blue:       #1d53c0;
+  --comic-display: "Bangers", "Arial Black", "Avenir Next Condensed", sans-serif;
+
+  /* The night world inside "screen" plates: live canvases and site code keep
+     the dark ground they were designed against; the printed page frames them. */
+  --screen-bg:     #10131f;
+
+  /* Semantic tokens, re-pointed from the old dark theme to printed paper
+     (the flip table lives in .claude/PLAN-COMIC-SITEWIDE.md). */
+  --bg:            var(--comic-paper);
+  --bg-surface:    #fffdf6;
+  --bg-elevated:   #ffffff;
+  --border:        rgba(18, 16, 14, 0.28);
+  --border-bright: var(--comic-ink);
+  --accent:        var(--comic-blue);
+  --accent-dim:    rgba(29, 83, 192, 0.1);
+  --accent-glow:   rgba(29, 83, 192, 0.25);
+  /* CTAs re-ink to comic red; brand orange survives only inside the logo mark */
+  --brand-orange:  var(--comic-red);
+  --brand-orange-soft: #f04a43;
+  --brand-orange-dim: rgba(229, 38, 31, 0.1);
+  --brand-orange-glow: rgba(229, 38, 31, 0.3);
+  --brand-yellow:  var(--comic-yellow);
+  --text:          var(--comic-ink);
+  --text-muted:    #5c5344;
+  --text-code:     #a5b4fc;  /* code lives on dark screens — unchanged */
+  --code-bg:       #090b13;  /* code blocks ARE screens — unchanged */
+  --green:         #14804a;  /* darkened for ink-on-paper contrast (was #34d399) */
+  --red:           #c4231d;  /* darkened for ink-on-paper contrast (was #f87171) */
 }
 
 body {
@@ -59,48 +74,56 @@ a {
   font-weight: 600;
   transition: color 0.15s;
   &:hover {
-    color: var(--text);
+    color: var(--comic-red);
     text-decoration: none;
   }
 }
 
+// Comic buttons: white plates with hard ink borders and offset shadows;
+// hovering nudges the plate toward its shadow, pressing lands it flat.
 button {
   padding: 0.45rem 1.1rem;
-  border-radius: 8px;
-  border: 1px solid var(--border-bright);
+  border-radius: 0;
+  border: 2px solid var(--comic-ink);
+  box-shadow: 3px 3px 0 var(--comic-ink);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   background: var(--bg-elevated);
   color: var(--text);
-  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
   &:hover {
-    background: var(--accent-dim);
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
+    background: var(--comic-yellow);
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--comic-ink);
+  }
+  &:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--comic-ink);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--comic-blue);
+    outline-offset: 2px;
   }
 }
 
 .btn-primary {
-  background: var(--brand-orange);
-  border-color: var(--brand-orange);
+  background: var(--comic-red);
+  border-color: var(--comic-ink);
   color: #fff;
   &:hover {
-    background: var(--brand-orange);
-    opacity: 0.88;
-    box-shadow: 0 0 0 3px var(--brand-orange-glow);
+    background: var(--comic-red);
+    color: #fff;
   }
 }
 
 .btn-secondary {
   background: var(--bg-elevated);
-  border-color: var(--border-bright);
-  color: var(--text-muted);
+  border-color: var(--comic-ink);
+  color: var(--text);
   &:hover {
     color: var(--text);
-    border-color: var(--brand-orange);
-    background: var(--brand-orange-dim);
-    box-shadow: 0 0 0 3px var(--brand-orange-glow);
+    background: var(--comic-yellow);
   }
 }
 
@@ -140,10 +163,10 @@ pre {
   justify-content: center;
   gap: 8px 20px;
   padding: 0 16px;
-  background: var(--bg);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--comic-paper-deep);
+  border-top: 3px solid var(--comic-ink);
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-muted);
 }
 
 .site-footer__links {
@@ -153,7 +176,7 @@ pre {
   gap: 18px;
 
   a {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--comic-ink);
     text-decoration: none;
     font-size: 0.8rem;
     letter-spacing: 0.01em;
@@ -161,20 +184,20 @@ pre {
 
     &:hover,
     &:focus-visible {
-      color: var(--brand-orange-soft, #ffcf8f);
+      color: var(--comic-red);
     }
   }
 }
 
 .site-footer__legal {
-  color: rgba(255, 255, 255, 0.32);
+  color: var(--text-muted);
 
   a {
-    color: rgba(255, 255, 255, 0.45);
+    color: var(--text-muted);
     text-decoration: none;
     transition: color 0.15s;
     &:hover {
-      color: var(--text);
+      color: var(--comic-red);
     }
   }
 }

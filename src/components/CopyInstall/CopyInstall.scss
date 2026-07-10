@@ -26,21 +26,24 @@
   &__button {
     padding: 0 0.9rem;
     border: none;
-    border-left: 1px solid var(--border-bright);
-    background: rgba(9, 11, 19, 0.55);
-    color: var(--brand-orange-soft);
+    border-left: 2px solid var(--comic-ink);
+    border-radius: 0;
+    background: var(--comic-red);
+    color: #fff;
     font-family: inherit;
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
+    box-shadow: none; // the box provides the frame; no floating plate inside it
     transition: background 0.15s ease, color 0.15s ease;
 
     &:hover,
     &:focus-visible {
-      background: rgba(9, 11, 19, 0.85);
-      box-shadow: none; // suppress the global button:hover glow
+      background: var(--comic-blue);
+      transform: none; // suppress the global comic-button nudge inside the box
+      box-shadow: none;
     }
   }
 }
