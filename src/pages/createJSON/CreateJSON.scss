@@ -1,3 +1,5 @@
+@use "../../styles/comic" as *;
+
 #create-json {
   width: 100%;
   position: relative;
@@ -15,7 +17,7 @@
 
     p {
       margin-bottom: 6px;
-      color: var(--brand-orange-soft);
+      color: var(--comic-red);
       font-size: 0.78rem;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -24,9 +26,14 @@
 
     h1 {
       margin: 0 0 8px;
-      font-size: clamp(2rem, 4vw, 3.4rem);
-      line-height: 1.04;
-      letter-spacing: 0;
+      font-family: var(--comic-display);
+      font-weight: 400;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1;
+      letter-spacing: 0.02em;
+      color: var(--comic-red);
+      text-shadow: 3px 3px 0 var(--comic-yellow), 5px 5px 0 var(--comic-ink);
+      transform: skew(-4deg);
     }
 
     span {
@@ -54,9 +61,7 @@
     max-height: $pane-max;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--bg-surface);
+    @include comic-plate(var(--bg-surface));
     overflow: hidden;
   }
 
@@ -65,11 +70,11 @@
     align-items: center;
     gap: 8px;
     padding: 12px 14px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-surface);
+    border-bottom: 2px solid var(--comic-ink);
+    background: #fff;
 
     .copy-code__search-icon {
-      color: var(--text-muted);
+      color: var(--comic-ink);
       font-size: 1rem;
     }
 
@@ -78,13 +83,13 @@
       min-width: 0;
       border: none;
       background: transparent;
-      color: var(--text);
+      color: var(--comic-ink);
       font: inherit;
       font-size: 0.9rem;
       outline: none;
 
       &::placeholder {
-        color: var(--text-muted);
+        color: #8a8071;
       }
     }
   }
@@ -128,26 +133,27 @@
     align-items: center;
     gap: 9px;
     padding: 7px 10px;
-    border-radius: 8px;
+    border-radius: 0;
     cursor: pointer;
     transition: background 0.12s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--comic-paper-deep);
     }
 
+    // Checked rows read as highlighter-yellow lines in the index.
     &.is-checked {
-      background: var(--brand-orange-dim);
+      background: rgba(255, 214, 48, 0.45);
     }
 
     input {
       flex-shrink: 0;
-      accent-color: var(--brand-orange);
+      accent-color: var(--comic-red);
       cursor: pointer;
     }
 
     &-title {
-      color: var(--text);
+      color: var(--comic-ink);
       font-size: 0.88rem;
     }
 
@@ -163,9 +169,9 @@
   /* ── output (right) ─────────────────────────────────────────────── */
   .copy-code__output {
     min-width: 0;
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    border: 3px solid var(--comic-ink);
     background: var(--bg);
+    box-shadow: 4px 4px 0 var(--comic-ink);
     // NOTE: intentionally not `overflow: hidden` — that would make this panel the
     // scroll container for the sticky actions bar and push it 64px down inside.
   }
@@ -179,9 +185,8 @@
     flex-wrap: wrap;
     gap: 10px 14px;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    border-radius: 12px 12px 0 0;
-    background: var(--bg-elevated);
+    border-bottom: 3px solid var(--comic-ink);
+    background: #fff;
   }
 
   .copy-code__count {
@@ -189,10 +194,11 @@
     color: var(--text-muted);
   }
 
+  // Segmented language toggle: quiet chip strip; yellow marks the active
+  // language (red stays reserved for the primary CTA next to it).
   .copy-code__lang {
     display: inline-flex;
-    border: 1px solid var(--border-bright);
-    border-radius: 8px;
+    border: 2px solid var(--comic-ink);
     overflow: hidden;
 
     button {
@@ -200,20 +206,27 @@
       border: none;
       border-radius: 0;
       background: transparent;
-      color: var(--text-muted);
+      color: var(--comic-ink);
       font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       box-shadow: none;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--comic-paper-deep);
+        box-shadow: none;
+        transform: none;
+      }
+
+      &:active {
+        transform: none;
         box-shadow: none;
       }
 
       &.is-active {
-        background: var(--brand-orange-dim);
-        color: var(--brand-orange-soft);
+        background: var(--comic-yellow);
+        color: var(--comic-ink);
+        font-weight: 700;
       }
     }
   }
@@ -223,9 +236,10 @@
     gap: 8px;
     margin-left: auto;
 
+    // Color/border/shadow come from the global comic .btn-primary /
+    // .btn-secondary plates; only sizing and the disabled state live here.
     button {
       padding: 0.4rem 0.95rem;
-      border-radius: 8px;
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
@@ -234,18 +248,6 @@
         opacity: 0.4;
         cursor: not-allowed;
       }
-    }
-
-    .btn-primary {
-      background: var(--brand-orange);
-      border: 1px solid var(--brand-orange);
-      color: #fff;
-    }
-
-    .btn-secondary {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-bright);
-      color: var(--text);
     }
   }
 
@@ -259,14 +261,14 @@
     color: var(--text-muted);
 
     .copy-code__empty-title {
-      color: var(--text);
+      color: var(--comic-ink);
       font-size: 1.05rem;
       font-weight: 600;
       margin-bottom: 8px;
     }
 
     code {
-      color: var(--brand-orange-soft);
+      color: var(--comic-blue);
       font-family: "Space Mono", monospace;
       font-size: 0.85em;
     }
@@ -284,13 +286,14 @@
     align-items: center;
     gap: 7px;
     padding: 4px 10px;
-    border: 1px solid var(--border-bright);
+    border: 2px solid var(--comic-ink);
     border-radius: 999px;
-    background: var(--bg-elevated);
-    color: var(--text);
+    background: #fff;
+    box-shadow: 2px 2px 0 var(--comic-ink);
+    color: var(--comic-ink);
     font-size: 0.78rem;
     cursor: pointer;
-    transition: border-color 0.12s ease, color 0.12s ease;
+    transition: border-color 0.12s ease, background 0.12s ease;
 
     span {
       color: var(--text-muted);
@@ -300,7 +303,10 @@
 
     &:hover {
       border-color: var(--red);
-      color: var(--text);
+      background: #fff;
+      color: var(--comic-ink);
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 var(--comic-ink);
 
       span {
         color: var(--red);
@@ -311,14 +317,14 @@
   .copy-code__included {
     padding: 10px 16px 4px;
     font-size: 0.82rem;
-    color: var(--text);
+    color: var(--comic-ink);
 
     p {
       margin: 4px 0;
     }
 
     strong {
-      color: var(--brand-orange-soft);
+      color: var(--comic-red);
     }
 
     .copy-code__included-note {
@@ -326,11 +332,11 @@
     }
   }
 
+  // The generated code IS a screen: dark ground, light code, ink frame.
   .copy-code__code {
+    @include comic-screen;
     margin: 14px 16px 16px;
     padding: 14px;
-    border-radius: 8px;
-    background: var(--code-bg);
     color: var(--text-code);
     font-size: 0.76rem;
     line-height: 1.55;
