@@ -1,3 +1,16 @@
+<p align="center">
+  <a href="https://utilspalooza.com">
+    <img src="https://utilspalooza.com/npm-banner.png" alt="Utilspalooza — canvas animation math you can see, understand, and copy into your own project" width="100%" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@utilspalooza/core"><img src="https://img.shields.io/npm/v/%40utilspalooza%2Fcore?style=flat-square&labelColor=12100e&color=e5261f" alt="npm version" /></a>
+  <img src="https://img.shields.io/badge/license-MIT-ffd630?style=flat-square&labelColor=12100e" alt="MIT license" />
+  <a href="https://utilspalooza.com/api"><img src="https://img.shields.io/badge/docs-read_the_comic-1d53c0?style=flat-square&labelColor=12100e" alt="docs: read the comic" /></a>
+  <img src="https://img.shields.io/badge/dependencies-zero-12100e?style=flat-square&labelColor=12100e&color=fbf3df" alt="zero dependencies" />
+</p>
+
 # @utilspalooza/core
 
 Utilspalooza is a small TypeScript toolkit of readable math helpers for creative
@@ -11,6 +24,19 @@ time-driven animation helpers.
 
 No React, no canvas dependency, no runtime dependencies. Just pure functions you
 can use, inspect, and adapt.
+
+## The docs read like a comic
+
+Every function in this package is its own **issue** on
+[utilspalooza.com/api](https://utilspalooza.com/api) — see the math move in a
+live demo, read the plain-English explanation, then take the code. Chapters run
+in teaching order, so you can also just read it front to back.
+
+<p align="center">
+  <a href="https://utilspalooza.com/api?tab=documentation&fn=lerp">
+    <img src="https://utilspalooza.com/npm-shot-issue.png" alt="lerp, presented as Issue No. 1 of the Utilspalooza function reference — an interactive comic-book page" width="100%" />
+  </a>
+</p>
 
 ## Install
 

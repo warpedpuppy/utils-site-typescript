@@ -1,3 +1,15 @@
+<p align="center">
+  <a href="https://utilspalooza.com">
+    <img src="https://utilspalooza.com/npm-banner.png" alt="Utilspalooza — canvas animation math you can see, understand, and copy into your own project" width="100%" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@utilspalooza/core"><img src="https://img.shields.io/npm/v/%40utilspalooza%2Fcore?style=flat-square&labelColor=12100e&color=e5261f" alt="npm version" /></a>
+  <img src="https://img.shields.io/badge/license-MIT-ffd630?style=flat-square&labelColor=12100e" alt="MIT license" />
+  <a href="https://utilspalooza.com/api"><img src="https://img.shields.io/badge/docs-read_the_comic-1d53c0?style=flat-square&labelColor=12100e" alt="docs: read the comic" /></a>
+</p>
+
 # Utilspalooza
 
 Readable animation math for canvas, creative coding, and visual experiments.
