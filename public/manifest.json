@@ -4,8 +4,8 @@
   "description": "Canvas animation formulas with live demos and one-click TypeScript/JavaScript export.",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#0d0f1a",
-  "background_color": "#0d0f1a",
+  "theme_color": "#fbf3df",
+  "background_color": "#fbf3df",
   "icons": [
     {
       "src": "favicon.ico",

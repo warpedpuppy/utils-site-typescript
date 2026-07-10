@@ -4,31 +4,30 @@
   overflow: visible;
 }
 
+// Full-Lichtenstein re-ink (Ted, 2026-07-10): the mark joins the printed page.
+// Flat comic fills + hard ink lines only — no glows, no translucency, and the
+// old brand orange is retired entirely (it was the last orange on the site).
+
 .utilspalooza-logo__orbits {
   fill: none;
-  stroke: rgba(130, 215, 198, 0.48);
-  stroke-width: 0.85;
-  filter: drop-shadow(0 0 4px rgba(130, 215, 198, 0.16));
+  stroke: var(--comic-ink);
+  stroke-width: 0.9;
 }
 
 .utilspalooza-logo__rays {
-  // Pinned literal, NOT var(--brand-orange-soft): site accents re-inked to
-  // comic red in the paper flip, but Ted's call is the logo mark alone keeps
-  // its brand orange.
-  stroke: #ff9f1c;
+  stroke: var(--comic-red);
   stroke-width: 1.45;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 4px rgba(255, 140, 50, 0.42));
 }
 
 .utilspalooza-logo__dots {
-  fill: #ffd58c;
-  filter: drop-shadow(0 0 4px rgba(255, 176, 64, 0.35));
+  fill: var(--comic-yellow);
+  stroke: var(--comic-ink);
+  stroke-width: 0.55;
 }
 
 .utilspalooza-logo__nucleus {
-  fill: rgba(100, 200, 185, 0.92);
-  stroke: rgba(244, 248, 255, 0.4);
-  stroke-width: 0.45;
-  filter: drop-shadow(0 0 6px rgba(100, 200, 185, 0.35));
+  fill: var(--comic-blue);
+  stroke: var(--comic-ink);
+  stroke-width: 0.6;
 }
