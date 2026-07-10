@@ -41,11 +41,15 @@
     a {
       padding: 0;
       margin: 0;
-      color: var(--comic-ink);
-      background: linear-gradient(135deg, var(--comic-ink) 55%, var(--comic-red));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      // Masthead echoes the hero wordmark, cut down for 18px: Bangers in flat
+      // comic red with a 1px yellow offset — no ink outline, no skew (both
+      // smear at this size). Replaces the dark-site gradient text fill.
+      font-family: var(--comic-display);
+      font-size: 1.55rem;
+      font-weight: 400;
+      letter-spacing: 0.045em;
+      color: var(--comic-red);
+      text-shadow: 1px 1px 0 var(--comic-yellow);
     }
   }
 
