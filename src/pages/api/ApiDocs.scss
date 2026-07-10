@@ -9,21 +9,25 @@
   margin: calc(var(--menu-height) + 34px) auto 64px;
   color: var(--text);
 
-  code {
-    color: var(--text-code);
-  }
+  // Code is ink on the printed page. Only dark "screen" plates re-light it,
+  // via scoped rules on each screen block below.
 }
 
 .api-docs__intro {
+  // No hairline here — the comic tab bar's 4px ink rule below is the divider.
   padding: 24px 0 30px;
-  border-bottom: 1px solid var(--border);
 
   h1 {
     max-width: 760px;
     margin: 0 0 14px;
-    font-size: clamp(2rem, 5vw, 4.25rem);
-    line-height: 1.02;
-    letter-spacing: 0;
+    font-family: var(--comic-display);
+    font-weight: 400; // Bangers ships one weight; bolding it just blurs the ink
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    line-height: 0.98;
+    letter-spacing: 0.02em;
+    color: var(--comic-red);
+    text-shadow: 3px 3px 0 var(--comic-yellow), 5px 5px 0 var(--comic-ink);
+    transform: skew(-4deg);
   }
 
   p {
@@ -43,23 +47,25 @@
   display: inline-flex;
   align-items: center;
   padding: 3px 10px;
-  border: 1px solid var(--border-bright);
-  border-radius: 999px;
+  border: 2px solid var(--comic-ink);
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--comic-ink);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.03em;
-  color: var(--text-muted);
+  color: var(--comic-ink);
   text-decoration: none;
 }
 
 a.api-docs__badge:hover {
-  color: var(--text);
-  border-color: var(--accent);
+  color: var(--comic-ink);
+  background: var(--comic-yellow);
 }
 
 .api-docs__eyebrow {
   margin-bottom: 8px;
-  color: var(--brand-orange-soft) !important;
+  // !important: must out-rank `.api-docs__intro p`'s muted color.
+  color: var(--comic-red) !important;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -77,9 +83,15 @@ a.api-docs__badge:hover {
   gap: 18px;
   margin-bottom: 16px;
 
+  // Overview section titles: comic-lettered ink with a yellow offset — quieter
+  // than the red newsstand/page mastheads, so the hierarchy still reads.
   h2 {
-    font-size: 1.4rem;
-    letter-spacing: 0;
+    font-family: var(--comic-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+    letter-spacing: 0.03em;
+    text-shadow: 2px 2px 0 var(--comic-yellow);
+    transform: skew(-3deg);
   }
 
   p {
@@ -95,9 +107,7 @@ a.api-docs__badge:hover {
 
 .api-docs__card,
 .api-docs__effect {
-  border: 1px solid var(--border);
-  background: rgba(22, 25, 41, 0.72);
-  border-radius: 8px;
+  @include comic-plate;
   padding: 18px;
   // jumpToConcept scrollIntoView must clear the fixed NavBar + sticky tab bar
   // (the Overview has no sticky filter, so this margin is smaller than the entries').
@@ -105,8 +115,10 @@ a.api-docs__badge:hover {
 
   h3 {
     margin-bottom: 8px;
-    font-size: 1rem;
-    letter-spacing: 0;
+    font-family: var(--comic-display);
+    font-weight: 400;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
   }
 
   p {
@@ -115,19 +127,13 @@ a.api-docs__badge:hover {
   }
 }
 
-.api-docs__card:hover,
-.api-docs__effect:hover {
-  border-color: rgba(255, 122, 0, 0.24);
-}
-
 // The concept's ambient vignette (same scene as its newsstand cover), framed
-// as a small comic panel on the dark card. Decorative; LazyMount unmounts it
+// as a small comic panel on the white plate. Decorative; LazyMount unmounts it
 // off-screen, so the wrapper (not the canvas) must own the box height.
 .api-docs__card-art {
   height: 88px;
   margin: -6px 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 3px solid var(--comic-ink);
   overflow: hidden;
 
   // LazyMount's wrapper div must pass the box height down to the canvas.
@@ -146,13 +152,15 @@ a.api-docs__badge:hover {
 
 .api-docs__card pre,
 .api-docs__wide-code {
+  @include comic-screen;
   margin: 14px 0;
   padding: 14px;
   overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--code-bg);
   font-size: 0.82rem;
+
+  code {
+    color: var(--text-code); // code on a screen goes back to the night palette
+  }
 }
 
 .api-docs__wide-code {
@@ -169,11 +177,11 @@ a.api-docs__badge:hover {
   // deeper, inside a button, and must not inherit this styling.
   > span,
   > button {
-    padding: 3px 7px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.03);
+    padding: 3px 9px;
+    border: 2px solid var(--comic-ink);
+    border-radius: 999px; // ink-bordered pills
+    color: var(--comic-ink);
+    background: #fff;
     font-family: "Space Mono", monospace;
     font-size: 0.76rem;
   }
@@ -181,13 +189,15 @@ a.api-docs__badge:hover {
   button {
     position: relative;
     cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    box-shadow: 2px 2px 0 var(--comic-ink);
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
 
     &:hover,
     &:focus-visible {
-      color: var(--text);
-      border-color: var(--accent, #6366f1);
-      background: rgba(99, 102, 241, 0.12);
+      color: var(--comic-ink);
+      background: var(--comic-yellow);
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 var(--comic-ink);
 
       .api-docs__chip-tip {
         max-width: min(220px, calc(100vw - 20px));
@@ -215,10 +225,11 @@ a.api-docs__badge:hover {
   // (ApiOverview.tsx) sets --chip-tip-shift so edge tips stay in the viewport.
   max-width: 100%;
   padding: 6px 9px;
-  border: 1px solid var(--border-bright);
-  border-radius: 6px;
-  background: var(--bg-elevated);
-  color: var(--text);
+  border: 2px solid var(--comic-ink);
+  border-radius: 0;
+  background: var(--comic-yellow); // narrator caption plate
+  box-shadow: 3px 3px 0 var(--comic-ink);
+  color: var(--comic-ink);
   font-family: inherit;
   font-size: 0.72rem;
   font-weight: 400;
@@ -232,16 +243,18 @@ a.api-docs__badge:hover {
   pointer-events: none;
 }
 
+// Guide-module chips read blue at rest and fill blue on hover — the same
+// accent the shelf guides' key-piece buttons use.
 .api-docs__chip--guide {
-  border-color: rgba(125, 232, 255, 0.22) !important;
-  color: var(--text-muted) !important;
-  background: rgba(125, 232, 255, 0.05) !important;
+  border-color: var(--comic-blue) !important;
+  color: var(--comic-blue) !important;
+  background: #fff !important;
 
   &:hover,
   &:focus-visible {
-    border-color: rgb(125, 232, 255) !important;
-    color: var(--text) !important;
-    background: rgba(125, 232, 255, 0.12) !important;
+    border-color: var(--comic-ink) !important;
+    color: #fff !important;
+    background: var(--comic-blue) !important;
   }
 }
 
@@ -252,49 +265,63 @@ a.api-docs__badge:hover {
 .api-docs__effect code {
   display: block;
   margin-bottom: 10px;
+  color: var(--comic-blue);
+  font-weight: 700;
   font-size: 0.82rem;
 }
 
 .api-docs__tabs {
   display: flex;
   align-items: stretch;
-  gap: 6px;
+  gap: 8px;
   height: var(--api-tab-h);
   margin-top: 18px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 4px solid var(--comic-ink);
   // Park just below the fixed NavBar so the long doc list scrolls cleanly
   // underneath instead of bleeding through the translucent nav.
   position: sticky;
   top: var(--menu-height);
   z-index: 5; // below the NavBar's z-index: 999
-  background: var(--bg);
+  background: var(--bg); // opaque paper mask over the scrolling content
 }
 
+// Comic folder-tabs sitting on the ink rule — same vocabulary as the issue's
+// entry tabs. The global comic <button> shadow/press must not leak in: these
+// sit flush on the rule, so shadow and transform are zeroed in every state.
 .api-docs__tab {
   appearance: none;
   display: flex;
   align-items: center;
-  border: 0;
-  // Square off the inherited global `button { border-radius: 8px }` so the
-  // active-tab underline is a straight line, not curled up at both ends.
+  border: 3px solid var(--comic-ink);
+  border-bottom: none;
   border-radius: 0;
-  background: transparent;
-  color: var(--text-muted);
-  padding: 0 4px;
-  margin-bottom: -1px;
-  margin-right: 18px;
-  font: inherit;
-  font-weight: 600;
+  background: var(--comic-paper-deep);
+  color: var(--comic-ink);
+  padding: 0 16px;
+  margin-bottom: 0;
+  font-family: var(--comic-display);
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  box-shadow: none;
 
   &:hover {
-    color: var(--text);
+    color: var(--comic-ink);
+    background: var(--comic-yellow);
+    transform: none;
+    box-shadow: none;
+  }
+
+  &:active {
+    transform: none;
+    box-shadow: none;
   }
 
   &.is-active {
-    color: var(--text);
-    border-bottom-color: var(--brand-orange-soft);
+    background: var(--comic-red);
+    color: #fff;
+    text-shadow: 2px 2px 0 var(--comic-ink);
   }
 }
 
@@ -309,35 +336,27 @@ a.api-docs__badge:hover {
 
 .api-docs__search {
   width: 100%;
-  // Extra left pad leaves room for the inline magnifier icon.
+  // Extra left pad leaves room for the inline magnifier icon (inked).
   padding: 14px 16px 14px 46px;
-  border: 1.5px solid var(--border-bright);
-  border-radius: 10px;
-  // Lighter than the page (was --code-bg #090b13, DARKER than the page —
-  // which is why it vanished). --bg-elevated reads as a real, findable control.
-  background-color: var(--bg-elevated);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23ff9f1c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  border: 3px solid var(--comic-ink);
+  border-radius: 0;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2312100e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: 16px center;
-  color: var(--text);
+  color: var(--comic-ink);
   font: inherit;
   font-size: 0.98rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
-  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.15s;
 
   &::placeholder {
-    color: var(--text-muted);
-  }
-
-  &:hover {
-    border-color: var(--brand-orange-soft);
+    color: #8a8071;
   }
 
   &:focus {
     outline: none;
-    border-color: var(--brand-orange);
-    box-shadow: 0 0 0 3px var(--brand-orange-glow);
-    background-color: var(--bg-surface);
+    box-shadow: 4px 4px 0 var(--comic-blue);
   }
 }
 
@@ -361,40 +380,25 @@ a.api-docs__badge:hover {
   flex-wrap: wrap;
 }
 
-.api-docs__kind {
-  padding: 2px 7px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-
-.api-docs__kind--function {
-  border-color: rgba(255, 122, 0, 0.35);
-  color: var(--brand-orange-soft);
-}
-
+.api-docs__kind,
 .api-docs__role {
   padding: 2px 7px;
-  border-radius: 999px;
-  border: 1px solid rgba(125, 232, 255, 0.28);
-  color: rgb(125, 232, 255);
+  border: 2px solid var(--comic-ink);
+  background: var(--comic-paper-deep);
+  color: var(--comic-ink);
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
+// Guides ("start here" boxes) are narrator caption plates on the shelf.
 .api-docs__guide {
-  border: 1px solid rgba(125, 232, 255, 0.2);
-  background: rgba(14, 28, 40, 0.72);
-  border-radius: 8px;
+  @include comic-plate(var(--comic-yellow));
   padding: 16px 18px;
-  margin-bottom: 12px;
+  margin: 14px 0 12px;
 
   p {
-    color: var(--text-muted);
+    color: var(--comic-ink);
     font-size: 0.92rem;
     margin: 8px 0 0;
   }
@@ -417,7 +421,7 @@ a.api-docs__badge:hover {
     font-size: 0.72rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: rgb(125, 232, 255);
+    color: var(--comic-red);
   }
 }
 
@@ -429,20 +433,24 @@ a.api-docs__badge:hover {
 
   button {
     padding: 3px 7px;
-    border: 1px solid rgba(125, 232, 255, 0.22);
-    border-radius: 6px;
-    color: rgb(125, 232, 255);
-    background: rgba(125, 232, 255, 0.08);
+    border: 2px solid var(--comic-ink);
+    border-radius: 0;
+    color: var(--comic-ink);
+    background: #fff;
+    box-shadow: 2px 2px 0 var(--comic-ink);
     font-family: "Space Mono", monospace;
     font-size: 0.76rem;
     cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease,
+      box-shadow 0.1s ease;
 
     &:hover,
     &:focus-visible {
-      color: var(--text);
-      border-color: rgb(125, 232, 255);
-      background: rgba(125, 232, 255, 0.16);
+      color: #fff;
+      border-color: var(--comic-ink);
+      background: var(--comic-blue);
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 var(--comic-ink);
     }
   }
 }
@@ -506,25 +514,32 @@ a.api-docs__badge:hover {
   display: flex;
   align-items: center;
   gap: 7px;
-  margin-top: 8px;
+  margin-top: 14px;
 
   span {
     color: var(--text-muted);
     font-size: 0.78rem;
   }
 
+  // Text-style buttons: zero out the global comic <button> plate (border,
+  // shadow, press-transform) in every state.
   button {
     border: 0;
     padding: 0;
     background: transparent;
-    color: rgb(125, 232, 255);
+    box-shadow: none;
+    color: var(--comic-blue);
     font: inherit;
     font-size: 0.8rem;
     cursor: pointer;
 
     &:hover,
-    &:focus-visible {
-      color: var(--text);
+    &:focus-visible,
+    &:active {
+      color: var(--comic-ink);
+      background: transparent;
+      box-shadow: none;
+      transform: none;
       text-decoration: underline;
       text-underline-offset: 2px;
     }
@@ -540,9 +555,10 @@ a.api-docs__badge:hover {
   // Wrap long signatures/examples instead of forcing a scrollbar.
   white-space: pre-wrap;
   word-break: break-word;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--code-bg);
+  // White plates, not screens: signatures are print, part of the page.
+  border: 2px solid var(--comic-ink);
+  border-radius: 0;
+  background: #fff;
   font-size: 0.82rem;
 }
 
@@ -719,19 +735,11 @@ a.api-docs__badge:hover {
 // comic-plate comes from src/styles/_comic.scss.
 // ═══════════════════════════════════════════════════════════════════════════
 
-.api-docs__newsstand,
-.api-docs__issue {
-  margin-top: 26px;
-  padding: 0 22px 30px;
-  background: var(--comic-paper);
-  border: 4px solid var(--comic-ink);
-  box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.45);
-  color: var(--comic-ink);
-
-  code {
-    color: var(--comic-ink);
-  }
-}
+// Phase 3 (site-wide comic): the page behind these surfaces is paper now too.
+// The newsstand stopped being a plate-on-a-plate — it simply IS the page, so
+// it carries no frame of its own. The issue keeps its plate (one comic book
+// picked up off the rack); its frame lives on .api-docs__issue below. Final
+// look flagged for Ted's eye pass (plan open question #1).
 
 // ── Newsstand chrome ────────────────────────────────────────────────────────
 
@@ -754,36 +762,6 @@ a.api-docs__badge:hover {
     color: #5c5344;
     font-size: 0.98rem;
   }
-}
-
-.api-docs__newsstand .api-docs__filter {
-  background: var(--comic-paper); // opaque sticky mask over the scrolling rack
-}
-
-.api-docs__newsstand .api-docs__search {
-  border: 3px solid var(--comic-ink);
-  border-radius: 0;
-  background-color: #fff;
-  color: var(--comic-ink);
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
-
-  &::placeholder {
-    color: #8a8071;
-  }
-
-  &:hover {
-    border-color: var(--comic-ink);
-  }
-
-  &:focus {
-    border-color: var(--comic-ink);
-    box-shadow: 4px 4px 0 var(--comic-blue);
-    background-color: #fff;
-  }
-}
-
-.api-docs__newsstand .api-docs__count {
-  color: #5c5344;
 }
 
 // ── The rack (chapter covers) ───────────────────────────────────────────────
@@ -1065,49 +1043,15 @@ a.api-docs__badge:hover {
   line-height: 1.35;
 }
 
-// Guides ("start here" boxes) become narrator caption plates on the shelf.
-.api-docs__newsstand .api-docs__guide {
-  @include comic-plate(var(--comic-yellow));
-  border-radius: 0;
-  margin: 14px 0 12px;
-
-  p {
-    color: var(--comic-ink);
-  }
-}
-
-.api-docs__newsstand .api-docs__guide-head span {
-  color: var(--comic-red);
-}
-
-.api-docs__newsstand .api-docs__guide-pieces button {
-  border: 2px solid var(--comic-ink);
-  border-radius: 0;
-  background: #fff;
-  color: var(--comic-ink);
-
-  &:hover,
-  &:focus-visible {
-    background: var(--comic-blue);
-    border-color: var(--comic-ink);
-    color: #fff;
-  }
-}
-
-.api-docs__newsstand .api-docs__fn-sig {
-  border: 2px solid var(--comic-ink);
-  border-radius: 0;
-  background: #fff;
-}
-
-.api-docs__newsstand .api-docs__empty {
-  color: #5c5344;
-}
-
 // ── The issue (one export, full comic treatment) ────────────────────────────
 
 .api-docs__issue {
-  padding-top: 0;
+  margin-top: 26px;
+  padding: 0 22px 30px;
+  background: var(--comic-paper);
+  border: 4px solid var(--comic-ink);
+  // Retuned for paper-on-paper: a warm ink wash, not the old harsh black drop.
+  box-shadow: 10px 10px 0 rgba(18, 16, 14, 0.2);
   // ?fn= deep links scrollIntoView the article; clear the NavBar + tab bar.
   scroll-margin-top: calc(var(--menu-height) + var(--api-tab-h) + 12px);
 
@@ -1248,13 +1192,6 @@ a.api-docs__badge:hover {
     font-size: 0.85rem;
   }
 
-  .api-docs__kind,
-  .api-docs__role {
-    border: 2px solid var(--comic-ink);
-    border-radius: 0;
-    background: var(--comic-paper-deep);
-    color: var(--comic-ink);
-  }
 }
 
 .api-docs__issue-subtitle {
@@ -1265,23 +1202,6 @@ a.api-docs__badge:hover {
   padding: 8px 14px;
   font-size: 0.98rem;
   transform: rotate(-1deg);
-}
-
-.api-docs__issue .api-docs__crumbs {
-  margin-top: 14px;
-
-  span {
-    color: #5c5344;
-  }
-
-  button {
-    color: var(--comic-blue);
-
-    &:hover,
-    &:focus-visible {
-      color: var(--comic-ink);
-    }
-  }
 }
 
 // The three-tab anatomy, re-inked. Same markup, comic clothes.
@@ -1367,13 +1287,6 @@ a.api-docs__badge:hover {
     background: var(--comic-red);
     border-color: var(--comic-ink);
   }
-}
-
-.api-docs__issue .api-docs__fn-sig,
-.api-docs__issue .api-docs__fn-example {
-  border: 2px solid var(--comic-ink);
-  border-radius: 0;
-  background: #fff;
 }
 
 .api-docs__issue .api-docs__example-callout {
@@ -1471,8 +1384,18 @@ a.api-docs__badge:hover {
     border: none;
     border-radius: 0;
     background: transparent;
+    // Zero out the global comic <button> plate in every state — this is a
+    // full-bleed text button living inside the red footer, not a plate.
+    box-shadow: none;
     text-align: left;
     cursor: pointer;
+
+    &:hover,
+    &:active {
+      background: transparent;
+      transform: none;
+      box-shadow: none;
+    }
 
     span {
       display: block;
@@ -1516,7 +1439,6 @@ a.api-docs__badge:hover {
 }
 
 @media (max-width: 700px) {
-  .api-docs__newsstand,
   .api-docs__issue {
     padding-left: 14px;
     padding-right: 14px;
