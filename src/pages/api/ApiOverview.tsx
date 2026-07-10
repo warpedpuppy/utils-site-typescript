@@ -1,8 +1,9 @@
 // The /api "Overview" tab: concept cards (click a chip → the reference,
 // pre-filtered) and the preview of the planned @utilspalooza/effects surface.
 // Pure layout, fed by conceptGroups from apiModel.
+import type { SyntheticEvent } from "react";
 import { apiEntries, conceptGroups, CONCEPT_PREFIX } from "./apiModel";
-import { getModuleDocMode } from "./docsManifest";
+import { getEntryUsageLead, getModuleDocMode } from "./docsManifest";
 
 const effects = [
   {
@@ -27,6 +28,24 @@ const effects = [
   },
 ];
 
+// Chip tooltips are CSS-positioned (centered above the chip), which lets edge
+// chips push them off-screen on narrow viewports. On reveal, measure the tip at
+// its natural position and shift it back inside the viewport via a CSS var.
+const CHIP_TIP_VIEWPORT_PAD = 10;
+function clampChipTip(event: SyntheticEvent<HTMLButtonElement>) {
+  const tip = event.currentTarget.querySelector<HTMLElement>(".api-docs__chip-tip");
+  if (!tip) return;
+  tip.style.removeProperty("--chip-tip-shift");
+  const rect = tip.getBoundingClientRect();
+  let shift = 0;
+  if (rect.left < CHIP_TIP_VIEWPORT_PAD) {
+    shift = CHIP_TIP_VIEWPORT_PAD - rect.left;
+  } else if (rect.right > window.innerWidth - CHIP_TIP_VIEWPORT_PAD) {
+    shift = window.innerWidth - CHIP_TIP_VIEWPORT_PAD - rect.right;
+  }
+  if (shift !== 0) tip.style.setProperty("--chip-tip-shift", `${Math.round(shift)}px`);
+}
+
 export function Overview({ onPick }: { onPick: (name: string, conceptId: string) => void }) {
   const total = apiEntries.length;
   return (
@@ -50,37 +69,33 @@ export function Overview({ onPick }: { onPick: (name: string, conceptId: string)
             >
               <h3>{group.title}</h3>
               <p>{group.blurb}</p>
-              <div className="api-docs__card-meta">
-                <span>{group.referenceModules} reference module{group.referenceModules === 1 ? "" : "s"}</span>
-                {group.systemGuideModules > 0 && (
-                  <span>
-                    {group.systemGuideModules} system guide
-                    {group.systemGuideModules === 1 ? "" : "s"}
-                  </span>
-                )}
-                {group.conceptSetModules > 0 && (
-                  <span>
-                    {group.conceptSetModules} concept set
-                    {group.conceptSetModules === 1 ? "" : "s"}
-                  </span>
-                )}
-              </div>
+              <p className="api-docs__card-count">
+                {group.items.length} function{group.items.length === 1 ? "" : "s"}
+              </p>
               <div className="api-docs__chips">
-                {group.items.map((item) => (
-                  <button
-                    type="button"
-                    key={`${item.module}.${item.name}`}
-                    onClick={() => onPick(item.name, group.id)}
-                    title={`Open ${item.name} in the reference`}
-                    className={
-                      getModuleDocMode(item.module) === "guide"
-                        ? "api-docs__chip api-docs__chip--guide"
-                        : "api-docs__chip"
-                    }
-                  >
-                    {item.name}
-                  </button>
-                ))}
+                {group.items.map((item) => {
+                  const tipId = `chip-tip-${item.module}-${item.name}`;
+                  return (
+                    <button
+                      type="button"
+                      key={`${item.module}.${item.name}`}
+                      onClick={() => onPick(item.name, group.id)}
+                      onMouseEnter={clampChipTip}
+                      onFocus={clampChipTip}
+                      aria-describedby={tipId}
+                      className={
+                        getModuleDocMode(item.module) === "guide"
+                          ? "api-docs__chip api-docs__chip--guide"
+                          : "api-docs__chip"
+                      }
+                    >
+                      {item.name}
+                      <span className="api-docs__chip-tip" role="tooltip" id={tipId}>
+                        {getEntryUsageLead(item)}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </article>
           ))}

@@ -6,11 +6,9 @@ import coreApi from "./core-api.json";
 import {
   CATCH_ALL_CONCEPT,
   CONCEPTS,
-  getModuleDocMode,
   makeConceptId,
   MODULE_ENTRY_ORDER,
   MODULE_GUIDES,
-  ModuleDocMode,
 } from "./docsManifest";
 
 export const CONCEPT_PREFIX = "concept-";
@@ -33,9 +31,6 @@ export interface ConceptGroup {
   title: string;
   blurb: string;
   items: ApiEntry[];
-  systemGuideModules: number;
-  conceptSetModules: number;
-  referenceModules: number;
 }
 
 // JSDoc descriptions may contain inline {@link name} tags — render them as plain text.
@@ -169,30 +164,6 @@ export function renderImportLine(entry: ApiEntry): string {
   return `import { ${entry.name} } from "@utilspalooza/core";`;
 }
 
-function countConceptModulesByMode(entries: ApiEntry[]) {
-  const seen = new Map<string, ModuleDocMode>();
-  for (const entry of entries) {
-    if (!seen.has(entry.module)) {
-      seen.set(entry.module, getModuleDocMode(entry.module));
-    }
-  }
-
-  let systemGuideModules = 0;
-  let conceptSetModules = 0;
-  let referenceModules = 0;
-  for (const [module, mode] of seen.entries()) {
-    if (mode === "guide") {
-      const guideKind = MODULE_GUIDES[module]?.guideKind;
-      if (guideKind === "system") systemGuideModules += 1;
-      else conceptSetModules += 1;
-      continue;
-    }
-    referenceModules += 1;
-  }
-
-  return { systemGuideModules, conceptSetModules, referenceModules };
-}
-
 // Build concept groups straight from the generated docs data. Each concept lists
 // every export whose source module it claims; anything unclaimed is collected
 // into the catch-all so nothing the package exports is ever hidden here.
@@ -215,7 +186,6 @@ function buildConceptGroups(): ConceptGroup[] {
     title: concept.title,
     blurb: concept.blurb,
     items: buckets[i],
-    ...countConceptModulesByMode(buckets[i]),
   })).filter((g) => g.items.length > 0);
 
   if (leftovers.length > 0) {
@@ -223,7 +193,6 @@ function buildConceptGroups(): ConceptGroup[] {
       id: makeConceptId(CATCH_ALL_CONCEPT.title),
       ...CATCH_ALL_CONCEPT,
       items: leftovers,
-      ...countConceptModulesByMode(leftovers),
     });
   }
   return groups;

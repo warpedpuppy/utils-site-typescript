@@ -127,20 +127,12 @@ a.api-docs__badge:hover {
   border-color: rgba(255, 122, 0, 0.24);
 }
 
-.api-docs__card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.api-docs__card .api-docs__card-count {
   margin-top: 12px;
-
-  span {
-    padding: 2px 7px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    color: var(--text-muted);
-    font-size: 0.72rem;
-    letter-spacing: 0.03em;
-  }
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .api-docs__card pre,
@@ -164,8 +156,10 @@ a.api-docs__badge:hover {
   gap: 7px;
   margin-top: 12px;
 
-  span,
-  button {
+  // Direct children only — the chip-tip tooltip lives nested one level
+  // deeper, inside a button, and must not inherit this styling.
+  > span,
+  > button {
     padding: 3px 7px;
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -176,6 +170,7 @@ a.api-docs__badge:hover {
   }
 
   button {
+    position: relative;
     cursor: pointer;
     transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 
@@ -184,8 +179,48 @@ a.api-docs__badge:hover {
       color: var(--text);
       border-color: var(--accent, #6366f1);
       background: rgba(99, 102, 241, 0.12);
+
+      .api-docs__chip-tip {
+        max-width: min(220px, calc(100vw - 20px));
+        opacity: 1;
+        transform: translate(calc(-50% + var(--chip-tip-shift, 0px)), -4px);
+        visibility: visible;
+      }
     }
   }
+}
+
+// One-line plain-English preview, revealed on hover/focus so a reader can
+// tell what a chip does before opening it. `aria-describedby` keeps the text
+// in the accessibility tree regardless of visibility.
+.api-docs__chip-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 4;
+  width: max-content;
+  // While hidden, cap the tip at its chip's width: invisible boxes still count
+  // toward scrollable overflow, and 142 of these centered over edge chips added
+  // ~45px of horizontal scroll at 390px. The hover/focus rule above widens it
+  // to the real reading width before it becomes visible, and clampChipTip()
+  // (ApiOverview.tsx) sets --chip-tip-shift so edge tips stay in the viewport.
+  max-width: 100%;
+  padding: 6px 9px;
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 0);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  pointer-events: none;
 }
 
 .api-docs__chip--guide {

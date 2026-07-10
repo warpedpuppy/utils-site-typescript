@@ -43,7 +43,11 @@ function renderEntryMeta(entry: ApiEntry, mode: ModuleDocMode) {
   const guide = MODULE_GUIDES[entry.module];
   return (
     <div className="api-docs__entry-meta">
-      <span className={`api-docs__kind api-docs__kind--${entry.kind}`}>{entry.kind}</span>
+      {/* "function" is the default case for ~87% of exports — flagging it on
+          every issue is taxonomy noise. Only const/type are worth calling out. */}
+      {entry.kind !== "function" && (
+        <span className={`api-docs__kind api-docs__kind--${entry.kind}`}>{entry.kind}</span>
+      )}
       {mode === "guide" && guide && <span className="api-docs__role">{guide.badgeLabel}</span>}
     </div>
   );
@@ -403,13 +407,13 @@ function Documentation({
         <input
           type="search"
           className="api-docs__search"
-          placeholder={`Looking for someone? Filter ${total} exports…`}
+          placeholder={`Looking for someone? Filter ${total} functions…`}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           aria-label="Filter API functions"
         />
         <p className="api-docs__count">
-          {shown} of {total} exports
+          Showing {shown} of {total} functions
         </p>
       </div>
 
