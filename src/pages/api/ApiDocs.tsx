@@ -15,6 +15,7 @@ import {
   getEntryIntro,
   getEntryTabs,
   getEntryUsageLead,
+  getEntryPanelSize,
   getEntryVisual,
   getModuleDocMode,
   MODULE_GUIDES,
@@ -241,6 +242,9 @@ function IssueView({
   const chapter = getChapterForModule(entry.module);
   const nextChapter = getChapterForModule(next.module);
   const turnsChapter = !isLast && chapter && nextChapter && chapter.id !== nextChapter.id;
+  // Phase 4 pacing: splash issues open like a double-page spread, compact ones
+  // like a one-pager. All three sizes keep the full three-tab anatomy.
+  const panelSize = getEntryPanelSize(entry);
 
   // Turning to another issue (tile, related button, NEXT ISSUE) presents it
   // from the top like a page turn, and hands focus to the article so keyboard
@@ -252,7 +256,11 @@ function IssueView({
   }, [entry.name]);
 
   return (
-    <article className="api-docs__issue" id={entry.name} tabIndex={-1}>
+    <article
+      className={`api-docs__issue api-docs__issue--${panelSize}`}
+      id={entry.name}
+      tabIndex={-1}
+    >
       <header className="api-docs__issue-masthead">
         <div className="api-docs__issue-art" aria-hidden="true">
           {concept && <AmbientConceptCanvas conceptId={concept.id} />}
@@ -463,25 +471,40 @@ function Documentation({
             )}
             <div className="api-docs__tile-grid">
               {chapter.moduleGroups.flatMap(([module, entries]) =>
-                entries.map((entry) => (
-                  <button
-                    type="button"
-                    key={`${module}.${entry.name}`}
-                    className={`api-docs__tile api-docs__tile--${accent}`}
-                    onClick={() => onExpandFunction(entry.name)}
-                  >
-                    <span className="api-docs__tile-strip" aria-hidden="true" />
-                    <span className="api-docs__tile-body">
-                      <span className="api-docs__tile-topline">
-                        <code>{entry.name}</code>
-                        {entry.kind !== "function" && (
-                          <span className="api-docs__tile-kind">{entry.kind}</span>
+                entries.map((entry) => {
+                  // Splash flagships rack face-out: a double-wide featured
+                  // cover with the comic title, so the shelf has headliners.
+                  const featured = getEntryPanelSize(entry) === "splash";
+                  return (
+                    <button
+                      type="button"
+                      key={`${module}.${entry.name}`}
+                      className={`api-docs__tile api-docs__tile--${accent}${featured ? " api-docs__tile--featured" : ""}`}
+                      onClick={() => onExpandFunction(entry.name)}
+                    >
+                      <span className="api-docs__tile-strip" aria-hidden="true" />
+                      {featured && (
+                        <span className="api-docs__tile-flash" aria-hidden="true">
+                          ★ feature
+                        </span>
+                      )}
+                      <span className="api-docs__tile-body">
+                        {featured && (
+                          <span className="api-docs__tile-feature-title">
+                            {comicDisplayTitle(entry.name)}
+                          </span>
                         )}
+                        <span className="api-docs__tile-topline">
+                          <code>{entry.name}</code>
+                          {entry.kind !== "function" && (
+                            <span className="api-docs__tile-kind">{entry.kind}</span>
+                          )}
+                        </span>
+                        <span className="api-docs__tile-lead">{getEntryUsageLead(entry)}</span>
                       </span>
-                      <span className="api-docs__tile-lead">{getEntryUsageLead(entry)}</span>
-                    </span>
-                  </button>
-                )),
+                    </button>
+                  );
+                }),
               )}
             </div>
             {/* The narrator's page-turn to the next shelf. Hidden while

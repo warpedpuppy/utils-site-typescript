@@ -4,7 +4,9 @@ import coreApi from "./core-api.json";
 import {
   CONCEPTS,
   ENTRY_DOCS,
+  ENTRY_PANEL_SIZES,
   getEntryIntro,
+  getEntryPanelSize,
   getEntryTabs,
   getEntryUsageLead,
   MODULE_GUIDES,
@@ -149,6 +151,35 @@ describe("api docs manifest", () => {
 
     expect(missing).toEqual([]);
     expect(CONCEPTS[CONCEPTS.length - 1].handoff).toBeUndefined();
+  });
+
+  // Phase 4 pacing: a splash assignment for a renamed/removed export would
+  // silently do nothing, and a splash entry without a live demo would feature
+  // a cover with no story inside.
+  it("panel-size assignments point at real exports and splashes have visuals", () => {
+    const exportNames = new Set(apiEntries.map((entry) => entry.name));
+
+    for (const name of Object.keys(ENTRY_PANEL_SIZES)) {
+      expect(exportNames.has(name)).toBe(true);
+      if (ENTRY_PANEL_SIZES[name] === "splash") {
+        expect(getEntryVisual(name).kind).not.toBe("none");
+      }
+    }
+
+    // Types and consts never have demos to give room to — compact unless a
+    // direct assignment says otherwise (Flock is a class, and a flagship).
+    for (const entry of apiEntries) {
+      if (ENTRY_PANEL_SIZES[entry.name]) continue;
+      if (entry.kind === "type" || entry.kind === "const") {
+        expect(
+          getEntryPanelSize({
+            module: entry.module,
+            name: entry.name,
+            kind: entry.kind as "const" | "type",
+          }),
+        ).toBe("compact");
+      }
+    }
   });
 
   it("collision entries get shape-specific usage leads", () => {

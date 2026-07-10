@@ -960,6 +960,59 @@ a.api-docs__badge:hover {
   text-transform: uppercase;
 }
 
+// Phase 4 pacing on the rack: splash flagships sit face-out — double-wide,
+// comic-lettered title, two-line lead, a corner flash. Compact entries keep
+// the standard tile; their pacing shows inside the issue instead.
+.api-docs__tile--featured {
+  position: relative;
+
+  // Only go double-wide when the grid actually has columns to span; on a
+  // one-column phone shelf a forced span would overflow the page.
+  @media (min-width: 540px) {
+    grid-column: span 2;
+  }
+
+  .api-docs__tile-strip {
+    height: 12px;
+  }
+
+  .api-docs__tile-body {
+    padding: 10px 14px 13px;
+  }
+
+  .api-docs__tile-lead {
+    -webkit-line-clamp: 2;
+    font-size: 0.84rem;
+  }
+}
+
+.api-docs__tile-feature-title {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--comic-display);
+  font-size: 1.55rem;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: var(--comic-ink);
+  transform: skew(-3deg);
+}
+
+.api-docs__tile-flash {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  padding: 3px 9px;
+  border: 2px solid var(--comic-ink);
+  background: var(--comic-yellow);
+  box-shadow: 2px 2px 0 var(--comic-ink);
+  transform: rotate(5deg);
+  font-family: var(--comic-display);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--comic-ink);
+}
+
 // One-line teaching scent under the name; also keeps the leads in the DOM as
 // real text for crawlers now that the old TOC rows are gone.
 .api-docs__tile-lead {
@@ -1030,6 +1083,37 @@ a.api-docs__badge:hover {
   margin: 0 -22px; // bleed to the page border
   border-bottom: 4px solid var(--comic-ink);
   overflow: hidden;
+}
+
+// Phase 4 pacing inside the issue. Splash = double-page spread: a taller
+// masthead with more ambient art and a bigger title. Compact = one-pager:
+// the same anatomy at a brisker rhythm. Reference content is identical in
+// all three — pacing only ever changes room, never data.
+.api-docs__issue--splash {
+  .api-docs__issue-masthead,
+  .api-docs__issue-masthead-inner {
+    min-height: 400px;
+  }
+
+  .api-docs__issue-title {
+    font-size: clamp(2.8rem, 9vw, 5.6rem);
+  }
+}
+
+.api-docs__issue--compact {
+  .api-docs__issue-masthead,
+  .api-docs__issue-masthead-inner {
+    min-height: 190px;
+  }
+
+  .api-docs__issue-title {
+    margin-top: 10px;
+    font-size: clamp(1.7rem, 5.5vw, 2.9rem);
+  }
+
+  .api-docs__issue-subtitle {
+    font-size: 0.92rem;
+  }
 }
 
 .api-docs__issue-art {
@@ -1408,5 +1492,16 @@ a.api-docs__badge:hover {
   .api-docs__issue-masthead,
   .api-docs__issue-masthead-inner {
     min-height: 250px;
+  }
+
+  // Size modifiers out-specify the cap above; restate the phone ceilings.
+  .api-docs__issue--splash .api-docs__issue-masthead,
+  .api-docs__issue--splash .api-docs__issue-masthead-inner {
+    min-height: 300px;
+  }
+
+  .api-docs__issue--compact .api-docs__issue-masthead,
+  .api-docs__issue--compact .api-docs__issue-masthead-inner {
+    min-height: 170px;
   }
 }

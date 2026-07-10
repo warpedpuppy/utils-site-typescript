@@ -534,6 +534,60 @@ const ENTRY_USAGE_LEADS: Partial<Record<string, string>> = {
   "CenterOnParent:centerOnParent": "This one helps answer: what x,y puts this box dead-center inside that one?",
 };
 
+// ── Phase 4 pacing: splash / standard / compact ─────────────────────────────
+// Pacing in the comic IA lands on two surfaces: splash entries get a featured
+// face-out cover on the newsstand shelf and a taller masthead in their issue;
+// compact entries (helpers, shared types, easing family variants) keep the
+// full three-tab anatomy but read like a one-pager — tighter masthead, tighter
+// rhythm. Every size keeps every tab: pacing must never hide reference data.
+export type EntryPanelSize = "splash" | "standard" | "compact";
+
+// Assignment list approved by Ted, 2026-07-10 ("i love the splash list").
+// New flagships need his sign-off before joining.
+export const ENTRY_PANEL_SIZES: Partial<Record<string, EntryPanelSize>> = {
+  circleCircle: "splash",
+  circleToCircle: "splash",
+  unitCirclePoint: "splash",
+  sineCurve: "splash",
+  sineWave: "splash",
+  waveAmplitude: "splash",
+  shortestAngleBetween: "splash",
+  mapRange: "splash",
+  vecReflect: "splash",
+  Flock: "splash",
+};
+
+// Helpers + Core types chapter members read as one-pagers.
+const COMPACT_MODULES = new Set([
+  "RandomIntegerBetween",
+  "RandomNumberBetween",
+  "NumberWithCommas",
+  "CenterOnParent",
+  "types",
+]);
+
+// Easing beyond the named quartet (linear/easeIn/easeOut/easeInOut): the
+// quad/cubic/quart/quint variants are the same lesson at different strengths.
+// easeOutBounce and easeOutElastic stay standard — each teaches a new shape.
+const COMPACT_EASING_VARIANTS = new Set([
+  "easeInQuad", "easeOutQuad", "easeInOutQuad",
+  "easeInCubic", "easeOutCubic", "easeInOutCubic",
+  "easeInQuart", "easeOutQuart", "easeInOutQuart",
+  "easeInQuint", "easeOutQuint", "easeInOutQuint",
+]);
+
+export function getEntryPanelSize(
+  entry: Pick<ApiEntryLike, "module" | "name"> & { kind?: "function" | "const" | "type" },
+): EntryPanelSize {
+  const direct = ENTRY_PANEL_SIZES[entry.name];
+  if (direct) return direct;
+  // Shared shapes and ready-made values have no demo to give room to.
+  if (entry.kind === "type" || entry.kind === "const") return "compact";
+  if (COMPACT_MODULES.has(entry.module)) return "compact";
+  if (entry.module === "Easing" && COMPACT_EASING_VARIANTS.has(entry.name)) return "compact";
+  return "standard";
+}
+
 const INTRO_TAB: EntryTabConfig = { id: "intro", label: "Start Here", panel: "intro" };
 const EXPLAIN_TAB: EntryTabConfig = { id: "intro", label: "Explain It", panel: "intro" };
 const VISUAL_TAB: EntryTabConfig = { id: "visual", label: "See It Move", panel: "visual" };
