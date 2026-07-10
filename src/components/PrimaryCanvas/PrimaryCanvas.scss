@@ -1,21 +1,16 @@
+@use "../../styles/comic" as *;
+
+// The Examples stage, comic edition: a paper gutter holds a white toolbar
+// plate and THE big dark screen plate — the site's largest window onto the
+// night world. The demo canvas keeps the dark ground it was designed against;
+// the printed page frames it. (This replaces Phase 0's temporary token
+// re-pin — see .claude/PLAN-COMIC-SITEWIDE.md Phase 4.)
 #primary-canvas {
-  // Dark "screen" context: the demo canvas keeps its night-world ground, so
-  // the paper-flipped text tokens (ink, warm gray) would be unreadable here.
-  // Restore the night text values locally until Phase 4 of
-  // .claude/PLAN-COMIC-SITEWIDE.md gives this page its full comic treatment.
-  --text: #e2e4f0;
-  --text-muted: #8890b0;
-
-  // …but the global comic buttons are white plates, so their text must stay
-  // ink even inside this dark context.
-  button {
-    color: var(--comic-ink);
-  }
-
   display: flex;
   position: relative;
   flex-direction: column;
   flex: 1;
+  padding: 12px 14px 14px;
 
   &--header {
     min-height: 44px;
@@ -26,9 +21,9 @@
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(13, 15, 26, 0.82);
-    backdrop-filter: blur(14px);
+    margin-bottom: 10px;
+    @include comic-plate;
+    box-shadow: 3px 3px 0 var(--comic-ink);
 
     .primary-canvas-header-left {
       display: flex;
@@ -43,16 +38,18 @@
       font-family: "Space Mono", monospace;
       font-size: 0.72rem;
       line-height: 1.1;
-      color: var(--brand-orange-soft);
-      border: 1px solid rgba(255, 140, 50, 0.3);
-      border-radius: 4px;
+      color: var(--comic-ink);
+      border: 2px solid var(--comic-ink);
+      background: #fff;
+      box-shadow: 2px 2px 0 var(--comic-ink);
       white-space: nowrap;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
 
       &:hover {
-        color: var(--text);
-        border-color: var(--brand-orange-soft);
-        background: rgba(255, 140, 50, 0.08);
+        color: var(--comic-ink);
+        background: var(--comic-yellow);
+        transform: translate(1px, 1px);
+        box-shadow: 1px 1px 0 var(--comic-ink);
       }
     }
 
@@ -84,43 +81,65 @@
   }
 
   &--content {
+    // The screen plate: dark night-world ground inside a hard ink frame. The
+    // demos keep the light-on-dark text they were designed with, so the night
+    // text tokens are restored locally — but ONLY inside the screen.
+    --text: #e2e4f0;
+    --text-muted: #8890b0;
+    @include comic-screen;
     width: 100%;
-    background: var(--bg);
-    height: calc(100vh - var(--menu-height) - 44px);
+    // Viewport minus: nav, gutter top 12 + header 44 + gap 10 + gutter bottom 14.
+    height: calc(100vh - var(--menu-height) - 80px);
     position: relative;
 
-    /* Title overlay */
+    // The global comic buttons are white plates; any control an animation
+    // injects into the screen must keep ink text despite the night --text.
+    button {
+      color: var(--comic-ink);
+    }
+
+    /* The ELI5 narrator caption: a yellow plate pinned to the panel's top-left
+       corner, exactly where a comic page puts its captions. Animations inject
+       h3 + p via innerHTML; hidden when the current demo injects nothing. */
     &--text {
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 14px;
+      left: 14px;
       z-index: 9;
-      padding: 1rem;
+      max-width: min(36em, calc(100% - 28px));
+      padding: 10px 14px;
       pointer-events: none;
+      @include comic-plate(var(--comic-yellow));
+      box-shadow: 3px 3px 0 var(--comic-ink);
+      color: var(--comic-ink);
+
+      &:empty {
+        display: none;
+      }
 
       h3 {
         margin: 0 0 0.25rem;
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--brand-orange-soft);
-        text-shadow: 0 0 20px var(--brand-orange-glow);
+        font-family: var(--comic-display);
+        font-weight: 400;
+        font-size: 0.98rem;
+        letter-spacing: 0.05em;
+        color: var(--comic-red);
       }
+
       p {
         margin: 0.25rem 0;
         font-size: 0.8rem;
-        color: var(--text-muted);
+        color: var(--comic-ink);
       }
 
       a {
-        color: var(--brand-orange-soft);
+        color: var(--comic-blue);
         pointer-events: auto;
         text-decoration: underline;
         text-underline-offset: 0.16em;
 
         &:hover {
-          color: var(--text);
+          color: var(--comic-ink);
         }
       }
     }
@@ -131,7 +150,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(100vh - var(--menu-height) - 44px);
+      height: 100%;
 
       canvas {
         width: 100%;

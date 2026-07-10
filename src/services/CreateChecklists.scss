@@ -1,33 +1,38 @@
+// The Examples sidebar as a comic index page: deep-paper column, white
+// category plates, red marker on the open chapter. Skin only — the accordion
+// max-height/font-size mechanics and the 0.5s transition are behavioral
+// contracts (fenced by tests) and must not change.
 .example-page-checklist {
-  background: var(--bg-surface);
-  border-right: 1px solid var(--border);
+  background: var(--comic-paper-deep);
+  border-right: 3px solid var(--comic-ink);
 
   .checklist-filter {
     position: sticky;
     top: 0;
     z-index: 2;
     padding: 0.55rem 0.75rem;
-    background: var(--bg-elevated);
-    border-bottom: 1px solid var(--border);
+    background: var(--comic-paper-deep); // opaque mask over the scrolling list
+    border-bottom: 2px solid var(--comic-ink);
 
     input {
       width: 100%;
       padding: 0.4rem 0.65rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: var(--bg-surface);
-      color: var(--text);
+      border: 2px solid var(--comic-ink);
+      border-radius: 0;
+      background: #fff;
+      color: var(--comic-ink);
       font-size: 0.85rem;
       font-family: inherit;
-      transition: border-color 0.12s;
+      box-shadow: 2px 2px 0 var(--comic-ink);
+      transition: box-shadow 0.12s;
 
       &::placeholder {
-        color: var(--text-muted);
+        color: #8a8071;
       }
 
       &:focus {
         outline: none;
-        border-color: var(--brand-orange-soft);
+        box-shadow: 2px 2px 0 var(--comic-blue);
       }
     }
   }
@@ -43,28 +48,29 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.6rem 1rem;
-    background: var(--bg-elevated);
-    color: var(--text-muted);
+    background: var(--bg-surface);
+    color: var(--comic-ink);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--comic-ink);
     transition: color 0.15s, background 0.15s;
 
     &:hover {
-      color: var(--text);
-      background: var(--brand-orange-dim);
+      color: var(--comic-ink);
+      background: var(--comic-yellow);
     }
 
     .category-count {
       margin-left: auto;
       margin-right: 0.45rem;
       padding: 0.05rem 0.38rem;
-      border: 1px solid var(--border);
+      border: 2px solid var(--comic-ink);
       border-radius: 999px;
-      color: var(--text-muted);
+      background: #fff;
+      color: var(--comic-ink);
       font-size: 0.68rem;
       font-family: "Space Mono", monospace;
     }
@@ -77,14 +83,14 @@
     }
 
     &.open {
-      color: var(--brand-orange-soft);
-      background: var(--brand-orange-dim);
-      border-left: 2px solid var(--brand-orange);
-      padding-left: calc(1rem - 2px);
+      color: var(--comic-ink);
+      background: var(--comic-yellow);
+      border-left: 5px solid var(--comic-red);
+      padding-left: calc(1rem - 5px);
 
       .category-count {
-        color: var(--brand-orange-soft);
-        border-color: rgba(255, 122, 0, 0.3);
+        color: var(--comic-ink);
+        border-color: var(--comic-ink);
       }
 
       + .inner-checklist {
@@ -101,7 +107,7 @@
           transition: background 0.12s;
 
           &:hover {
-            background: var(--bg-elevated);
+            background: #fff;
           }
 
           .checklist-div {
@@ -115,7 +121,7 @@
             cursor: pointer;
 
             &.active .link-name {
-              color: var(--brand-orange-soft);
+              color: var(--comic-red);
             }
 
             .example-checklist-link {
@@ -126,7 +132,7 @@
             .link-name {
               font-size: 0.85rem;
               font-weight: 500;
-              color: var(--text-muted);
+              color: var(--comic-ink);
               transition: color 0.12s;
             }
 
@@ -140,18 +146,19 @@
               display: inline-flex;
               align-items: center;
               padding: 0.16rem 0.45rem;
-              border: 1px solid var(--border);
+              border: 2px solid var(--comic-ink);
               border-radius: 999px;
+              background: #fff;
               font-family: "Space Mono", monospace;
               font-size: 0.68rem;
               line-height: 1.2;
-              color: var(--text-muted);
-              transition: border-color 0.12s, color 0.12s, background 0.12s;
+              color: var(--comic-ink);
+              transition: background 0.12s;
 
               &:hover {
-                color: var(--text);
-                border-color: var(--brand-orange-soft);
-                background: var(--brand-orange-dim);
+                color: var(--comic-ink);
+                border-color: var(--comic-ink);
+                background: var(--comic-yellow);
               }
             }
 

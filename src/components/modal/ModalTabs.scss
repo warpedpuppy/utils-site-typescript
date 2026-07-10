@@ -1,9 +1,10 @@
+// Comic folder-tabs on an ink rule, matching the /api tab vocabulary.
 #modal-tabs {
   display: flex;
-  gap: 2px;
+  gap: 6px;
   padding: 0.5rem 1.25rem 0;
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border);
+  background: var(--comic-paper-deep);
+  border-bottom: 3px solid var(--comic-ink);
   flex-shrink: 0;
 
   > div {
@@ -11,25 +12,24 @@
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.03em;
-    color: var(--text-muted);
+    color: var(--comic-ink);
     cursor: pointer;
-    border-radius: 6px 6px 0 0;
-    border: 1px solid transparent;
+    border: 2px solid var(--comic-ink);
     border-bottom: none;
+    background: #fff;
     transition: color 0.15s, background 0.15s;
     position: relative;
-    bottom: -1px;
+    bottom: 0;
 
     &:hover {
-      color: var(--text);
-      background: var(--bg-elevated);
+      color: var(--comic-ink);
+      background: var(--comic-yellow);
     }
 
     &.active-modal-tab {
-      color: var(--accent);
-      background: var(--bg);
-      border-color: var(--border-bright);
-      border-bottom-color: var(--bg);
+      color: #fff;
+      background: var(--comic-red);
+      text-shadow: 1px 1px 0 var(--comic-ink);
     }
   }
 }
