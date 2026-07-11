@@ -109,4 +109,11 @@ export default class MoveObjectToDestinationPoint extends AnimationBaseClass {
   pointerDownHandler(_e: PointerEvent) {}
   pointerUpHandler(_e: PointerEvent) {}
   pointerMoveHandler(_e: PointerEvent) {}
+
+  stop() {
+    // The 2s drawDot interval outlived navigation before this override.
+    clearInterval(this.interval);
+    this.interval = undefined;
+    super.stop();
+  }
 }

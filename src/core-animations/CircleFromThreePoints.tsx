@@ -112,8 +112,17 @@ export default class CircleFromThreePointsAnimation extends AnimationBaseClass {
     this.draw();
 
     if (this.points.length === 3) {
+      // A previous sweep may still be mid-chain — clear it so two chains
+      // never run (and leak) concurrently.
+      clearTimeout(this.interval);
       this.interval = setTimeout(this.drawCircle, 10);
     }
+  }
+
+  stop() {
+    clearTimeout(this.interval);
+    this.interval = undefined;
+    super.stop();
   }
 
   formatText() {

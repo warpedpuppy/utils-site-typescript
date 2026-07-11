@@ -34,6 +34,10 @@ class Template {
   private onPointerDown = (e: PointerEvent) => this.pointerDownHandler(e);
   private onPointerMove = (e: PointerEvent) => this.pointerMoveHandler(e);
   private onPointerUp = (e: PointerEvent) => this.pointerUpHandler(e);
+  // Stable wrapper (mirrors AnimationBaseClass): subclass field initializers
+  // run after this constructor registers the listener, so a subclass that
+  // shadows resizeHandler would otherwise leak the registered base listener.
+  private _onResize = () => this.resizeHandler();
 
   constructor(id: string) {
     if (!this.canvas || !this.ctx) return;
@@ -56,7 +60,7 @@ class Template {
     this.canvas.addEventListener("pointerdown", this.onPointerDown);
     this.canvas.addEventListener("pointermove", this.onPointerMove);
     this.canvas.addEventListener("pointerup", this.onPointerUp);
-    window.addEventListener("resize", this.resizeHandler);
+    window.addEventListener("resize", this._onResize);
   }
   resizeHandler = () => {
     if (!this.canvas || !this.ctx) return;
@@ -128,7 +132,7 @@ class Template {
       this.canvas.removeEventListener("pointermove", this.onPointerMove);
       this.canvas.removeEventListener("pointerup", this.onPointerUp);
     }
-    window.removeEventListener("resize", this.resizeHandler);
+    window.removeEventListener("resize", this._onResize);
     if (this.cont) this.cont.innerHTML = "";
     this.ctx = null;
     this.canvas = null;

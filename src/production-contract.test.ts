@@ -46,6 +46,70 @@ beforeAll(async () => {
   });
   browser = await chromium.launch();
   page = await browser.newPage();
+
+  // Lifecycle instrumentation for the SPA leak test (WP4): count active
+  // window resize listeners and live intervals/timeouts from before any page
+  // script runs.
+  await page.addInitScript(() => {
+    const counts = {
+      resizeListeners: 0,
+      activeIntervals: 0,
+      activeTimeouts: 0,
+    };
+    (window as unknown as Record<string, unknown>).__leakCounts = counts;
+
+    const addEL = window.addEventListener.bind(window);
+    const removeEL = window.removeEventListener.bind(window);
+    window.addEventListener = ((type: string, ...rest: unknown[]) => {
+      if (type === "resize") counts.resizeListeners++;
+      return (addEL as (...a: unknown[]) => unknown)(type, ...rest);
+    }) as typeof window.addEventListener;
+    window.removeEventListener = ((type: string, ...rest: unknown[]) => {
+      if (type === "resize") counts.resizeListeners--;
+      return (removeEL as (...a: unknown[]) => unknown)(type, ...rest);
+    }) as typeof window.removeEventListener;
+
+    const origSetInterval = window.setInterval.bind(window);
+    const origClearInterval = window.clearInterval.bind(window);
+    const liveIntervals = new Set<number>();
+    window.setInterval = ((...args: unknown[]) => {
+      const id = (origSetInterval as (...a: unknown[]) => number)(...args);
+      liveIntervals.add(id);
+      counts.activeIntervals = liveIntervals.size;
+      return id;
+    }) as typeof window.setInterval;
+    window.clearInterval = ((id?: number) => {
+      if (id !== undefined) liveIntervals.delete(id);
+      counts.activeIntervals = liveIntervals.size;
+      return origClearInterval(id);
+    }) as typeof window.clearInterval;
+
+    const origSetTimeout = window.setTimeout.bind(window);
+    const origClearTimeout = window.clearTimeout.bind(window);
+    const liveTimeouts = new Set<number>();
+    window.setTimeout = ((handler: TimerHandler, ...rest: unknown[]) => {
+      const wrapped =
+        typeof handler === "function"
+          ? (...handlerArgs: unknown[]) => {
+              liveTimeouts.delete(id);
+              counts.activeTimeouts = liveTimeouts.size;
+              return (handler as (...a: unknown[]) => unknown)(...handlerArgs);
+            }
+          : handler;
+      const id = (origSetTimeout as (...a: unknown[]) => number)(
+        wrapped,
+        ...rest
+      );
+      liveTimeouts.add(id);
+      counts.activeTimeouts = liveTimeouts.size;
+      return id;
+    }) as typeof window.setTimeout;
+    window.clearTimeout = ((id?: number) => {
+      if (id !== undefined) liveTimeouts.delete(id);
+      counts.activeTimeouts = liveTimeouts.size;
+      return origClearTimeout(id);
+    }) as typeof window.clearTimeout;
+  });
 }, 60_000);
 
 afterAll(async () => {
@@ -188,5 +252,91 @@ describe("production dist/ serves a working Copy Code page", () => {
       }
     },
     600_000
+  );
+});
+
+describe("SPA navigation releases animation resources (WP4)", () => {
+  interface LeakCounts {
+    resizeListeners: number;
+    activeIntervals: number;
+    activeTimeouts: number;
+  }
+
+  it(
+    "resize listeners and timers return to baseline across animation transitions",
+    async () => {
+      if (!page) throw new Error("browser page did not start");
+
+      const readCounts = async (): Promise<LeakCounts> => {
+        // Let any teardown timeouts fire before sampling.
+        await page!.waitForTimeout(250);
+        return page!.evaluate(
+          () =>
+            (window as unknown as { __leakCounts: LeakCounts }).__leakCounts
+        );
+      };
+
+      // /create-json renders no canvas, so it is a clean pre-animation state.
+      await page.goto(`${PREVIEW_ORIGIN}/create-json`, {
+        waitUntil: "networkidle",
+      });
+      const baseline = await readCounts();
+
+      // Enter the SPA's Examples section by clicking, so every transition
+      // below is a client-side route change (no full reload, no counter reset).
+      await page.getByRole("link", { name: "examples" }).click();
+      await page.waitForSelector(".example-checklist-link");
+
+      const visit = async (title: string) => {
+        // Categories are collapsed by default; the sidebar filter auto-opens
+        // whichever category matches.
+        await page!.fill(".checklist-filter input", title);
+        await page!
+          .locator(".example-checklist-link", { hasText: title })
+          .first()
+          .click();
+        await page!.waitForSelector(
+          "#primary-canvas--content--canvas-container canvas"
+        );
+        await page!.fill(".checklist-filter input", "");
+        return readCounts();
+      };
+
+      const sequence: Array<[string, string]> = [
+        ["flow-field", "Perlin noise flow field"],
+        ["ball-bounce-1", "ball bounce"],
+        ["wave-interference", "Wave interference"],
+        ["ball-bounce-2", "ball bounce"],
+        ["move-to-destination", "move object to changing point"],
+        ["ball-bounce-3", "ball bounce"],
+      ];
+      const snapshots: Record<string, LeakCounts> = {};
+      for (const [label, title] of sequence) {
+        snapshots[label] = await visit(title);
+      }
+
+      // The same animation must cost the same resources every visit — growth
+      // between identical states is a leak.
+      expect(snapshots["ball-bounce-2"]).toEqual(snapshots["ball-bounce-1"]);
+      expect(snapshots["ball-bounce-3"]).toEqual(snapshots["ball-bounce-1"]);
+
+      // MoveToDestination's 2s interval must not survive into the next page.
+      expect(snapshots["ball-bounce-3"].activeIntervals).toBe(
+        snapshots["ball-bounce-1"].activeIntervals
+      );
+
+      // Leaving the Examples section entirely returns to the pre-animation
+      // baseline. Short-lived UI timeouts may still be pending right after
+      // the transition — give them up to 5s to fire; a leaked interval or
+      // listener never drains and still fails.
+      await page.getByRole("link", { name: "copy code" }).click();
+      await page.waitForURL("**/create-json");
+      let finalCounts = await readCounts();
+      for (let i = 0; i < 20 && finalCounts.activeTimeouts > baseline.activeTimeouts; i++) {
+        finalCounts = await readCounts();
+      }
+      expect(finalCounts).toEqual(baseline);
+    },
+    120_000
   );
 });

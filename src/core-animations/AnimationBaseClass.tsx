@@ -34,9 +34,16 @@ class AnimationBaseClass {
   private firstFrameScheduled = false;
 
   // Store bound handlers as stable references so removeEventListener works.
+  // _onResize matters even though resizeHandler is itself an arrow field:
+  // subclass field initializers run AFTER this constructor registers the
+  // listener, so a subclass that shadows resizeHandler would otherwise leak
+  // the base listener (remove would target the new field, not the registered
+  // one). The wrapper is registered once and always dispatches to the
+  // current resizeHandler.
   private _onPointerDown = (e: PointerEvent) => this.pointerDownHandler(e);
   private _onPointerMove = (e: PointerEvent) => this.pointerMoveHandler(e);
   private _onPointerUp   = (e: PointerEvent) => this.pointerUpHandler(e);
+  private _onResize = () => this.resizeHandler();
 
   constructor(id: string = "primary-canvas--content--canvas-container") {
     if (!this.canvas || !this.ctx) return;
@@ -60,7 +67,7 @@ class AnimationBaseClass {
     this.canvas.addEventListener("pointerdown", this._onPointerDown);
     this.canvas.addEventListener("pointermove", this._onPointerMove);
     this.canvas.addEventListener("pointerup",   this._onPointerUp);
-    window.addEventListener("resize", this.resizeHandler);
+    window.addEventListener("resize", this._onResize);
   }
 
   resizeHandler = () => {
@@ -115,7 +122,7 @@ class AnimationBaseClass {
       this.canvas.removeEventListener("pointermove", this._onPointerMove);
       this.canvas.removeEventListener("pointerup",   this._onPointerUp);
     }
-    window.removeEventListener("resize", this.resizeHandler);
+    window.removeEventListener("resize", this._onResize);
 
     if (this.cont) this.cont.innerHTML = "";
     this.ctx    = null;
