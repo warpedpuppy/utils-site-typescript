@@ -7,6 +7,15 @@
 .mini-demo {
   margin: 0.75rem 0 0.25rem;
   padding: 12px;
+  // The demo must never dictate the page's width. Its contents have huge
+  // intrinsic widths (the nowrap live-call line, the canvas bitmap), and the
+  // /api entry panel's grid track has no zero floor — so without containment
+  // the track inflates to the demo's min-content (867px on circleCircle at a
+  // 390px viewport), the demo then re-measures the oversized container and
+  // bakes it into the canvas. inline-size containment zeroes the demo's
+  // intrinsic contribution; it simply fills whatever column it's given.
+  contain: inline-size;
+  max-width: 100%;
   @include comic-screen;
 
   // Paper surfaces blanket-ink `code`; inside the screen it re-lights.
@@ -75,6 +84,9 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.1rem;
+    // Grid items default to min-width auto and resist shrinking below their
+    // label text; let them shrink so narrow viewports never overflow.
+    min-width: 0;
     font-family: monospace;
     font-size: 0.78rem;
     color: rgba(255, 255, 255, 0.65);
@@ -171,6 +183,10 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.2);
+      // Same shrink permission as __control: readout cells must never widen
+      // the document (auto-fit already drops them to one column when two
+      // 150px columns plus gaps don't fit).
+      min-width: 0;
     }
 
     code {

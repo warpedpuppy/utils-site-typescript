@@ -340,3 +340,41 @@ describe("SPA navigation releases animation resources (WP4)", () => {
     120_000
   );
 });
+
+describe("no horizontal overflow on /api docs at 390px (WP5)", () => {
+  const ROUTES = [
+    "/api?tab=documentation&fn=mapRange",
+    "/api?tab=documentation&fn=circleCircle",
+  ];
+
+  it(
+    "mapRange and circleCircle issue pages fit a 390px viewport",
+    async () => {
+      if (!browser) throw new Error("browser did not start");
+      const mobile = await browser.newPage({
+        viewport: { width: 390, height: 844 },
+      });
+      const failures: Array<{ route: string; scrollWidth: number; clientWidth: number }> = [];
+      try {
+        for (const route of ROUTES) {
+          await mobile.goto(`${PREVIEW_ORIGIN}${route}`, {
+            waitUntil: "networkidle",
+          });
+          // Let the mini-demos mount and size themselves.
+          await mobile.waitForTimeout(500);
+          const { scrollWidth, clientWidth } = await mobile.evaluate(() => ({
+            scrollWidth: document.documentElement.scrollWidth,
+            clientWidth: document.documentElement.clientWidth,
+          }));
+          if (scrollWidth > clientWidth) {
+            failures.push({ route, scrollWidth, clientWidth });
+          }
+        }
+      } finally {
+        await mobile.close();
+      }
+      expect(failures).toEqual([]);
+    },
+    120_000
+  );
+});

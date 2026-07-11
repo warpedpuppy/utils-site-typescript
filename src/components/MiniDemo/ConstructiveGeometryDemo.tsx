@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Point } from "@utilspalooza/core";
 import type { ConstructiveGeometryDemoDef, GeometryDemoKind } from "./constructiveGeometryDemos";
 import type {
@@ -180,7 +180,9 @@ export default function ConstructiveGeometryDemo({
   });
   const [polyScene, setPolyScene] = useState<PolyScene>(initialDefaults.polyScene);
 
-  useEffect(() => {
+  // Layout effect so the real container width is measured before first paint
+  // — the 480 initial state is a pre-mount placeholder, never a minimum.
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
