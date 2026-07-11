@@ -37,3 +37,12 @@ jobs:
 
       - name: Test suite
         run: npm test
+
+      # The ordinary suite reads pen payloads from source, which can stay green
+      # while minification breaks the shipped bundle. This gate builds dist/ and
+      # boots every canonical pen payload out of the served production page.
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Production bundle contract
+        run: npm run test:production-contract

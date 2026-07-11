@@ -24,6 +24,10 @@
     "useDefineForClassFields": true
   },
   "include": ["src", "packages/core/src", "packages/effects/src"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/pages/studio/codepenRuntimeTestHarness.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

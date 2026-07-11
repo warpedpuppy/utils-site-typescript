@@ -18,7 +18,8 @@
     "build": "tsc -b && vite build",
     "build:prerender": "npm run build && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run --exclude src/production-contract.test.ts",
+    "test:production-contract": "npm run build && vitest run src/production-contract.test.ts"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
