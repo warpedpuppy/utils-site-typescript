@@ -8,19 +8,16 @@ import {
   gatherSelection,
   ExportLang,
 } from "./createJSONUtils/createJSONUtils";
-
-function readSelected(): string[] {
-  return (localStorage.getItem("functions") ?? "").split(",").filter(Boolean);
-}
+import { readSelection, writeSelection } from "./selectionStorage";
 
 function persist(keys: string[]) {
-  localStorage.setItem("functions", keys.join(","));
+  writeSelection(keys);
   // Kept for any other listeners (e.g. the nav selection badge).
   window.dispatchEvent(new CustomEvent("formulaSelectionChanged"));
 }
 
 function CreateJSON() {
-  const [selected, setSelected] = useState<string[]>(readSelected);
+  const [selected, setSelected] = useState<string[]>(readSelection);
   const [lang, setLang] = useState<ExportLang>("ts");
   const [copied, setCopied] = useState(false);
 

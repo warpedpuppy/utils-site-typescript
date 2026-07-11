@@ -1,10 +1,12 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 import { preview, type PreviewServer } from "vite";
 import { chromium, type Browser, type Page } from "playwright";
 import { ALL_RECORDS } from "./registry";
 import { runPen } from "./pages/studio/codepenRuntimeTestHarness";
+import { EXPORT_CATALOG } from "./pages/createJSON/exportCatalog";
 
 // Production-bundle contract test.
 //
@@ -105,5 +107,86 @@ describe("production dist/ serves working CodePen payloads", () => {
       expect(failures).toEqual([]);
     },
     180_000
+  );
+});
+
+describe("production dist/ serves a working Copy Code page", () => {
+  function parseFailure(code: string, lang: "ts" | "js"): string | null {
+    const result = ts.transpileModule(code, {
+      reportDiagnostics: true,
+      fileName: lang === "ts" ? "snippet.ts" : "snippet.js",
+      compilerOptions: {
+        target: ts.ScriptTarget.ES2022,
+        module: ts.ModuleKind.ESNext,
+        allowJs: true,
+      },
+    });
+    const first = (result.diagnostics ?? [])[0];
+    return first ? ts.flattenDiagnosticMessageText(first.messageText, " ") : null;
+  }
+
+  it(
+    "labels are canonical catalog keys and every selection parses in both languages",
+    async () => {
+      if (!page) throw new Error("browser page did not start");
+
+      await page.goto(`${PREVIEW_ORIGIN}/create-json`, { waitUntil: "networkidle" });
+      await page.waitForSelector(".copy-code__item");
+
+      // Start from a clean selection regardless of stored state.
+      await page.evaluate(() => {
+        localStorage.setItem("functions", "");
+        localStorage.setItem("functionsSchemaVersion", "2");
+      });
+      await page.reload({ waitUntil: "networkidle" });
+      await page.waitForSelector(".copy-code__item");
+
+      // Labels must be the canonical API names, not minified identifiers.
+      const labels = await page.$$eval(".copy-code__item-title", (els) =>
+        els.map((e) => e.textContent ?? "")
+      );
+      const catalogKeys = EXPORT_CATALOG.map((e) => e.key);
+      expect([...labels].sort()).toEqual([...catalogKeys].sort());
+
+      const readOutput = async (lang: "ts" | "js") => {
+        await page!
+          .getByRole("tab", { name: lang === "ts" ? "TypeScript" : "JavaScript" })
+          .click();
+        return page!.textContent(".copy-code__code code");
+      };
+
+      const failures: Array<{ key: string; lang: string; message: string }> = [];
+      const items = page.locator(".copy-code__item input[type=checkbox]");
+      const count = await items.count();
+      expect(count).toBe(catalogKeys.length);
+
+      for (let i = 0; i < count; i++) {
+        const key = labels[i];
+        await items.nth(i).check();
+        for (const lang of ["ts", "js"] as const) {
+          const code = (await readOutput(lang)) ?? "";
+          if (code.trim() === "") {
+            failures.push({ key, lang, message: "empty output" });
+            continue;
+          }
+          const message = parseFailure(code, lang);
+          if (message) failures.push({ key, lang, message });
+        }
+        await items.nth(i).uncheck();
+      }
+      expect(failures).toEqual([]);
+
+      // Select everything and parse both combined outputs.
+      for (let i = 0; i < count; i++) await items.nth(i).check();
+      for (const lang of ["ts", "js"] as const) {
+        const code = (await readOutput(lang)) ?? "";
+        expect(code.trim(), `combined ${lang} output is non-empty`).not.toBe("");
+        expect(
+          parseFailure(code, lang),
+          `combined ${lang} output parses`
+        ).toBeNull();
+      }
+    },
+    600_000
   );
 });

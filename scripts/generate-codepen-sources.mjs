@@ -18,112 +18,22 @@
 // A drift test (src/pages/studio/generated-codepen-sources.test.ts) compares
 // fresh output from generateCodepenSources() against the committed module.
 
-import ts from "typescript";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { CODEPEN_SOURCE_MANIFEST } from "./codepen-source-manifest.mjs";
+import {
+  findExportedDeclaration,
+  parseSource,
+  printDeclaration,
+  transpileDeclaration,
+} from "./ts-extract.mjs";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const GENERATED_MODULE_PATH = join(
   REPO_ROOT,
   "src/pages/studio/generatedCodepenSources.ts"
 );
-
-function hasExportModifier(statement) {
-  return (
-    ts.canHaveModifiers(statement) &&
-    (ts.getModifiers(statement) ?? []).some(
-      (m) => m.kind === ts.SyntaxKind.ExportKeyword
-    )
-  );
-}
-
-function withoutExportModifier(statement, factory) {
-  const modifiers = (ts.getModifiers(statement) ?? []).filter(
-    (m) => m.kind !== ts.SyntaxKind.ExportKeyword
-  );
-  if (ts.isFunctionDeclaration(statement)) {
-    return factory.updateFunctionDeclaration(
-      statement,
-      modifiers,
-      statement.asteriskToken,
-      statement.name,
-      statement.typeParameters,
-      statement.parameters,
-      statement.type,
-      statement.body
-    );
-  }
-  if (ts.isVariableStatement(statement)) {
-    return factory.updateVariableStatement(
-      statement,
-      modifiers,
-      statement.declarationList
-    );
-  }
-  throw new Error(`Unsupported statement kind ${ts.SyntaxKind[statement.kind]}`);
-}
-
-function collectNamedExportNames(sourceFile) {
-  const names = new Set();
-  for (const statement of sourceFile.statements) {
-    if (
-      ts.isExportDeclaration(statement) &&
-      !statement.moduleSpecifier &&
-      statement.exportClause &&
-      ts.isNamedExports(statement.exportClause)
-    ) {
-      for (const el of statement.exportClause.elements) {
-        // Local name of the export (`export { local as public }` → local).
-        names.add((el.propertyName ?? el.name).text);
-      }
-    }
-  }
-  return names;
-}
-
-function findExportedDeclaration(sourceFile, exportName, sourcePath) {
-  // A declaration counts as exported when it carries the `export` modifier or
-  // when a separate `export { name }` statement in the same file exports it.
-  const namedExports = collectNamedExportNames(sourceFile);
-  const matches = [];
-  for (const statement of sourceFile.statements) {
-    if (!hasExportModifier(statement) && !namedExports.has(exportName)) continue;
-    if (
-      ts.isFunctionDeclaration(statement) &&
-      statement.name?.text === exportName
-    ) {
-      matches.push(statement);
-    } else if (ts.isVariableStatement(statement)) {
-      const declared = statement.declarationList.declarations.filter(
-        (d) => ts.isIdentifier(d.name) && d.name.text === exportName
-      );
-      if (declared.length > 0) {
-        if (statement.declarationList.declarations.length !== 1) {
-          throw new Error(
-            `Export "${exportName}" in ${sourcePath} shares a variable statement ` +
-              `with other declarators — split it so it can be extracted alone.`
-          );
-        }
-        matches.push(statement);
-      }
-    }
-  }
-  if (matches.length === 0) {
-    throw new Error(
-      `Export "${exportName}" not found as an exported function or variable ` +
-        `declaration in ${sourcePath}.`
-    );
-  }
-  if (matches.length > 1) {
-    throw new Error(
-      `Export "${exportName}" matches ${matches.length} declarations in ` +
-        `${sourcePath} — expected exactly one.`
-    );
-  }
-  return matches[0];
-}
 
 /**
  * Pure generation pass: manifest → { exportName: plainJsSource }, keys sorted
@@ -135,37 +45,11 @@ export function generateCodepenSources() {
     if (entries.has(exportName)) {
       throw new Error(`Duplicate manifest exportName "${exportName}".`);
     }
-    const absolutePath = join(REPO_ROOT, sourceFile);
-    const sourceText = readFileSync(absolutePath, "utf8");
-    const parsed = ts.createSourceFile(
-      sourceFile,
-      sourceText,
-      ts.ScriptTarget.Latest,
-      /* setParentNodes */ true,
-      sourceFile.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS
-    );
-
+    const sourceText = readFileSync(join(REPO_ROOT, sourceFile), "utf8");
+    const parsed = parseSource(sourceFile, sourceText);
     const declaration = findExportedDeclaration(parsed, exportName, sourceFile);
-    const stripped = withoutExportModifier(declaration, ts.factory);
-    const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
-    const tsDeclaration = printer.printNode(
-      ts.EmitHint.Unspecified,
-      stripped,
-      parsed
-    );
-
-    const transpiled = ts.transpileModule(tsDeclaration, {
-      compilerOptions: {
-        target: ts.ScriptTarget.ES2022,
-        module: ts.ModuleKind.ESNext,
-      },
-      fileName: sourceFile,
-    }).outputText;
-
-    // transpileModule prepends a `"use strict";` directive prologue. Drop it:
-    // pens embed several declarations into one payload (and one embeds inside
-    // an object literal, where a directive would be a syntax error).
-    const jsSource = transpiled.replace(/^"use strict";\r?\n/, "").trimEnd();
+    const tsDeclaration = printDeclaration(declaration, parsed);
+    const jsSource = transpileDeclaration(tsDeclaration, sourceFile);
     if (!jsSource.includes(exportName)) {
       throw new Error(
         `Transpiled source for "${exportName}" lost its identifier — refusing ` +

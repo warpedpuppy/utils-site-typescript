@@ -1,30 +1,23 @@
 import { useMemo, useState } from "react";
-import animationManifest from "../../../animationManifest";
-
-interface PickerItem {
-  key: string;
-  title: string;
-  fn: string;
-}
+import {
+  EXPORT_CATALOG,
+  EXPORT_GROUP_ORDER,
+  ExportCatalogEntry,
+} from "../exportCatalog";
 
 interface PickerGroup {
   category: string;
-  items: PickerItem[];
+  items: ExportCatalogEntry[];
 }
 
+// Function-grained picker over the generated export catalog: every copyable
+// core export (all 18 easings included) is its own checkbox, labelled with
+// its canonical API name. Groups mirror the /api concept map.
 function buildGroups(): PickerGroup[] {
-  return Object.entries(animationManifest).map(([category, objects]) => ({
+  return EXPORT_GROUP_ORDER.map((category) => ({
     category,
-    items: Object.entries(objects)
-      .filter(([, value]) => value.include !== false)
-      .map(([key, value]) => ({
-        key,
-        title: value.title,
-        // Explicit registry identity — never Function.name, which
-        // minification rewrites in production builds.
-        fn: value.primaryCoreExport ?? "",
-      })),
-  }));
+    items: EXPORT_CATALOG.filter((entry) => entry.group === category),
+  })).filter((group) => group.items.length > 0);
 }
 
 export default function CopyCodePicker({
@@ -44,8 +37,7 @@ export default function CopyCodePicker({
       items: group.items.filter(
         (item) =>
           !q ||
-          item.title.toLowerCase().includes(q) ||
-          item.fn.toLowerCase().includes(q) ||
+          item.key.toLowerCase().includes(q) ||
           group.category.toLowerCase().includes(q),
       ),
     }))
@@ -93,9 +85,6 @@ export default function CopyCodePicker({
                       onChange={() => onToggle(item.key)}
                     />
                     <span className="copy-code__item-title">{item.title}</span>
-                    {item.fn && (
-                      <code className="copy-code__item-fn">{item.fn}()</code>
-                    )}
                   </label>
                 );
               })}
