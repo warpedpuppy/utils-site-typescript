@@ -335,7 +335,21 @@ describe("SPA navigation releases animation resources (WP4)", () => {
       for (let i = 0; i < 20 && finalCounts.activeTimeouts > baseline.activeTimeouts; i++) {
         finalCounts = await readCounts();
       }
-      expect(finalCounts).toEqual(baseline);
+      // A leak is GROWTH past baseline, so the invariant is "no counter exceeds
+      // baseline." Resize listeners and intervals are animation-owned and
+      // deterministic — those must return to baseline exactly (this is what
+      // catches the resize-listener and MoveToDestination-interval leaks WP4
+      // fixed). activeTimeouts also includes non-animation, one-shot app timers
+      // (analytics/fonts/React) that may be pending when the baseline is sampled
+      // on a cold first load but drained by the warm final sample — a strict
+      // `toEqual` there produces a false failure (final 0 < baseline 1). Assert
+      // `<=` so a genuine timeout leak (final > baseline) still fails while a
+      // drained transient does not.
+      expect(finalCounts.resizeListeners).toBe(baseline.resizeListeners);
+      expect(finalCounts.activeIntervals).toBe(baseline.activeIntervals);
+      expect(finalCounts.activeTimeouts).toBeLessThanOrEqual(
+        baseline.activeTimeouts
+      );
     },
     120_000
   );
