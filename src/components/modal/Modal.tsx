@@ -6,18 +6,21 @@ import { CollisionDetectionObject } from "../../types/types";
 function Modal({
   animationObject,
   closeModal,
+  functionName,
 }: {
   animationObject: CollisionDetectionObject;
   closeModal: Function;
+  /** Explicit registry identity (primaryCoreExport) — never Function.name. */
+  functionName?: string | null;
 }) {
   const [activeTab, setActiveTab] = useState(0);
-  const functionName = animationObject.keyFunction?.name || "function";
+  const headingName = functionName || "function";
 
   return (
     <div className="modal-container">
       <div className="modal-inner">
         <div className="modal-inner-header">
-          <span>{functionName} — full function, dependencies, and interfaces</span>
+          <span>{headingName} — full function, dependencies, and interfaces</span>
           <span className="close-modal" onClick={() => closeModal()}>
             x
           </span>

@@ -17,6 +17,7 @@ export const MOTION_EASING: RegistryRecord[] = [
     formula: ballBounceFormula,
     load: () => import("../../core-animations/BallBounce"),
     coreExports: ["ballBounce"],
+    primaryCoreExport: "ballBounce",
     pen: "canonical-vm-tested",
   },
   {
@@ -27,6 +28,7 @@ export const MOTION_EASING: RegistryRecord[] = [
     formula: SphereLighting,
     load: () => import("../../core-animations/OrbitalMotion"),
     coreExports: ["sphereLighting", "findPointAroundCircle"],
+    primaryCoreExport: "sphereLighting",
     pen: "canonical-vm-tested",
   },
   {
@@ -37,6 +39,7 @@ export const MOTION_EASING: RegistryRecord[] = [
     formula: lerpFormula,
     load: () => import("../../core-animations/Lerp"),
     coreExports: ["lerp"],
+    primaryCoreExport: "lerp",
     pen: "canonical-vm-tested",
   },
   {
@@ -67,6 +70,7 @@ export const MOTION_EASING: RegistryRecord[] = [
       "easeOutBounce",
       "easeOutElastic",
     ],
+    primaryCoreExport: "easeInOut",
     pen: "canonical-vm-tested",
   },
   {
@@ -77,6 +81,7 @@ export const MOTION_EASING: RegistryRecord[] = [
     formula: SpringFormula,
     load: () => import("../../core-animations/Spring"),
     coreExports: ["springValue", "criticalDamping"],
+    primaryCoreExport: "springValue",
     pen: "canonical-vm-tested",
   },
   {
@@ -87,6 +92,7 @@ export const MOTION_EASING: RegistryRecord[] = [
     formula: moveAlongLineFormula,
     load: () => import("../../core-animations/MoveToDestination"),
     coreExports: ["moveAlongLine", "getRotation"],
+    primaryCoreExport: "moveAlongLine",
     pen: "canonical-vm-tested",
   },
   {
@@ -97,6 +103,7 @@ export const MOTION_EASING: RegistryRecord[] = [
     formula: quadraticBezierFormula,
     load: () => import("../../core-animations/QuadraticBezier"),
     coreExports: ["quadraticBezier", "bezierPoint"],
+    primaryCoreExport: "quadraticBezier",
     pen: "canonical-vm-tested",
   },
   {
@@ -107,6 +114,7 @@ export const MOTION_EASING: RegistryRecord[] = [
     formula: BezierFormula,
     load: () => import("../../core-animations/BezierCurves"),
     coreExports: ["deCasteljau"],
+    primaryCoreExport: "deCasteljau",
     pen: "canonical",
   },
 ];

@@ -17,9 +17,12 @@ const EMPTY_ANIMATION_OBJECT: CollisionDetectionObject = {
 function CanvasContainer({
   instance,
   isLoading = false,
+  functionName = null,
 }: {
   instance: AnimationClassRef | undefined;
   isLoading?: boolean;
+  /** Explicit registry identity (primaryCoreExport) for the code modal heading. */
+  functionName?: string | null;
 }) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [animationObject, setAnimationObject] =
@@ -87,6 +90,7 @@ function CanvasContainer({
         <Modal
           animationObject={animationObject}
           closeModal={() => setShowModal(false)}
+          functionName={functionName}
         />
       )}
     </section>

@@ -20,6 +20,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: sineCurveFormula,
     load: () => import("../../core-animations/SineCurve"),
     coreExports: ["sineCurve", "sineWave"],
+    primaryCoreExport: "sineCurve",
     pen: "canonical-vm-tested",
   },
   {
@@ -30,6 +31,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: unitCirclePointFormula,
     load: () => import("../../core-animations/DeMystifySineCosine"),
     coreExports: ["unitCirclePoint", "radToDeg"],
+    primaryCoreExport: "unitCirclePoint",
     pen: "canonical-vm-tested",
   },
   {
@@ -40,6 +42,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: findPointAroundCircleFormula,
     load: () => import("../../core-animations/MoveItemAroundCircle"),
     coreExports: ["findPointAroundCircle"],
+    primaryCoreExport: "findPointAroundCircle",
     pen: "canonical-vm-tested",
   },
   {
@@ -50,6 +53,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: getRotationFormula,
     load: () => import("../../core-animations/PointTowards"),
     coreExports: ["getRotation"],
+    primaryCoreExport: "getRotation",
     pen: "canonical-vm-tested",
   },
   {
@@ -60,6 +64,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: distributeFormula,
     load: () => import("../../core-animations/DistributeAroundCircle"),
     coreExports: ["distributeAroundCircle"],
+    primaryCoreExport: "distributeAroundCircle",
     pen: "canonical-vm-tested",
   },
   {
@@ -70,6 +75,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: VectorReflectFormula,
     load: () => import("../../core-animations/VectorReflect"),
     coreExports: ["vecReflect", "vecNormalize", "vecPerpendicular"],
+    primaryCoreExport: "vecReflect",
     pen: "canonical-vm-tested",
   },
   {
@@ -80,6 +86,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: VectorRotateFormula,
     load: () => import("../../core-animations/VectorRotate"),
     coreExports: ["vecRotate"],
+    primaryCoreExport: "vecRotate",
     pen: "canonical-vm-tested",
   },
   {
@@ -90,6 +97,7 @@ export const TRIG_ANGLES_VECTORS: RegistryRecord[] = [
     formula: AngleLerpFormula,
     load: () => import("../../core-animations/AngleLerp"),
     coreExports: ["lerpAngle", "shortestAngleBetween", "wrapAngle"],
+    primaryCoreExport: "lerpAngle",
     pen: "canonical-vm-tested",
   },
 ];

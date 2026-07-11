@@ -31,13 +31,19 @@ export type Category = (typeof CATEGORY_ORDER)[number];
  * - "mini-demo-no-pen"     — docs-first scalar; deliberately has NO pen
  *                            (today: MINI_DEMO_KEYS). The no-pen rule is
  *                            CLAUDE.md law ("mini-demo is never a pen source").
+ * - "hidden-no-pen"        — include:false record that has no Studio pen at
+ *                            all (the hidden balls-bouncing duplicate). Its
+ *                            old "canonical-vm-tested" label was stale data:
+ *                            no pen ever existed post-canonicalization, and
+ *                            the old gallery-driven VM test could not notice.
  */
 export type PenStatus =
   | "canonical-vm-tested"
   | "canonical"
   | "handwritten"
   | "effects-mount"
-  | "mini-demo-no-pen";
+  | "mini-demo-no-pen"
+  | "hidden-no-pen";
 
 export interface RegistryRecord {
   /** Canonical id: === manifest `slug`, === animation `static l`, === pen `key`. */
@@ -66,6 +72,15 @@ export interface RegistryRecord {
    * apply — there are none in Phase A, so: non-empty, always.
    */
   coreExports: string[];
+  /**
+   * The ONE canonical @utilspalooza/core export name this animation primarily
+   * teaches — used for every user-facing function label and docs deep-link
+   * (`/api?fn=…`). This replaces reading `formula.keyFunction.name` at
+   * runtime, which minification breaks in production. Must appear in this
+   * record's `coreExports` and in core-api.json; `null` only when no core
+   * function is a truthful target (pure showpieces / effects mounts).
+   */
+  primaryCoreExport: string | null;
   pen: PenStatus;
 }
 
@@ -80,6 +95,8 @@ export interface AnimationManifestEntry {
   include?: boolean;
   formula: CollisionDetectionObject;
   load: () => Promise<{ default: new (containerId: string) => AnimationInstance }>;
+  /** Carried from RegistryRecord.primaryCoreExport — see that field's doc. */
+  primaryCoreExport: string | null;
 }
 
 export interface AnimationManifest {

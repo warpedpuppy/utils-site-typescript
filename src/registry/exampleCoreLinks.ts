@@ -164,7 +164,7 @@ export const EXAMPLE_CORE_ROWS: ExampleCoreRow[] = [
   {
     slug: "circle-field",
     title: "circle field (collision at scale)",
-    coreExports: ["circleToCircle"],
+    coreExports: ["circleToCircle", "circleCircle"],
   },
   { slug: "lerp", title: "lerp", coreExports: ["lerp"] },
   { slug: "inverse-lerp", title: "inverse lerp", coreExports: ["inverseLerp"] },

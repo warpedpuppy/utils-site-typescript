@@ -30,6 +30,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     formula: FourierFormula,
     load: () => import("../../core-animations/FourierEpicycles"),
     coreExports: ["dft"],
+    primaryCoreExport: "dft",
     pen: "canonical-vm-tested",
   },
   {
@@ -40,6 +41,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     formula: GameOfLifeFormula,
     load: () => import("../../core-animations/GameOfLife"),
     coreExports: ["gameOfLifeStep"],
+    primaryCoreExport: "gameOfLifeStep",
     pen: "canonical-vm-tested",
   },
   {
@@ -51,6 +53,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     load: () => import("../../core-animations/FlowField"),
     // Pure showpiece: inline Perlin noise, no @utilspalooza/core export to teach.
     coreExports: [],
+    primaryCoreExport: null,
     pen: "canonical-vm-tested",
   },
   {
@@ -61,6 +64,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     formula: WaveFormula,
     load: () => import("../../core-animations/WaveInterference"),
     coreExports: ["waveAmplitude"],
+    primaryCoreExport: "waveAmplitude",
     pen: "canonical-vm-tested",
   },
   {
@@ -71,6 +75,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     formula: LensingFormula,
     load: () => import("../../core-animations/GravitationalLensing"),
     coreExports: ["lensDeflection"],
+    primaryCoreExport: "lensDeflection",
     pen: "canonical-vm-tested",
   },
   {
@@ -81,6 +86,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     formula: PrecessionFormula,
     load: () => import("../../core-animations/OrbitalPrecession"),
     coreExports: ["grStep", "gravitationalStep"],
+    primaryCoreExport: "grStep",
     pen: "canonical-vm-tested",
   },
   {
@@ -92,6 +98,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     load: () => import("../../core-animations/Phyllotaxis"),
     // Pure showpiece: inline golden-angle placement, no core export to teach.
     coreExports: [],
+    primaryCoreExport: null,
     pen: "canonical-vm-tested",
   },
   {
@@ -102,6 +109,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     formula: BoidsObject,
     load: () => import("../../core-animations/Murmuration"),
     coreExports: ["boidsStep"],
+    primaryCoreExport: "boidsStep",
     pen: "canonical-vm-tested",
   },
   {
@@ -113,6 +121,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     load: () => import("../../core-animations/Sierpinski"),
     // Pure showpiece: inline midpoint subdivision, no core export to teach.
     coreExports: [],
+    primaryCoreExport: null,
     pen: "canonical-vm-tested",
   },
   {
@@ -124,6 +133,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     load: () => import("../../core-animations/Glitter"),
     // Effects-backed showpiece: teaches @utilspalooza/effects (cosWave), not core.
     coreExports: [],
+    primaryCoreExport: null,
     pen: "effects-mount",
   },
   {
@@ -135,6 +145,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     load: () => import("../../core-animations/PrettyRing"),
     // Effects-backed showpiece: teaches @utilspalooza/effects (cosWave), not core.
     coreExports: [],
+    primaryCoreExport: null,
     pen: "effects-mount",
   },
   {
@@ -146,6 +157,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     load: () => import("../../core-animations/Sparklies"),
     // Effects-backed showpiece: teaches @utilspalooza/effects (sparklyBeamPoint), not core.
     coreExports: [],
+    primaryCoreExport: null,
     pen: "effects-mount",
   },
   {
@@ -157,6 +169,7 @@ export const GENERATIVE_SHOWPIECES: RegistryRecord[] = [
     load: () => import("../../core-animations/Klimt"),
     // Pure showpiece: inline tip-to-tail brick placement, no core export to teach.
     coreExports: [],
+    primaryCoreExport: null,
     pen: "canonical-vm-tested",
   },
 ];

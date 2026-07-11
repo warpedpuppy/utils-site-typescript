@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import SiteData from "../../SiteData";
 import { CODEPEN_GALLERY } from "./pens";
 import { ALL_RECORDS } from "../../registry";
+import { CODEPEN_FUNCTION_SOURCES } from "./generatedCodepenSources";
 
 /**
  * Studio has two kinds of CodePens:
@@ -98,7 +99,7 @@ describe("Studio pens stay in sync with the Examples page", () => {
     });
   });
 
-  it("canonicalized pens embed their animation's standalone draw function verbatim", () => {
+  it("canonicalized pens embed their animation's generated draw-function source verbatim", () => {
     const failures: string[] = [];
 
     for (const [path, mod] of Object.entries(animationModules)) {
@@ -112,7 +113,9 @@ describe("Studio pens stay in sync with the Examples page", () => {
       if (!CANONICAL_DRAW_PEN_KEYS.has(slug)) continue;
 
       // The iron rule's "standalone draw functions" — module-level exports
-      // named draw* that CodePen can embed via .toString().
+      // named draw*. Pens embed the build-time generated source for each
+      // (CODEPEN_FUNCTION_SOURCES), which is extracted from the same canonical
+      // declaration this module exports, so identity here means identity there.
       const drawFns = Object.entries(mod).filter(
         ([name, val]) => name.startsWith("draw") && typeof val === "function"
       ) as [string, (...args: unknown[]) => unknown][];
@@ -124,10 +127,17 @@ describe("Studio pens stay in sync with the Examples page", () => {
       }
       expect(drawFns.length, `${slug} exports at least one draw* function`).toBeGreaterThan(0);
 
-      for (const [name, fn] of drawFns) {
-        if (!pen.payload.js.includes(fn.toString())) {
+      for (const [name] of drawFns) {
+        const generated = CODEPEN_FUNCTION_SOURCES[name];
+        if (!generated) {
           failures.push(
-            `${slug}: pen does not embed ${name}() verbatim — they have drifted`
+            `${slug}: ${name}() has no generated CodePen source — add it to scripts/codepen-source-manifest.mjs`
+          );
+          continue;
+        }
+        if (!pen.payload.js.includes(generated)) {
+          failures.push(
+            `${slug}: pen does not embed the generated ${name}() source verbatim — they have drifted`
           );
         }
       }

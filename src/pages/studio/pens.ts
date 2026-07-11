@@ -10,8 +10,10 @@
 
 import { CodePenPayload } from "./codepen";
 import { AUDIO_VISUALIZER_PEN } from "./AudioVisualizerWireframe";
-import { drawFlowField } from "../../core-animations/FlowField";
-import { drawPhyllotaxis, phyllotaxisPoint } from "../../core-animations/Phyllotaxis";
+// Build-time generated plain-JS source for the embedded functions — see
+// scripts/generate-codepen-sources.mjs. String literals survive minification;
+// runtime function serialization does not.
+import { CODEPEN_FUNCTION_SOURCES } from "./generatedCodepenSources";
 import { EXAMPLE_PENS } from "./pens-examples";
 
 // ── shared CSS used by the canvas-fills-the-page pens ────────────────────────
@@ -63,9 +65,9 @@ const PHYLLOTAXIS_HTML = `<canvas id="canvas"></canvas>
 
 const PHYLLOTAXIS_JS = `const GOLDEN_ANGLE = 137.50776405003785; // ← (2 − φ) × 360, the whole show
 
-${phyllotaxisPoint.toString()}
+${CODEPEN_FUNCTION_SOURCES.phyllotaxisPoint}
 
-${drawPhyllotaxis.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawPhyllotaxis}
 
 // ─── canvas setup (what the site's Template base class normally does) ─────────
 const canvas = document.getElementById('canvas');
@@ -188,7 +190,7 @@ function perlin2(x, y) {
   );
 }
 
-${drawFlowField.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawFlowField}
 
 // ─── canvas setup (what the site's Template base class normally does) ─────────
 const canvas = document.getElementById('canvas');

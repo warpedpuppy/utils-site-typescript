@@ -24,6 +24,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: pointCircle,
     load: () => import("../../core-animations/PointToCircle"),
     coreExports: ["pointToCircle", "pointCircle"],
+    primaryCoreExport: "pointCircle",
     pen: "canonical-vm-tested",
   },
   {
@@ -34,6 +35,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: polygonPoint,
     load: () => import("../../core-animations/PointToRect"),
     coreExports: ["pointToPolygon", "pointToRect", "polygonPoint"],
+    primaryCoreExport: "polygonPoint",
     pen: "canonical-vm-tested",
   },
   {
@@ -44,6 +46,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: polygonPolygon,
     load: () => import("../../core-animations/RectToRect"),
     coreExports: ["rectToRect", "rectToPolygon", "polygonPolygon"],
+    primaryCoreExport: "polygonPolygon",
     pen: "canonical-vm-tested",
   },
   {
@@ -54,6 +57,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: polygonCircle,
     load: () => import("../../core-animations/CircleToRect"),
     coreExports: ["circleToRect", "polygonCircle"],
+    primaryCoreExport: "polygonCircle",
     pen: "canonical-vm-tested",
   },
   {
@@ -64,6 +68,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: circleCircle,
     load: () => import("../../core-animations/CircleToCircle"),
     coreExports: ["circleToCircle", "circleCircle"],
+    primaryCoreExport: "circleCircle",
     pen: "canonical-vm-tested",
   },
   {
@@ -74,6 +79,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: lineCircle,
     load: () => import("../../core-animations/LineToCircle"),
     coreExports: ["lineToCircle", "lineCircle"],
+    primaryCoreExport: "lineCircle",
     pen: "canonical-vm-tested",
   },
   {
@@ -84,6 +90,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: lineLine,
     load: () => import("../../core-animations/LineToLine"),
     coreExports: ["lineToLine", "lineLine"],
+    primaryCoreExport: "lineLine",
     pen: "canonical-vm-tested",
   },
   {
@@ -94,6 +101,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: linePoint,
     load: () => import("../../core-animations/LineToPoint"),
     coreExports: ["lineToPoint", "linePoint"],
+    primaryCoreExport: "linePoint",
     pen: "canonical-vm-tested",
   },
   {
@@ -104,6 +112,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: LinePolygon,
     load: () => import("../../core-animations/LineToRect"),
     coreExports: ["lineToRect", "polygonLine"],
+    primaryCoreExport: "polygonLine",
     pen: "canonical-vm-tested",
   },
   {
@@ -114,6 +123,7 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: polygonPolygon,
     load: () => import("../../core-animations/PolygonToPolygonCollision"),
     coreExports: ["polygonToPolygon", "polygonPolygon"],
+    primaryCoreExport: "polygonPolygon",
     pen: "canonical-vm-tested",
   },
   {
@@ -123,7 +133,10 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     manifestKey: "CircleFieldCollision",
     formula: circleCircle,
     load: () => import("../../core-animations/CircleField"),
-    coreExports: ["circleToCircle"],
+    // circleCircle is the object-argument form the formula wrapper actually
+    // exposes; the animation itself steps with circleToCircle.
+    coreExports: ["circleToCircle", "circleCircle"],
+    primaryCoreExport: "circleCircle",
     pen: "canonical",
   },
   {
@@ -137,6 +150,11 @@ export const COLLISION_DETECTION: RegistryRecord[] = [
     formula: ballToBallBounceFormula,
     load: () => import("../../core-animations/BallBall"),
     coreExports: ["ballToBallBounce"],
-    pen: "canonical-vm-tested",
+    primaryCoreExport: "ballToBallBounce",
+    // Data correction (2026-07-11): no pen for this hidden record exists in
+    // CODEPEN_GALLERY, so "canonical-vm-tested" was stale. The production
+    // contract test surfaced it the moment the expected set came from the
+    // registry instead of the gallery.
+    pen: "hidden-no-pen",
   },
 ];

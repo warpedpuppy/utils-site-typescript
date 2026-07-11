@@ -40,7 +40,13 @@ function PrimaryCanvas({
     };
   }, [activeObject, createClassReference]);
 
-  return <CanvasContainer instance={instanceOfClass} isLoading={isLoading} />;
+  return (
+    <CanvasContainer
+      instance={instanceOfClass}
+      isLoading={isLoading}
+      functionName={activeObject?.primaryCoreExport ?? null}
+    />
+  );
 }
 
 export default PrimaryCanvas;

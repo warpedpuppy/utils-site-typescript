@@ -46,8 +46,10 @@ function CreateChecklists() {
         const firstEntry = visibleEntries[0];
         let tempArray: ReactNode[] = [];
         visibleEntries.forEach((innerInnerArray) => {
-          const { title, slug, formula } = innerInnerArray[1];
-          const docsTarget = formula.keyFunction?.name ?? "";
+          const { title, slug, primaryCoreExport } = innerInnerArray[1];
+          // Explicit registry identity — never Function.name, which
+          // minification rewrites in production builds.
+          const docsTarget = primaryCoreExport ?? "";
           const docsHref = docsTarget
             ? `/api?tab=documentation&fn=${encodeURIComponent(docsTarget)}`
             : "";

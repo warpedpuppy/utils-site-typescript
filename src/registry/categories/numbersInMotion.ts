@@ -22,6 +22,7 @@ export const NUMBERS_IN_MOTION: RegistryRecord[] = [
     formula: lerpFormula,
     load: () => import("../../core-animations/ScalarLerp"),
     coreExports: ["lerp"],
+    primaryCoreExport: "lerp",
     pen: "mini-demo-no-pen",
   },
   {
@@ -32,6 +33,7 @@ export const NUMBERS_IN_MOTION: RegistryRecord[] = [
     formula: inverseLerpFormula,
     load: () => import("../../core-animations/InverseLerp"),
     coreExports: ["inverseLerp"],
+    primaryCoreExport: "inverseLerp",
     pen: "mini-demo-no-pen",
   },
   {
@@ -42,6 +44,7 @@ export const NUMBERS_IN_MOTION: RegistryRecord[] = [
     formula: mapRangeFormula,
     load: () => import("../../core-animations/MapRange"),
     coreExports: ["mapRange"],
+    primaryCoreExport: "mapRange",
     pen: "mini-demo-no-pen",
   },
   {
@@ -52,6 +55,7 @@ export const NUMBERS_IN_MOTION: RegistryRecord[] = [
     formula: clampFormula,
     load: () => import("../../core-animations/Clamp"),
     coreExports: ["clamp"],
+    primaryCoreExport: "clamp",
     pen: "mini-demo-no-pen",
   },
   {
@@ -62,6 +66,7 @@ export const NUMBERS_IN_MOTION: RegistryRecord[] = [
     formula: wrapFormula,
     load: () => import("../../core-animations/Wrap"),
     coreExports: ["wrap"],
+    primaryCoreExport: "wrap",
     pen: "mini-demo-no-pen",
   },
   {
@@ -72,6 +77,7 @@ export const NUMBERS_IN_MOTION: RegistryRecord[] = [
     formula: pingPongFormula,
     load: () => import("../../core-animations/PingPong"),
     coreExports: ["pingPong"],
+    primaryCoreExport: "pingPong",
     pen: "mini-demo-no-pen",
   },
   {
@@ -82,6 +88,7 @@ export const NUMBERS_IN_MOTION: RegistryRecord[] = [
     formula: smoothstepFormula,
     load: () => import("../../core-animations/Smoothstep"),
     coreExports: ["smoothstep", "smootherstep"],
+    primaryCoreExport: "smoothstep",
     pen: "mini-demo-no-pen",
   },
 ];

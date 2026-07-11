@@ -1,112 +1,22 @@
 import { CodePenPayload } from "./codepen";
-import { ballBounce } from "../../pages/createJSON/formulas/animation/BallBounce";
+// Build-time generated plain-JS source for every embedded function — see
+// scripts/generate-codepen-sources.mjs. String literals survive minification;
+// runtime function serialization does not.
+import { CODEPEN_FUNCTION_SOURCES } from "./generatedCodepenSources";
 import { ballToBallBounce } from "../../pages/createJSON/formulas/animation/BallToBallBounce";
 import { lerp } from "../../pages/createJSON/formulas/animation/Lerp";
-import {
-  linear,
-  easeIn,
-  easeOut,
-  easeInOut,
-} from "@utilspalooza/core/Easing";
-import { quadraticBezier } from "../../pages/createJSON/formulas/animation/QuadraticBezier";
+import { linear, easeIn, easeOut, easeInOut } from "@utilspalooza/core/Easing";
 import { DistributeAroundCircle } from "../../pages/createJSON/formulas/animation/DistributeAroundCircle";
-import { getRotation } from "../../pages/createJSON/formulas/animation/GetRotation";
-import { findPointAroundCircle } from "@utilspalooza/core/FindPointAroundCircle";
-import { sineCurve } from "@utilspalooza/core/SineCurve";
-import { unitCirclePoint } from "@utilspalooza/core/UnitCirclePoint";
 import { pointToCircle } from "@utilspalooza/core/PointToCircle";
 import { circleToCircle } from "@utilspalooza/core/CircleToCircle";
 import { circleToRect } from "@utilspalooza/core/CircleToRect";
-import { lineToCircle } from "@utilspalooza/core/LineToCircle";
-import { lineToLine } from "@utilspalooza/core/LineToLine";
-import { lineToPoint } from "@utilspalooza/core/LineToPoint";
-import { lineLine as lineLineFn } from "@utilspalooza/core/CollisionObjectAPI/LineLine";
 import { polygonToPolygon } from "@utilspalooza/core/PolygonToPolygon";
 import { polygonLine as polygonLineFn } from "@utilspalooza/core/CollisionObjectAPI/PolygonLine";
 import { getPointOnLine } from "@utilspalooza/core/GetPointOnLine";
 import { getTriangleData } from "@utilspalooza/core/GetTriangleData";
-import { starVertices } from "@utilspalooza/core/Star";
 import { drawEquilateralTriangle } from "./pen-snippets";
-import { drawEquilateralTriangle as drawEquilateralTriangleAnimation } from "../../core-animations/EquilateralTriangle";
-import { equilateralTriangle } from "@utilspalooza/core/EquilateralTriangle";
-import { circleFromThreePoints } from "@utilspalooza/core/CircleFromThreePoints";
-import { deCasteljau } from "@utilspalooza/core/DeCasteljau";
-import { drawBezierCurves } from "../../core-animations/BezierCurves";
-import { dft } from "@utilspalooza/core/DFT";
-import { heartPath, drawFourierEpicycles } from "../../core-animations/FourierEpicycles";
-import { gameOfLifeStep } from "@utilspalooza/core/GameOfLife";
-import { drawGameOfLife } from "../../core-animations/GameOfLife";
-import { drawWaveInterference } from "../../core-animations/WaveInterference";
-import { drawGravitationalLensing } from "../../core-animations/GravitationalLensing";
-import { newtonAccel, grAccel, drawOrbitalPrecession } from "../../core-animations/OrbitalPrecession";
-import { lineLength } from "@utilspalooza/core/LineLength";
-import { moveAlongLine } from "@utilspalooza/core/MoveAlongLine";
-import { SphereLighting } from "../../pages/createJSON/formulas/animation/OrbitalMotion";
-import { radToDeg as radToDegFn } from "@utilspalooza/core/RadToDeg";
-import { drawCenterOnParent } from "../../core-animations/CenterOnParentAnimation";
-import { drawDegreesToRadians } from "../../core-animations/DegToRadAnimation";
-import { drawRadiansToDegrees } from "../../core-animations/Rad2DegAnimation";
-import { drawFormatNumberWithCommas } from "../../core-animations/NumberWithCommasAnimation";
-import { drawRandomIntegerBetween } from "../../core-animations/RandomIntegerAnimation";
-import { drawRandomNumberBetween } from "../../core-animations/RandomNumberAnimation";
-import { sierpinskiMidpoints, drawSierpinski } from "../../core-animations/Sierpinski";
-import { createKlimtSwirls, drawKlimt } from "../../core-animations/Klimt";
-import {
-  hslToRgb,
-  lerpColor as lerpColorFn,
-  lerpColorHsl,
-  rgbToCss,
-  rgbToHsl,
-} from "@utilspalooza/core/Color";
-import {
-  vecNormalize,
-  vecPerpendicular,
-  vecReflect,
-  vecRotate,
-} from "@utilspalooza/core/Vec2";
-import {
-  lerpAngle,
-  shortestAngleBetween,
-  wrapAngle,
-} from "@utilspalooza/core/AngleInterpolation";
-import { drawRainbowBall } from "../../core-animations/BallBounce";
-import { drawLerp } from "../../core-animations/Lerp";
-import { drawEasing } from "../../core-animations/Easing";
-import { drawQuadraticBezier } from "../../core-animations/QuadraticBezier";
-import { drawDistributeAroundCircle } from "../../core-animations/DistributeAroundCircle";
-import { drawMoveToDestination } from "../../core-animations/MoveToDestination";
-import { drawPointTowards } from "../../core-animations/PointTowards";
-import { drawSineCurve } from "../../core-animations/SineCurve";
-import { drawDeMystifySineCosine } from "../../core-animations/DeMystifySineCosine";
-import { springValue, criticalDamping } from "@utilspalooza/core/Animate";
-import { drawSpring } from "../../core-animations/Spring";
-import { drawColorLerp } from "../../core-animations/ColorLerp";
-import { drawColorFamily } from "../../core-animations/ColorFamilies";
-import { drawVectorReflect } from "../../core-animations/VectorReflect";
-import { drawVectorRotate } from "../../core-animations/VectorRotate";
-import { drawAngleLerp } from "../../core-animations/AngleLerp";
-import { drawBird } from "../../core-animations/Murmuration";
-import { drawOrbitalMotion } from "../../core-animations/OrbitalMotion";
-import { drawMoveItemAroundCircle } from "../../core-animations/MoveItemAroundCircle";
-import { drawGetPointOnLine } from "../../core-animations/GetPointOnLine";
-import { drawLineLength } from "../../core-animations/LineLength";
-import { drawPolygon } from "../../core-animations/Polygon";
-import { drawStar } from "../../core-animations/Star";
-import { drawCircleFromThreePoints } from "../../core-animations/CircleFromThreePoints";
-import { drawTriangleDataFromLine } from "../../core-animations/TriangleDataFromLine";
-import { drawCircleToCircle } from "../../core-animations/CircleToCircle";
-import { drawCircleField } from "../../core-animations/CircleField";
-import { pointCircle as pointCircleFn } from "@utilspalooza/core/CollisionObjectAPI/PointCircle";
-import { drawPointToCircle } from "../../core-animations/PointToCircle";
-import { drawLineToCircle } from "../../core-animations/LineToCircle";
-import { drawLineToLine } from "../../core-animations/LineToLine";
-import { drawLineToPoint } from "../../core-animations/LineToPoint";
-import { drawLineToRectangle } from "../../core-animations/LineToRect";
-import { drawPointToRectangle } from "../../core-animations/PointToRect";
-import { drawRectToRect } from "../../core-animations/RectToRect";
-import { drawCircleToRectangle } from "../../core-animations/CircleToRect";
-import { drawPolygonToPolygon } from "../../core-animations/PolygonToPolygonCollision";
-import { polygonPoint } from "../../pages/createJSON/formulas/collision-detection/PolygonCollision";
+import { lerpColor as lerpColorFn, lerpColorHsl, rgbToHsl } from "@utilspalooza/core/Color";
+import { vecRotate } from "@utilspalooza/core/Vec2";
 
 export interface ExamplePen {
   group: string;
@@ -142,9 +52,9 @@ canvas { display: block; width: 100vw; height: 100vh; }
 
 // ── Ball Bounce ──────────────────────────────────────────────────────────────
 const BALL_BOUNCE_HTML = `<canvas id="canvas"></canvas>`;
-const BALL_BOUNCE_JS = `${ballBounce.keyFunction.toString()}
+const BALL_BOUNCE_JS = `${CODEPEN_FUNCTION_SOURCES.ballBounce}
 
-${drawRainbowBall.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawRainbowBall}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -225,13 +135,13 @@ draw();`;
 // ── Orbital Motion ───────────────────────────────────────────────────────────
 const ORBITAL_MOTION_HTML = `<canvas id="canvas"></canvas>`;
 const ORBITAL_MOTION_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${findPointAroundCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.findPointAroundCircle}
 
 const SphereLighting = {
-  keyFunction: ${SphereLighting.keyFunction.toString()}
+  keyFunction: ${CODEPEN_FUNCTION_SOURCES.sphereLighting}
 };
 
-${drawOrbitalMotion.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawOrbitalMotion}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -269,9 +179,9 @@ const LERP_HTML = `<canvas id="canvas"></canvas>
 <div id="controls">
   <label>speed <input type="range" id="speed" min="0.01" max="0.1" step="0.01" value="0.05"></label>
 </div>`;
-const LERP_JS = `${lerp.keyFunction.toString()}
+const LERP_JS = `${CODEPEN_FUNCTION_SOURCES.lerp}
 
-${drawLerp.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawLerp}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -342,7 +252,7 @@ const TRACKS = [
   { name: 'ease-out-bounce', ease: easeOutBounce, color: '#fb923c' }
 ];
 
-${drawEasing.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawEasing}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -360,9 +270,9 @@ draw();`;
 
 // ── Quadratic Bézier ────────────────────────────────────────────────────────
 const QUADRATIC_BEZIER_HTML = `<canvas id="canvas"></canvas>`;
-const QUADRATIC_BEZIER_JS = `${quadraticBezier.keyFunction.toString()}
+const QUADRATIC_BEZIER_JS = `${CODEPEN_FUNCTION_SOURCES.quadraticBezier}
 
-${drawQuadraticBezier.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawQuadraticBezier}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -422,9 +332,9 @@ const FIND_POINTS_CIRCLE_HTML = `<canvas id="canvas"></canvas>
 <div id="controls">
   <label>progress: <input type="range" id="progress" min="0" max="100" step="1" value="0"></label>
 </div>`;
-const FIND_POINTS_CIRCLE_JS = `${findPointAroundCircle.toString()}
+const FIND_POINTS_CIRCLE_JS = `${CODEPEN_FUNCTION_SOURCES.findPointAroundCircle}
 
-${drawMoveItemAroundCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawMoveItemAroundCircle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -459,9 +369,9 @@ draw();`;
 
 // ── Move Object to Changing Point ───────────────────────────────────────────
 const MOVE_TO_DESTINATION_HTML = `<canvas id="canvas"></canvas>`;
-const MOVE_TO_DESTINATION_JS = `${moveAlongLine.toString()}
-${getRotation.keyFunction.toString()}
-${drawMoveToDestination.toString()}
+const MOVE_TO_DESTINATION_JS = `${CODEPEN_FUNCTION_SOURCES.moveAlongLine}
+${CODEPEN_FUNCTION_SOURCES.getRotation}
+${CODEPEN_FUNCTION_SOURCES.drawMoveToDestination}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -500,13 +410,13 @@ img.src = '/bmps/arrow.png';`;
 
 // ── Point Object Towards Another ────────────────────────────────────────────
 const POINT_TOWARDS_HTML = `<canvas id="canvas"></canvas>`;
-const POINT_TOWARDS_JS = `${getRotation.keyFunction.toString()}
+const POINT_TOWARDS_JS = `${CODEPEN_FUNCTION_SOURCES.getRotation}
 function pointsAroundCircle(circleCenter, i, radius, numElements) {
   const x = circleCenter.x + radius * Math.cos((2 * Math.PI * i) / numElements);
   const y = circleCenter.y + radius * Math.sin((2 * Math.PI * i) / numElements);
   return { x, y };
 }
-${drawPointTowards.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawPointTowards}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -535,9 +445,9 @@ const SINE_CURVE_HTML = `<canvas id="canvas"></canvas><div id="controls">
   <label>differential: <input type="range" id="differential" min="0" max="200" value="200"></label>
   <label>speed: <input type="range" id="speed" min="0.0005" max="0.05" step="0.005" value="0.005"></label>
 </div>`;
-const SINE_CURVE_JS = `${sineCurve.toString()}
+const SINE_CURVE_JS = `${CODEPEN_FUNCTION_SOURCES.sineCurve}
 
-${drawSineCurve.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawSineCurve}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -570,11 +480,11 @@ draw();`;
 
 // ── Demystify Sine & Cosine ────────────────────────────────────────────────
 const DEMYSTIFY_SINE_COSINE_HTML = `<canvas id="canvas"></canvas>`;
-const DEMYSTIFY_SINE_COSINE_JS = `${unitCirclePoint.toString()}
+const DEMYSTIFY_SINE_COSINE_JS = `${CODEPEN_FUNCTION_SOURCES.unitCirclePoint}
 
-${radToDegFn.toString()}
+${CODEPEN_FUNCTION_SOURCES.radToDeg}
 
-${drawDeMystifySineCosine.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawDeMystifySineCosine}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -603,10 +513,10 @@ draw();`;
 
 const POINT_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const POINT_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${sineCurve.toString()}
-${pointCircleFn.toString()}
+${CODEPEN_FUNCTION_SOURCES.sineCurve}
+${CODEPEN_FUNCTION_SOURCES.pointCircle}
 
-${drawPointToCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawPointToCircle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -631,13 +541,13 @@ draw();`;
 
 const POINT_RECT_HTML = `<canvas id="canvas"></canvas>`;
 const POINT_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
-${sineCurve.toString()}
+${CODEPEN_FUNCTION_SOURCES.sineCurve}
 
-${polygonPoint.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.polygonPoint}
 
-${lineLength.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLength}
 
-${getRotation.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.getRotation}
 
 function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
   const vertices = [];
@@ -666,7 +576,7 @@ function createRect(width, height, angle = 0, options = { rotate: false, rotateS
   return { vertices };
 }
 
-${drawPointToRectangle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawPointToRectangle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -693,11 +603,11 @@ draw();`;
 
 const CIRCLE_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const CIRCLE_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${sineCurve.toString()}
+${CODEPEN_FUNCTION_SOURCES.sineCurve}
 
-${circleToCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.circleToCircle}
 
-${drawCircleToCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawCircleToCircle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -733,9 +643,9 @@ draw();`;
 
 const CIRCLE_FIELD_HTML = `<canvas id="canvas"></canvas>`;
 const CIRCLE_FIELD_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${circleToCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.circleToCircle}
 
-${drawCircleField.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawCircleField}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -768,9 +678,9 @@ draw();`;
 
 const CIRCLE_RECT_HTML = `<canvas id="canvas"></canvas>`;
 const CIRCLE_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
-${sineCurve.toString()}
+${CODEPEN_FUNCTION_SOURCES.sineCurve}
 
-${pointCircleFn.toString()}
+${CODEPEN_FUNCTION_SOURCES.pointCircle}
 
 function linePoint(line, point, buffer = 0.1) {
   const d1 = Math.hypot(point.x - line.startPoint.x, point.y - line.startPoint.y);
@@ -779,7 +689,7 @@ function linePoint(line, point, buffer = 0.1) {
   return d1 + d2 >= lineLen - buffer && d1 + d2 <= lineLen + buffer;
 }
 
-${lineLength.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLength}
 
 function lineCircle(line, circle) {
   let inside1 = pointCircle(line.startPoint, circle);
@@ -810,7 +720,7 @@ function lineCircle(line, circle) {
   return false;
 }
 
-${polygonPoint.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.polygonPoint}
 
 function polygonCircle(polygon, circle) {
   let next = 0;
@@ -835,7 +745,7 @@ function polygonCircle(polygon, circle) {
   return false;
 }
 
-${getRotation.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.getRotation}
 
 function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
   const vertices = [];
@@ -864,7 +774,7 @@ function createRect(width, height, angle = 0, options = { rotate: false, rotateS
   return { vertices };
 }
 
-${drawCircleToRectangle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawCircleToRectangle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -891,9 +801,9 @@ draw();`;
 
 const LINE_CIRCLE_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_CIRCLE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineToCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineToCircle}
 
-${drawLineToCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawLineToCircle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -938,9 +848,9 @@ draw();`;
 
 const LINE_LINE_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_LINE_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineToLine.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineToLine}
 
-${drawLineToLine.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawLineToLine}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -986,9 +896,9 @@ draw();`;
 
 const LINE_POINT_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_POINT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineToPoint.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineToPoint}
 
-${drawLineToPoint.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawLineToPoint}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1022,7 +932,7 @@ draw();`;
 
 const LINE_RECT_HTML = `<canvas id="canvas"></canvas>`;
 const LINE_RECT_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineLineFn.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLine}
 
 function polygonLine(polygon, line) {
   let next = 0;
@@ -1039,9 +949,9 @@ function polygonLine(polygon, line) {
   return false;
 }
 
-${lineLength.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLength}
 
-${getRotation.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.getRotation}
 
 function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
   const vertices = [];
@@ -1071,7 +981,7 @@ function createRect(width, height, angle = 0, options = { rotate: false, rotateS
   return { vertices };
 }
 
-${drawLineToRectangle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawLineToRectangle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1120,9 +1030,9 @@ draw();`;
 
 const RECT_RECT_HTML = `<canvas id="canvas"></canvas>`;
 const RECT_RECT_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
-${sineCurve.toString()}
+${CODEPEN_FUNCTION_SOURCES.sineCurve}
 
-${lineLineFn.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLine}
 
 function polygonLine(polygon, line) {
   let next = 0;
@@ -1147,7 +1057,7 @@ function polygonLine(polygon, line) {
   return false;
 }
 
-${polygonPoint.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.polygonPoint}
 
 function polygonPolygon(polygon1, polygon2) {
   let next = 0;
@@ -1170,9 +1080,9 @@ function polygonPolygon(polygon1, polygon2) {
   return false;
 }
 
-${lineLength.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLength}
 
-${getRotation.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.getRotation}
 
 function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
   const vertices = [];
@@ -1201,7 +1111,7 @@ function createRect(width, height, angle = 0, options = { rotate: false, rotateS
   return { vertices };
 }
 
-${drawRectToRect.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawRectToRect}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1228,9 +1138,9 @@ draw();`;
 
 const POLYGON_POLYGON_HTML = `<canvas id="canvas"></canvas>`;
 const POLYGON_POLYGON_JS = `// ─── the core algorithms ───────────────────────────────────────────────────
-${sineCurve.toString()}
+${CODEPEN_FUNCTION_SOURCES.sineCurve}
 
-${lineLineFn.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLine}
 
 function polygonLine(polygon, line) {
   let next = 0;
@@ -1255,7 +1165,7 @@ function polygonLine(polygon, line) {
   return false;
 }
 
-${polygonPoint.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.polygonPoint}
 
 function polygonPolygon(polygon1, polygon2) {
   let next = 0;
@@ -1278,9 +1188,9 @@ function polygonPolygon(polygon1, polygon2) {
   return false;
 }
 
-${starVertices.toString()}
+${CODEPEN_FUNCTION_SOURCES.starVertices}
 
-${drawPolygonToPolygon.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawPolygonToPolygon}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1311,12 +1221,12 @@ const SPRING_HTML = `<canvas id="canvas"></canvas>
   <label>stiffness <input type="range" id="stiffness" min="40" max="400" step="10" value="170"></label>
 </div>`;
 const SPRING_JS = `// ─── the core algorithm ─────────────────────────────────────────────────────
-${springValue.toString()}
+${CODEPEN_FUNCTION_SOURCES.springValue}
 
-${criticalDamping.toString()}
+${CODEPEN_FUNCTION_SOURCES.criticalDamping}
 
 // ─── the drawing ────────────────────────────────────────────────────────────
-${drawSpring.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawSpring}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -1373,7 +1283,7 @@ const SIMPLE_EQUATION_PENS: ExamplePen[] = [
       description: "Center a child box by subtracting its size from the parent size and halving the remainder.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${drawCenterOnParent.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawCenterOnParent}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1398,7 +1308,7 @@ loop();`,
       description: "JavaScript trig uses radians, so 180 degrees becomes PI radians.",
       html: `<canvas id="canvas"></canvas><div id="controls"><label>degrees <input id="deg" type="range" min="0" max="360" value="45"></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `${drawDegreesToRadians.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawDegreesToRadians}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1424,7 +1334,7 @@ loop();`,
       description: "Radians are the natural unit for trig; degrees are often easier to read.",
       html: `<canvas id="canvas"></canvas><div id="controls"><label>radians <input id="rad" type="range" min="0" max="6.283" step="0.001" value="0.785"></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `${drawRadiansToDegrees.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawRadiansToDegrees}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1450,7 +1360,7 @@ loop();`,
       description: "A tiny formatting helper for making large values scan quickly.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${drawFormatNumberWithCommas.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawFormatNumberWithCommas}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1475,7 +1385,7 @@ loop();`,
       description: "Generate whole numbers with inclusive lower and upper bounds.",
       html: `<canvas id="canvas"></canvas><div id="controls"><button id="roll">roll</button></div>`,
       css: FULLSCREEN_CSS,
-      js: `${drawRandomIntegerBetween.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawRandomIntegerBetween}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1500,7 +1410,7 @@ roll();`,
       description: "Generate decimal values greater than or equal to min and less than max.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${drawRandomNumberBetween.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawRandomNumberBetween}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1594,7 +1504,7 @@ function lerpColorHsl(a, b, t) {
 function rgbToCss(rgb) {
   return 'rgb(' + Math.round(rgb.r) + ', ' + Math.round(rgb.g) + ', ' + Math.round(rgb.b) + ')';
 }
-${drawColorLerp.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawColorLerp}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1628,9 +1538,9 @@ draw();`,
       description: "Pick a named hue family and generate a coherent palette from that slice of the color wheel.",
       html: `<canvas id="canvas"></canvas><div id="controls"><label>family <select id="family"><option>all</option><option>red</option><option>orange</option><option>yellow</option><option>green</option><option>cyan</option><option>blue</option><option>purple</option><option>pink</option></select></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `${hslToRgb.toString()}
-${rgbToCss.toString()}
-${drawColorFamily.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.hslToRgb}
+${CODEPEN_FUNCTION_SOURCES.rgbToCss}
+${CODEPEN_FUNCTION_SOURCES.drawColorFamily}
 
 const HUE_FAMILIES = { all: [0, 360], red: [-12, 18], orange: [18, 45], yellow: [45, 70], green: [80, 160], cyan: [160, 200], blue: [200, 250], purple: [255, 290], pink: [300, 345] };
 function colorFamily(family, count) {
@@ -1668,9 +1578,9 @@ function draw() {
       description: "A bounce is the incoming vector reflected across the surface normal.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${vecNormalize.toString()}
-${vecPerpendicular.toString()}
-${vecReflect.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.vecNormalize}
+${CODEPEN_FUNCTION_SOURCES.vecPerpendicular}
+${CODEPEN_FUNCTION_SOURCES.vecReflect}
 function drawArrow(ctx, fromX, fromY, toX, toY, color, label) {
   const ang = Math.atan2(toY - fromY, toX - fromX);
   const head = 11;
@@ -1683,7 +1593,7 @@ function drawArrow(ctx, fromX, fromY, toX, toY, color, label) {
   ctx.closePath(); ctx.fill();
   if (label) { ctx.font = 'bold 12px monospace'; ctx.fillText(label, toX + 8, toY - 8); }
 }
-${drawVectorReflect.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawVectorReflect}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1713,8 +1623,8 @@ draw();`,
       description: "Rotation remixes each point's x and y with sine and cosine.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${vecRotate.toString()}
-${drawVectorRotate.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.vecRotate}
+${CODEPEN_FUNCTION_SOURCES.drawVectorRotate}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1753,9 +1663,9 @@ draw();`,
       description: "350 degrees to 10 degrees is a short hop, not an almost-full spin.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${wrapAngle.toString()}
-${shortestAngleBetween.toString()}
-${lerpAngle.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.wrapAngle}
+${CODEPEN_FUNCTION_SOURCES.shortestAngleBetween}
+${CODEPEN_FUNCTION_SOURCES.lerpAngle}
 function drawDial(ctx, cx, cy, r, angle, color, label) {
   ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
@@ -1764,7 +1674,7 @@ function drawDial(ctx, cx, cy, r, angle, color, label) {
   ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = color; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center'; ctx.fillText(label, cx, cy + r + 28); ctx.textAlign = 'left';
 }
-${drawAngleLerp.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawAngleLerp}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1794,7 +1704,7 @@ draw();`,
       description: "Many small triangles steer toward a wandering target, creating a flock-like smear.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${drawBird.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawBird}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1838,9 +1748,9 @@ const PRETTY_AND_FRACTAL_PENS: ExamplePen[] = [
       description: "Each triangle splits into three smaller triangles; repeat and the fractal appears.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${sierpinskiMidpoints.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.sierpinskiMidpoints}
 
-${drawSierpinski.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawSierpinski}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -1978,9 +1888,9 @@ draw();`,
       description: "Curving gold ribbons with jewel accents, loosely inspired by Klimt ornament.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${createKlimtSwirls.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.createKlimtSwirls}
 
-${drawKlimt.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawKlimt}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -2363,7 +2273,7 @@ function getPointOnLine(startPoint, endPoint, percentage) {
 const T_MIN = -0.4;
 const T_MAX = 1.4;
 
-${drawGetPointOnLine.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawGetPointOnLine}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2403,7 +2313,7 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineLength.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLength}
 
 // alias used inside calculateTriangleData
 const LineLengthFunc = lineLength;
@@ -2425,7 +2335,7 @@ function distanceBetweenPoints(startPoint, endPoint) {
   return Math.sqrt(a * a + b * b);
 }
 
-${drawTriangleDataFromLine.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawTriangleDataFromLine}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2478,9 +2388,9 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>points: <input type="range" id="points" min="3" max="12" step="1" value="5"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${starVertices.toString()}
+${CODEPEN_FUNCTION_SOURCES.starVertices}
 
-${drawStar.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawStar}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2530,8 +2440,8 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="controls"><label>rotation: <input type="range" id="rotation" min="0" max="360" step="1" value="0"></label></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineLength.toString()}
-${getRotation.keyFunction.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLength}
+${CODEPEN_FUNCTION_SOURCES.getRotation}
 function createRect(width, height, angle = 0, options = { rotate: false, rotateSpeed: 1000, clockwise: true }) {
   const vertices = [];
   let x = width / 2;
@@ -2561,7 +2471,7 @@ function createRect(width, height, angle = 0, options = { rotate: false, rotateS
 }
 
 // ─── the drawing helper from the /examples animation ────────────────────────
-${drawPolygon.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawPolygon}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2606,9 +2516,9 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"><h3>Click and drag to draw triangle</h3></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${equilateralTriangle.toString()}
+${CODEPEN_FUNCTION_SOURCES.equilateralTriangle}
 
-${drawEquilateralTriangleAnimation.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawEquilateralTriangle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2685,12 +2595,12 @@ draw();`,
       html: `<canvas id="canvas"></canvas><div id="info" style="position: fixed; top: 20px; left: 20px; color: #d8e2ff; font-family: monospace; font-size: 12px;"></div>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${circleFromThreePoints.toString()}
+${CODEPEN_FUNCTION_SOURCES.circleFromThreePoints}
 
 // alias used inside drawCircleFromThreePoints
 const CircleFromThreePointsFunc = circleFromThreePoints;
 
-${drawCircleFromThreePoints.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawCircleFromThreePoints}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2772,7 +2682,7 @@ function cosWave(startValue, differential, speed) {
   return startValue + Math.cos(currentDate.getTime() * speed) * differential;
 }
 
-${drawDistributeAroundCircle.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawDistributeAroundCircle}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2815,7 +2725,7 @@ draw();`,
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${lineLength.toString()}
+${CODEPEN_FUNCTION_SOURCES.lineLength}
 const LineLengthFunc = lineLength;
 
 function getHypAngle(originPoint, destinationPoint) {
@@ -2825,7 +2735,7 @@ function getHypAngle(originPoint, destinationPoint) {
   );
 }
 
-${drawLineLength.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawLineLength}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2866,10 +2776,10 @@ draw();`,
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
       js: `// ─── core algorithm ──────────────────────────────────────────────────────────
-${deCasteljau.toString()}
+${CODEPEN_FUNCTION_SOURCES.deCasteljau}
 
 // ─── standalone draw ─────────────────────────────────────────────────────────
-${drawBezierCurves.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawBezierCurves}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2914,11 +2824,11 @@ draw();`,
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
       js: `// ─── the core algorithm ─────────────────────────────────────────────────────
-${dft.toString()}
+${CODEPEN_FUNCTION_SOURCES.dft}
 
-${heartPath.toString()}
+${CODEPEN_FUNCTION_SOURCES.heartPath}
 
-${drawFourierEpicycles.toString()}
+${CODEPEN_FUNCTION_SOURCES.drawFourierEpicycles}
 
 // ─── canvas setup ────────────────────────────────────────────────────────────
 const canvas = document.getElementById('canvas');
@@ -2956,8 +2866,8 @@ draw();`,
         "Four rules on a grid: 1. Underpop = death. 2. 2-3 neighbors = survive. 3. Overpop = death. 4. Exactly 3 neighbors = birth.",
       html: `<canvas id="canvas"></canvas><div id="controls"><button id="reset">Reset</button><button id="toggle">Pause/Play</button></div>`,
       css: FULLSCREEN_CSS,
-      js: `${gameOfLifeStep.toString()}
-${drawGameOfLife.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.gameOfLifeStep}
+${CODEPEN_FUNCTION_SOURCES.drawGameOfLife}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -3010,7 +2920,7 @@ draw();`,
         "Multiple sources create ripples; where peaks meet = bright, where troughs meet = dark.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${drawWaveInterference.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawWaveInterference}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -3056,7 +2966,7 @@ draw();`,
         "Light rays pass near a massive object and are deflected by its gravity.",
       html: `<canvas id="canvas"></canvas>`,
       css: FULLSCREEN_CSS,
-      js: `${drawGravitationalLensing.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.drawGravitationalLensing}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -3103,9 +3013,9 @@ draw();`,
         "Einstein's correction to Newtonian gravity causes elliptical orbits to slowly rotate.",
       html: `<canvas id="canvas"></canvas><div id="controls"><label>GR ε: <input type="range" id="gr" min="0" max="3000" step="50" value="800"></label></div>`,
       css: FULLSCREEN_CSS,
-      js: `${newtonAccel.toString()}
-${grAccel.toString()}
-${drawOrbitalPrecession.toString()}
+      js: `${CODEPEN_FUNCTION_SOURCES.newtonAccel}
+${CODEPEN_FUNCTION_SOURCES.grAccel}
+${CODEPEN_FUNCTION_SOURCES.drawOrbitalPrecession}
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');

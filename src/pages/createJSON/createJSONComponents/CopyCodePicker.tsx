@@ -17,16 +17,13 @@ function buildGroups(): PickerGroup[] {
     category,
     items: Object.entries(objects)
       .filter(([, value]) => value.include !== false)
-      .map(([key, value]) => {
-        // Only surface a real function name — several formulas use a `noop`
-        // placeholder keyFunction, which would read as a misleading `noop()`.
-        const fnName = value.formula.keyFunction?.name ?? "";
-        return {
-          key,
-          title: value.title,
-          fn: fnName === "noop" ? "" : fnName,
-        };
-      }),
+      .map(([key, value]) => ({
+        key,
+        title: value.title,
+        // Explicit registry identity — never Function.name, which
+        // minification rewrites in production builds.
+        fn: value.primaryCoreExport ?? "",
+      })),
   }));
 }
 

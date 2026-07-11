@@ -30,6 +30,7 @@ export function buildManifest(): AnimationManifest {
       ...(r.include === false ? { include: false } : {}),
       formula: r.formula,
       load: r.load,
+      primaryCoreExport: r.primaryCoreExport,
     };
   }
   return manifest;

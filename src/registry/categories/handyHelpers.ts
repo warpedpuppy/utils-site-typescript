@@ -17,6 +17,7 @@ export const HANDY_HELPERS: RegistryRecord[] = [
     formula: degToRad,
     load: () => import("../../core-animations/DegToRadAnimation"),
     coreExports: ["degToRad"],
+    primaryCoreExport: "degToRad",
     pen: "canonical-vm-tested",
   },
   {
@@ -27,6 +28,7 @@ export const HANDY_HELPERS: RegistryRecord[] = [
     formula: radToDeg,
     load: () => import("../../core-animations/Rad2DegAnimation"),
     coreExports: ["radToDeg"],
+    primaryCoreExport: "radToDeg",
     pen: "canonical-vm-tested",
   },
   {
@@ -37,6 +39,7 @@ export const HANDY_HELPERS: RegistryRecord[] = [
     formula: numberWithCommas,
     load: () => import("../../core-animations/NumberWithCommasAnimation"),
     coreExports: ["numberWithCommas"],
+    primaryCoreExport: "numberWithCommas",
     pen: "canonical-vm-tested",
   },
   {
@@ -47,6 +50,7 @@ export const HANDY_HELPERS: RegistryRecord[] = [
     formula: randomIntegerBetween,
     load: () => import("../../core-animations/RandomIntegerAnimation"),
     coreExports: ["randomIntegerBetween"],
+    primaryCoreExport: "randomIntegerBetween",
     pen: "canonical-vm-tested",
   },
   {
@@ -57,6 +61,7 @@ export const HANDY_HELPERS: RegistryRecord[] = [
     formula: randomNumberBetween,
     load: () => import("../../core-animations/RandomNumberAnimation"),
     coreExports: ["randomNumberBetween"],
+    primaryCoreExport: "randomNumberBetween",
     pen: "canonical-vm-tested",
   },
   {
@@ -67,6 +72,7 @@ export const HANDY_HELPERS: RegistryRecord[] = [
     formula: lerpColorFormula,
     load: () => import("../../core-animations/ColorLerp"),
     coreExports: ["lerpColor", "lerpColorHsl", "rgbToCss", "rgbToHsl", "hslToRgb"],
+    primaryCoreExport: "lerpColorHsl",
     pen: "canonical-vm-tested",
   },
   {
@@ -77,6 +83,7 @@ export const HANDY_HELPERS: RegistryRecord[] = [
     formula: colorFamilyFormula,
     load: () => import("../../core-animations/ColorFamilies"),
     coreExports: ["colorFamily", "getRandomColors", "rgbToCss"],
+    primaryCoreExport: "colorFamily",
     pen: "canonical-vm-tested",
   },
 ];

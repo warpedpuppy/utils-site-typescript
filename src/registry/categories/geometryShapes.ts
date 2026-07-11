@@ -18,6 +18,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: getPointOnLineFormula,
     load: () => import("../../core-animations/GetPointOnLine"),
     coreExports: ["getPointOnLine"],
+    primaryCoreExport: "getPointOnLine",
     pen: "canonical-vm-tested",
   },
   {
@@ -28,6 +29,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: lineLengthFormula,
     load: () => import("../../core-animations/LineLength"),
     coreExports: ["lineLength", "distance"],
+    primaryCoreExport: "lineLength",
     pen: "canonical-vm-tested",
   },
   {
@@ -38,6 +40,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: triangleDataFromLineFormula,
     load: () => import("../../core-animations/TriangleDataFromLine"),
     coreExports: ["triangleDataFromLine", "getTriangleData"],
+    primaryCoreExport: "triangleDataFromLine",
     pen: "canonical-vm-tested",
   },
   {
@@ -48,6 +51,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: starFormula,
     load: () => import("../../core-animations/Star"),
     coreExports: ["starVertices"],
+    primaryCoreExport: "starVertices",
     pen: "canonical-vm-tested",
   },
   {
@@ -58,6 +62,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: rectangleFormula,
     load: () => import("../../core-animations/Polygon"),
     coreExports: ["createRect"],
+    primaryCoreExport: "createRect",
     pen: "canonical-vm-tested",
   },
   {
@@ -68,6 +73,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: equilateralTriangleFormula,
     load: () => import("../../core-animations/EquilateralTriangle"),
     coreExports: ["equilateralTriangle"],
+    primaryCoreExport: "equilateralTriangle",
     pen: "canonical-vm-tested",
   },
   {
@@ -78,6 +84,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: circleFromThreePointsFormula,
     load: () => import("../../core-animations/CircleFromThreePoints"),
     coreExports: ["circleFromThreePoints"],
+    primaryCoreExport: "circleFromThreePoints",
     pen: "canonical-vm-tested",
   },
   {
@@ -88,6 +95,7 @@ export const GEOMETRY_SHAPES: RegistryRecord[] = [
     formula: centerOnParent,
     load: () => import("../../core-animations/CenterOnParentAnimation"),
     coreExports: ["centerOnParent"],
+    primaryCoreExport: "centerOnParent",
     pen: "canonical-vm-tested",
   },
 ];

@@ -613,4 +613,23 @@ describe("registry drift tests", () => {
     ).map((r) => ({ slug: r.slug, title: r.title, coreExports: r.coreExports }));
     expect(EXAMPLE_CORE_ROWS).toEqual(expected);
   });
+
+  // A8 — primaryCoreExport is the explicit, minification-proof identity used
+  // for user-facing function labels and /api?fn= deep links. Every non-null
+  // value must be one of the record's own coreExports AND a documented
+  // core-api.json export, so a label or link can never point at a function the
+  // record doesn't teach or the docs don't know.
+  it("A8 — every non-null primaryCoreExport is in its record's coreExports and core-api.json", () => {
+    const failures: string[] = [];
+    for (const r of ALL_RECORDS) {
+      if (r.primaryCoreExport === null) continue;
+      if (!r.coreExports.includes(r.primaryCoreExport)) {
+        failures.push(`${r.slug}: ${r.primaryCoreExport} not in coreExports`);
+      }
+      if (!CORE_API_NAMES.has(r.primaryCoreExport)) {
+        failures.push(`${r.slug}: ${r.primaryCoreExport} not in core-api.json`);
+      }
+    }
+    expect(failures).toEqual([]);
+  });
 });
