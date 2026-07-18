@@ -1,4 +1,5 @@
 import Template from "../../core-animations/animationTemplate";
+import { dft } from "@utilspalooza/core/DFT";
 import { CodePenPayload } from "./codepen";
 import {
   injectStudioNotes,
@@ -20,7 +21,7 @@ const DESIGN_NOTES = `
 <p>The source shape is a list of cubic Bézier segments — exactly how an SVG <code>&lt;path&gt;</code> or a font glyph is defined. We sample each curve with de Casteljau into evenly spaced points, then treat each point as a complex number <code>x + iy</code>.</p>
 
 <h4>What the DFT gives you</h4>
-<p>The DFT turns those points into a set of <em>rotating vectors</em>: each has a frequency, a radius (amplitude), and a starting phase. Sorted biggest-first and chained tip-to-tail, they re-draw the outline as the chain spins — the famous epicycle trick.</p>
+<p>The DFT turns those points into a set of <em>rotating vectors</em>: each has a frequency, a radius (amplitude), and a starting phase. Sorted biggest-first and chained tip-to-tail, they re-draw the outline as the chain spins — the famous epicycle trick. Half the vectors spin clockwise and half counter-clockwise (negative frequencies) — you need both to trace an arbitrary closed path.</p>
 
 <h4>Why the "circles" slider teaches the transform</h4>
 <p>Keep only the largest N vectors and you get a band-limited approximation: a handful of circles capture the gross shape, more circles recover the sharp corners. That's lossy compression and the Fourier idea in one slider.</p>
@@ -59,35 +60,18 @@ const PRESETS: Record<string, number[][][]> = {
   })(),
 };
 
-function samplePath(segs: number[][][], perSeg: number): { re: number; im: number }[] {
-  const pts: { re: number; im: number }[] = [];
+function samplePath(segs: number[][][], perSeg: number): { x: number; y: number }[] {
+  const pts: { x: number; y: number }[] = [];
   for (const [p0, p1, p2, p3] of segs) {
     for (let i = 0; i < perSeg; i++) {
       const [x, y] = cubic(p0, p1, p2, p3, i / perSeg);
-      pts.push({ re: x, im: y });
+      pts.push({ x, y });
     }
   }
   return pts;
 }
 
 interface Vec { freq: number; amp: number; phase: number; }
-
-function dft(x: { re: number; im: number }[]): Vec[] {
-  const N = x.length;
-  const out: Vec[] = [];
-  for (let k = 0; k < N; k++) {
-    let re = 0, im = 0;
-    for (let n = 0; n < N; n++) {
-      const phi = (2 * Math.PI * k * n) / N;
-      const c = Math.cos(phi), s = Math.sin(phi);
-      re += x[n].re * c + x[n].im * s;
-      im += -x[n].re * s + x[n].im * c;
-    }
-    re /= N; im /= N;
-    out.push({ freq: k, amp: Math.hypot(re, im), phase: Math.atan2(im, re) });
-  }
-  return out.sort((a, b) => b.amp - a.amp);
-}
 
 const PEN_HTML = `<canvas id="c"></canvas>
 <div id="ui">
@@ -123,17 +107,19 @@ const SHAPES = {
 function sample(segs,per){const o=[];for(const[a,b,c,d] of segs)for(let i=0;i<per;i++){const[x,y]=cubic(a,b,c,d,i/per);o.push({re:x,im:y});}return o;}
 
 // ─── Discrete Fourier Transform → rotating vectors ───────────────────────────
+// Bins above N/2 are negative frequencies (k ≡ k − N); remapping them makes the
+// top-n cut a true low-pass, so the trace stays smooth between sample points.
 function dft(x){const N=x.length,out=[];
   for(let k=0;k<N;k++){let re=0,im=0;
     for(let n=0;n<N;n++){const p=2*Math.PI*k*n/N,c=Math.cos(p),s=Math.sin(p);
       re+=x[n].re*c+x[n].im*s; im+=-x[n].re*s+x[n].im*c;}
-    re/=N;im/=N; out.push({freq:k,amp:Math.hypot(re,im),phase:Math.atan2(im,re)});}
+    re/=N;im/=N; out.push({freq:k>N/2?k-N:k,amp:Math.hypot(re,im),phase:Math.atan2(im,re)});}
   return out.sort((a,b)=>b.amp-a.amp);}
 
-let shape='heart', circles=40, speed=12, vectors=[], N=0, t=0, trail=[];
+let shape='heart', circles=40, speed=12, vectors=[], t=0, trail=[];
 function build(){
-  const pts = sample(SHAPES[shape],28).map(p=>({re:p.re*2.6,im:p.im*2.6}));
-  N = pts.length; vectors = dft(pts); trail=[]; t=0;
+  const pts = sample(SHAPES[shape],64).map(p=>({re:p.re*2.6,im:p.im*2.6}));
+  vectors = dft(pts); trail=[]; t=0;
 }
 build();
 
@@ -148,10 +134,11 @@ function frame(){
     ctx.strokeStyle='rgba(140,180,255,0.18)'; ctx.beginPath(); ctx.arc(px,py,v.amp,0,7); ctx.stroke();
     ctx.strokeStyle='rgba(200,220,255,0.5)'; ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(x,y); ctx.stroke();
   }
-  trail.unshift([x,y]); if(trail.length>N) trail.pop();
+  const framesPerLoop = Math.round(2880/speed);      // one loop ≈ 4s at speed 12
+  trail.unshift([x,y]); if(trail.length>framesPerLoop) trail.length=framesPerLoop;
   ctx.strokeStyle='#ff5fa2'; ctx.lineWidth=2; ctx.beginPath();
   trail.forEach((p,i)=> i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.stroke(); ctx.lineWidth=1;
-  t += (2*Math.PI/N) * (speed/12) * 6;   // one full loop every N/(speed factor) frames
+  t += 2*Math.PI/framesPerLoop; if(t>=2*Math.PI) t-=2*Math.PI;
   requestAnimationFrame(frame);
 }
 frame();
@@ -179,7 +166,7 @@ class GenerativeLogoTracer extends Template {
   private circles = 40;
   private speed = 12;
   private scaleFactor = 2.6;
-  private samplesPerSeg = 28;
+  private samplesPerSeg = 64;
   private vectors: Vec[] = [];
   private trail: number[][] = [];
   private t = 0;
@@ -193,16 +180,19 @@ class GenerativeLogoTracer extends Template {
     this.loop();
   }
 
-  private sampleCount() {
-    return PRESETS[this.shape].length * this.samplesPerSeg;
-  }
-
   private build() {
     const pts = samplePath(PRESETS[this.shape], this.samplesPerSeg).map((p) => ({
-      re: p.re * this.scaleFactor,
-      im: p.im * this.scaleFactor,
+      x: p.x * this.scaleFactor,
+      y: p.y * this.scaleFactor,
     }));
-    this.vectors = dft(pts);
+    const N = pts.length;
+    // DFT bins above N/2 are really negative frequencies (k ≡ k − N). Remapping
+    // them makes the amplitude-sorted top-n cut a true low-pass, so the tip
+    // stays on a smooth path between sample instants at any playback speed.
+    this.vectors = dft(pts).map((v) => ({
+      ...v,
+      freq: v.freq > N / 2 ? v.freq - N : v.freq,
+    }));
     this.trail = [];
     this.t = 0;
   }
@@ -235,8 +225,11 @@ class GenerativeLogoTracer extends Template {
         ctx.stroke();
       }
 
+      // rolling trail holding exactly one loop, so the outline reads as one
+      // stable closed curve instead of stacked precessing copies
+      const framesPerLoop = Math.round(2880 / this.speed);
       this.trail.unshift([x, y]);
-      if (this.trail.length > this.sampleCount()) this.trail.pop();
+      if (this.trail.length > framesPerLoop) this.trail.length = framesPerLoop;
       ctx.strokeStyle = "#ff5fa2";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -244,8 +237,9 @@ class GenerativeLogoTracer extends Template {
       ctx.stroke();
       ctx.lineWidth = 1;
 
-      // advance one full loop over `sampleCount` frames, scaled by speed
-      this.t += ((2 * Math.PI) / this.sampleCount()) * (this.speed / 12) * 6;
+      this.t += (2 * Math.PI) / framesPerLoop;
+      // integer frequencies make a 2π wrap invisible; keeps t small forever
+      if (this.t >= 2 * Math.PI) this.t -= 2 * Math.PI;
     };
     frame();
   }
